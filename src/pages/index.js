@@ -4,31 +4,6 @@ import { Box } from "@material-ui/core"
 import ShadowScrollbars from "../components/ShadowScrollbars"
 import Layout from "../layouts/index"
 
-    // query={graphql`
-    //   query CatalogueQuery {
-    //     products: allDatoCmsProduct {
-    //       edges {
-    //         node {
-    //           id
-    //           basename
-    //           price
-    //           image {
-    //             url
-    //             sizes(maxWidth: 300, imgixParams: { fm: "jpg" }) {
-    //               ...GatsbyDatoCmsSizes
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //     site {
-    //       siteMetadata {
-    //         siteName
-    //       }
-    //     }
-    //   }
-    // `}
-
 export default () => (
   <StaticQuery
     query={graphql`
@@ -59,6 +34,17 @@ export default () => (
     render={data => (
       <>
         <Layout site={data.site}>
+          <Box style={{display: "flex", flexDirection: "row", padding: "0 0 32px 0"}}>
+            <div style={{marginRight: "16px"}}>
+              <span className="Product__button">Lend NFT</span>
+            </div>
+            <div style={{marginRight: "16px"}}>
+              <span className="Product__button">My Stats</span>
+            </div>
+            <div>
+              <span className="Product__button">But How?!</span>
+            </div>
+          </Box>
             <ShadowScrollbars style={{ height: 800 }}>
           <Box className="gradient-box" style={{ padding: '32px 64px', border: "3px solid black" }}>
             <ul class="c-rainbow">
