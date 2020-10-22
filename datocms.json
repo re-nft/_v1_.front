@@ -1,0 +1,11 @@
+{
+  "name": "Snipcart + Gatsby Shop",
+  "description": "Simple e-commerce for socks made with Gatsby, Snipcart and DatoCMS",
+  "previewImage": "https://www.datocms-assets.com/205/1584546293-screen-shot-2020-03-18-at-16-44-29-fullpage.png?crop=top&fit=crop&h=500&w=600&auto=format",
+  "datocmsProjectId": "5985",
+  "deploymentType": "static",
+  "buildCommand": "yarn build",
+  "buildDirectory": "public",
+  "datocmsApiTokenEnvName": "DATO_API_TOKEN",
+  "livePreviewUrl": "https://datocms-snipcart-gatsby-demo.netlify.com/"
+}
