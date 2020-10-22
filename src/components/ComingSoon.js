@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default () => (
-  <div className="coming-soon" title="Coming Soon">
+export default ({hidden}) => (
+  !hidden && <div className="coming-soon" title="Coming Soon">
     Coming Soon
   </div>
 );

@@ -5,6 +5,7 @@ import ShadowScrollbars from "../components/ShadowScrollbars"
 import Layout from "../layouts/index"
 import Psychedelic from "../components/Psychedelic"
 import ComingSoon from '../components/ComingSoon'
+import ButHow from '../components/ButHow'
 
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
@@ -52,7 +53,7 @@ export default () => {
             <div role="button" style={{marginRight: "16px"}} onClick={setTab("STATS")} onKeyDown={setTab("STATS")}>
               <span className={activeTab === "STATS" ? "active-tab" : "Product__button"}>My Stats</span>
             </div>
-            <div role="button" style={{marginRight: "16px"}} onClick={setTab("LEADER")} onKeyDown={setTab("STATS")}>
+            <div role="button" style={{marginRight: "16px"}} onClick={setTab("LEADER")} onKeyDown={setTab("LEADER")}>
               <span className={activeTab === "LEADER" ? "active-tab" : "Product__button"}>Leaderboard</span>
             </div>
             <div role="button" onClick={setTab("HOW")} onKeyDown={setTab("HOW")}>
@@ -60,8 +61,11 @@ export default () => {
             </div>
           </Box>
             <ShadowScrollbars style={{ height: 800 }}>
-              <Psychedelic data={data} hidden={activeTab !== "RENT"} />
-              <ComingSoon hidden={activeTab !== "LEADER"} />
+              <Box style={{ padding: '32px 64px', border: "3px solid black" }}>
+                <Psychedelic data={data} hidden={activeTab !== "LEND"} isRent={false} />
+                <ComingSoon hidden={activeTab !== "LEADER"} />
+                <ButHow hidden={activeTab !== "HOW"} />
+              </Box>
             </ShadowScrollbars>
         </Layout>
       </>

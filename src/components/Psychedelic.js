@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box } from "@material-ui/core";
 
-export default ({ data, hidden }) => (
-   (!hidden && <Box className="gradient-box" style={{ padding: '32px 64px', border: "3px solid black" }}>
+export default ({ data, hidden, isRent }) => {
+  const btnActionLabel = isRent ? "Rent" : "Lend";
+
+   return (!hidden && <>
     <ul class="c-rainbow">
       <li class="c-rainbow__layer c-rainbow__layer--white">SCROLL FOR MORE</li>
       <li class="c-rainbow__layer c-rainbow__layer--orange">SCROLL FOR MORE</li>
@@ -35,11 +37,11 @@ export default ({ data, hidden }) => (
                   10 €
                 </div>
               </div>
-              <span className="Product__buy">Rent now</span>
+              <span className="Product__buy">{btnActionLabel} now</span>
             </div>
           </div>
       </div>)})
       }
   </div>
-</Box>)
-);
+</>)
+};
