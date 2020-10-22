@@ -20,7 +20,7 @@ module.exports = {
     {
       resolve: "gatsby-source-custom-api",
       options: {
-          url: "https://api.opensea.io/api/v1/assets?owner=0x465DCa9995D6c2a81A9Be80fBCeD5a770dEE3daE&order_direction=desc&offset=0&limit=5"
+          url: "https://api.opensea.io/api/v1/assets?owner=0x465DCa9995D6c2a81A9Be80fBCeD5a770dEE3daE&order_direction=desc&offset=0"
       },
       imageKeys: ["assets.image_original_url"]
     },

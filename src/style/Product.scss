@@ -76,6 +76,7 @@
 
   &:hover {
     text-decoration: underline;
+    cursor: cell;
 
     &:before {
       content: "Yes now";
@@ -108,8 +109,20 @@
 
   &:hover {
     text-decoration: underline;
-    cursor: pointer;
+    cursor: cell;
   }
+}
+
+.active-tab {
+  flex: 1;
+  text-align: right;
+  text-transform: uppercase;
+  background: #663399;
+  border: 3px double black;
+  padding: 10px 20px;
+  color: white;
+  position: relative;
+  font-weight: bold;
 }
 
 @keyframes cross-1 {

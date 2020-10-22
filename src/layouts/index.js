@@ -35,7 +35,7 @@ const Layout = ({ children, site }) => (
         {children}
       </div>
         <div className="Footer" style={{textAlign: "center"}}>
-        ♦
+        ♦ See me in openverse soon... ♦
         </div>
     </div>
   </div>

@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { StaticQuery, graphql } from 'gatsby'
 import { Box } from "@material-ui/core"
 import ShadowScrollbars from "../components/ShadowScrollbars"
 import Layout from "../layouts/index"
+import Psychedelic from "../components/Psychedelic"
+import ComingSoon from '../components/ComingSoon'
 
-export default () => (
-  <StaticQuery
+export default () => {
+  const [activeTab, setActiveTab] = useState("RENT");
+  const setTab = useCallback((tab) => {
+    return () => setActiveTab(tab);
+  }, [setActiveTab]);
+  console.log(activeTab)
+
+  return (<StaticQuery
     query={graphql`
       query CatalogueQuery {
         allCustomApi {
@@ -35,62 +43,28 @@ export default () => (
       <>
         <Layout site={data.site}>
           <Box style={{display: "flex", flexDirection: "row", padding: "0 0 32px 0"}}>
-            <div style={{marginRight: "16px"}}>
-              <span className="Product__button">Lend NFT</span>
+            <div role="button" style={{marginRight: "16px"}} onClick={setTab("RENT")} onKeyDown={setTab("RENT")}>
+              <span className={activeTab === "RENT" ? "active-tab" : "Product__button"}>Rent NFT</span>
             </div>
-            <div style={{marginRight: "16px"}}>
-              <span className="Product__button">My Stats</span>
+            <div role="button" style={{marginRight: "16px"}} onClick={setTab("LEND")} onKeyDown={setTab("LEND")}>
+              <span className={activeTab === "LEND" ? "active-tab" : "Product__button"}>Lend NFT</span>
             </div>
-            <div>
-              <span className="Product__button">But How?!</span>
+            <div role="button" style={{marginRight: "16px"}} onClick={setTab("STATS")} onKeyDown={setTab("STATS")}>
+              <span className={activeTab === "STATS" ? "active-tab" : "Product__button"}>My Stats</span>
+            </div>
+            <div role="button" style={{marginRight: "16px"}} onClick={setTab("LEADER")} onKeyDown={setTab("STATS")}>
+              <span className={activeTab === "LEADER" ? "active-tab" : "Product__button"}>Leaderboard</span>
+            </div>
+            <div role="button" onClick={setTab("HOW")} onKeyDown={setTab("HOW")}>
+              <span className={activeTab === "HOW" ? "active-tab" : "Product__button"}>But How?!</span>
             </div>
           </Box>
             <ShadowScrollbars style={{ height: 800 }}>
-          <Box className="gradient-box" style={{ padding: '32px 64px', border: "3px solid black" }}>
-            <ul class="c-rainbow">
-              <li class="c-rainbow__layer c-rainbow__layer--white">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--orange">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--red">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--violet">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--blue">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--green">SCROLL FOR MORE</li>
-              <li class="c-rainbow__layer c-rainbow__layer--yellow">SCROLL FOR MORE</li>
-            </ul>
-            <div className="Catalogue">
-
-              {data.allCustomApi.edges[0].node.assets.map((product) => {
-                return (<div className="Catalogue__item" key={product.token_id}>
-                  <div
-                    className="Product snipcart-add-item"
-                    data-item-id={product.token_id}
-                    data-item-price='10'
-                    data-item-image={product.image_url}
-                    data-item-name="a"
-                    data-item-url={`/`}
-                  >
-                    <div className="Product__image">
-                        <img src={product.image_original_url} />
-                      {/* <Img key={product.token_id} fluid /> */}
-                      {/* <Img sizes={product.image.sizes} /> */}
-                    </div>
-                    <div className="Product__details">
-                      <div className="Product__name">
-                        {/* {product.asset_contract.address} */}
-                        <div className="Product__price">
-                          10 €
-                        </div>
-                      </div>
-                      <span className="Product__buy">Rent now</span>
-                    </div>
-                  </div>
-              </div>)})
-              }
-          </div>
-
-            </Box>
+              <Psychedelic data={data} hidden={activeTab !== "RENT"} />
+              <ComingSoon hidden={activeTab !== "LEADER"} />
             </ShadowScrollbars>
         </Layout>
       </>
       )}
-  />
-  );
+  />)
+};
