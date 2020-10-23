@@ -7,7 +7,7 @@ import "../style/index.scss";
 
 const Layout = ({ children, site, wallet }) => {
   const connectWallet = useCallback(() => {
-    if (!wallet) {
+    if (!wallet || wallet.account) {
       return;
     }
     wallet.connect("injected");
@@ -62,7 +62,7 @@ const Layout = ({ children, site, wallet }) => {
 };
 
 Layout.propTypes = {
-  children: PropTypes.func
+  children: PropTypes.func,
 };
 
 export default Layout;

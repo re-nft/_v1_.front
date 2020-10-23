@@ -9,12 +9,13 @@ import Psychedelic from "../components/Psychedelic";
 import ComingSoon from "../components/ComingSoon";
 import ButHow from "../components/ButHow";
 import DappContext from "../contexts/Dapp";
+import Stats from "../components/Stats";
 
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
   const wallet = useWallet();
   const setTab = useCallback(
-    tab => {
+    (tab) => {
       return () => setActiveTab(tab);
     },
     [setActiveTab]
@@ -48,14 +49,14 @@ export default () => {
             }
           }
         `}
-        render={data => (
+        render={(data) => (
           <>
             <Layout site={data.site} wallet={wallet}>
               <Box
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  padding: "0 0 32px 0"
+                  padding: "0 0 32px 0",
                 }}
               >
                 <div
@@ -132,7 +133,7 @@ export default () => {
                 <Box
                   style={{
                     padding: "32px 64px",
-                    border: "3px solid black"
+                    border: "3px solid black",
                   }}
                 >
                   <Psychedelic
@@ -142,6 +143,7 @@ export default () => {
                   />
                   <ComingSoon hidden={activeTab !== "LEADER"} />
                   <ButHow hidden={activeTab !== "HOW"} />
+                  <Stats hidden={activeTab !== "STATS"} />
                 </Box>
               </ShadowScrollbars>
             </Layout>
