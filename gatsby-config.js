@@ -18,6 +18,12 @@ module.exports = {
     // },
     // to pull nfts
     {
+      resolve: "gatsby-plugin-manifest",
+      options: {
+        icon: "src/images/favicon.ico"
+      }
+    },
+    {
       resolve: "gatsby-source-custom-api",
       options: {
           url: "https://api.opensea.io/api/v1/assets?owner=0x465DCa9995D6c2a81A9Be80fBCeD5a770dEE3daE&order_direction=desc&offset=0"
