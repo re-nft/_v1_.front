@@ -23,7 +23,8 @@
     "react": "^16.12.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.12.0",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^5.2.0",
+    "use-wallet": "^0.8.0"
   },
   "keywords": [
     "gatsby"

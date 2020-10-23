@@ -10,10 +10,11 @@
 .Header__body {
   display: flex;
   align-items: center;
+  justify-content: space-around;
 }
 
 .Header__title {
-  flex: 1;
+  // flex: 1;
   padding: 20px 0;
   font-family: "times new roman", times, serif;
   font-style: italic;
@@ -27,14 +28,15 @@
     display: block;
     padding: 2px;
 
-    &:after, &:before {
+    &:after,
+    &:before {
       content: attr(data-text);
       position: absolute;
       top: 0;
       color: white;
       background: #663399;
       overflow: hidden;
-      clip: rect(0,900px,0,0);
+      clip: rect(0, 900px, 0, 0);
       display: block;
       padding: 2px;
     }
@@ -46,7 +48,7 @@
     }
 
     &:before {
-      content:attr(data-text);
+      content: attr(data-text);
       left: -3px;
       text-shadow: 2px 0 blue;
       animation: noise-anim-2 3s infinite linear alternate-reverse;
@@ -74,7 +76,7 @@
 
   @for $i from 0 through $steps {
     #{percentage($i * (1 / $steps))} {
-      clip:rect(random(100) + px, 9999px, random(100) + px, 0);
+      clip: rect(random(100) + px, 9999px, random(100) + px, 0);
     }
   }
 }
@@ -82,9 +84,9 @@
 @keyframes noise-anim-2 {
   $steps: 20;
 
-  @for $i from 0 through $steps{
-    #{percentage($i * (1/$steps))}{
-      clip:rect(random(100) + px, 9999px, random(100) + px, 0);
+  @for $i from 0 through $steps {
+    #{percentage($i * (1/$steps))} {
+      clip: rect(random(100) + px, 9999px, random(100) + px, 0);
     }
   }
 }
