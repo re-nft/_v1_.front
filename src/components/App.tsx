@@ -3,13 +3,14 @@ import { StaticQuery, graphql } from "gatsby";
 import { Box } from "@material-ui/core";
 import { useWallet } from "use-wallet";
 
-import ShadowScrollbars from "../components/ShadowScrollbars";
+import ShadowScrollbars from "./ShadowScrollbars";
 import Layout from "../layouts/index";
-import Psychedelic from "../components/Psychedelic";
-import ComingSoon from "../components/ComingSoon";
-import ButHow from "../components/ButHow";
+import Psychedelic from "./Psychedelic";
+import ComingSoon from "./ComingSoon";
+import ButHow from "./ButHow";
 import DappContext from "../contexts/Dapp";
-import Stats from "../components/Stats";
+import Stats from "./Stats";
+import { getGanFace } from "../api/ganFace";
 
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
@@ -20,9 +21,17 @@ export default () => {
     },
     [setActiveTab]
   );
+  const getFace = useCallback(async () => {
+    // const face = await getGanFace();
+    // console.error("face");
+    // console.error(face);
+    // const url = URL.createObjectURL(face);
+    // const img = document.getElementById('face');
+    // img.src = url;
+  }, [getGanFace]);
 
   return (
-    <DappContext.Provider value={wallet}>
+    <DappContext.Provider value={{wallet}}>
       <StaticQuery
         query={graphql`
           query CatalogueQuery {
@@ -50,15 +59,18 @@ export default () => {
           }
         `}
         render={(data) => (
-          <>
-            <Layout site={data.site} wallet={wallet}>
-              <Box
+            <Layout>
+              <div
                 style={{
                   display: "flex",
                   flexDirection: "row",
                   padding: "0 0 32px 0",
                 }}
               >
+                {/* <div role="button" onClick={getFace} style={{backgroundColor: "green", cursor: "pointer"}}>
+                  Click me
+                </div>
+                <div className="Product__image"><img id="face"></img></div> */}
                 <div
                   role="button"
                   style={{ marginRight: "16px" }}
@@ -128,8 +140,8 @@ export default () => {
                     But How?!
                   </span>
                 </div>
-              </Box>
-              <ShadowScrollbars style={{ height: 800 }}>
+              </div>
+              <ShadowScrollbars style={{height: "800px"}}>
                 <Box
                   style={{
                     padding: "32px 64px",
@@ -147,7 +159,6 @@ export default () => {
                 </Box>
               </ShadowScrollbars>
             </Layout>
-          </>
         )}
       />
     </DappContext.Provider>

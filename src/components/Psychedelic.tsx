@@ -6,31 +6,31 @@ export default ({ data, hidden, isRent }) => {
   return (
     !hidden && (
       <>
-        <ul class="c-rainbow">
-          <li class="c-rainbow__layer c-rainbow__layer--white">
+        <ul className="c-rainbow">
+          <li className="c-rainbow__layer c-rainbow__layer--white">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--orange">
+          <li className="c-rainbow__layer c-rainbow__layer--orange">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--red">
+          <li className="c-rainbow__layer c-rainbow__layer--red">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--violet">
+          <li className="c-rainbow__layer c-rainbow__layer--violet">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--blue">
+          <li className="c-rainbow__layer c-rainbow__layer--blue">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--green">
+          <li className="c-rainbow__layer c-rainbow__layer--green">
             SCROLL FOR MORE
           </li>
-          <li class="c-rainbow__layer c-rainbow__layer--yellow">
+          <li className="c-rainbow__layer c-rainbow__layer--yellow">
             SCROLL FOR MORE
           </li>
         </ul>
         <div className="Catalogue">
-          {data.allCustomApi.edges[0].node.assets.map(product => {
+          {data.allCustomApi.edges[0].node.assets.map((product) => {
             return (
               <div className="Catalogue__item" key={product.token_id}>
                 <div

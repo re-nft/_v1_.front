@@ -1,6 +1,6 @@
 import React from "react";
 
-import SweetProgress from "../components/SweetProgress";
+import SweetProgress from "./SweetProgress";
 
 export default ({ hidden }) => {
   return (
