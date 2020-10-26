@@ -21,7 +21,7 @@ export const getGanFace = async () => {
       method: "GET",
       headers: {
         "x-rapidapi-host": "face-generator.p.rapidapi.com",
-        "x-rapidapi-key": "89ee52e4e9msh1d05f5557a7adbbp1e2aa1jsn81750205cd1b",
+        "x-rapidapi-key": process.env.GATSBY_RAPID_API_KEY,
         useQueryString: "true",
       },
     }
