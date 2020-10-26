@@ -1,27 +1,26 @@
 import React, { useCallback } from "react";
-import PropTypes from "prop-types";
 import Helmet from "react-helmet";
 import Link from "gatsby-link";
 
 import "../style/index.scss";
 
-const Layout = ({ children }) => {
-  // const connectWallet = useCallback(() => {
-  //   if (!wallet || wallet.account) {
-  //     return;
-  //   }
-  //   wallet.connect("injected");
-  // }, [wallet]);
+const Layout = ({ children, site, wallet }) => {
+  const connectWallet = useCallback(() => {
+    if (!wallet || wallet.account) {
+      return;
+    }
+    wallet.connect("injected");
+  }, [wallet]);
 
-  // const userAddress = useCallback(() => {
-  //   if (!wallet || !wallet.account) {
-  //     return "";
-  //   }
-  //   return `${wallet.account.substr(0, 5)}...${wallet.account.substr(
-  //     wallet.account.length - 5,
-  //     5
-  //   )}`;
-  // }, [wallet]);
+  const userAddress = useCallback(() => {
+    if (!wallet || !wallet.account) {
+      return "";
+    }
+    return `${wallet.account.substr(0, 5)}...${wallet.account.substr(
+      wallet.account.length - 5,
+      5
+    )}`;
+  }, [wallet]);
 
   return (
     <div>
@@ -31,13 +30,13 @@ const Layout = ({ children }) => {
           <div className="Wrap">
             <div className="Header__body">
               <h1 className="Header__title">
-                {/* <Link data-text={site.siteMetadata.siteName} to="/">
+                <Link data-text={site.siteMetadata.siteName} to="/">
                   {site.siteMetadata.siteName}
-                </Link> */}
+                </Link>
               </h1>
-              {/* <div className="Header__summary" onClick={connectWallet}>
+              <div className="Header__summary" onClick={connectWallet}>
                 {userAddress() !== "" ? userAddress() : "Connect to Görli"}
-              </div> */}
+              </div>
               <div className="Header__summary snipcart-summary snipcart-checkout">
                 <div className="Header__summary__title">🛍 MY NFT CART 🛍</div>
                 <div className="Header__summary__line">

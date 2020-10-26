@@ -23,8 +23,6 @@ export default () => {
   );
   const getFace = useCallback(async () => {
     // const face = await getGanFace();
-    // console.error("face");
-    // console.error(face);
     // const url = URL.createObjectURL(face);
     // const img = document.getElementById('face');
     // img.src = url;
@@ -59,7 +57,7 @@ export default () => {
           }
         `}
         render={(data) => (
-            <Layout>
+            <Layout site={data.site} wallet={wallet}>
               <div
                 style={{
                   display: "flex",
