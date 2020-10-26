@@ -11,9 +11,17 @@ import ButHow from "./ButHow";
 import DappContext from "../contexts/Dapp";
 import Stats from "./Stats";
 import { getGanFace } from "../api/ganFace";
+import MintNft from "./MintNFT";
 
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
+  const [nftModalOpen, setNftModalOpen] = useState(false);
+  const handleNftModalOpen = useCallback((e) => {
+    setNftModalOpen(true);
+  }, [setNftModalOpen]);
+  const handleNftModalClose = useCallback((e) => {
+    setNftModalOpen(false);
+  }, [setNftModalOpen]);
   const wallet = useWallet();
   const setTab = useCallback(
     (tab) => {
@@ -127,6 +135,20 @@ export default () => {
                 </div>
                 <div
                   role="button"
+                  style={{ marginRight: "16px" }}
+                  onClick={handleNftModalOpen}
+                >
+                  <span
+                    className={
+                      activeTab === "LEND" ? "active-tab" : "Product__button"
+                    }
+                  >
+                    Get NFT
+                  </span>
+                </div>
+                <MintNft open={nftModalOpen} handleClose={handleNftModalClose} />
+                <div
+                  role="button"
                   onClick={setTab("HOW")}
                   onKeyDown={setTab("HOW")}
                 >
@@ -146,6 +168,11 @@ export default () => {
                     border: "3px solid black",
                   }}
                 >
+                  {/* <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
+                    <div>
+                      All around are familiar faces...
+                    </div>
+                  </Psychedelic> */}
                   <Psychedelic
                     data={data}
                     hidden={activeTab !== "LEND"}
