@@ -5,6 +5,16 @@ import SweetProgress from "./SweetProgress";
 export default ({ hidden }) => {
   return (
     !hidden && (
+      <div>
+          <div className="coming-soon" title="Coming Soon,">
+            Coming Soon,
+        </div>
+        <div className="coming-soon" title="it will look">
+            it will look
+        </div>
+        <div className="coming-soon" title="fab">
+            fab
+        </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div>Total earned from lending: $1222 (in rent prices)</div>
         <div># of NFTs currently lending: 3</div>
@@ -45,6 +55,8 @@ export default ({ hidden }) => {
           </div>
         </div>
       </div>
+      </div>
+
     )
   );
 };

@@ -48,7 +48,7 @@ const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
               <div className="Header__summary" onClick={connectWallet}>
                 {userAddress() !== "" ? userAddress() : "Connect to Görli"}
               </div>
-              <div className="Header__summary snipcart-summary snipcart-checkout">
+              {/* <div className="Header__summary snipcart-summary snipcart-checkout">
                 <div className="Header__summary__title">🛍 MY NFT CART 🛍</div>
                 <div className="Header__summary__line">
                   Number of items:{" "}
@@ -58,7 +58,7 @@ const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
                   Total rent price:{" "}
                   <span className="snipcart-total-price"></span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
