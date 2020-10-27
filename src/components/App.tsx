@@ -34,7 +34,7 @@ export default () => {
 
   return (
     <DappContext.Provider value={{wallet, web3, setWeb3}}>
-      <StaticQuery
+      {/* <StaticQuery
         query={graphql`
           query CatalogueQuery {
             allCustomApi {
@@ -60,8 +60,8 @@ export default () => {
             }
           }
         `}
-        render={(data) => (
-            <Layout site={data.site} wallet={wallet} web3={web3} setWeb3={setWeb3}>
+        render={(data) => ( */}
+            <Layout site="Rent NFT" wallet={wallet} web3={web3} setWeb3={setWeb3}>
               <div
                 style={{
                   display: "flex",
@@ -168,17 +168,18 @@ export default () => {
                     <Cold fancyText="One day it will be warm here..." />
                   </Psychedelic>
                   <Psychedelic
-                    data={data}
                     hidden={activeTab !== "LEND"}
                     isRent={false}
-                  />
+                  >
+                    <Cold fancyText="One day it will be warm here..." />
+                  </Psychedelic>
                   <ComingSoon hidden={activeTab !== "LEADER"} />
                   <ButHow hidden={activeTab !== "HOW"} />
                   <Stats hidden={activeTab !== "STATS"} />
                 </Box>
               </ShadowScrollbars>
             </Layout>
-        )}
+        {/* )} */}
       />
     </DappContext.Provider>
   );

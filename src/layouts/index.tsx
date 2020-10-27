@@ -41,8 +41,8 @@ const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
           <div className="Wrap">
             <div className="Header__body">
               <h1 className="Header__title">
-                <Link data-text={site.siteMetadata.siteName} to="/">
-                  {site.siteMetadata.siteName}
+                <Link data-text="Rent NFT" to="/">
+                  Rent NFT
                 </Link>
               </h1>
               <div className="Header__summary" onClick={connectWallet}>

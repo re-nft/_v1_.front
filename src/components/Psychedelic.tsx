@@ -48,7 +48,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ children, data, hidden, isRen
     !hidden && (<>
         {data && <ScrollForMore />}
         {data && <Catalogue data={data} btnActionLabel={btnActionLabel} />}
-        {children && children}
+        {(children && data == null) && children}
       </>)
   );
 };
