@@ -136,7 +136,7 @@ export default () => {
                 >
                   <span
                     className={
-                      activeTab === "LEND" ? "active-tab" : "Product__button"
+                      activeTab === "GETNFT" ? "active-tab" : "Product__button"
                     }
                   >
                     Get NFT

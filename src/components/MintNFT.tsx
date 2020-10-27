@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     swanky: {
       flex: "0",
       width: 600,
-      height: 600,
+      height: 650,
       backgroundColor: "#663399",
       margin: "auto",
       border: '3px solid #000',
@@ -28,27 +28,28 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default ({open, handleClose}) => {
   const classes = useStyles();
+  const [counter, setCounter] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [yourFace, setYourFace] = useState<Blob>();
   const [isMinting, setIsMinting] = useState(false);
+  const [pin, setPin] = useState();
   const [faceContract, setFaceContract] = useState();
   const { wallet, web3, setWeb3 } = useContext(DappContext);
 
-  // useEffect(() => {
-  //   console.log(wallet);
-  //   console.log(addresses)
-  // }, [wallet]);
-
   const getFace = useCallback(async () => {
     setIsLoading(true);
+    setCounter(counter + 1);
     const ganFace = await getGanFace();
     // const person = await getPerson();
     const url = URL.createObjectURL(ganFace);
     const img = document.getElementById('face');
     img.src = url;
+
     setYourFace(ganFace);
+    const _pin = await pinToIpfs({blob: ganFace});
+    const _pinData = await _pin.json();
+    setPin(_pinData);
     setIsLoading(false);
-    pinToIpfs({blob: ganFace});
   }, [getGanFace]);
 
   const mintFace = useCallback(async () => {
@@ -62,7 +63,7 @@ export default ({open, handleClose}) => {
     let contract = faceContract;
 
     if (faceContract == null) {
-      contract = web3.eth.Contract(abis.goerli.face, addresses.goerli.face);
+      contract = new web3.eth.Contract(abis.goerli.face.abi, addresses.goerli.face);
       if (contract != null) {
         setFaceContract(contract);
       } else {
@@ -70,13 +71,13 @@ export default ({open, handleClose}) => {
       }
     }
 
-    const receipt = await contract.awardGanFace(wallet.account, "https://pinata.link");
-
-    console.log("face minted");
-    console.log(receipt);
+    const receipt = await contract.methods.awardGanFace(
+      wallet.account,
+      pin.IpfsHash ? `https://gateway.pinata.cloud/ipfs/${pin.IpfsHash}` : "")
+      .send({ from: wallet.account });
 
     setIsMinting(false);
-  }, [web3, faceContract]);
+  }, [web3, faceContract, wallet, pin]);
 
   return (
     <Modal
@@ -90,16 +91,18 @@ export default ({open, handleClose}) => {
         <div>
           |-: Generate your GAN face :-|
         </div>
-        <div className="Product__image" style={{maxWidth: "80%", maxHeight: "80%", margin: "auto"}}>
+        <div className="Product__image" style={{maxWidth: "80%", maxHeight: "80%", margin: "32px auto"}}>
           <img id="face" style={{width: "100%", height: "100%"}} src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Anonymous_SVG.svg">
           </img>
         </div>
         {isLoading && <FunnySpinner />}
-        <div onClick={getFace} role="button" className="Product__button" style={{marginTop: "auto", flex: "0", width: "200px", border: "3px solid black", margin: "8px auto 0px auto", textAlign: "center"}}>
-          Give me a face
-        </div>
-        <div onClick={mintFace} role="button" className="Product__button" style={{width: "200px", border: "3px solid black", margin: "8px auto 8px auto", textAlign: "center"}}>
-          Mint my face
+        <div style={{display: "flex"}}>
+          <button onClick={getFace} role="button" disabled={counter > 4}  className="Product__button" style={{marginTop: "auto", flex: "1", width: "200px", border: "3px solid black", margin: "0 8px 8px 0", textAlign: "center"}}>
+            Give me a face
+          </button>
+          <button onClick={mintFace} role="button" disabled={isLoading || pin == null || pin.IpfsHash == null || isMinting}  className="Product__button" style={{width: "200px", flex:"1", border: "3px solid black", margin: "0 0 8px 0", textAlign: "center"}}>
+            Mint my face
+          </button>
         </div>
       </div>
     </Modal>

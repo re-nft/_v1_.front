@@ -106,10 +106,19 @@
   color: white;
   position: relative;
   font-weight: bold;
+  font-size: "16px";
+  font-family: monospace;
 
   &:hover {
     text-decoration: underline;
     cursor: cell;
+  }
+
+  &:disabled {
+    background-color: #555;
+    text-decoration: none;
+    color: white;
+    
   }
 }
 
