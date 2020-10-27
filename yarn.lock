@@ -7977,6 +7977,11 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+extract-files@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/extract-files/-/extract-files-9.0.0.tgz#8a7744f2437f81f5ed3250ed9f1550de902fe54a"
+  integrity sha512-CvdFfHkC95B4bBBk36hcEmvdR2awOdhhVUYH6S/zrVj3477zven/fJMYg7121h4T1xHZC+tetUpubpAhxwI7hQ==
+
 extract-zip@^1.0.3:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/extract-zip/-/extract-zip-1.7.0.tgz#556cc3ae9df7f452c493a0cfb51cc30277940927"
@@ -9503,6 +9508,15 @@ graphql-playground-middleware-express@^1.7.18:
   integrity sha512-PJLiCxLmN6Dp+dHGyHU92m9y3hB/RAkcUBWcqYl2fiP+EbpDDgNfElrsVzW60MhJe+LTV1PFqiInH2d3KNvlCQ==
   dependencies:
     graphql-playground-html "^1.6.29"
+
+graphql-request@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-3.3.0.tgz#1b9003f34b73cd40d691803d2d422fde5c713af3"
+  integrity sha512-NHj65WSIUh8j7TBYgzWU0fqvLfxrqFDrLG8nZUh+IREZw50ljR6JXlXRkr52/fL/46wpItiQNLDrG+UZI+KmzA==
+  dependencies:
+    cross-fetch "^3.0.6"
+    extract-files "^9.0.0"
+    form-data "^3.0.0"
 
 graphql-subscriptions@^1.1.0:
   version "1.1.0"
