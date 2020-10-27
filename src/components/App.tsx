@@ -12,6 +12,7 @@ import DappContext from "../contexts/Dapp";
 import Stats from "./Stats";
 import { getGanFace } from "../api/ganFace";
 import MintNft from "./MintNFT";
+import Cold from "./Cold";
 
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
@@ -23,21 +24,16 @@ export default () => {
     setNftModalOpen(false);
   }, [setNftModalOpen]);
   const wallet = useWallet();
+  const [web3, setWeb3] = useState();
   const setTab = useCallback(
     (tab) => {
       return () => setActiveTab(tab);
     },
     [setActiveTab]
   );
-  const getFace = useCallback(async () => {
-    // const face = await getGanFace();
-    // const url = URL.createObjectURL(face);
-    // const img = document.getElementById('face');
-    // img.src = url;
-  }, [getGanFace]);
 
   return (
-    <DappContext.Provider value={{wallet}}>
+    <DappContext.Provider value={{wallet, web3, setWeb3}}>
       <StaticQuery
         query={graphql`
           query CatalogueQuery {
@@ -65,7 +61,7 @@ export default () => {
           }
         `}
         render={(data) => (
-            <Layout site={data.site} wallet={wallet}>
+            <Layout site={data.site} wallet={wallet} web3={web3} setWeb3={setWeb3}>
               <div
                 style={{
                   display: "flex",
@@ -168,11 +164,9 @@ export default () => {
                     border: "3px solid black",
                   }}
                 >
-                  {/* <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
-                    <div>
-                      All around are familiar faces...
-                    </div>
-                  </Psychedelic> */}
+                  <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
+                    <Cold fancyText="One day it will be warm here..." />
+                  </Psychedelic>
                   <Psychedelic
                     data={data}
                     hidden={activeTab !== "LEND"}

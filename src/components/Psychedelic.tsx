@@ -1,7 +1,6 @@
 import React from "react";
 
 import ScrollForMore from "../components/ScrollForMore";
-import Optional from "../types";
 
 export const Catalogue = ({data, btnActionLabel}) => (
   <div className="Catalogue">
@@ -47,9 +46,9 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ children, data, hidden, isRen
 
   return (
     !hidden && (<>
-        <ScrollForMore />
+        {data && <ScrollForMore />}
         {data && <Catalogue data={data} btnActionLabel={btnActionLabel} />}
-        {children && {children}}
+        {children && children}
       </>)
   );
 };
