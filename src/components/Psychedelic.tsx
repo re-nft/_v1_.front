@@ -75,7 +75,7 @@ const LendModal = ({
       return;
     }
     if (web3 == null || wallet.account == null) {
-      console.error("connect to goerli network");
+      console.debug("connect to goerli network");
       return;
     }
     if (rent == null || face == null || faceId == null) {
@@ -294,7 +294,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
     } else {
       // lend. so pull all the nfts that you own
       if (wallet.account == null || web3 == null) {
-        console.error("connect to goerli network");
+        console.debug("connect to goerli network");
         return;
       }
       const userNftsQuery = userQuery(wallet.account, web3);

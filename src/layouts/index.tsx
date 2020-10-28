@@ -1,29 +1,20 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import Helmet from "react-helmet";
 import Link from "gatsby-link";
-import Web3 from "web3";
+
+// contexts
+import DappContext from "../contexts/Dapp";
 
 import "../style/index.scss";
 
-const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
-  const connectWallet = useCallback(() => {
-    if (!wallet || wallet.account) {
-      return;
-    }
-    wallet.connect("injected");
+type LayoutProps = {
+  children: React.ReactNode;
+};
 
-    if (web3 == null) {
-      if ("web3" in window) {
-        if (!window.web3.currentProvider) {
-          return;
-        }
-        setWeb3(new Web3(window.web3.currentProvider));
-      }
-    }
-  }, [wallet]);
-
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { wallet } = useContext(DappContext);
   const userAddress = useCallback(() => {
-    if (!wallet || !wallet.account) {
+    if (wallet == null || !wallet.account) {
       return "";
     }
     return `${wallet.account.substr(0, 5)}...${wallet.account.substr(
@@ -44,20 +35,9 @@ const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
                   Rent NFT
                 </Link>
               </h1>
-              <div className="Header__summary" onClick={connectWallet}>
+              <div className="Header__summary">
                 {userAddress() !== "" ? userAddress() : "Connect to Görli"}
               </div>
-              {/* <div className="Header__summary snipcart-summary snipcart-checkout">
-                <div className="Header__summary__title">🛍 MY NFT CART 🛍</div>
-                <div className="Header__summary__line">
-                  Number of items:{" "}
-                  <span className="snipcart-total-items"></span>
-                </div>
-                <div className="Header__summary__line">
-                  Total rent price:{" "}
-                  <span className="snipcart-total-price"></span>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

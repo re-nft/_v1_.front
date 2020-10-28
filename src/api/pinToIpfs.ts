@@ -26,7 +26,7 @@ export const pinToIpfs = async ({ blob }) => {
     });
     return resp;
   } catch (error) {
-    console.error("captured pinning to IPFS with Pinata error", error);
+    console.debug("captured pinning to IPFS with Pinata error", error);
   }
   return null;
 };

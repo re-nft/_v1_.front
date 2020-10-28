@@ -56,7 +56,7 @@ export default ({ open, handleClose }) => {
     setIsMinting(true);
 
     if (web3 == null) {
-      console.error(
+      console.debug(
         "no web3 instance. You must connect your metamask wallet to Goerli"
       );
       return;
@@ -72,7 +72,7 @@ export default ({ open, handleClose }) => {
       if (contract != null) {
         setFaceContract(contract);
       } else {
-        console.error("could not set face contract");
+        console.debug("could not set face contract");
       }
     }
 
