@@ -60,9 +60,8 @@ export const GanFacesProvider: React.FC = ({ children }) => {
     <GanFacesContext.Provider
       value={{
         numFacesGenerated,
-        generatingFace,
         face,
-        mintingFace,
+        stages: ganStages,
         ipfsUri,
         getFace
       }}
