@@ -3,20 +3,6 @@ export const pinToIpfs = async ({ blob }) => {
   try {
     let data = new FormData();
     data.append("file", blob);
-    // const metadata = JSON.stringify({
-    // name: `${artMeta.artName}`,
-    // keyvalues: {
-    //   wildcards: "art",
-    // userName: `${profile.name}`,
-    // proofDid: `${profile.proof_did}`,
-    // artName: `${artMeta.artName}`,
-    // authorComment: `${artMeta.authorComment}`,
-    // fileName: `${file.name}`,
-    // animalID: `${artMeta.animalID}`,
-    // status: IN_REVIEW,
-    // },
-    // });
-    // data.append("pinataMetadata", metadata);
     const pinataOptions = JSON.stringify({
       cidVersion: 0,
       customPinPolicy: {
@@ -25,10 +11,6 @@ export const pinToIpfs = async ({ blob }) => {
             id: "FRA1",
             desiredReplicationCount: 1,
           },
-          // {
-          //   id: "NYC1",
-          //   desiredReplicationCount: 2,
-          // },
         ],
       },
     });
@@ -42,7 +24,6 @@ export const pinToIpfs = async ({ blob }) => {
       headers,
       body: data,
     });
-    // const resp = await axios.post(url, data, { headers });
     return resp;
   } catch (error) {
     console.error("captured pinning to IPFS with Pinata error", error);

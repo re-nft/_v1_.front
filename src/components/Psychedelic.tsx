@@ -1,23 +1,136 @@
 import React, { useContext, useEffect, useState, useCallback, useMemo } from "react";
+import { request } from "graphql-request";
+import Modal from '@material-ui/core/Modal';
+import { Input } from '@material-ui/core';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 import ScrollForMore from "../components/ScrollForMore";
 import DappContext from "../contexts/Dapp";
 import { ENDPOINT, nftsQuery, userQuery } from "../api/graph";
-import { request } from "graphql-request";
+import { addresses, abis } from "../contracts";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    swanky: {
+      flex: "0",
+      width: 600,
+      height: 650,
+      backgroundColor: "#663399",
+      margin: "auto",
+      border: '3px solid #000',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+      color: "white",
+      textAlign: "center"
+    },
+  }),
+);
+
+const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel }) => {
+  const classes = useStyles();
+  const [maxDuration, setMaxDuration] = useState("1");
+  const [borrowPrice, setBorrowPrice] = useState("5");
+  const [nftPrice, setNftPrice] = useState("100");
+  const handleMaxDuration = useCallback((event) => {
+    setMaxDuration(event.target.value);
+  }, [setMaxDuration]);
+  const handleBorrowPrice = useCallback((event) => {
+    setBorrowPrice(event.target.value);
+  }, [setBorrowPrice]);
+  const handleNftPrice = useCallback((event) => {
+    setNftPrice(event.target.value);
+  }, [setNftPrice]);
+  const handleAction = useCallback(async () => {
+    if (maxDuration == null || borrowPrice == null || nftPrice == null) {
+      return;
+    }
+    if (web3 == null || wallet.account == null) {
+      console.error("connect to goerli network");
+      return;
+    };
+    if (rent == null || face == null) {
+      return;
+    };
+    if (btnActionLabel === "Lend") {
+      // TODO: if not approved. don't approve every single time
+      console.log("face")
+      console.log(face.methods)
+      await face.methods.setApprovalForAll(addresses.goerli.rent, true).send({ from: wallet.account });
+
+      await rent.methods.lendOne(
+        addresses.goerli.face,
+        id,
+        maxDuration,
+        borrowPrice,
+        nftPrice
+      ).send({ from: wallet.account });
+    } else {
+      // rent
+    }
+  }, [web3, rent, wallet.account, btnActionLabel, id, face]);
+
+  return (
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+      className={classes.swanky}
+   >
+     <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", margin: "auto"}}>
+       <div style={{marginBottom: "16px"}}>
+      <p>Max Duration of NFT lend</p>
+      <Input value={maxDuration} type="number" onChange={handleMaxDuration} placeholder="1" name="maxDuration" />
+      </div>
+      <div style={{marginBottom: "16px"}}>
+      <p>Borrow price that borrower will pay for every day</p>
+      <Input value={borrowPrice} type="number" onChange={handleBorrowPrice} placeholder="5" name="borrowPrice" />
+      </div>
+      <div style={{marginBottom: "16px"}}>
+      <p>Collateral price. If borrower defaults, you will get this much back</p>
+      <Input value={nftPrice} type="number" onChange={handleNftPrice} placeholder="50" name="nftPrice" />
+      </div>
+      <button className="Product__button" onClick={handleAction}>Lend</button>
+     </div>
+    </Modal>
+  )
+}
 
 export const Catalogue = ({data, btnActionLabel}) => {
+  const [rent, setRent] = useState();
+  const [lendModalOpen, setLendModalOpen] = useState(false);
+  const [borrowModalOpen, setBorrowModalOpen] = useState(false);
+  const [faceC, setFace] = useState();
+  const { wallet, web3 } = useContext(DappContext);
+
+  useEffect(() => {
+    const _rent = new web3.eth.Contract(abis.goerli.rent.abi, addresses.goerli.rent);
+    setRent(_rent);
+    const _face = new web3.eth.Contract(abis.goerli.face.abi, addresses.goerli.face);
+    setFace(_face);
+  }, [web3, wallet]);
+
   const resolved = useMemo(() => {
     if (btnActionLabel === "Lend") {
       return data.user.faces;
     }
   }, [data, btnActionLabel]);
 
+  const handleClick = useCallback(() => {
+    if (btnActionLabel === "Lend") {
+      setLendModalOpen(true);
+    } else {
+      setBorrowModalOpen(true);
+    }
+  }, [btnActionLabel, setLendModalOpen, setBorrowModalOpen]);
+
   return (<div className="Catalogue">
   {resolved.map((face) => {
     return (
+      <>
       <div className="Catalogue__item" key={face.id}>
         <div
-          className="Product snipcart-add-item"
+          className="Product"
           data-item-id={face.id}
           data-item-image={face.uri}
           data-item-name="a"
@@ -33,10 +146,14 @@ export const Catalogue = ({data, btnActionLabel}) => {
               {/* {product.asset_contract.address} */}
               {btnActionLabel === "Rent" && <div className="Product__price">10 €</div>}
             </div>
-            <span className="Product__buy">{btnActionLabel} now</span>
+            <span className="Product__buy" onClick={handleClick}>{btnActionLabel} now</span>
+            <LendModal face={faceC} key={face.id} id={face.id} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} />
           </div>
         </div>
+        
       </div>
+      
+      </>
     );
   })}
 </div>)
