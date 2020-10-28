@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
     swanky: {
       flex: "0",
       width: 600,
-      height: 650,
+      height: 430,
       backgroundColor: "#663399",
       margin: "auto",
       border: '3px solid #000',
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel }) => {
+const LendModal = ({ web3, face, wallet, faceId, rent, open, setOpen, btnActionLabel }) => {
   const classes = useStyles();
   const [maxDuration, setMaxDuration] = useState("1");
   const [borrowPrice, setBorrowPrice] = useState("5");
@@ -40,6 +40,10 @@ const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel
   const handleNftPrice = useCallback((event) => {
     setNftPrice(event.target.value);
   }, [setNftPrice]);
+  const approveAll = useCallback(async () => {
+    // TODO: if not approved. don't approve every single time
+    await face.methods.setApprovalForAll(addresses.goerli.rent, true).send({ from: wallet.account });
+  }, [face, wallet.account]);
   const handleAction = useCallback(async () => {
     if (maxDuration == null || borrowPrice == null || nftPrice == null) {
       return;
@@ -48,18 +52,13 @@ const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel
       console.error("connect to goerli network");
       return;
     };
-    if (rent == null || face == null) {
+    if (rent == null || face == null || faceId == null) {
       return;
     };
     if (btnActionLabel === "Lend") {
-      // TODO: if not approved. don't approve every single time
-      console.log("face")
-      console.log(face.methods)
-      await face.methods.setApprovalForAll(addresses.goerli.rent, true).send({ from: wallet.account });
-
       await rent.methods.lendOne(
         addresses.goerli.face,
-        id,
+        faceId,
         maxDuration,
         borrowPrice,
         nftPrice
@@ -67,7 +66,7 @@ const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel
     } else {
       // rent
     }
-  }, [web3, rent, wallet.account, btnActionLabel, id, face]);
+  }, [web3, rent, wallet.account, btnActionLabel, faceId, face]);
 
   return (
     <Modal
@@ -79,18 +78,20 @@ const LendModal = ({ web3, face, wallet, id, rent, open, setOpen, btnActionLabel
    >
      <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center", margin: "auto"}}>
        <div style={{marginBottom: "16px"}}>
-      <p>Max Duration of NFT lend</p>
-      <Input value={maxDuration} type="number" onChange={handleMaxDuration} placeholder="1" name="maxDuration" />
+      <p>Max lend duration</p>
+      <Input style={{color: "white"}} value={maxDuration} type="number" onChange={handleMaxDuration} placeholder="1" name="maxDuration" />
       </div>
       <div style={{marginBottom: "16px"}}>
-      <p>Borrow price that borrower will pay for every day</p>
-      <Input value={borrowPrice} type="number" onChange={handleBorrowPrice} placeholder="5" name="borrowPrice" />
+      <p>Borrow price</p>
+      <Input style={{color: "white"}} value={borrowPrice} type="number" onChange={handleBorrowPrice} placeholder="5" name="borrowPrice" />
       </div>
       <div style={{marginBottom: "16px"}}>
-      <p>Collateral price. If borrower defaults, you will get this much back</p>
-      <Input value={nftPrice} type="number" onChange={handleNftPrice} placeholder="50" name="nftPrice" />
+      <p>Collateral</p>
+      <Input style={{color: "white"}} value={nftPrice} type="number" onChange={handleNftPrice} placeholder="50" name="nftPrice" />
       </div>
-      <button className="Product__button" onClick={handleAction}>Lend</button>
+      <p style={{marginTop: "32px", marginBottom: "16px"}}>Only use approve all, if you have not used it before</p>
+      <button style={{width: "150px", marginBottom: "16px", marginLeft: "auto", marginRight: "auto"}} className="Product__button" onClick={approveAll}>Approve all</button>
+      <button style={{width: "150px", marginLeft: "auto", marginRight: "auto"}} className="Product__button" onClick={handleAction}>Lend</button>
      </div>
     </Modal>
   )
@@ -101,6 +102,8 @@ export const Catalogue = ({data, btnActionLabel}) => {
   const [lendModalOpen, setLendModalOpen] = useState(false);
   const [borrowModalOpen, setBorrowModalOpen] = useState(false);
   const [faceC, setFace] = useState();
+  // TODO: mumbo-jumbo 2 am - follow the easy path
+  const [faceId, setFaceId] = useState();
   const { wallet, web3 } = useContext(DappContext);
 
   useEffect(() => {
@@ -116,18 +119,19 @@ export const Catalogue = ({data, btnActionLabel}) => {
     }
   }, [data, btnActionLabel]);
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((id) => {
     if (btnActionLabel === "Lend") {
       setLendModalOpen(true);
     } else {
       setBorrowModalOpen(true);
     }
+    setFaceId(id);
   }, [btnActionLabel, setLendModalOpen, setBorrowModalOpen]);
 
-  return (<div className="Catalogue">
+  // <LendModal face={faceC} key={face.id} id={face.id} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} />
+  return (<><LendModal face={faceC} faceId={faceId} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} /><div className="Catalogue">
   {resolved.map((face) => {
     return (
-      <>
       <div className="Catalogue__item" key={face.id}>
         <div
           className="Product"
@@ -146,17 +150,13 @@ export const Catalogue = ({data, btnActionLabel}) => {
               {/* {product.asset_contract.address} */}
               {btnActionLabel === "Rent" && <div className="Product__price">10 €</div>}
             </div>
-            <span className="Product__buy" onClick={handleClick}>{btnActionLabel} now</span>
-            <LendModal face={faceC} key={face.id} id={face.id} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} />
+            <span className="Product__buy" onClick={() => handleClick(face.id)}>{btnActionLabel} now</span>
           </div>
         </div>
-        
       </div>
-      
-      </>
     );
   })}
-</div>)
+</div></>)
 };
 
 type PsychedelicProps = {
