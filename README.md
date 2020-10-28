@@ -27,6 +27,10 @@
 21. (Optional) authenticate users with their crypto wallet signature
 22. Better Lend one UI
 23. Fix the production build scrollbar issue
+24. ! Make it responsive
+25. Can you make it mobile / non-crypto friendly?
+26. (Optional) If GAN faces are in mainnet, add them to backlog for future batch mint
+27. When clicking on a picture, open the IPFS picture
 
 Most important for Friday (30/10/2020):
 ...

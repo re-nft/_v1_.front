@@ -1,13 +1,11 @@
 import React, {
   useContext,
-  useEffect,
   useState,
   useCallback,
-  useMemo
+  useMemo,
+  useEffect
 } from "react";
-import { request } from "graphql-request";
-import Modal from "@material-ui/core/Modal";
-import { Input } from "@material-ui/core";
+import { Box, Modal, Input } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
@@ -15,8 +13,8 @@ import DappContext from "../contexts/Dapp";
 import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "../components/ScrollForMore";
-import { ENDPOINT, nftsQuery, userQuery } from "../api/graph";
 import { addresses } from "../contracts";
+import GraphContext from "../contexts/Graph";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -64,6 +62,7 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
     [setNftPrice]
   );
 
+  // TODO: to be handled by Contracts context
   const handleAction = useCallback(async () => {
     if (maxDuration == null || borrowPrice == null || nftPrice == null) {
       console.debug("must set lending related fields first");
@@ -176,15 +175,6 @@ export const Catalogue = ({ data, btnActionLabel }) => {
   // TODO: mumbo-jumbo 2 am - follow the easy path
   const [faceId, setFaceId] = useState();
 
-  // TODO: crazzey
-  const resolved = useMemo(() => {
-    if (btnActionLabel === "Lend") {
-      return data.user.faces;
-    } else {
-      return data;
-    }
-  }, [data, btnActionLabel]);
-
   const handleClick = useCallback(
     id => {
       if (btnActionLabel === "Lend") {
@@ -206,8 +196,8 @@ export const Catalogue = ({ data, btnActionLabel }) => {
         setOpen={setLendModalOpen}
       />
       <div className="Catalogue">
-        {resolved.length > 0 &&
-          resolved.map(face => {
+        {data.length > 0 &&
+          data.map(face => {
             return (
               <div className="Catalogue__item" key={face.id}>
                 <div
@@ -248,46 +238,55 @@ type PsychedelicProps = {
   isRent: boolean;
 };
 
+type Face = {
+  id: string;
+  uri: string;
+};
+
 const Psychedelic: React.FC<PsychedelicProps> = ({
   children,
   hidden,
   isRent
 }) => {
-  const [data, setData] = useState();
-  const { wallet, web3 } = useContext(DappContext);
-
-  // TODO: move to graph  context
-  const fetchNfts = useCallback(async () => {
-    if (isRent) {
-      const data = await request(ENDPOINT, nftsQuery());
-      if ("nfts" in data && data["nfts"].length !== 0) {
-        setData(data["nfts"].map(nft => nft.face));
-      }
-    } else {
-      // lend. so pull all the nfts that you own
-      if (wallet.account == null || web3 == null) {
-        console.debug("connect to goerli network");
-        return;
-      }
-      const userNftsQuery = userQuery(wallet.account, web3);
-      const data = await request(ENDPOINT, userNftsQuery);
-      setData(data);
-    }
-  }, [wallet.account, web3]);
+  const { nfts, user } = useContext(GraphContext);
+  const [data, setData] = useState<Face[]>();
+  const btnLbl = isRent === true ? "Rent" : "Lend";
 
   useEffect(() => {
-    fetchNfts();
-  }, [wallet.account, web3]);
+    if (isRent && nfts != null) {
+      const resolvedData = nfts.map(item => item.face);
+      setData(resolvedData);
+      return;
+    }
+    // lend
+    if (user == null) {
+      console.debug("no user data yet");
+      return;
+    }
+    const resolvedData = user.faces;
+    setData(resolvedData);
+  }, [nfts, user]);
 
-  const btnActionLabel = isRent ? "Rent" : "Lend";
+  const isValid = data => {
+    return data != null && data.length > 0;
+  };
+
+  const dataIsValid = useMemo(() => {
+    return isValid(data);
+  }, [data]);
 
   return (
     !hidden && (
-      <>
-        {data != null && <ScrollForMore />}
-        {data && <Catalogue data={data} btnActionLabel={btnActionLabel} />}
-        {children && data == null && children}
-      </>
+      <Box>
+        {dataIsValid && (
+          <Box>
+            <ScrollForMore />
+            <Catalogue data={data} btnActionLabel={btnLbl} />
+          </Box>
+        )}
+        {/* TODO: just fire here */}
+        {!dataIsValid && children}
+      </Box>
     )
   );
 };
