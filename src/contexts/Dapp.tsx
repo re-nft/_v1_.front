@@ -37,15 +37,13 @@ export const DappProvider = ({ children }) => {
         setWeb3(new Web3(window.web3.currentProvider));
       }
     }
+    // ! could not add window here. compile time error that window is not defined
     //@ts-ignore
-  }, [wallet, window.web3]);
+  }, [wallet]);
 
   // ---------------
   useEffect(() => {
     connectWallet();
-    // return () => {
-    // cleanup
-    // }
   }, [connectWallet]);
 
   return (

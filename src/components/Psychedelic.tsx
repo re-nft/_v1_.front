@@ -10,10 +10,13 @@ import Modal from "@material-ui/core/Modal";
 import { Input } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
-import ScrollForMore from "../components/ScrollForMore";
+// contexts
 import DappContext from "../contexts/Dapp";
+import ContractsContext from "../contexts/Contracts";
+
+import ScrollForMore from "../components/ScrollForMore";
 import { ENDPOINT, nftsQuery, userQuery } from "../api/graph";
-import { addresses, abis } from "../contracts";
+import { addresses } from "../contracts";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,20 +35,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const LendModal = ({
-  web3,
-  face,
-  wallet,
-  faceId,
-  rent,
-  open,
-  setOpen,
-  btnActionLabel
-}) => {
+const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
+  const { web3, wallet } = useContext(DappContext);
+  const { rent, face, approveOfAllFaces } = useContext(ContractsContext);
+
   const classes = useStyles();
   const [maxDuration, setMaxDuration] = useState("1");
   const [borrowPrice, setBorrowPrice] = useState("5");
   const [nftPrice, setNftPrice] = useState("100");
+
+  // TODO: one handler to rule them all
   const handleMaxDuration = useCallback(
     event => {
       setMaxDuration(event.target.value);
@@ -64,23 +63,21 @@ const LendModal = ({
     },
     [setNftPrice]
   );
-  const approveAll = useCallback(async () => {
-    // TODO: if not approved. don't approve every single time
-    await face.methods
-      .setApprovalForAll(addresses.goerli.rent, true)
-      .send({ from: wallet.account });
-  }, [face, wallet.account]);
+
   const handleAction = useCallback(async () => {
     if (maxDuration == null || borrowPrice == null || nftPrice == null) {
+      console.debug("must set lending related fields first");
       return;
     }
-    if (web3 == null || wallet.account == null) {
+    if (web3 == null || wallet == null || !wallet.account) {
       console.debug("connect to goerli network");
       return;
     }
-    if (rent == null || face == null || faceId == null) {
+    if (rent == null || face == null) {
+      console.debug("contracts are not ready yet");
       return;
     }
+
     if (btnActionLabel === "Lend") {
       await rent.methods
         .lendOne(
@@ -157,7 +154,7 @@ const LendModal = ({
             marginRight: "auto"
           }}
           className="Product__button"
-          onClick={approveAll}
+          onClick={approveOfAllFaces}
         >
           Approve all
         </button>
@@ -174,30 +171,12 @@ const LendModal = ({
 };
 
 export const Catalogue = ({ data, btnActionLabel }) => {
-  const [rent, setRent] = useState();
   const [lendModalOpen, setLendModalOpen] = useState(false);
   const [borrowModalOpen, setBorrowModalOpen] = useState(false);
-  const [faceC, setFace] = useState();
   // TODO: mumbo-jumbo 2 am - follow the easy path
   const [faceId, setFaceId] = useState();
-  const { wallet, web3 } = useContext(DappContext);
 
-  useEffect(() => {
-    if (web3 == null || wallet == null) {
-      return;
-    }
-    const _rent = new web3.eth.Contract(
-      abis.goerli.rent.abi,
-      addresses.goerli.rent
-    );
-    setRent(_rent);
-    const _face = new web3.eth.Contract(
-      abis.goerli.face.abi,
-      addresses.goerli.face
-    );
-    setFace(_face);
-  }, [web3, wallet]);
-
+  // TODO: crazzey
   const resolved = useMemo(() => {
     if (btnActionLabel === "Lend") {
       return data.user.faces;
@@ -218,16 +197,11 @@ export const Catalogue = ({ data, btnActionLabel }) => {
     [btnActionLabel, setLendModalOpen, setBorrowModalOpen]
   );
 
-  // <LendModal face={faceC} key={face.id} id={face.id} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} />
   return (
     <>
       <LendModal
-        face={faceC}
         faceId={faceId}
         btnActionLabel={btnActionLabel}
-        rent={rent}
-        web3={web3}
-        wallet={wallet}
         open={lendModalOpen}
         setOpen={setLendModalOpen}
       />
@@ -240,21 +214,17 @@ export const Catalogue = ({ data, btnActionLabel }) => {
                   className="Product"
                   data-item-id={face.id}
                   data-item-image={face.uri}
-                  data-item-name="a"
-                  data-item-url={`/`}
                 >
                   <div className="Product__image">
                     <img alt="nft" src={face.uri} />
-                    {/* <Img key={product.token_id} fluid /> */}
-                    {/* <Img sizes={product.image.sizes} /> */}
                   </div>
                   <div className="Product__details">
                     <div className="Product__name">
-                      {/* {product.asset_contract.address} */}
                       {btnActionLabel === "Rent" && (
                         <div className="Product__price">10 €</div>
                       )}
                     </div>
+                    {/* TODO: yikes at re-generating the handler */}
                     <span
                       className="Product__buy"
                       onClick={() => handleClick(face.id)}
@@ -285,6 +255,8 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
 }) => {
   const [data, setData] = useState();
   const { wallet, web3 } = useContext(DappContext);
+
+  // TODO: move to graph  context
   const fetchNfts = useCallback(async () => {
     if (isRent) {
       const data = await request(ENDPOINT, nftsQuery());

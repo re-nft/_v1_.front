@@ -11,15 +11,31 @@ import Stats from "./Stats";
 import MintNft from "./MintNFT";
 import Cold from "./Cold";
 
+const Tab = ({ setTab, activeTab, tabName, buttonName }) => {
+  return (
+    <div
+      role="button"
+      style={{ marginRight: "16px" }}
+      onClick={setTab(tabName)}
+      onKeyDown={setTab(tabName)}
+    >
+      <span
+        className={activeTab === tabName ? "active-tab" : "Product__button"}
+      >
+        {buttonName}
+      </span>
+    </div>
+  );
+};
+
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
   const [nftModalOpen, setNftModalOpen] = useState(false);
-  const handleNftModalOpen = useCallback(() => {
-    setNftModalOpen(true);
-  }, [setNftModalOpen]);
-  const handleNftModalClose = useCallback(() => {
-    setNftModalOpen(false);
-  }, [setNftModalOpen]);
+
+  const handleNftModal = useCallback(() => {
+    setNftModalOpen(!nftModalOpen);
+  }, [nftModalOpen]);
+
   const setTab = useCallback(
     tab => {
       return () => setActiveTab(tab);
@@ -30,67 +46,41 @@ export default () => {
   // TODO: rewrite with a router
   return (
     <Layout>
-      <div
+      <Box
         style={{
           display: "flex",
           flexDirection: "row",
           padding: "0 0 32px 0"
         }}
       >
+        <Tab
+          setTab={setTab}
+          activeTab={activeTab}
+          tabName="RENT"
+          buttonName="Rent NFT"
+        />
+        <Tab
+          setTab={setTab}
+          activeTab={activeTab}
+          tabName="LEND"
+          buttonName="Lend NFT"
+        />
+        <Tab
+          setTab={setTab}
+          activeTab={activeTab}
+          tabName="STATS"
+          buttonName="My Stats"
+        />
+        <Tab
+          setTab={setTab}
+          activeTab={activeTab}
+          tabName="LEADER"
+          buttonName="Leaderboard"
+        />
         <div
           role="button"
           style={{ marginRight: "16px" }}
-          onClick={setTab("RENT")}
-          onKeyDown={setTab("RENT")}
-        >
-          <span
-            className={activeTab === "RENT" ? "active-tab" : "Product__button"}
-          >
-            Rent NFT
-          </span>
-        </div>
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={setTab("LEND")}
-          onKeyDown={setTab("LEND")}
-        >
-          <span
-            className={activeTab === "LEND" ? "active-tab" : "Product__button"}
-          >
-            Lend NFT
-          </span>
-        </div>
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={setTab("STATS")}
-          onKeyDown={setTab("STATS")}
-        >
-          <span
-            className={activeTab === "STATS" ? "active-tab" : "Product__button"}
-          >
-            My Stats
-          </span>
-        </div>
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={setTab("LEADER")}
-          onKeyDown={setTab("LEADER")}
-        >
-          <span
-            className={
-              activeTab === "LEADER" ? "active-tab" : "Product__button"
-            }
-          >
-            Leaderboard
-          </span>
-        </div>
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={handleNftModalOpen}
+          onClick={handleNftModal}
         >
           <span
             className={
@@ -100,15 +90,15 @@ export default () => {
             Get NFT
           </span>
         </div>
-        <MintNft open={nftModalOpen} handleClose={handleNftModalClose} />
-        <div role="button" onClick={setTab("HOW")} onKeyDown={setTab("HOW")}>
-          <span
-            className={activeTab === "HOW" ? "active-tab" : "Product__button"}
-          >
-            But How?!
-          </span>
-        </div>
-      </div>
+        <MintNft open={nftModalOpen} handleClose={handleNftModal} />
+        <Tab
+          setTab={setTab}
+          activeTab={activeTab}
+          tabName="HOW"
+          buttonName="But How?!"
+        />
+      </Box>
+      {/* TODO: get rid of style. doesn't belong on props */}
       <ShadowScrollbars style={{ height: "800px" }}>
         <Box
           style={{
@@ -116,6 +106,7 @@ export default () => {
             border: "3px solid black"
           }}
         >
+          {/* TODO: tidy up this craziness */}
           <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
             <Cold fancyText="One day it will be warm here..." />
           </Psychedelic>
