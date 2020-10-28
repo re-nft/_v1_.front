@@ -8,8 +8,8 @@ export const getGanFace = async () => {
       headers: {
         "x-rapidapi-host": "face-generator.p.rapidapi.com",
         "x-rapidapi-key": process.env.GATSBY_RAPID_API_KEY,
-        useQueryString: "true",
-      },
+        useQueryString: "true"
+      }
     }
   );
   return response.blob();

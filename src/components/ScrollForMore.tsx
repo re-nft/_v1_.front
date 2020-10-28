@@ -2,7 +2,7 @@ import React from "react";
 
 export default () => {
   return (
-      <ul className="c-rainbow">
+    <ul className="c-rainbow">
       <li className="c-rainbow__layer c-rainbow__layer--white">
         SCROLL FOR MORE
       </li>
@@ -25,5 +25,5 @@ export default () => {
         SCROLL FOR MORE
       </li>
     </ul>
-  )
-}
+  );
+};

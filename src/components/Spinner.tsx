@@ -1,5 +1,5 @@
-import React from 'react';
+import React from "react";
 
-const FunnySpinner = () => (<div className="spinner"></div>);
+const FunnySpinner = () => <div className="spinner"></div>;
 
 export default FunnySpinner;

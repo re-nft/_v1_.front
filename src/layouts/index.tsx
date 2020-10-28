@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import Helmet from "react-helmet";
 import Link from "gatsby-link";
-import Web3 from 'web3';
+import Web3 from "web3";
 
 import "../style/index.scss";
 
@@ -13,12 +13,11 @@ const Layout = ({ children, site, wallet, web3, setWeb3 }) => {
     wallet.connect("injected");
 
     if (web3 == null) {
-      if ('web3' in window) {
+      if ("web3" in window) {
         if (!window.web3.currentProvider) {
           return;
         }
         setWeb3(new Web3(window.web3.currentProvider));
-      
       }
     }
   }, [wallet]);

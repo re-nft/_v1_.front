@@ -38,11 +38,22 @@
   "scripts": {
     "build": "gatsby build",
     "develop": "gatsby develop",
-    "format": "prettier --write 'src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx' 'src/*.tsx' 'src/*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "husky": "^4.3.0",
+    "lint-staged": ">=10",
     "prettier": "^1.12.0",
+    "pretty-quick": "^3.1.0",
     "typescript": "^4.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "prettier --write"
   }
 }

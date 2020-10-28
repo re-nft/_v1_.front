@@ -17,29 +17,35 @@ import Cold from "./Cold";
 export default () => {
   const [activeTab, setActiveTab] = useState("RENT");
   const [nftModalOpen, setNftModalOpen] = useState(false);
-  const handleNftModalOpen = useCallback((e) => {
-    setNftModalOpen(true);
-  }, [setNftModalOpen]);
-  const handleNftModalClose = useCallback((e) => {
-    setNftModalOpen(false);
-  }, [setNftModalOpen]);
+  const handleNftModalOpen = useCallback(
+    e => {
+      setNftModalOpen(true);
+    },
+    [setNftModalOpen]
+  );
+  const handleNftModalClose = useCallback(
+    e => {
+      setNftModalOpen(false);
+    },
+    [setNftModalOpen]
+  );
   const wallet = useWallet();
   const [web3, setWeb3] = useState();
   const setTab = useCallback(
-    (tab) => {
+    tab => {
       return () => setActiveTab(tab);
     },
     [setActiveTab]
   );
 
   return (
-    <DappContext.Provider value={{wallet, web3, setWeb3}}>
+    <DappContext.Provider value={{ wallet, web3, setWeb3 }}>
       <Layout site="Rent NFT" wallet={wallet} web3={web3} setWeb3={setWeb3}>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            padding: "0 0 32px 0",
+            padding: "0 0 32px 0"
           }}
         >
           {/* <div role="button" onClick={getFace} style={{backgroundColor: "green", cursor: "pointer"}}>
@@ -116,34 +122,25 @@ export default () => {
             </span>
           </div>
           <MintNft open={nftModalOpen} handleClose={handleNftModalClose} />
-          <div
-            role="button"
-            onClick={setTab("HOW")}
-            onKeyDown={setTab("HOW")}
-          >
+          <div role="button" onClick={setTab("HOW")} onKeyDown={setTab("HOW")}>
             <span
-              className={
-                activeTab === "HOW" ? "active-tab" : "Product__button"
-              }
+              className={activeTab === "HOW" ? "active-tab" : "Product__button"}
             >
               But How?!
             </span>
           </div>
         </div>
-        <ShadowScrollbars style={{height: "800px"}}>
+        <ShadowScrollbars style={{ height: "800px" }}>
           <Box
             style={{
               padding: "32px 64px",
-              border: "3px solid black",
+              border: "3px solid black"
             }}
           >
             <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
               <Cold fancyText="One day it will be warm here..." />
             </Psychedelic>
-            <Psychedelic
-              hidden={activeTab !== "LEND"}
-              isRent={false}
-            >
+            <Psychedelic hidden={activeTab !== "LEND"} isRent={false}>
               <Cold fancyText="One day it will be warm here..." />
             </Psychedelic>
             <ComingSoon hidden={activeTab !== "LEADER"} />

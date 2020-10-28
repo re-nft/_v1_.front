@@ -1,11 +1,12 @@
 import Web3 from "web3";
 
-export const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+export const ENDPOINT =
+  "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 
 const facesQuery = "";
 
 export const nftsQuery = (): string => {
-    return `{
+  return `{
         nfts {
           id
           address
@@ -14,12 +15,12 @@ export const nftsQuery = (): string => {
           face {
             uri
           }
-      }}`
-}
+      }}`;
+};
 
 export const userQuery = (user: string, web3: Web3): string => {
-    const hex = web3.utils.toHex(user);
-    return `{
+  const hex = web3.utils.toHex(user);
+  return `{
         user(id: "${hex}") {
         id
         lending {

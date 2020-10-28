@@ -9,20 +9,20 @@ export const pinToIpfs = async ({ blob }) => {
         regions: [
           {
             id: "FRA1",
-            desiredReplicationCount: 1,
-          },
-        ],
-      },
+            desiredReplicationCount: 1
+          }
+        ]
+      }
     });
     data.append("pinataOptions", pinataOptions);
     const headers = {
       pinata_api_key: process.env.GATSBY_PINATA_API_KEY,
-      pinata_secret_api_key: process.env.GATSBY_PINATA_SECRET_API_KEY,
+      pinata_secret_api_key: process.env.GATSBY_PINATA_SECRET_API_KEY
     };
     const resp = await fetch(url, {
       method: "POST",
       headers,
-      body: data,
+      body: data
     });
     return resp;
   } catch (error) {
