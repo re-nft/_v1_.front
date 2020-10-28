@@ -107,6 +107,9 @@ export const Catalogue = ({data, btnActionLabel}) => {
   const { wallet, web3 } = useContext(DappContext);
 
   useEffect(() => {
+    if (web3 == null || wallet == null) {
+      return;
+    }
     const _rent = new web3.eth.Contract(abis.goerli.rent.abi, addresses.goerli.rent);
     setRent(_rent);
     const _face = new web3.eth.Contract(abis.goerli.face.abi, addresses.goerli.face);
@@ -116,6 +119,8 @@ export const Catalogue = ({data, btnActionLabel}) => {
   const resolved = useMemo(() => {
     if (btnActionLabel === "Lend") {
       return data.user.faces;
+    } else {
+      return data;
     }
   }, [data, btnActionLabel]);
 
@@ -130,7 +135,7 @@ export const Catalogue = ({data, btnActionLabel}) => {
 
   // <LendModal face={faceC} key={face.id} id={face.id} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} />
   return (<><LendModal face={faceC} faceId={faceId} btnActionLabel={btnActionLabel} rent={rent} web3={web3} wallet={wallet} open={lendModalOpen} setOpen={setLendModalOpen} /><div className="Catalogue">
-  {resolved.map((face) => {
+  {resolved.length > 0 && resolved.map((face) => {
     return (
       <div className="Catalogue__item" key={face.id}>
         <div
@@ -166,13 +171,6 @@ type PsychedelicProps = {
   isRent: boolean;
 }
 
-
-// const getProduct = useCallback(async (): Promise<void> => {
-//   const nftInfo = await request(endpoint, productQuery(nftId));
-//   setProduct(nftInfo.product);
-//   console.log(nftInfo.product);
-// }, [nftId]);
-
 const Psychedelic: React.FC<PsychedelicProps> = ({ children, hidden, isRent }) => {
   const [data, setData] = useState();
   const { wallet, web3 } = useContext(DappContext);
@@ -180,7 +178,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ children, hidden, isRent }) =
     if (isRent) {
       const data = await request(ENDPOINT, nftsQuery());
       if ('nfts' in data && data['nfts'].length !== 0) {
-        setData(data['nfts']);
+        setData(data['nfts'].map(nft => nft.face));
       }
     } else {
       // lend. so pull all the nfts that you own
@@ -190,8 +188,6 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ children, hidden, isRent }) =
       }
       const userNftsQuery = userQuery(wallet.account, web3);
       const data = await request(ENDPOINT, userNftsQuery);
-      console.log("data");
-      console.log(data);
       setData(data);
     }
   }, [wallet.account, web3]);
@@ -204,7 +200,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ children, hidden, isRent }) =
 
   return (
     !hidden && (<>
-        {data && <ScrollForMore />}
+        {(data != null) && <ScrollForMore />}
         {data && <Catalogue data={data} btnActionLabel={btnActionLabel} />}
         {(children && data == null) && children}
       </>)
