@@ -36,9 +36,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.6.0",
+    "@typescript-eslint/parser": "^4.6.0",
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.0",
     "lint-staged": ">=10",
-    "prettier": "^1.12.0",
+    "prettier": "^2.1.2",
     "pretty-quick": "^3.1.0",
     "typescript": "^4.0.3"
   },

@@ -1,61 +1,97 @@
-import React, { useContext, useState, useCallback, ChangeEvent } from "react";
-import { Modal, Input } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import { Modal, TextField } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
-import DappContext from "../contexts/Dapp";
 import ContractsContext from "../contexts/Contracts";
-
-type LendOneInputs = {
-  maxDuration: number;
-  borrowPrice: number;
-  nftPrice: number;
-};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     swanky: {
       flex: "0",
       width: 600,
-      height: 430,
+      height: 500,
       backgroundColor: "#663399",
       margin: "auto",
       border: "3px solid #000",
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
       color: "white",
-      textAlign: "center"
-    }
+      textAlign: "center",
+    },
   })
 );
 
-export default ({ faceId, open, setOpen, btnActionLabel }) => {
+enum lendOneInput {
+  maxDuration,
+  borrowPrice,
+  nftPrice,
+}
+
+type LendOneInputs = {
+  maxDuration: string;
+  borrowPrice: string;
+  nftPrice: string;
+};
+
+type LendModalProps = {
+  faceId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  btnActionLabel: string;
+};
+
+const LendModal: React.FC<LendModalProps> = ({
+  faceId,
+  open,
+  setOpen,
+  btnActionLabel,
+}) => {
   const classes = useStyles();
 
-  const { web3, wallet } = useContext(DappContext);
   const { rent, face } = useContext(ContractsContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
-    maxDuration: 7,
-    borrowPrice: 10,
-    nftPrice: 100
+    maxDuration: "7",
+    borrowPrice: "10",
+    nftPrice: "100",
   });
 
-  const handleAction = useCallback(async () => {
+  const handleAction = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (btnActionLabel === "Lend") {
       await rent.lendOne(
-        faceId,
-        lendOneInputs.maxDuration,
-        lendOneInputs.borrowPrice,
-        lendOneInputs.nftPrice
+        Number(faceId),
+        Number(lendOneInputs.maxDuration),
+        Number(lendOneInputs.borrowPrice),
+        Number(lendOneInputs.nftPrice)
       );
     } else {
       // rent
     }
-  }, [web3, rent, wallet.account, btnActionLabel, faceId, face]);
+  };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setLendOneInputs({ ...lendOneInputs, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
+    e.persist();
+    // ! if setting the state based on the previous state values, you should use a function
+    setLendOneInputs((lendOneInputs) => ({
+      ...lendOneInputs,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const isValid = (n: string, t: lendOneInput) => {
+    if (t === lendOneInput.maxDuration) {
+      // must be an integer
+      return !n.includes(".") && Number(n) > 0;
+    } else if (t === lendOneInput.borrowPrice || t === lendOneInput.nftPrice) {
+      return Number(n) >= 0;
+    } else {
+      console.debug("exhaustive check failed");
+      return false;
+    }
+  };
 
   return (
     <Modal
@@ -65,45 +101,69 @@ export default ({ faceId, open, setOpen, btnActionLabel }) => {
       aria-describedby="simple-modal-description"
       className={classes.swanky}
     >
-      <div
+      <form
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignContent: "center",
-          margin: "auto"
+          margin: "auto",
         }}
+        noValidate
+        autoComplete="off"
+        onSubmit={handleAction}
       >
-        <div style={{ marginBottom: "16px" }}>
-          <p>Max lend duration</p>
-          <Input
-            style={{ color: "white" }}
-            value={lendOneInputs.maxDuration}
-            type="number"
-            onChange={handleChange}
-            name="maxDuration"
-          />
-        </div>
-        <div style={{ marginBottom: "16px" }}>
-          <p>Borrow price</p>
-          <Input
-            style={{ color: "white" }}
-            value={lendOneInputs.borrowPrice}
-            type="number"
-            onChange={handleChange}
-            name="borrowPrice"
-          />
-        </div>
-        <div style={{ marginBottom: "16px" }}>
-          <p>Collateral</p>
-          <Input
-            style={{ color: "white" }}
-            value={lendOneInputs.nftPrice}
-            type="number"
-            onChange={handleChange}
-            name="nftPrice"
-          />
-        </div>
+        <TextField
+          required
+          error={!isValid(lendOneInputs.maxDuration, lendOneInput.maxDuration)}
+          label="Max lend duration"
+          id="maxDuration"
+          variant="outlined"
+          style={{ color: "white", marginBottom: "16px" }}
+          value={lendOneInputs.maxDuration}
+          type="number"
+          helperText={
+            !isValid(lendOneInputs.maxDuration, lendOneInput.maxDuration)
+              ? "Must be a natural number"
+              : ""
+          }
+          onChange={handleChange}
+          name="maxDuration"
+        />
+        <TextField
+          required
+          error={!isValid(lendOneInputs.borrowPrice, lendOneInput.borrowPrice)}
+          label="Borrow Price"
+          id="borrowPrice"
+          variant="outlined"
+          style={{ color: "white", marginBottom: "16px" }}
+          value={lendOneInputs.borrowPrice}
+          type="number"
+          helperText={
+            !isValid(lendOneInputs.borrowPrice, lendOneInput.borrowPrice)
+              ? "Must be a zero or a positive decimal"
+              : ""
+          }
+          onChange={handleChange}
+          name="borrowPrice"
+        />
+        <TextField
+          required
+          error={!isValid(lendOneInputs.nftPrice, lendOneInput.nftPrice)}
+          label="Collateral"
+          id="nftPrice"
+          variant="outlined"
+          style={{ color: "white", marginBottom: "16px" }}
+          value={lendOneInputs.nftPrice}
+          type="number"
+          helperText={
+            !isValid(lendOneInputs.nftPrice, lendOneInput.nftPrice)
+              ? "Must be a zero or a positive decimal"
+              : ""
+          }
+          onChange={handleChange}
+          name="nftPrice"
+        />
         <p style={{ marginTop: "32px", marginBottom: "16px" }}>
           Only use approve all, if you have not used it before
         </p>
@@ -112,7 +172,7 @@ export default ({ faceId, open, setOpen, btnActionLabel }) => {
             width: "150px",
             marginBottom: "16px",
             marginLeft: "auto",
-            marginRight: "auto"
+            marginRight: "auto",
           }}
           className="Product__button"
           onClick={face.approveOfAllFaces}
@@ -122,11 +182,13 @@ export default ({ faceId, open, setOpen, btnActionLabel }) => {
         <button
           style={{ width: "150px", marginLeft: "auto", marginRight: "auto" }}
           className="Product__button"
-          onClick={handleAction}
+          type="submit"
         >
           Lend
         </button>
-      </div>
+      </form>
     </Modal>
   );
 };
+
+export default LendModal;

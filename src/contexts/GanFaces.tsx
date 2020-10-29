@@ -40,7 +40,7 @@ const GanFacesContext = createContext<GanFacesContextType>(
 export const GanFacesProvider: React.FC = ({ children }) => {
   // contexts
   const { web3, wallet } = useContext(DappContext);
-  const { face: faceContract } = useContext(ContractsContext);
+  const { face: faceContext } = useContext(ContractsContext);
 
   // state
   const [ganStages, setGanStages] = useState<GanFaceStages>(GanFaceStages.Idle);
@@ -59,8 +59,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
 
       setFace(ganFace);
       setGanStages(GanFaceStages.ReadyForMinting);
-      console.log("num faces is", numFacesGenerated + 1);
-      setNumFaces(numFacesGenerated + 1);
+      setNumFaces(numFacesGenerated => numFacesGenerated + 1);
     } catch (err) {
       console.debug("could not generate the face");
       setGanStages(GanFaceStages.Idle);
@@ -78,7 +77,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
 
       if (
         web3 == null ||
-        faceContract == null ||
+        faceContext.contract == null ||
         wallet == null ||
         !wallet.account
       ) {
@@ -92,7 +91,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
       setIpfsUri(uri);
       setGanStages(GanFaceStages.Minting);
 
-      await faceContract.methods
+      await faceContext.contract.methods
         .awardGanFace(wallet.account, uri)
         .send({ from: wallet.account });
 
@@ -101,7 +100,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
       console.debug("could not mint the face");
       setGanStages(GanFaceStages.ReadyForMinting);
     }
-  }, [face, web3, faceContract, wallet]);
+  }, [face, web3, faceContext, wallet]);
 
   return (
     <GanFacesContext.Provider

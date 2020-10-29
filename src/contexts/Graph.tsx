@@ -96,7 +96,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const nftsData = data["nfts"];
       setNfts(nftsData);
     }
-  }, []);
+  }, [wallet, web3]);
 
   const getUser = useCallback(async () => {
     if (web3 == null || wallet == null || !wallet.account) {
