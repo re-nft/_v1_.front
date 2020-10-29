@@ -99,6 +99,9 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   </div>
                   <div className="Product__details">
                     <div className="Product__name">{short(nft.address)}</div>
+                  </div>
+                  <div className="Product__details">
+                    <div className="Product__name">Daily price</div>
                     <div className="Product__price">{nft.borrowPrice} fDAI</div>
                   </div>
                   <div className="Product__details">
