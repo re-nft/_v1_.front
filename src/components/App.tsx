@@ -3,13 +3,11 @@ import { Box } from "@material-ui/core";
 
 // components and other
 import Layout from "../layouts/index";
-import ShadowScrollbars from "./ShadowScrollbars";
 import Psychedelic from "./Psychedelic";
 import ComingSoon from "./ComingSoon";
 import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
-import Cold from "./Cold";
 
 const Tab = ({ setTab, activeTab, tabName, buttonName }) => {
   return (
@@ -98,26 +96,21 @@ export default () => {
           buttonName="But How?!"
         />
       </Box>
-      {/* TODO: get rid of style. doesn't belong on props */}
-      <ShadowScrollbars style={{ height: "800px" }}>
-        <Box
-          style={{
-            padding: "32px 64px",
-            border: "3px solid black"
-          }}
-        >
-          {/* TODO: tidy up this craziness */}
-          <Psychedelic hidden={activeTab !== "RENT"} isRent={true}>
-            <Cold fancyText="One day it will be warm here..." />
-          </Psychedelic>
-          <Psychedelic hidden={activeTab !== "LEND"} isRent={false}>
-            <Cold fancyText="One day it will be warm here..." />
-          </Psychedelic>
-          <ComingSoon hidden={activeTab !== "LEADER"} />
-          <ButHow hidden={activeTab !== "HOW"} />
-          <Stats hidden={activeTab !== "STATS"} />
-        </Box>
-      </ShadowScrollbars>
+      <Box
+        style={{
+          padding: "32px 64px",
+          border: "3px solid black",
+          overflowY: "scroll",
+          height: "80vh"
+        }}
+      >
+        {/* TODO: tidy up this craziness */}
+        <Psychedelic hidden={activeTab !== "RENT"} isRent={true} />
+        <Psychedelic hidden={activeTab !== "LEND"} isRent={false} />
+        <ComingSoon hidden={activeTab !== "LEADER"} />
+        <ButHow hidden={activeTab !== "HOW"} />
+        <Stats hidden={activeTab !== "STATS"} />
+      </Box>
     </Layout>
   );
 };

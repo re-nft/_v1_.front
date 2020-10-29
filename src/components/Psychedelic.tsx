@@ -10,12 +10,13 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
 import DappContext from "../contexts/Dapp";
+import GraphContext from "../contexts/Graph";
 import ContractsContext from "../contexts/Contracts";
 
-import ScrollForMore from "../components/ScrollForMore";
+import ScrollForMore from "./ScrollForMore";
+import Cold from "./Cold";
+
 import { addresses } from "../contracts";
-import GraphContext from "../contexts/Graph";
-import { UseWalletProvider } from "use-wallet";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -289,8 +290,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
             <Catalogue data={data} btnActionLabel={btnLbl} />
           </Box>
         )}
-        {/* TODO: just fire here */}
-        {!dataIsValid && children}
+        {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
       </Box>
     )
   );
