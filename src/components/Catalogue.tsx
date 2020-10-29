@@ -3,6 +3,7 @@ import React, { useState, useCallback } from "react";
 import LendModal from "./LendModal";
 
 import { Face, Nft } from "../types";
+import { short } from "../utils";
 
 type CatalogueProps = {
   data: Face[] | Nft[];
@@ -64,14 +65,11 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   data-item-image={face.uri}
                 >
                   <div className="Product__image">
-                    <img alt="nft" src={face.uri} />
+                    <a href={face.uri}>
+                      <img alt="nft" src={face.uri} />
+                    </a>
                   </div>
                   <div className="Product__details">
-                    {/* <div className="Product__name">
-                      {btnActionLabel === "Rent" && (
-                        <div className="Product__price"></div>
-                      )}
-                    </div> */}
                     <span
                       className="Product__buy"
                       onClick={e => handleClick(face.id)}
@@ -86,6 +84,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
         {data.length > 0 &&
           dataIsRent(data) &&
           data.map(nft => {
+            console.log(nft)
             return (
               <div className="Catalogue__item" key={nft.id}>
                 <div
@@ -94,21 +93,30 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   data-item-image={nft.face.uri}
                 >
                   <div className="Product__image">
-                    <img alt="nft" src={nft.face.uri} />
+                    <a href={nft.face.uri}>
+                      <img alt="nft" src={nft.face.uri} />
+                    </a>
                   </div>
                   <div className="Product__details">
-                    <div className="Product__name">
-                      {btnActionLabel === "Rent" && (
-                        <div className="Product__price">1000</div>
-                      )}
+                    <div className="Product__name">{short(nft.address)}</div>
+                    <div className="Product__price">{nft.borrowPrice} fDAI</div>
+                  </div>
+                  <div className="Product__details">
+                  <div className="Product__name">Max duration</div>
+                  <div className="Product__price">{nft.maxDuration} fDAI</div>
                     </div>
-                    <span
+                    <div className="Product__details">
+                      <div className="Product__name">Collateral</div>
+            <div className="Product__price">{nft.nftPrice} fDAI</div>
+                      </div>
+                  <div className="Product__details">
+                  <span
                       className="Product__buy"
                       onClick={e => handleClick(nft.face.id)}
                     >
                       Rent now
                     </span>
-                  </div>
+                    </div>
                 </div>
               </div>
             );

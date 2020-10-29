@@ -51,6 +51,8 @@
 .Product__details {
   display: flex;
   align-items: center;
+  align-content: space-between;
+  justify-content: space-between;
 }
 
 .Product__name {
@@ -118,7 +120,6 @@
     background-color: #555;
     text-decoration: none;
     color: white;
-    
   }
 }
 

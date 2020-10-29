@@ -4,6 +4,7 @@ import Link from "gatsby-link";
 
 // contexts
 import DappContext from "../contexts/Dapp";
+import { short } from "../utils";
 
 import "../style/index.scss";
 
@@ -17,10 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (wallet == null || !wallet.account) {
       return "";
     }
-    return `${wallet.account.substr(0, 5)}...${wallet.account.substr(
-      wallet.account.length - 5,
-      5
-    )}`;
+    return short(wallet.account);
   }, [wallet]);
 
   return (

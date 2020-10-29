@@ -32,6 +32,11 @@ const queryNft = `{
     address
     lender
     borrower
+    maxDuration
+    actualDuration
+    borrowedAt
+    borrowPrice
+    nftPrice
     face {
       id
       uri
