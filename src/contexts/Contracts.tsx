@@ -11,14 +11,31 @@ import DappContext from "./Dapp";
 import { abis, addresses } from "../contracts";
 
 type ContractsContextType = {
-  face?: Contract;
-  rent?: Contract;
-  approveOfAllFaces: (event: React.SyntheticEvent) => void;
+  face: {
+    contract?: Contract;
+    approveOfAllFaces: () => void;
+  };
+  rent: {
+    contract?: Contract;
+    lendOne: (
+      tokenId: number,
+      maxDuration: number,
+      borrowPrice: number,
+      nftPrice: number
+    ) => void;
+  };
 };
 
 const DefaultContractsContext = {
-  approveOfAllFaces: () => {
-    throw new Error("must be implemented");
+  face: {
+    approveOfAllFaces: () => {
+      throw new Error("must be implemented");
+    }
+  },
+  rent: {
+    lendOne: () => {
+      throw new Error("must be implemented");
+    }
   }
 };
 
@@ -31,7 +48,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
   const [face, setFace] = useState<Contract>();
   const [rent, setRent] = useState<Contract>();
 
-  const getFace = useCallback(async () => {
+  const getFaceContract = useCallback(async () => {
     if (face != null) {
       return;
     }
@@ -42,7 +59,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
     setFace(contract);
   }, [web3]);
 
-  const getRent = useCallback(async () => {
+  const getRentContract = useCallback(async () => {
     if (rent != null) {
       return;
     }
@@ -57,8 +74,8 @@ export const ContractsProvider: React.FC = ({ children }) => {
     if (web3 == null) {
       return;
     }
-    getFace();
-    getRent();
+    getFaceContract();
+    getRentContract();
   }, [web3]);
 
   // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
@@ -72,8 +89,32 @@ export const ContractsProvider: React.FC = ({ children }) => {
       .send({ from: wallet.account });
   }, [face, wallet, web3]);
 
+  const lendOne = useCallback(
+    async (tokenId, maxDuration, borrowPrice, nftPrice) => {
+      if (rent == null || web3 == null || wallet == null) {
+        console.debug("need face and web3 and wallet to approve all");
+        return;
+      }
+      await rent.methods
+        .lendOne(
+          addresses.goerli.face,
+          tokenId,
+          maxDuration,
+          borrowPrice,
+          nftPrice
+        )
+        .send({ from: wallet.account });
+    },
+    [face, wallet, web3]
+  );
+
   return (
-    <ContractsContext.Provider value={{ face, rent, approveOfAllFaces }}>
+    <ContractsContext.Provider
+      value={{
+        face: { contract: face, approveOfAllFaces },
+        rent: { contract: rent, lendOne }
+      }}
+    >
       {children}
     </ContractsContext.Provider>
   );

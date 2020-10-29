@@ -3,7 +3,8 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  useEffect
+  useEffect,
+  ChangeEvent
 } from "react";
 import { Box, Modal, Input } from "@material-ui/core";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
@@ -35,64 +36,39 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+type LendOneInputs = {
+  maxDuration: number;
+  borrowPrice: number;
+  nftPrice: number;
+};
+
 const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
-  const { web3, wallet } = useContext(DappContext);
-  const { rent, face, approveOfAllFaces } = useContext(ContractsContext);
-
   const classes = useStyles();
-  const [maxDuration, setMaxDuration] = useState("1");
-  const [borrowPrice, setBorrowPrice] = useState("5");
-  const [nftPrice, setNftPrice] = useState("100");
 
-  // TODO: one handler to rule them all
-  const handleMaxDuration = useCallback(
-    event => {
-      setMaxDuration(event.target.value);
-    },
-    [setMaxDuration]
-  );
-  const handleBorrowPrice = useCallback(
-    event => {
-      setBorrowPrice(event.target.value);
-    },
-    [setBorrowPrice]
-  );
-  const handleNftPrice = useCallback(
-    event => {
-      setNftPrice(event.target.value);
-    },
-    [setNftPrice]
-  );
+  const { web3, wallet } = useContext(DappContext);
+  const { rent, face } = useContext(ContractsContext);
 
-  // TODO: to be handled by Contracts context
+  const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
+    maxDuration: 7,
+    borrowPrice: 10,
+    nftPrice: 100
+  });
+
   const handleAction = useCallback(async () => {
-    if (maxDuration == null || borrowPrice == null || nftPrice == null) {
-      console.debug("must set lending related fields first");
-      return;
-    }
-    if (web3 == null || wallet == null || !wallet.account) {
-      console.debug("connect to goerli network");
-      return;
-    }
-    if (rent == null || face == null) {
-      console.debug("contracts are not ready yet");
-      return;
-    }
-
     if (btnActionLabel === "Lend") {
-      await rent.methods
-        .lendOne(
-          addresses.goerli.face,
-          faceId,
-          maxDuration,
-          borrowPrice,
-          nftPrice
-        )
-        .send({ from: wallet.account });
+      await rent.lendOne(
+        faceId,
+        lendOneInputs.maxDuration,
+        lendOneInputs.borrowPrice,
+        lendOneInputs.nftPrice
+      );
     } else {
       // rent
     }
   }, [web3, rent, wallet.account, btnActionLabel, faceId, face]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setLendOneInputs({ ...lendOneInputs, [e.target.name]: e.target.value });
 
   return (
     <Modal
@@ -115,10 +91,9 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
           <p>Max lend duration</p>
           <Input
             style={{ color: "white" }}
-            value={maxDuration}
+            value={lendOneInputs.maxDuration}
             type="number"
-            onChange={handleMaxDuration}
-            placeholder="1"
+            onChange={handleChange}
             name="maxDuration"
           />
         </div>
@@ -126,10 +101,9 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
           <p>Borrow price</p>
           <Input
             style={{ color: "white" }}
-            value={borrowPrice}
+            value={lendOneInputs.borrowPrice}
             type="number"
-            onChange={handleBorrowPrice}
-            placeholder="5"
+            onChange={handleChange}
             name="borrowPrice"
           />
         </div>
@@ -137,10 +111,9 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
           <p>Collateral</p>
           <Input
             style={{ color: "white" }}
-            value={nftPrice}
+            value={lendOneInputs.nftPrice}
             type="number"
-            onChange={handleNftPrice}
-            placeholder="50"
+            onChange={handleChange}
             name="nftPrice"
           />
         </div>
@@ -155,7 +128,7 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
             marginRight: "auto"
           }}
           className="Product__button"
-          onClick={approveOfAllFaces}
+          onClick={face.approveOfAllFaces}
         >
           Approve all
         </button>
@@ -173,7 +146,6 @@ const LendModal = ({ faceId, open, setOpen, btnActionLabel }) => {
 
 export const Catalogue = ({ data, btnActionLabel }) => {
   const [lendModalOpen, setLendModalOpen] = useState(false);
-  const [borrowModalOpen, setBorrowModalOpen] = useState(false);
   // TODO: mumbo-jumbo 2 am - follow the easy path
   const [faceId, setFaceId] = useState();
 
@@ -181,12 +153,10 @@ export const Catalogue = ({ data, btnActionLabel }) => {
     id => {
       if (btnActionLabel === "Lend") {
         setLendModalOpen(true);
-      } else {
-        setBorrowModalOpen(true);
       }
       setFaceId(id);
     },
-    [btnActionLabel, setLendModalOpen, setBorrowModalOpen]
+    [btnActionLabel, setLendModalOpen]
   );
 
   return (
@@ -216,10 +186,9 @@ export const Catalogue = ({ data, btnActionLabel }) => {
                         <div className="Product__price">10 €</div>
                       )}
                     </div>
-                    {/* TODO: yikes at re-generating the handler */}
                     <span
                       className="Product__buy"
-                      onClick={() => handleClick(face.id)}
+                      onClick={e => handleClick(face.id)}
                     >
                       {btnActionLabel} now
                     </span>
@@ -245,11 +214,7 @@ type Face = {
   uri: string;
 };
 
-const Psychedelic: React.FC<PsychedelicProps> = ({
-  children,
-  hidden,
-  isRent
-}) => {
+const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
   const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
   const [data, setData] = useState<Face[]>();
@@ -258,7 +223,9 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
   useEffect(() => {
     if (isRent && nfts != null && wallet != null && wallet.account) {
       // * filter step removes YOUR lent NFTs
-      const resolvedData = nfts.filter(item => item.lender !== wallet.account.toLowerCase()).map(item => item.face);
+      const resolvedData = nfts
+        .filter(item => item.lender !== wallet.account.toLowerCase())
+        .map(item => item.face);
       setData(resolvedData);
       return;
     }
@@ -269,7 +236,9 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
     }
     const currentLending = user.lending.map(item => item.id);
     // TODO: O(N**2) time complexity is shit
-    const resolvedData = user.faces.filter(item => !currentLending.includes(item.id));
+    const resolvedData = user.faces.filter(
+      item => !currentLending.includes(item.id)
+    );
     setData(resolvedData);
   }, [nfts, user]);
 
