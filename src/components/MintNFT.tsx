@@ -63,7 +63,7 @@ export default ({ open, handleClose }) => {
           <button
             onClick={getFace}
             role="button"
-            disabled={numFacesGenerated > 9}
+            disabled={numFacesGenerated > 9 || (stages !== GanFaceStages.Idle && stages !== GanFaceStages.ReadyForMinting)}
             className="Product__button"
             style={{
               marginTop: "auto",

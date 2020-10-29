@@ -59,6 +59,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
 
       setFace(ganFace);
       setGanStages(GanFaceStages.ReadyForMinting);
+      console.log("num faces is", numFacesGenerated + 1);
       setNumFaces(numFacesGenerated + 1);
     } catch (err) {
       console.debug("could not generate the face");

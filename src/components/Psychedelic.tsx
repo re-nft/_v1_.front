@@ -15,6 +15,7 @@ import ContractsContext from "../contexts/Contracts";
 import ScrollForMore from "../components/ScrollForMore";
 import { addresses } from "../contracts";
 import GraphContext from "../contexts/Graph";
+import { UseWalletProvider } from "use-wallet";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -248,13 +249,15 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
   hidden,
   isRent
 }) => {
+  const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
   const [data, setData] = useState<Face[]>();
   const btnLbl = isRent === true ? "Rent" : "Lend";
 
   useEffect(() => {
-    if (isRent && nfts != null) {
-      const resolvedData = nfts.map(item => item.face);
+    if (isRent && nfts != null && wallet != null && wallet.account) {
+      // * filter step removes YOUR lent NFTs
+      const resolvedData = nfts.filter(item => item.lender !== wallet.account.toLowerCase()).map(item => item.face);
       setData(resolvedData);
       return;
     }
@@ -263,7 +266,9 @@ const Psychedelic: React.FC<PsychedelicProps> = ({
       console.debug("no user data yet");
       return;
     }
-    const resolvedData = user.faces;
+    const currentLending = user.lending.map(item => item.id);
+    // TODO: O(N**2) time complexity is shit
+    const resolvedData = user.faces.filter(item => !currentLending.includes(item.id));
     setData(resolvedData);
   }, [nfts, user]);
 
