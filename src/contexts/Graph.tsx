@@ -11,30 +11,7 @@ import Web3 from "web3";
 // contexts
 import DappContext from "./Dapp";
 
-type Nft = {
-  id: string;
-  address: string;
-  lender: string;
-  borrower: string;
-  maxDuration: number;
-  actualDuration: number;
-  borrowedAt: number;
-  borrowPrice: number;
-  nftPrice: number;
-  face: Face;
-};
-
-type Face = {
-  id: string;
-  uri: string;
-};
-
-type User = {
-  id: string;
-  lending: Nft[];
-  borrowing: Nft[];
-  faces: Face[];
-};
+import { Nft, User } from "../types";
 
 type GraphContextType = {
   nfts: Nft[];
