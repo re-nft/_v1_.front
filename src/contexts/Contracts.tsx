@@ -19,9 +19,9 @@ type ContractsContextType = {
     contract?: Contract;
     lendOne: (
       tokenId: number,
-      maxDuration: number,
-      borrowPrice: number,
-      nftPrice: number
+      maxDuration: string,
+      borrowPrice: string,
+      nftPrice: string
     ) => void;
   };
 };
@@ -96,8 +96,13 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [face, wallet, web3]);
 
   const lendOne = useCallback(
-    async (tokenId, maxDuration, borrowPrice, nftPrice) => {
-      if (rent == null || web3 == null || wallet == null) {
+    async (
+      tokenId: number,
+      maxDuration: string,
+      borrowPrice: string,
+      nftPrice: string
+    ) => {
+      if (rent == null || web3 == null || wallet == null || !wallet.account) {
         console.debug("need face and web3 and wallet to approve all");
         return;
       }

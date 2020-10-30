@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 
 import LendModal from "./LendModal";
 
 import { Face, Nft } from "../types";
 import { short } from "../utils";
+import DappContext from "../contexts/Dapp";
 
 type CatalogueProps = {
   data?: Face[] | Nft[];
@@ -14,6 +15,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
   const [lendModalOpen, setLendModalOpen] = useState(false);
   // TODO: mumbo-jumbo 2 am - follow the easy path
   const [faceId, setFaceId] = useState<string>();
+  const { web3 } = useContext(DappContext);
 
   const handleClick = useCallback(
     (id) => {
@@ -24,6 +26,9 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
     },
     [btnActionLabel, setLendModalOpen]
   );
+
+  const fromWei = (v?: number): string =>
+    v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
   // type guard
   const dataIsRent = (_data: CatalogueProps["data"]): _data is Nft[] => {
@@ -105,19 +110,40 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                     </a>
                   </div>
                   <div className="Product__details">
-                    <div className="Product__name">{short(nft.address)}</div>
+                    <p className="Product__text_overflow">
+                      <a
+                        href={`https://goerli.etherscan.io/address/${nft.address}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ textDecoration: "none", color: "black" }}
+                      >
+                        {nft.address}
+                      </a>
+                    </p>
                   </div>
                   <div className="Product__details">
-                    <div className="Product__name">Daily price</div>
-                    <div className="Product__price">{nft.borrowPrice} fDAI</div>
+                    <p className="Product__text_overflow">
+                      <span className="Product__label">Daily price</span>
+                      <span className="Product__value">
+                        {`${fromWei(nft.borrowPrice)} fDAI`}
+                      </span>
+                    </p>
                   </div>
                   <div className="Product__details">
-                    <div className="Product__name">Max duration</div>
-                    <div className="Product__price">{nft.maxDuration} days</div>
+                    <p className="Product__text_overflow">
+                      <span className="Product__label">Max duration</span>{" "}
+                      <span className="Product__value">{`${fromWei(
+                        nft.maxDuration
+                      )} days`}</span>
+                    </p>
                   </div>
                   <div className="Product__details">
-                    <div className="Product__name">Collateral</div>
-                    <div className="Product__price">{nft.nftPrice} fDAI</div>
+                    <p className="Product__text_overflow">
+                      <span className="Product__label">Collateral</span>
+                      <span className="Product__value">
+                        {`${fromWei(nft.nftPrice)} fDAI`}
+                      </span>
+                    </p>
                   </div>
                   <div className="Product__details">
                     <span

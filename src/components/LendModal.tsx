@@ -4,6 +4,7 @@ import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
+import DappContext from "../contexts/Dapp";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,6 +51,7 @@ const LendModal: React.FC<LendModalProps> = ({
   const classes = useStyles();
 
   const { rent, face } = useContext(ContractsContext);
+  const { web3 } = useContext(DappContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: "7",
@@ -60,11 +62,15 @@ const LendModal: React.FC<LendModalProps> = ({
   const handleAction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (btnActionLabel === "Lend") {
+      if (web3 == null) {
+        return;
+      }
       await rent.lendOne(
         Number(faceId),
-        Number(lendOneInputs.maxDuration),
-        Number(lendOneInputs.borrowPrice),
-        Number(lendOneInputs.nftPrice)
+        // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
+        web3.utils.toWei(lendOneInputs.maxDuration, "ether"),
+        web3.utils.toWei(lendOneInputs.borrowPrice, "ether"),
+        web3.utils.toWei(lendOneInputs.nftPrice, "ether")
       );
     } else {
       // rent
@@ -167,7 +173,8 @@ const LendModal: React.FC<LendModalProps> = ({
         <p style={{ marginTop: "32px", marginBottom: "16px" }}>
           Only use approve all, if you have not used it before
         </p>
-        <button
+        <div
+          role="button"
           style={{
             width: "150px",
             marginBottom: "16px",
@@ -178,7 +185,7 @@ const LendModal: React.FC<LendModalProps> = ({
           onClick={face.approveOfAllFaces}
         >
           Approve all
-        </button>
+        </div>
         <button
           style={{ width: "150px", marginLeft: "auto", marginRight: "auto" }}
           className="Product__button"

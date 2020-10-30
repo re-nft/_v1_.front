@@ -55,15 +55,22 @@
   justify-content: space-between;
 }
 
-.Product__name {
+.Product__label {
   font-weight: bold;
   padding-right: 20px;
 }
 
-.Product__price {
+.Product__value {
   font-size: 0.8em;
   font-weight: normal;
   color: #555;
+}
+
+.Product__text_overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .Product__buy {
