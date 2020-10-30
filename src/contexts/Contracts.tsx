@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useContext
+  useContext,
 } from "react";
 import { Contract } from "web3-eth-contract";
 
@@ -30,26 +30,32 @@ const DefaultContractsContext = {
   face: {
     approveOfAllFaces: () => {
       throw new Error("must be implemented");
-    }
+    },
   },
   rent: {
     lendOne: () => {
       throw new Error("must be implemented");
-    }
-  }
+    },
+  },
 };
 
 const ContractsContext = createContext<ContractsContextType>(
   DefaultContractsContext
 );
 
-export const ContractsProvider: React.FC = ({ children }) => {
+type ContractsProviderProps = {
+  children: React.ReactNode;
+};
+
+export const ContractsProvider: React.FC<ContractsProviderProps> = ({
+  children,
+}) => {
   const { web3, wallet } = useContext(DappContext);
   const [face, setFace] = useState<Contract>();
   const [rent, setRent] = useState<Contract>();
 
   const getFaceContract = useCallback(async () => {
-    if (face != null) {
+    if (face != null || web3 == null) {
       return;
     }
     const contract = new web3.eth.Contract(
@@ -57,10 +63,10 @@ export const ContractsProvider: React.FC = ({ children }) => {
       addresses.goerli.face
     );
     setFace(contract);
-  }, [web3]);
+  }, [web3, face]);
 
   const getRentContract = useCallback(async () => {
-    if (rent != null) {
+    if (rent != null || web3 == null) {
       return;
     }
     const contract = new web3.eth.Contract(
@@ -68,7 +74,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
       addresses.goerli.rent
     );
     setRent(contract);
-  }, [web3]);
+  }, [web3, rent]);
 
   useEffect(() => {
     if (web3 == null) {
@@ -76,7 +82,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
     }
     getFaceContract();
     getRentContract();
-  }, [web3]);
+  }, [web3, getFaceContract, getRentContract]);
 
   // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
   const approveOfAllFaces = useCallback(async () => {
@@ -105,14 +111,14 @@ export const ContractsProvider: React.FC = ({ children }) => {
         )
         .send({ from: wallet.account });
     },
-    [face, wallet, web3]
+    [wallet, web3, rent]
   );
 
   return (
     <ContractsContext.Provider
       value={{
         face: { contract: face, approveOfAllFaces },
-        rent: { contract: rent, lendOne }
+        rent: { contract: rent, lendOne },
       }}
     >
       {children}

@@ -19,7 +19,7 @@ export enum GanFaceStages {
   Generating,
   ReadyForMinting,
   PinningToIpfs,
-  Minting
+  Minting,
 }
 
 const DefaultGanFacesContext: GanFacesContextType = {
@@ -30,14 +30,18 @@ const DefaultGanFacesContext: GanFacesContextType = {
   },
   mintFace: () => {
     throw new Error("this must be implemented");
-  }
+  },
 };
 
 const GanFacesContext = createContext<GanFacesContextType>(
   DefaultGanFacesContext
 );
 
-export const GanFacesProvider: React.FC = ({ children }) => {
+type GanFacesProps = {
+  children: React.ReactNode;
+};
+
+export const GanFacesProvider: React.FC<GanFacesProps> = ({ children }) => {
   // contexts
   const { web3, wallet } = useContext(DappContext);
   const { face: faceContext } = useContext(ContractsContext);
@@ -55,11 +59,13 @@ export const GanFacesProvider: React.FC = ({ children }) => {
       const ganFace = await getGanFace();
       const url = URL.createObjectURL(ganFace);
       const img = document.getElementById("face");
-      img.setAttribute("src", url);
+      if (img != null) {
+        img.setAttribute("src", url);
+      }
 
       setFace(ganFace);
       setGanStages(GanFaceStages.ReadyForMinting);
-      setNumFaces(numFacesGenerated => numFacesGenerated + 1);
+      setNumFaces((numFacesGenerated) => numFacesGenerated + 1);
     } catch (err) {
       console.debug("could not generate the face");
       setGanStages(GanFaceStages.Idle);
@@ -110,7 +116,7 @@ export const GanFacesProvider: React.FC = ({ children }) => {
         stages: ganStages,
         ipfsUri,
         getFace,
-        mintFace
+        mintFace,
       }}
     >
       {children}

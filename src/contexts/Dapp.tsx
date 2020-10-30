@@ -7,14 +7,15 @@ type DappContextType = {
   web3?: Web3;
 };
 
-const DefaultDappContext: DappContextType = {
-  wallet: null,
-  web3: null
-};
+const DefaultDappContext: DappContextType = {};
 
 const DappContext = createContext<DappContextType>(DefaultDappContext);
 
-export const DappProvider = ({ children }) => {
+type DappProviderProps = {
+  children: React.ReactNode;
+};
+
+export const DappProvider: React.FC<DappProviderProps> = ({ children }) => {
   // state & provider related
   const [web3, setWeb3] = useState<Web3>();
   const wallet = useWallet<"injected">();
@@ -39,7 +40,7 @@ export const DappProvider = ({ children }) => {
     }
     // ! could not add window here. compile time error that window is not defined
     //@ts-ignore
-  }, [wallet]);
+  }, [wallet, web3]);
 
   // ---------------
   useEffect(() => {

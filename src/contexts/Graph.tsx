@@ -3,7 +3,7 @@ import React, {
   useContext,
   useState,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 import { request } from "graphql-request";
 import Web3 from "web3";
@@ -14,13 +14,11 @@ import DappContext from "./Dapp";
 import { Nft, User } from "../types";
 
 type GraphContextType = {
-  nfts: Nft[];
+  nfts?: Nft[];
   user?: User;
 };
 
-const DefaultGraphContext: GraphContextType = {
-  nfts: []
-};
+const DefaultGraphContext: GraphContextType = {};
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
@@ -84,7 +82,11 @@ const queryUser = (user: string, web3: Web3): string => {
   }`;
 };
 
-export const GraphProvider: React.FC = ({ children }) => {
+type GraphProviderProps = {
+  children: React.ReactNode;
+};
+
+export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
 
   const [nfts, setNfts] = useState<Nft[]>();
@@ -96,7 +98,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const nftsData = data["nfts"];
       setNfts(nftsData);
     }
-  }, [wallet, web3]);
+  }, []);
 
   const getUser = useCallback(async () => {
     if (web3 == null || wallet == null || !wallet.account) {
