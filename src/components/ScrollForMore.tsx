@@ -1,6 +1,6 @@
 import React from "react";
 
-export default () => {
+const ScrollForMore: React.FC = () => {
   return (
     <ul className="c-rainbow">
       <li className="c-rainbow__layer c-rainbow__layer--white">
@@ -27,3 +27,5 @@ export default () => {
     </ul>
   );
 };
+
+export default ScrollForMore;

@@ -9,7 +9,22 @@ import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
 
-const Tab = ({ setTab, activeTab, tabName, buttonName }) => {
+// make enum
+type PossibleTabs = "RENT" | "LEND" | "STATS" | "LEADER" | "GETNFT" | "HOW";
+
+type TabProps = {
+  setTab: (tab: string) => void;
+  activeTab: PossibleTabs;
+  tabName: string;
+  buttonName: string;
+};
+
+const Tab: React.FC<TabProps> = ({
+  setTab,
+  activeTab,
+  tabName,
+  buttonName,
+}) => {
   return (
     <div
       role="button"
@@ -26,7 +41,7 @@ const Tab = ({ setTab, activeTab, tabName, buttonName }) => {
   );
 };
 
-export default () => {
+const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState("RENT");
   const [nftModalOpen, setNftModalOpen] = useState(false);
 
@@ -35,7 +50,7 @@ export default () => {
   }, [nftModalOpen]);
 
   const setTab = useCallback(
-    tab => {
+    (tab) => {
       return () => setActiveTab(tab);
     },
     [setActiveTab]
@@ -48,7 +63,7 @@ export default () => {
         style={{
           display: "flex",
           flexDirection: "row",
-          padding: "0 0 32px 0"
+          padding: "0 0 32px 0",
         }}
       >
         <Tab
@@ -101,7 +116,7 @@ export default () => {
           padding: "32px 64px",
           border: "3px solid black",
           overflowY: "scroll",
-          height: "80vh"
+          height: "80vh",
         }}
       >
         {/* TODO: tidy up this craziness */}
@@ -114,3 +129,5 @@ export default () => {
     </Layout>
   );
 };
+
+export default App;

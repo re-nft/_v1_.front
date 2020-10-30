@@ -6,17 +6,17 @@ import { Face, Nft } from "../types";
 import { short } from "../utils";
 
 type CatalogueProps = {
-  data: Face[] | Nft[];
+  data?: Face[] | Nft[];
   btnActionLabel: "Rent" | "Lend";
 };
 
 const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
   const [lendModalOpen, setLendModalOpen] = useState(false);
   // TODO: mumbo-jumbo 2 am - follow the easy path
-  const [faceId, setFaceId] = useState();
+  const [faceId, setFaceId] = useState<string>();
 
   const handleClick = useCallback(
-    id => {
+    (id) => {
       if (btnActionLabel === "Lend") {
         setLendModalOpen(true);
       }
@@ -27,7 +27,11 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
 
   // type guard
   const dataIsRent = (_data: CatalogueProps["data"]): _data is Nft[] => {
-    const firstItem = data[0];
+    if (_data == null) {
+      return false;
+    }
+
+    const firstItem = _data[0];
 
     // TODO: something like this in the future
     // Object.keys(firstItem).forEach(key => {
@@ -47,16 +51,19 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
   // TODO: refactor
   return (
     <>
-      <LendModal
-        faceId={faceId}
-        btnActionLabel={btnActionLabel}
-        open={lendModalOpen}
-        setOpen={setLendModalOpen}
-      />
+      {faceId && (
+        <LendModal
+          faceId={faceId}
+          btnActionLabel={btnActionLabel}
+          open={lendModalOpen}
+          setOpen={setLendModalOpen}
+        />
+      )}
       <div className="Catalogue">
-        {data.length > 0 &&
+        {data &&
+          data.length > 0 &&
           !dataIsRent(data) &&
-          data.map(face => {
+          data.map((face) => {
             return (
               <div className="Catalogue__item" key={face.id}>
                 <div
@@ -72,7 +79,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   <div className="Product__details">
                     <span
                       className="Product__buy"
-                      onClick={e => handleClick(face.id)}
+                      onClick={() => handleClick(face.id)}
                     >
                       Lend now
                     </span>
@@ -81,9 +88,10 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
               </div>
             );
           })}
-        {data.length > 0 &&
+        {data &&
+          data.length > 0 &&
           dataIsRent(data) &&
-          data.map(nft => {
+          data.map((nft) => {
             return (
               <div className="Catalogue__item" key={nft.id}>
                 <div
@@ -114,7 +122,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   <div className="Product__details">
                     <span
                       className="Product__buy"
-                      onClick={e => handleClick(nft.face.id)}
+                      onClick={() => handleClick(nft.face.id)}
                     >
                       Rent now
                     </span>

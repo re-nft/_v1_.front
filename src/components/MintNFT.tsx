@@ -19,12 +19,17 @@ const useStyles = makeStyles((theme: Theme) =>
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
       color: "white",
-      textAlign: "center"
-    }
+      textAlign: "center",
+    },
   })
 );
 
-export default ({ open, handleClose }) => {
+type MintNftProps = {
+  open: boolean;
+  handleClose: () => void;
+};
+
+const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
   const classes = useStyles();
   const { getFace, mintFace, numFacesGenerated, stages } = useContext(
     GanFacesContext
@@ -43,7 +48,7 @@ export default ({ open, handleClose }) => {
           display: "flex",
           flexDirection: "column",
           alignContent: "space-between",
-          height: "100%"
+          height: "100%",
         }}
       >
         <div>|-: Generate your GAN face :-|</div>
@@ -75,7 +80,7 @@ export default ({ open, handleClose }) => {
               width: "200px",
               border: "3px solid black",
               margin: "0 8px 8px 0",
-              textAlign: "center"
+              textAlign: "center",
             }}
           >
             Give me a face
@@ -93,7 +98,7 @@ export default ({ open, handleClose }) => {
               flex: "1",
               border: "3px solid black",
               margin: "0 0 8px 0",
-              textAlign: "center"
+              textAlign: "center",
             }}
           >
             Mint my face
@@ -103,3 +108,5 @@ export default ({ open, handleClose }) => {
     </Modal>
   );
 };
+
+export default MintNft;

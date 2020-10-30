@@ -13,22 +13,27 @@ import { Face, Nft } from "../types";
 
 type PsychedelicProps = {
   children?: React.ReactNode;
-  data?: any;
   hidden: boolean;
   isRent: boolean;
 };
 
 const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
+  const btnLbl = isRent === true ? "Rent" : "Lend";
+  const isValid = (data?: Face[] | Nft[]) => {
+    return data != null && data.length > 0;
+  };
+
   const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
   const [data, setData] = useState<Face[] | Nft[]>();
-  const btnLbl = isRent === true ? "Rent" : "Lend";
-
+  const dataIsValid = useMemo(() => {
+    return isValid(data);
+  }, [data]);
   useEffect(() => {
-    if (isRent && nfts != null && wallet != null && wallet.account) {
+    if (isRent && nfts != null && wallet != null && wallet.account != null) {
       // * filter step removes YOUR lent NFTs
       const resolvedData = nfts.filter(
-        item => item.lender !== wallet.account.toLowerCase()
+        (item) => item.lender !== wallet.account!.toLowerCase()
       );
       setData(resolvedData);
       return;
@@ -38,34 +43,28 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
       console.debug("no user data yet");
       return;
     }
-    const currentLending = user.lending.map(item => item.id);
+    const currentLending = user.lending.map((item) => item.id);
     // TODO: O(N**2) time complexity is shit
     const resolvedData = user.faces.filter(
-      item => !currentLending.includes(item.id)
+      (item) => !currentLending.includes(item.id)
     );
     setData(resolvedData);
-  }, [nfts, user]);
+  }, [nfts, user, isRent, wallet]);
 
-  const isValid = data => {
-    return data != null && data.length > 0;
-  };
-
-  const dataIsValid = useMemo(() => {
-    return isValid(data);
-  }, [data]);
+  if (hidden) {
+    return <></>;
+  }
 
   return (
-    !hidden && (
-      <Box>
-        {dataIsValid && (
-          <Box>
-            <ScrollForMore />
-            <Catalogue data={data} btnActionLabel={btnLbl} />
-          </Box>
-        )}
-        {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
-      </Box>
-    )
+    <Box>
+      {dataIsValid && (
+        <Box>
+          <ScrollForMore />
+          <Catalogue data={data} btnActionLabel={btnLbl} />
+        </Box>
+      )}
+      {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
+    </Box>
   );
 };
 

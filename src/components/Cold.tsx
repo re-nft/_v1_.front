@@ -1,6 +1,10 @@
 import React from "react";
 
-export default ({ fancyText }) => {
+type ColdProps = {
+  fancyText: string;
+};
+
+const Cold: React.FC<ColdProps> = ({ fancyText }) => {
   return (
     <div>
       <div id="fire" style={{ width: "400px", height: "300px" }}></div>
@@ -8,3 +12,5 @@ export default ({ fancyText }) => {
     </div>
   );
 };
+
+export default Cold;

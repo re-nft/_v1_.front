@@ -1,6 +1,7 @@
 import React from "react";
 
-export default () => {
+// TODO: a prop that takes the % completion (in bps). e.g. 10000 means 100%, 5050 means 50.50%
+const Progressbar: React.FC = () => {
   return (
     <>
       <div className="wrapper">
@@ -11,3 +12,5 @@ export default () => {
     </>
   );
 };
+
+export default Progressbar;
