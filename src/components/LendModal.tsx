@@ -113,7 +113,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       return;
     }
     await rent.lendOne(
-      Number(faceId),
+      faceId,
       // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
       web3.utils.toWei(Number(lendOneInputs.maxDuration).toFixed(18), "ether"),
       web3.utils.toWei(Number(lendOneInputs.borrowPrice).toFixed(18), "ether"),

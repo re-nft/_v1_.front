@@ -3,7 +3,10 @@ import React, { useState, useCallback, useContext } from "react";
 import LendModal from "./LendModal";
 
 import { Face, Nft } from "../types";
+
+// contexts
 import DappContext from "../contexts/Dapp";
+import ContractsContext from "../contexts/Contracts";
 
 type CatalogueProps = {
   data?: Face[] | Nft[];
@@ -15,15 +18,36 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
   // TODO: mumbo-jumbo 2 am - follow the easy path
   const [faceId, setFaceId] = useState<string>();
   const { web3 } = useContext(DappContext);
+  const { rent, pmtToken } = useContext(ContractsContext);
 
-  const handleClick = useCallback(
+  // TODO: refactor this setFace
+  const handleRent = useCallback(
+    async (tokenId: string) => {
+      setFaceId(tokenId);
+
+      if (
+        rent == null ||
+        pmtToken == null ||
+        pmtToken.dai == null ||
+        pmtToken.dai.approve == null
+      ) {
+        return;
+      }
+      // TODO: rent duration variable and remove approve here
+      // await pmtToken.dai.approve();
+      await rent.rentOne(tokenId, "2");
+    },
+    [rent, pmtToken]
+  );
+
+  const handleLend = useCallback(
     (id) => {
       if (btnActionLabel === "Lend") {
         setLendModalOpen(true);
       }
       setFaceId(id);
     },
-    [btnActionLabel, setLendModalOpen]
+    [btnActionLabel, setFaceId]
   );
 
   const fromWei = (v?: number): string =>
@@ -58,7 +82,6 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
       {faceId && (
         <LendModal
           faceId={faceId}
-          btnActionLabel={btnActionLabel}
           open={lendModalOpen}
           setOpen={setLendModalOpen}
         />
@@ -83,7 +106,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   <div className="Product__details">
                     <span
                       className="Product__buy"
-                      onClick={() => handleClick(face.id)}
+                      onClick={() => handleLend(face.id)}
                     >
                       Lend now
                     </span>
@@ -147,7 +170,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
                   <div className="Product__details">
                     <span
                       className="Product__buy"
-                      onClick={() => handleClick(nft.face.id)}
+                      onClick={() => handleRent(nft.face.id)}
                     >
                       Rent now
                     </span>
