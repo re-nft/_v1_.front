@@ -93,15 +93,9 @@ type LendModalProps = {
   faceId: string;
   open: boolean;
   setOpen: (open: boolean) => void;
-  btnActionLabel: string;
 };
 
-const LendModal: React.FC<LendModalProps> = ({
-  faceId,
-  open,
-  setOpen,
-  btnActionLabel,
-}) => {
+const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const classes = useStyles();
 
   const { rent, face } = useContext(ContractsContext);
@@ -113,28 +107,18 @@ const LendModal: React.FC<LendModalProps> = ({
     nftPrice: "100",
   });
 
-  const handleAction = async (e: React.FormEvent) => {
+  const handleLend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (btnActionLabel === "Lend") {
-      if (web3 == null) {
-        return;
-      }
-      await rent.lendOne(
-        Number(faceId),
-        // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-        web3.utils.toWei(
-          Number(lendOneInputs.maxDuration).toFixed(18),
-          "ether"
-        ),
-        web3.utils.toWei(
-          Number(lendOneInputs.borrowPrice).toFixed(18),
-          "ether"
-        ),
-        web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
-      );
-    } else {
-      // rent
+    if (web3 == null) {
+      return;
     }
+    await rent.lendOne(
+      Number(faceId),
+      // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
+      web3.utils.toWei(Number(lendOneInputs.maxDuration).toFixed(18), "ether"),
+      web3.utils.toWei(Number(lendOneInputs.borrowPrice).toFixed(18), "ether"),
+      web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,7 +154,7 @@ const LendModal: React.FC<LendModalProps> = ({
       <form
         noValidate
         autoComplete="off"
-        onSubmit={handleAction}
+        onSubmit={handleLend}
         className={classes.form}
       >
         <Box className={classes.inputs}>
