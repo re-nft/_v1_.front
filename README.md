@@ -33,6 +33,7 @@
 27. When clicking on a picture, open the IPFS picture
 28. Add another tab to remove the lent out NFTs from the platform
 29. Move to ethers.js before it is too late
+30. Add tooltip in the rent screen (for when the price is too low, show what it actually is)
 
 Most important for Friday (30/10/2020):
 ...

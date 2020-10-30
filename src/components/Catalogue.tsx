@@ -3,7 +3,6 @@ import React, { useState, useCallback, useContext } from "react";
 import LendModal from "./LendModal";
 
 import { Face, Nft } from "../types";
-import { short } from "../utils";
 import DappContext from "../contexts/Dapp";
 
 type CatalogueProps = {
