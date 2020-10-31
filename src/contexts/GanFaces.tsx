@@ -92,6 +92,10 @@ export const GanFacesProvider: React.FC<GanFacesProps> = ({ children }) => {
       }
 
       const pin = await pinToIpfs({ blob: face });
+      if (pin == null) {
+        console.debug("no pin");
+        return;
+      }
       const pinData = await pin.json();
       const uri = `https://gateway.pinata.cloud/ipfs/${pinData.IpfsHash}`;
       setIpfsUri(uri);

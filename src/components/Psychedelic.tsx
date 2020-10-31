@@ -30,7 +30,10 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
     return isValid(data);
   }, [data]);
   useEffect(() => {
-    if (isRent && nfts != null && wallet != null && wallet.account != null) {
+    if (nfts == null || wallet == null || !wallet.account) {
+      return;
+    }
+    if (isRent) {
       // * filter step removes YOUR lent NFTs
       const resolvedData = nfts.filter(
         (item) => item.lender !== wallet.account!.toLowerCase()
