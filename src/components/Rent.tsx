@@ -30,12 +30,10 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
     if (nfts == null || wallet == null || !wallet.account) {
       return;
     }
-    const resolvedData = nfts.filter((item) => {
-      console.error(item);
-      console.error(wallet.account);
-      console.error(wallet.account!.toLowerCase());
-      return item.lender !== wallet.account!.toLowerCase();
-    });
+    const resolvedData = nfts.filter(
+      (item) =>
+        item.lender !== wallet.account!.toLowerCase() && item.borrower == null
+    );
     setData(resolvedData);
   }, [nfts, user, wallet]);
 

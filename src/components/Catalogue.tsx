@@ -34,8 +34,8 @@ const Catalogue: React.FC<CatalogueProps> = ({ data, btnActionLabel }) => {
         return;
       }
       // TODO: rent duration variable and remove approve here
-      // await pmtToken.dai.approve();
-      await rent.rentOne(tokenId, "2");
+      await pmtToken.dai.approve();
+      await rent.rentOne(tokenId, "1");
     },
     [rent, pmtToken]
   );

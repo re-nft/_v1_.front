@@ -35,3 +35,6 @@
 29. Move to ethers.js before it is too late
 30. Add tooltip in the rent screen (for when the price is too low, show what it actually is)
 31. Add payment token faucet for testnet people
+32. upgrades persist the existing NFTs (thegraph)
+33. forbid lending the rented out NFT for now
+34. Add currently borrowing tab
