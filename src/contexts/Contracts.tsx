@@ -75,82 +75,106 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   const [rent, setRent] = useState<Contract>();
   const [dai, setDai] = useState<Contract>();
 
+  // checks that there is web3 and wallet
+  // plus any additional args
+  const dappOk = useCallback(
+    (...args) => {
+      if (web3 == null || wallet == null || !wallet.account) {
+        console.debug("no web3 or wallet");
+        return false;
+      }
+      for (const arg of args) {
+        if (arg == null) {
+          return false;
+        }
+      }
+      return true;
+    },
+    [web3, wallet]
+  );
+
   const getDaiContract = useCallback(async () => {
-    if (dai != null || web3 == null) {
-      return;
-    }
-    const contract = new web3.eth.Contract(
+    if (!dappOk()) return;
+    if (dai != null) return;
+
+    // todo: checkDapp as typeguard that web3 is not null
+    const contract = new web3!.eth.Contract(
       abis.erc20.abi,
       addresses.goerli.dai
     );
     setDai(contract);
-  }, [web3, dai]);
+  }, [web3, dai, dappOk]);
 
   const getFaceContract = useCallback(async () => {
-    if (face != null || web3 == null) {
-      return;
-    }
-    const contract = new web3.eth.Contract(
+    if (!dappOk()) return;
+    if (face != null) return;
+
+    const contract = new web3!.eth.Contract(
       abis.goerli.face.abi,
       addresses.goerli.face
     );
     setFace(contract);
-  }, [web3, face]);
+  }, [web3, face, dappOk]);
 
   const getRentContract = useCallback(async () => {
-    if (rent != null || web3 == null) {
-      return;
-    }
-    const contract = new web3.eth.Contract(
+    if (!dappOk()) return;
+    if (rent != null) return;
+
+    const contract = new web3!.eth.Contract(
       abis.goerli.rent.abi,
       addresses.goerli.rent
     );
     setRent(contract);
-  }, [web3, rent]);
+  }, [web3, rent, dappOk]);
+
+  const getAllContracts = useCallback(async () => {
+    await Promise.all([getDaiContract(), getFaceContract(), getRentContract()]);
+  }, [getDaiContract, getFaceContract, getRentContract]);
 
   useEffect(() => {
-    if (web3 == null) {
-      return;
-    }
-    getFaceContract();
-    getRentContract();
-    getDaiContract();
-  }, [web3, getFaceContract, getRentContract, getDaiContract]);
+    getAllContracts();
+  }, [getAllContracts]);
 
   // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
   const approveOfAllFaces = useCallback(async () => {
-    if (face == null || wallet == null || !wallet.account) {
-      console.debug("need face and web3 and wallet to approve all");
-      return;
-    }
-    await face.methods
+    if (!dappOk(face)) return;
+
+    // todo: checkdapp typeguard against nulls
+    await face?.methods
       .setApprovalForAll(addresses.goerli.rent, true)
-      .send({ from: wallet.account });
-  }, [face, wallet]);
+      .send({ from: wallet?.account });
+  }, [face, dappOk, wallet]);
 
+  // infinite approval of the payment token
   const approveDai = useCallback(async () => {
-    if (dai == null || wallet == null || !wallet.account) {
-      console.debug("no dai contract");
-      return;
-    }
-    await dai.methods
-      .approve(addresses.goerli.rent, UNLIMITED_ALLOWANCE)
-      .send({ from: wallet.account });
-  }, [wallet, dai]);
+    if (!dappOk(dai)) return;
 
+    await dai?.methods
+      .approve(addresses.goerli.rent, UNLIMITED_ALLOWANCE)
+      .send({ from: wallet?.account });
+  }, [wallet, dai, dappOk]);
+
+  // ----------------- Contract Interaction -----------------------
+
+  // rent one NFT
   const rentOne = useCallback(
     async (tokenId: string, rentDuration: string) => {
-      if (rent == null || wallet == null) {
-        return;
-      }
+      if (!dappOk(rent)) return;
+
       // ! TODO: change for the address of the NFT
-      await rent.methods
-        .rentOne(wallet.account, addresses.goerli.face, tokenId, rentDuration)
-        .send({ from: wallet.account });
+      await rent?.methods
+        .rentOne(
+          wallet?.account,
+          addresses.goerli.face,
+          web3?.utils.hexToNumberString(tokenId),
+          rentDuration
+        )
+        .send({ from: wallet?.account });
     },
-    [rent, wallet]
+    [rent, wallet, dappOk, web3]
   );
 
+  // lend one NFT
   const lendOne = useCallback(
     async (
       tokenId: string,
@@ -158,11 +182,9 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       borrowPrice: string,
       nftPrice: string
     ) => {
-      if (rent == null || web3 == null || wallet == null || !wallet.account) {
-        console.debug("need face and web3 and wallet to approve all");
-        return;
-      }
-      await rent.methods
+      if (!dappOk(rent)) return;
+
+      await rent?.methods
         .lendOne(
           addresses.goerli.face,
           tokenId,
@@ -170,10 +192,12 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           borrowPrice,
           nftPrice
         )
-        .send({ from: wallet.account });
+        .send({ from: wallet?.account });
     },
-    [wallet, web3, rent]
+    [wallet, rent, dappOk]
   );
+
+  // ---------------------------------------------------------------
 
   return (
     <ContractsContext.Provider

@@ -11,14 +11,11 @@ import Catalogue from "./Catalogue";
 
 import { Face, Nft } from "../types";
 
-type PsychedelicProps = {
-  children?: React.ReactNode;
+type RentProps = {
   hidden: boolean;
-  isRent: boolean;
 };
 
-const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
-  const btnLbl = isRent === true ? "Rent" : "Lend";
+const Rent: React.FC<RentProps> = ({ hidden }) => {
   const isValid = (data?: Face[] | Nft[]) => {
     return data != null && data.length > 0;
   };
@@ -33,26 +30,14 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
     if (nfts == null || wallet == null || !wallet.account) {
       return;
     }
-    if (isRent) {
-      // * filter step removes YOUR lent NFTs
-      const resolvedData = nfts.filter(
-        (item) => item.lender !== wallet.account!.toLowerCase()
-      );
-      setData(resolvedData);
-      return;
-    }
-    // lend
-    if (user == null || wallet == null || !wallet.account) {
-      console.debug("no user data yet");
-      return;
-    }
-    const currentLending = user.lending.map((item) => item.id);
-    // TODO: O(N**2) time complexity is shit
-    const resolvedData = user.faces.filter(
-      (item) => !currentLending.includes(item.id)
-    );
+    const resolvedData = nfts.filter((item) => {
+      console.error(item);
+      console.error(wallet.account);
+      console.error(wallet.account!.toLowerCase());
+      return item.lender !== wallet.account!.toLowerCase();
+    });
     setData(resolvedData);
-  }, [nfts, user, isRent, wallet]);
+  }, [nfts, user, wallet]);
 
   if (hidden) {
     return <></>;
@@ -63,7 +48,7 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
       {dataIsValid && (
         <Box>
           <ScrollForMore />
-          <Catalogue data={data} btnActionLabel={btnLbl} />
+          <Catalogue data={data} btnActionLabel="Rent" />
         </Box>
       )}
       {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
@@ -71,4 +56,4 @@ const Psychedelic: React.FC<PsychedelicProps> = ({ hidden, isRent }) => {
   );
 };
 
-export default Psychedelic;
+export default Rent;

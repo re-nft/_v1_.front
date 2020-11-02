@@ -3,38 +3,43 @@ import { Box } from "@material-ui/core";
 
 // components and other
 import Layout from "../layouts/index";
-import Psychedelic from "./Psychedelic";
+import Rent from "./Rent";
+import Lend from "./Lend";
 import ComingSoon from "./ComingSoon";
 import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
 
 // make enum
-type PossibleTabs = "RENT" | "LEND" | "STATS" | "LEADER" | "GETNFT" | "HOW";
+enum Tabs {
+  RENT,
+  LEND,
+  STATS,
+  LEADER,
+  GETNFT,
+  HOW,
+}
 
 type TabProps = {
-  setTab: (tab: string) => void;
-  activeTab: PossibleTabs;
-  tabName: string;
+  setTab: (tab: Tabs) => void;
+  isFocused: boolean;
+  thisTab: Tabs;
   buttonName: string;
 };
 
 const Tab: React.FC<TabProps> = ({
   setTab,
-  activeTab,
-  tabName,
+  thisTab,
+  isFocused,
   buttonName,
 }) => {
+  const handleClick = useCallback(() => {
+    setTab(thisTab);
+  }, [setTab, thisTab]);
+
   return (
-    <div
-      role="button"
-      style={{ marginRight: "16px" }}
-      onClick={setTab(tabName)}
-      onKeyDown={setTab(tabName)}
-    >
-      <span
-        className={activeTab === tabName ? "active-tab" : "Product__button"}
-      >
+    <div role="button" style={{ marginRight: "16px" }} onClick={handleClick}>
+      <span className={isFocused ? "active-tab" : "Product__button"}>
         {buttonName}
       </span>
     </div>
@@ -42,19 +47,12 @@ const Tab: React.FC<TabProps> = ({
 };
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("RENT");
+  const [activeTab, setActiveTab] = useState(Tabs.RENT);
   const [nftModalOpen, setNftModalOpen] = useState(false);
 
   const handleNftModal = useCallback(() => {
     setNftModalOpen(!nftModalOpen);
   }, [nftModalOpen]);
-
-  const setTab = useCallback(
-    (tab) => {
-      return () => setActiveTab(tab);
-    },
-    [setActiveTab]
-  );
 
   // TODO: rewrite with a router
   return (
@@ -67,27 +65,27 @@ const App: React.FC = () => {
         }}
       >
         <Tab
-          setTab={setTab}
-          activeTab={activeTab}
-          tabName="RENT"
+          setTab={setActiveTab}
+          isFocused={activeTab === Tabs.RENT}
+          thisTab={Tabs.RENT}
           buttonName="Rent NFT"
         />
         <Tab
-          setTab={setTab}
-          activeTab={activeTab}
-          tabName="LEND"
+          setTab={setActiveTab}
+          isFocused={activeTab === Tabs.LEND}
+          thisTab={Tabs.LEND}
           buttonName="Lend NFT"
         />
         <Tab
-          setTab={setTab}
-          activeTab={activeTab}
-          tabName="STATS"
+          setTab={setActiveTab}
+          isFocused={activeTab === Tabs.STATS}
+          thisTab={Tabs.STATS}
           buttonName="My Stats"
         />
         <Tab
-          setTab={setTab}
-          activeTab={activeTab}
-          tabName="LEADER"
+          setTab={setActiveTab}
+          isFocused={activeTab === Tabs.LEADER}
+          thisTab={Tabs.LEADER}
           buttonName="Leaderboard"
         />
         <div
@@ -97,7 +95,7 @@ const App: React.FC = () => {
         >
           <span
             className={
-              activeTab === "GETNFT" ? "active-tab" : "Product__button"
+              activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
             }
           >
             Get NFT
@@ -105,9 +103,9 @@ const App: React.FC = () => {
         </div>
         <MintNft open={nftModalOpen} handleClose={handleNftModal} />
         <Tab
-          setTab={setTab}
-          activeTab={activeTab}
-          tabName="HOW"
+          setTab={setActiveTab}
+          isFocused={activeTab === Tabs.HOW}
+          thisTab={Tabs.HOW}
           buttonName="But How?!"
         />
       </Box>
@@ -120,11 +118,11 @@ const App: React.FC = () => {
         }}
       >
         {/* TODO: tidy up this craziness */}
-        <Psychedelic hidden={activeTab !== "RENT"} isRent={true} />
-        <Psychedelic hidden={activeTab !== "LEND"} isRent={false} />
-        <ComingSoon hidden={activeTab !== "LEADER"} />
-        <ButHow hidden={activeTab !== "HOW"} />
-        <Stats hidden={activeTab !== "STATS"} />
+        <Rent hidden={activeTab !== Tabs.RENT} />
+        <Lend hidden={activeTab !== Tabs.LEND} />
+        <ComingSoon hidden={activeTab !== Tabs.LEADER} />
+        <ButHow hidden={activeTab !== Tabs.HOW} />
+        <Stats hidden={activeTab !== Tabs.STATS} />
       </Box>
     </Layout>
   );
