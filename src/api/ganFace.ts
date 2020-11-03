@@ -1,5 +1,3 @@
-import unirest from "unirest";
-
 export const getGanFace = async () => {
   const response = await fetch(
     "https://face-generator.p.rapidapi.com/faces/random",
@@ -8,8 +6,8 @@ export const getGanFace = async () => {
       headers: {
         "x-rapidapi-host": "face-generator.p.rapidapi.com",
         "x-rapidapi-key": process.env.GATSBY_RAPID_API_KEY,
-        useQueryString: "true"
-      }
+        useQueryString: "true",
+      },
     }
   );
   return response.blob();

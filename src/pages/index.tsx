@@ -11,17 +11,5 @@ import { GraphProvider } from "../contexts/Graph";
 import App from "../components/App";
 
 export default () => {
-  return (
-    <UseWalletProvider chainId={5}>
-      <DappProvider>
-        <GraphProvider>
-          <ContractsProvider>
-            <GanFacesProvider>
-              <App />
-            </GanFacesProvider>
-          </ContractsProvider>
-        </GraphProvider>
-      </DappProvider>
-    </UseWalletProvider>
-  );
+  return <App />;
 };

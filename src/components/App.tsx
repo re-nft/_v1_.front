@@ -117,7 +117,6 @@ const App: React.FC = () => {
           height: "80vh",
         }}
       >
-        {/* TODO: tidy up this craziness */}
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
         <ComingSoon hidden={activeTab !== Tabs.LEADER} />

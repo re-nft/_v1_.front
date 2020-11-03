@@ -1,35 +1,38 @@
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import { Box } from "@material-ui/core";
 
-// contexts
 import DappContext from "../contexts/Dapp";
 import GraphContext from "../contexts/Graph";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
-import Catalogue from "./Catalogue";
-
-import { Face, Nft } from "../types";
+import RentCatalogue from "./RentCatalogue";
+import { Nft } from "../types";
 
 type RentProps = {
   hidden: boolean;
 };
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
-  const isValid = (data?: Face[] | Nft[]) => {
+  const isValid = (data?: Nft[]) => {
     return data != null && data.length > 0;
   };
 
   const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
-  const [data, setData] = useState<Face[] | Nft[]>();
+  const [data, setData] = useState<Nft[]>();
   const dataIsValid = useMemo(() => {
     return isValid(data);
   }, [data]);
   useEffect(() => {
-    if (nfts == null || wallet == null || !wallet.account) {
+    if (!nfts || !wallet || !wallet.account) {
+      console.debug("no nfts or wallet or account");
       return;
     }
+    // ! only pulling NFTs where we are not the lender
+    // and there is no borrower
+    // this query might become heavy eventually (the query behind this data)
+    // and I may need to fetch it in multiple calls
     const resolvedData = nfts.filter(
       (item) =>
         item.lender !== wallet.account!.toLowerCase() && item.borrower == null
@@ -46,7 +49,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
       {dataIsValid && (
         <Box>
           <ScrollForMore />
-          <Catalogue data={data} btnActionLabel="Rent" />
+          <RentCatalogue data={data} />
         </Box>
       )}
       {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
