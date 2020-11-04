@@ -37,8 +37,9 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data }) => {
   const { rent, pmtToken } = useContext(ContractsContext);
 
   const handleRent = useCallback(
-    async (tokenId: string) => {
+    async (faceId: string) => {
       // setFaceId(tokenId);
+      const tokenId = faceId.split("::")[1];
 
       if (!rent || !pmtToken || !R.hasPath(["dai", "approve"], pmtToken)) {
         console.debug("rent or pmtToken or approve not available");

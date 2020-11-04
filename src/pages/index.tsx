@@ -10,6 +10,20 @@ import { GraphProvider } from "../contexts/Graph";
 // components and other
 import App from "../components/App";
 
-export default () => {
-  return <App />;
+const Index: React.FC = () => {
+  return (
+    <UseWalletProvider chainId={5}>
+      <DappProvider>
+        <GraphProvider>
+          <ContractsProvider>
+            <GanFacesProvider>
+              <App />
+            </GanFacesProvider>
+          </ContractsProvider>
+        </GraphProvider>
+      </DappProvider>
+    </UseWalletProvider>
+  );
 };
+
+export default Index;

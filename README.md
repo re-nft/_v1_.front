@@ -38,3 +38,4 @@
 32. upgrades persist the existing NFTs (thegraph)
 33. forbid lending the rented out NFT for now
 34. Add currently borrowing tab
+35. Add currently lending tab (so that you can return)
