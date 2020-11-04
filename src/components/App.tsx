@@ -9,6 +9,7 @@ import ComingSoon from "./ComingSoon";
 import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
+import RentModal from "./RentModal";
 
 // make enum
 enum Tabs {

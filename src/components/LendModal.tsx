@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, Modal, TextField, Button } from "@material-ui/core";
+import { Box, Modal, TextField } from "@material-ui/core";
 import {
   makeStyles,
   Theme,
@@ -229,7 +229,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           >
             Approve all
           </button>
-          <RainbowButton text="Lend" />
+          <RainbowButton role="submit" text="Lend" disabled={isBusy} />
           {/* <button
             style={{ border: "3px solid black" }}
             className="Product__button"

@@ -1,12 +1,9 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Box } from "@material-ui/core";
-import * as R from "ramda";
 
 // contexts
 import DappContext from "../contexts/Dapp";
-import ContractsContext from "../contexts/Contracts";
-
-// import RentModal from "./RentModal";
+import RentModal from "./RentModal";
 import { Nft } from "../types";
 
 type RentCatalogueProps = {
@@ -15,7 +12,7 @@ type RentCatalogueProps = {
 };
 
 type RentButtonProps = {
-  handleRent: (id: string) => Promise<void>;
+  handleRent: (id: string) => void;
   id: string;
   iBorrow: boolean;
 };
@@ -47,39 +44,24 @@ const RentButton: React.FC<RentButtonProps> = ({ handleRent, id, iBorrow }) => {
 };
 
 const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
-  // const [modalOpen, setModalOpen] = useState(false);
-  // const [faceId, setFaceId] = useState<string>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [faceId, setFaceId] = useState<string>("");
   const { web3 } = useContext(DappContext);
-  const { rent, pmtToken } = useContext(ContractsContext);
 
-  const handleRent = useCallback(
-    async (faceId: string) => {
-      // setFaceId(tokenId);
-      const tokenId = faceId.split("::")[1];
-
-      if (!rent || !pmtToken || !R.hasPath(["dai", "approve"], pmtToken)) {
-        console.debug("rent or pmtToken or approve not available");
-        return;
-      }
-
-      // TODO: approve conditional (only approve if not approved before)
-      await pmtToken.dai.approve();
-      // TODO: set the rent duration in the front-end modal
-      await rent.rentOne(tokenId, "1");
-    },
-    [rent, pmtToken]
-  );
+  const handleClose = useCallback(() => {
+    setModalOpen(false);
+  }, []);
+  const handleRent = useCallback((faceId: string) => {
+    setModalOpen(true);
+    setFaceId(faceId);
+  }, []);
 
   const fromWei = (v?: number): string =>
     v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
   return (
     <Box>
-      {/* <RentModal
-        faceId={faceId}
-        open={lendModalOpen}
-        setOpen={setLendModalOpen}
-      /> */}
+      <RentModal faceId={faceId} open={modalOpen} handleClose={handleClose} />
       <Box className="Catalogue">
         {data &&
           data.length > 0 &&

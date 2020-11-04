@@ -1,6 +1,7 @@
 .rainbow-button {
   width: 86px;
   height: 46px !important;
+  padding: 2px;
   background-image: linear-gradient(
     90deg,
     #00c0ff 0%,
@@ -20,7 +21,7 @@
 }
 .rainbow-button:after {
   content: attr(alt);
-  width: 80px;
+  width: 86px;
   height: 40px !important;
   background-color: #191919;
   display: flex;
@@ -28,7 +29,7 @@
   justify-content: center;
 }
 .rainbow-button:hover {
-  animation: slidebg 2s linear infinite;
+  animation: slidebg 4s linear infinite;
 }
 
 @keyframes slidebg {
