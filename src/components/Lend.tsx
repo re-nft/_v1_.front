@@ -8,6 +8,7 @@ import GraphContext from "../contexts/Graph";
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
+import Switcher from "./Switcher";
 
 import { Face } from "../types";
 
@@ -47,7 +48,16 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
     <Box>
       {dataIsValid && (
         <Box>
-          <ScrollForMore />
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              height: "60px",
+            }}
+          >
+            <ScrollForMore />
+            {/* <Switcher /> */}
+          </Box>
           <LendCatalogue data={data} />
         </Box>
       )}

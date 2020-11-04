@@ -1,5 +1,6 @@
 import React, { useCallback, useContext } from "react";
 import Helmet from "react-helmet";
+import { Box } from "@material-ui/core";
 import Link from "gatsby-link";
 
 // contexts
@@ -22,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [wallet]);
 
   return (
-    <div>
+    <div style={{ marginBottom: "100px" }}>
       <Helmet title="Rent NFT" />
       <div className="Container">
         <div className="Header">
@@ -39,10 +40,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </div>
         </div>
-        <div className="Wrap">{children}</div>
-        <div className="Footer" style={{ textAlign: "center" }}>
-          ♦ See me in openverse soon... ♦
+        <div className="Wrap">
+          <Box style={{ minWidth: "1000px" }}>{children}</Box>
         </div>
+        {/* <div className="Footer" style={{ textAlign: "center" }}>
+          ♦ See me in openverse soon... ♦
+        </div> */}
       </div>
     </div>
   );

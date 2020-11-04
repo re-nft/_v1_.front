@@ -4,6 +4,8 @@ import { Box } from "@material-ui/core";
 import LendModal from "./LendModal";
 import { Face } from "../types";
 
+import Switcher from "./Switcher";
+
 type LendButtonProps = {
   handleLend: (id: string) => void;
   id: string;

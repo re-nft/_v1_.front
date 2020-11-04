@@ -11,11 +11,13 @@ import { Nft } from "../types";
 
 type RentCatalogueProps = {
   data?: Nft[];
+  iBorrow: boolean;
 };
 
 type RentButtonProps = {
   handleRent: (id: string) => Promise<void>;
   id: string;
+  iBorrow: boolean;
 };
 
 type NumericFieldProps = {
@@ -32,19 +34,19 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value }) => (
   </div>
 );
 
-const RentButton: React.FC<RentButtonProps> = ({ handleRent, id }) => {
+const RentButton: React.FC<RentButtonProps> = ({ handleRent, id, iBorrow }) => {
   const handleClick = useCallback(() => {
     handleRent(id);
   }, [handleRent, id]);
 
   return (
     <span className="Product__buy" onClick={handleClick}>
-      Rent now
+      {iBorrow ? "Return" : "Rent"} now
     </span>
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = ({ data }) => {
+const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
   // const [modalOpen, setModalOpen] = useState(false);
   // const [faceId, setFaceId] = useState<string>();
   const { web3 } = useContext(DappContext);
@@ -127,7 +129,11 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data }) => {
                     value={fromWei(nft.nftPrice)}
                   />
                   <div className="Product__details">
-                    <RentButton handleRent={handleRent} id={nft.face.id} />
+                    <RentButton
+                      handleRent={handleRent}
+                      id={nft.face.id}
+                      iBorrow={iBorrow}
+                    />
                   </div>
                 </div>
               </div>

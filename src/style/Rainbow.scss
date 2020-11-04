@@ -30,6 +30,8 @@ $root: ".c-rainbow";
   padding: 0;
   margin: 0;
 
+  width: 500px;
+
   &__layer {
     --text-color: var(--color-foreground);
     counter-increment: rainbow;
@@ -50,10 +52,8 @@ $root: ".c-rainbow";
       }
     }
 
-    &:not(:first-child) {
-      position: absolute;
-      top: 0;
-    }
+    position: absolute;
+    top: 0;
 
     &--white {
       --text-color: var(--color-white);

@@ -5,8 +5,11 @@
   "author": "Nazariy Vavryk <nazariy@inbox.ru>",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "@types/classnames": "^2.2.11",
     "@types/ramda": "^0.27.32",
+    "@types/react-helmet": "^6.1.0",
     "@types/web3": "^1.2.2",
+    "classnames": "^2.2.6",
     "dom-css": "^2.1.0",
     "dotenv": "^8.2.0",
     "gatsby": "^2.22.12",
