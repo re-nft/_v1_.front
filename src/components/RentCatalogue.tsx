@@ -18,6 +18,20 @@ type RentButtonProps = {
   id: string;
 };
 
+type NumericFieldProps = {
+  text: string;
+  value: string;
+};
+
+const NumericField: React.FC<NumericFieldProps> = ({ text, value }) => (
+  <div className="Product__details">
+    <p className="Product__text_overflow">
+      <span className="Product__label">{text}</span>
+      <span className="Product__value">{`${value} fDAI`}</span>
+    </p>
+  </div>
+);
+
 const RentButton: React.FC<RentButtonProps> = ({ handleRent, id }) => {
   const handleClick = useCallback(() => {
     handleRent(id);
@@ -94,28 +108,24 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data }) => {
                   </div>
                   <div className="Product__details">
                     <p className="Product__text_overflow">
-                      <span className="Product__label">Daily price</span>
+                      <span className="Product__label">Token id</span>
                       <span className="Product__value">
-                        {`${fromWei(nft.borrowPrice)} fDAI`}
+                        {nft.id.split("::")[1]}
                       </span>
                     </p>
                   </div>
-                  <div className="Product__details">
-                    <p className="Product__text_overflow">
-                      <span className="Product__label">Max duration</span>{" "}
-                      <span className="Product__value">{`${fromWei(
-                        nft.maxDuration
-                      )} days`}</span>
-                    </p>
-                  </div>
-                  <div className="Product__details">
-                    <p className="Product__text_overflow">
-                      <span className="Product__label">Collateral</span>
-                      <span className="Product__value">
-                        {`${fromWei(nft.nftPrice)} fDAI`}
-                      </span>
-                    </p>
-                  </div>
+                  <NumericField
+                    text="Daily price"
+                    value={fromWei(nft.borrowPrice)}
+                  />
+                  <NumericField
+                    text="Max duration"
+                    value={fromWei(nft.maxDuration)}
+                  />
+                  <NumericField
+                    text="Collateral"
+                    value={fromWei(nft.nftPrice)}
+                  />
                   <div className="Product__details">
                     <RentButton handleRent={handleRent} id={nft.face.id} />
                   </div>

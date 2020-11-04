@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Box, Modal, TextField } from "@material-ui/core";
+import { Box, Modal, TextField, Button } from "@material-ui/core";
 import {
   makeStyles,
   Theme,
@@ -10,6 +10,7 @@ import {
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
+import FunnySpinner from "./Spinner";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -106,12 +107,14 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     borrowPrice: "10",
     nftPrice: "100",
   });
+  const [isBusy, setIsBusy] = useState(false);
 
   const handleLend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (web3 == null) {
       return;
     }
+    setIsBusy(true);
     const tokenId = faceId.split("::")[1];
     await rent.lendOne(
       tokenId,
@@ -120,6 +123,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       web3.utils.toWei(Number(lendOneInputs.borrowPrice).toFixed(18), "ether"),
       web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
     );
+    setIsBusy(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,21 +216,23 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             name="nftPrice"
           />
         </Box>
+        <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
-          <div
-            role="button"
+          <button
             style={{
               border: "3px solid black",
             }}
             className="Product__button"
             onClick={face.approveOfAllFaces}
+            disabled={isBusy}
           >
             Approve all
-          </div>
+          </button>
           <button
             style={{ border: "3px solid black" }}
             className="Product__button"
             type="submit"
+            disabled={isBusy}
           >
             Lend
           </button>

@@ -9,7 +9,7 @@ import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 
-import { Face, Nft } from "../types";
+import { Face } from "../types";
 
 type LendProps = {
   hidden: boolean;
@@ -31,12 +31,12 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
       console.debug("no user data yet");
       return;
     }
-    // const currentLending = user.lending.map((item) => item.id);
-    // // TODO: O(N**2) time complexity is shit
-    // const resolvedData = user.faces.filter(
-    //   (item) => !currentLending.includes(item.id)
-    // );
-    setData(user.faces);
+    // TODO: awful time complexity here too
+    const currentLending = user.lending.map((item) =>
+      item.id.split("::").slice(0, 2).join("::")
+    );
+    // TODO: O(N**2) time complexity is shit
+    setData(user.faces.filter((item) => !currentLending.includes(item.id)));
   }, [nfts, user, wallet]);
 
   if (hidden) {
