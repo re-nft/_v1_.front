@@ -11,6 +11,7 @@ import {
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
 import FunnySpinner from "./Spinner";
+import RainbowButton from "./RainbowButton";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -228,14 +229,15 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           >
             Approve all
           </button>
-          <button
+          <RainbowButton text="Lend" />
+          {/* <button
             style={{ border: "3px solid black" }}
             className="Product__button"
             type="submit"
             disabled={isBusy}
           >
             Lend
-          </button>
+          </button> */}
         </Box>
       </form>
     </Modal>

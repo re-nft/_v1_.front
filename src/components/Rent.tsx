@@ -77,7 +77,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
               }}
             >
               <Typography>
-                {!showIBorrow ? "I borrow ->" : "<- All"} &nbsp; &nbsp;
+                {!showIBorrow ? "Borrowed ->" : "<- All"} &nbsp; &nbsp;
               </Typography>
               <Box onClick={handleShowIBorrow}>
                 <Switcher />
