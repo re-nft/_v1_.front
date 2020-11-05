@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { Box, Modal, TextField } from "@material-ui/core";
 import {
   makeStyles,
@@ -115,15 +115,27 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     if (web3 == null) {
       return;
     }
+
     setIsBusy(true);
-    const tokenId = faceId.split("::")[1];
-    await rent.lendOne(
-      tokenId,
-      // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-      web3.utils.toWei(Number(lendOneInputs.maxDuration).toFixed(18), "ether"),
-      web3.utils.toWei(Number(lendOneInputs.borrowPrice).toFixed(18), "ether"),
-      web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
-    );
+    try {
+      const tokenId = faceId.split("::")[1];
+      await rent.lendOne(
+        tokenId,
+        // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
+        web3.utils.toWei(
+          Number(lendOneInputs.maxDuration).toFixed(18),
+          "ether"
+        ),
+        web3.utils.toWei(
+          Number(lendOneInputs.borrowPrice).toFixed(18),
+          "ether"
+        ),
+        web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
+      );
+    } catch (err) {
+      console.debug("could not complete the lending");
+    }
+
     setIsBusy(false);
   };
 
@@ -148,6 +160,21 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       return false;
     }
   };
+
+  // this will ensure that spinner halts if the user rejects the txn
+  const handleApproveAll = useCallback(async () => {
+    setIsBusy(true);
+
+    try {
+      await face.approveOfAllFaces();
+    } catch (e) {
+      console.debug("could not approve all the faces");
+    }
+
+    setIsBusy(false);
+  }, [face]);
+
+  const preventDefault = (e: React.FormEvent) => e.preventDefault();
 
   return (
     <Modal
@@ -220,24 +247,18 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
           <button
+            type="button"
             style={{
               border: "3px solid black",
             }}
             className="Product__button"
-            onClick={face.approveOfAllFaces}
+            onClick={handleApproveAll}
             disabled={isBusy}
+            onSubmit={preventDefault}
           >
             Approve all
           </button>
-          <RainbowButton role="submit" text="Lend" disabled={isBusy} />
-          {/* <button
-            style={{ border: "3px solid black" }}
-            className="Product__button"
-            type="submit"
-            disabled={isBusy}
-          >
-            Lend
-          </button> */}
+          <RainbowButton type="submit" text="Lend" disabled={isBusy} />
         </Box>
       </form>
     </Modal>

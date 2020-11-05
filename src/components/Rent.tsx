@@ -60,33 +60,32 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
 
   return (
     <Box>
-      {dataIsValid && (
-        <Box>
+      <Box>
+        <Box
+          style={{
+            display: "flex",
+          }}
+        >
+          {dataIsValid && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
-              justifyContent: "space-between",
+              flexDirection: "row",
+              alignItems: "center",
+
+              marginLeft: "auto",
             }}
           >
-            <ScrollForMore />
-            <Box
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Typography>
-                {!showIBorrow ? "Borrowed ->" : "<- All"} &nbsp; &nbsp;
-              </Typography>
-              <Box onClick={handleShowIBorrow}>
-                <Switcher />
-              </Box>
+            <span style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+              {!showIBorrow ? "ALL" : "BORROWED"} &nbsp; &nbsp;
+            </span>
+            <Box onClick={handleShowIBorrow}>
+              <Switcher />
             </Box>
           </Box>
-          <RentCatalogue data={data} iBorrow={showIBorrow} />
         </Box>
-      )}
+        <RentCatalogue data={data} iBorrow={showIBorrow} />
+      </Box>
       {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );

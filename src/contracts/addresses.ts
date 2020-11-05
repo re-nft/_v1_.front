@@ -1,9 +1,8 @@
 export const addresses = {
   goerli: {
-    dai: "0x48B1F93834f39545dAE5EaA29444193C1A5e3Fb3",
-    // migrations: "0x8C8585E4bcb9Bcd953456862bA8765b88AC4Ad0B",
-    face: "0x5fE2295545327dbcBCf63507B4F4145e3FC9D1b1",
-    resolver: "0x01BC5B712Fa3A6bbB3F573c43697ba98FfE9E746",
-    rent: "0x3c65a17c379B3DA6157066c8EB4D4b9e0bbD88d3",
+    dai: "0x5d64dab0fbe6f5e86b3b49573ced9c259681311e",
+    face: "0xF9F4F210D2A1A751295F4Fd06cBb8e6ad4574bf0",
+    resolver: "0x9d99743798D13fc172B107ecEEb40Aa341679bB3",
+    rent: "0xB4e90832b88b09ee1b6451862198d2BeBBC0630e",
   },
 };
