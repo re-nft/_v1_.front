@@ -51,23 +51,28 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+// TODO: this is a copy of what we have in RentModal
 const CssTextField = withStyles({
   root: {
     "& label": {
       color: "white",
+      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
     },
     "& input": {
-      color: "white",
+      color: "teal",
+      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
+      fontWeight: "1000",
     },
     "& label.Mui-focused": {
-      color: "pink",
+      color: "white",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "green",
+      borderBottomColor: "white",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        borderColor: "yellow",
+        borderColor: "black",
+        border: "2px solid black",
       },
       "&:hover fieldset": {
         borderColor: "white",
@@ -136,7 +141,10 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       console.debug("could not complete the lending");
     }
 
+    // ! grab that image and set display to hidden here
+    // show green check mark somewhere too
     setIsBusy(false);
+    setOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,14 +182,16 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(false);
   }, [face]);
 
+  const handleClose = useCallback(() => setOpen(false), [setOpen]);
+
   const preventDefault = (e: React.FormEvent) => e.preventDefault();
 
   return (
     <Modal
       open={open}
-      onClose={() => setOpen(false)}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
+      onClose={handleClose}
+      aria-labelledby="lending-nft-details"
+      aria-describedby="provide information regarding your desired maximum rent duration, the collateral price and daily borrow price"
       className={classes.swanky}
     >
       <form

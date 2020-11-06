@@ -37,7 +37,11 @@ const RentButton: React.FC<RentButtonProps> = ({ handleRent, id, iBorrow }) => {
   }, [handleRent, id]);
 
   return (
-    <span className="Product__buy" onClick={handleClick}>
+    <span
+      className="Product__buy"
+      onClick={handleClick}
+      style={{ marginTop: "8px" }}
+    >
       {iBorrow ? "Return" : "Rent"} now
     </span>
   );

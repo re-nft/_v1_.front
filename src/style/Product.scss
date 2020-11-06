@@ -58,6 +58,7 @@
 .Product__label {
   font-weight: bold;
   padding-right: 20px;
+  float: left;
 }
 
 .Product__value {
@@ -71,6 +72,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+  text-align: right;
 }
 
 .Product__buy {
@@ -82,6 +84,7 @@
   color: white;
   position: relative;
   font-weight: bold;
+  border: 3px solid black;
 
   &:hover {
     text-decoration: underline;
