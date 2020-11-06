@@ -22,7 +22,6 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     padding: "32px",
-    width: "60%",
     // matches direct div children of inputs
     "& > div": {
       marginBottom: "16px",
@@ -144,6 +143,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         autoComplete="off"
         onSubmit={handleLend}
         className={classes.form}
+        style={{ padding: "32px" }}
       >
         <Box className={classes.inputs}>
           <CssTextField

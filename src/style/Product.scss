@@ -1,7 +1,6 @@
 .Product {
   text-decoration: none;
   color: black;
-  cursor: pointer;
 }
 
 .Product__image {
@@ -11,6 +10,7 @@
   position: relative;
   margin-bottom: 25px;
   box-shadow: 9px 9px black;
+  cursor: pointer;
 
   img {
     width: 100%;
@@ -53,6 +53,7 @@
   align-items: center;
   align-content: space-between;
   justify-content: space-between;
+  cursor: default;
 }
 
 .Product__label {

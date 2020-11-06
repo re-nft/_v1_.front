@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box } from "@material-ui/core";
 import * as R from "ramda";
 
@@ -10,34 +10,13 @@ import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    swanky: {
-      width: "600px",
-      backgroundColor: "#663399",
-      margin: "auto",
-      border: "3px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-      color: "white",
-      textAlign: "center",
-      top: "30% !important",
-      left: "35% !important",
-      right: "unset !important",
-      bottom: "unset !important",
-    },
-    form: {
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-evenly",
-    },
     inputs: {
       display: "flex",
       flexDirection: "column",
       padding: "32px",
-      width: "60%",
-      // matches direct div children
+      // matches direct div children of inputs
       "& > div": {
         marginBottom: "16px",
       },
@@ -55,13 +34,22 @@ type RentModalProps = {
   faceId: string;
   open: boolean;
   handleClose: () => void;
+  borrowPrice: number;
+  nftPrice: number;
 };
 
-const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
+const RentModal: React.FC<RentModalProps> = ({
+  faceId,
+  open,
+  handleClose,
+  borrowPrice,
+  nftPrice,
+}) => {
   const classes = useStyles();
   const { rent, pmtToken } = useContext(ContractsContext);
   const [duration, setDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
+  const [totalRent, setTotalRent] = useState(0);
   const [inputsValid, setInputsValid] = useState(false);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,9 +57,15 @@ const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
     try {
       Number(e.target.value);
       setInputsValid(true);
+      setTotalRent(Number(e.target.value) * borrowPrice);
     } catch (err) {
       setInputsValid(false);
       console.debug("could not convert rent duration to number");
+      setTotalRent(0);
+    }
+    if (e.target.value.includes(".")) {
+      setInputsValid(false);
+      setTotalRent(0);
     }
     setDuration(e.target.value);
   }, []);
@@ -102,13 +96,9 @@ const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
   );
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-    >
-      <Box>
+    <Modal open={open} onClose={handleClose}>
+      <Box style={{ padding: "32px" }}>
+        {busy && <FunnySpinner />}
         <Box className={classes.inputs}>
           <CssTextField
             required
@@ -118,36 +108,52 @@ const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
             type="number"
             name="rentDuration"
             value={duration}
+            error={inputsValid}
+            helperText={"Must be a natural number e.g. 1, 2, 3"}
             onChange={handleChange}
           />
-        </Box>
-        {busy && <FunnySpinner />}
-        <Box className={classes.buttons} style={{ paddingBottom: "16px" }}>
-          <RainbowButton type="submit" text="Lend" disabled={busy} />
-        </Box>
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "50%",
-            minWidth: "200px",
-          }}
-        >
           <TextField
             id="standard-basic"
-            label="Daily rent price is..."
+            label={`Daily rent price: ${borrowPrice}`}
             disabled
           />
           <TextField
             id="standard-basic"
-            label="You will pay xxx upfront for the rent"
+            label={`Rent: ${borrowPrice} x ${
+              !duration ? "👾" : duration
+            } days = ${
+              totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
+            }`}
             disabled
           />
+          <TextField
+            id="standard-basic"
+            label={`Collateral: ${nftPrice}`}
+            disabled
+          />
+          <Box
+            className={classes.buttons}
+            style={{ paddingBottom: "16px" }}
+          ></Box>
           <Box>
-            You must return the NFT by xxx, or you will lose the collateral xxx
+            <p>
+              {`You must return the NFT by xxx, or you will lose the collateral`}
+            </p>
           </Box>
         </Box>
-        <Box>Confirm (this triggers the form)</Box>
+
+        <Box className={classes.buttons}>
+          <button
+            type="button"
+            style={{
+              border: "3px solid black",
+            }}
+            className="Product__button"
+          >
+            Approve fDAI
+          </button>
+          <RainbowButton type="submit" text="Rent" disabled={busy} />
+        </Box>
       </Box>
     </Modal>
   );

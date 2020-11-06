@@ -12,9 +12,11 @@ type RentCatalogueProps = {
 };
 
 type RentButtonProps = {
-  handleRent: (id: string) => void;
+  handleRent: (id: string, nftPrice: number, borrowPrice: number) => void;
   id: string;
   iBorrow: boolean;
+  nftPrice: number;
+  borrowPrice: number;
 };
 
 type NumericFieldProps = {
@@ -31,10 +33,16 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value }) => (
   </div>
 );
 
-const RentButton: React.FC<RentButtonProps> = ({ handleRent, id, iBorrow }) => {
+const RentButton: React.FC<RentButtonProps> = ({
+  handleRent,
+  id,
+  iBorrow,
+  nftPrice,
+  borrowPrice,
+}) => {
   const handleClick = useCallback(() => {
-    handleRent(id);
-  }, [handleRent, id]);
+    handleRent(id, nftPrice, borrowPrice);
+  }, [handleRent, id, nftPrice, borrowPrice]);
 
   return (
     <span
@@ -50,22 +58,35 @@ const RentButton: React.FC<RentButtonProps> = ({ handleRent, id, iBorrow }) => {
 const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState<string>("");
+  const [borrowPrice, setBorrowPrice] = useState<number>(0);
+  const [nftPrice, setNftPrice] = useState<number>(0);
   const { web3 } = useContext(DappContext);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, []);
-  const handleRent = useCallback((faceId: string) => {
-    setModalOpen(true);
-    setFaceId(faceId);
-  }, []);
+  const handleRent = useCallback(
+    (faceId: string, nftPrice: number, borrowPrice: number) => {
+      setModalOpen(true);
+      setFaceId(faceId);
+      setBorrowPrice(borrowPrice);
+      setNftPrice(nftPrice);
+    },
+    []
+  );
 
   const fromWei = (v?: number): string =>
     v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
   return (
     <Box>
-      <RentModal faceId={faceId} open={modalOpen} handleClose={handleClose} />
+      <RentModal
+        faceId={faceId}
+        open={modalOpen}
+        handleClose={handleClose}
+        borrowPrice={borrowPrice}
+        nftPrice={nftPrice}
+      />
       <Box className="Catalogue">
         {data &&
           data.length > 0 &&
@@ -118,6 +139,8 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                     <RentButton
                       handleRent={handleRent}
                       id={nft.face.id}
+                      borrowPrice={Number(fromWei(nft.borrowPrice))}
+                      nftPrice={Number(fromWei(nft.nftPrice))}
                       iBorrow={iBorrow}
                     />
                   </div>

@@ -1,10 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Box } from "@material-ui/core";
 
 import LendModal from "./LendModal";
 import { Face } from "../types";
-
-import Switcher from "./Switcher";
 
 type LendButtonProps = {
   handleLend: (id: string) => void;
@@ -30,8 +28,11 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
 };
 
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
+  console.log(data);
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState("");
+  const [nftAddress, setNftAddress] = useState("");
+  const [nftTokenId, setNftTokenId] = useState("");
   const handleLend = useCallback(
     (id) => {
       setModalOpen(true);
@@ -39,6 +40,16 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
     },
     [setModalOpen, setFaceId]
   );
+  // useEffect(() => {
+  //   const addrAndId = faceId.split("::");
+  //   console.log(addrAndId)
+  //   if (addrAndId.length !== 2) {
+  //     console.debug("incorrect faceID");
+  //     return;
+  //   }
+  //   setNftAddress(addrAndId[0]);
+  //   setNftTokenId(addrAndId[1]);
+  // }, [faceId])
 
   return (
     <Box>
@@ -46,8 +57,19 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
       <Box className="Catalogue">
         {data &&
           data.length > 0 &&
-          data.map((face) =>
-            face ? (
+          data.map((face) => {
+            if (!face) {
+              return <></>;
+            }
+
+            const parts = face.id.split("::");
+            let [addr, id] = ["", ""];
+            if (parts.length === 2) {
+              addr = parts[0];
+              id = parts[1];
+            }
+
+            return (
               <div className="Catalogue__item" key={face.id}>
                 <div
                   className="Product"
@@ -59,15 +81,35 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
                       <img alt="nft" src={face.uri} />
                     </a>
                   </div>
+
                   <div className="Product__details">
+                    <p className="Product__text_overflow">
+                      <a
+                        href={`https://goerli.etherscan.io/address/${addr}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ textDecoration: "none", color: "black" }}
+                      >
+                        {addr}
+                      </a>
+                    </p>
+                  </div>
+                  <div className="Product__details">
+                    <p className="Product__text_overflow">
+                      <span className="Product__label">Token id</span>
+                      <span className="Product__value">{id}</span>
+                    </p>
+                  </div>
+                  <div
+                    className="Product__details"
+                    style={{ marginTop: "8px" }}
+                  >
                     <LendButton id={face.id} handleLend={handleLend} />
                   </div>
                 </div>
               </div>
-            ) : (
-              <></>
-            )
-          )}
+            );
+          })}
       </Box>
     </Box>
   );

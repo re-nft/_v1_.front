@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import Modal from "@material-ui/core/Modal";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
 import GanFacesContext, { GanFaceStages } from "../contexts/GanFaces";
 
 import FunnySpinner from "./Spinner";
+import Modal from "./Modal";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,9 +39,8 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
     <Modal
       open={open}
       onClose={handleClose}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-      className={classes.swanky}
+      aria-labelledby="generating GAN face"
+      aria-describedby="to play around with the website we have given you the ability to generate an NFT"
     >
       <div
         style={{
