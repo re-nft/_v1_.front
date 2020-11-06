@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 
 import DappContext from "../contexts/Dapp";
 import GraphContext from "../contexts/Graph";

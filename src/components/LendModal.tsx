@@ -1,88 +1,40 @@
 import React, { useContext, useState, useCallback } from "react";
-import { Box, Modal, TextField } from "@material-ui/core";
-import {
-  makeStyles,
-  Theme,
-  createStyles,
-  withStyles,
-} from "@material-ui/core/styles";
+import { Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    swanky: {
-      width: 600,
-      height: 440,
-      backgroundColor: "#663399",
-      margin: "auto",
-      border: "3px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-      color: "white",
-      textAlign: "center",
-    },
-    form: {
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-evenly",
-    },
-    inputs: {
-      display: "flex",
-      flexDirection: "column",
-      padding: "32px",
-      width: "60%",
-      // matches direct div children
-      "& > div": {
-        marginBottom: "16px",
-      },
-      margin: "0 auto",
-    },
-    buttons: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-    },
-  })
-);
+import Modal from "./Modal";
+import CssTextField from "./CssTextField";
 
 // TODO: this is a copy of what we have in RentModal
-const CssTextField = withStyles({
-  root: {
-    "& label": {
-      color: "white",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
-    },
-    "& input": {
-      color: "teal",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
-      fontWeight: "1000",
-    },
-    "& label.Mui-focused": {
-      color: "white",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "white",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "black",
-        border: "2px solid black",
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
-    },
+const useStyles = makeStyles({
+  form: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-evenly",
   },
-})(TextField);
+  inputs: {
+    display: "flex",
+    flexDirection: "column",
+    padding: "32px",
+    width: "60%",
+    // matches direct div children of inputs
+    "& > div": {
+      marginBottom: "16px",
+    },
+    margin: "0 auto",
+  },
+  buttons: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+});
 
 enum lendOneInput {
   maxDuration,
@@ -104,7 +56,6 @@ type LendModalProps = {
 
 const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const classes = useStyles();
-
   const { rent, face } = useContext(ContractsContext);
   const { web3 } = useContext(DappContext);
 
@@ -187,13 +138,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const preventDefault = (e: React.FormEvent) => e.preventDefault();
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="lending-nft-details"
-      aria-describedby="provide information regarding your desired maximum rent duration, the collateral price and daily borrow price"
-      className={classes.swanky}
-    >
+    <Modal open={open} onClose={handleClose}>
       <form
         noValidate
         autoComplete="off"

@@ -1,55 +1,19 @@
 import React, { useCallback, useState, useContext } from "react";
-import {
-  makeStyles,
-  Theme,
-  createStyles,
-  withStyles,
-} from "@material-ui/core/styles";
-import { TextField, Box, Modal } from "@material-ui/core";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { TextField, Box } from "@material-ui/core";
 import * as R from "ramda";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
-
-const CssTextField = withStyles({
-  root: {
-    "& label": {
-      color: "white",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
-    },
-    "& input": {
-      color: "teal",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
-      fontWeight: "1000",
-    },
-    "& label.Mui-focused": {
-      color: "white",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "white",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "black",
-        border: "2px solid black",
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
-    },
-  },
-})(TextField);
+import CssTextField from "./CssTextField";
+import Modal from "./Modal";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     swanky: {
       width: "600px",
-      height: "240px",
       backgroundColor: "#663399",
       margin: "auto",
       border: "3px solid #000",
@@ -57,6 +21,10 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2, 4, 3),
       color: "white",
       textAlign: "center",
+      top: "30% !important",
+      left: "35% !important",
+      right: "unset !important",
+      bottom: "unset !important",
     },
     form: {
       height: "100%",
@@ -139,7 +107,6 @@ const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
       onClose={handleClose}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
-      className={classes.swanky}
     >
       <Box>
         <Box className={classes.inputs}>
@@ -158,9 +125,27 @@ const RentModal: React.FC<RentModalProps> = ({ faceId, open, handleClose }) => {
         <Box className={classes.buttons} style={{ paddingBottom: "16px" }}>
           <RainbowButton type="submit" text="Lend" disabled={busy} />
         </Box>
-        <Box>
-          Daily rent price is: ... You will pay DAI xxx to aaa for rent You must
-          return the NFT by: ...
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "50%",
+            minWidth: "200px",
+          }}
+        >
+          <TextField
+            id="standard-basic"
+            label="Daily rent price is..."
+            disabled
+          />
+          <TextField
+            id="standard-basic"
+            label="You will pay xxx upfront for the rent"
+            disabled
+          />
+          <Box>
+            You must return the NFT by xxx, or you will lose the collateral xxx
+          </Box>
         </Box>
         <Box>Confirm (this triggers the form)</Box>
       </Box>
