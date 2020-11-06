@@ -4,38 +4,25 @@
 
 ## TODOs
 
-1. Store fetched NFTs in context to avoid constant API pinging
-2. Don't give face when loading
-3. Don't let generating too many per day (cache)
-4. Button to refresh the faces (pulls all the faces again)
-5. Don't show the faces with no face
-6. Better UX / UI when minting. Say it is minting. What if it fails to mint? Show Try again
-7. Approve once and for all button
-8. Don't let them get face when minting or getting a face
-9. (Optional) like minting NFTs in Gitcoin, give animation here
-10. Do not show / fetch all the faces. Someone may have too many NFTs, do the background fetches and store in state and load as they press "Load More" / scroll down
-11. Do not show the lent out ones in the lend tab (only show the ones you can lend)
-12. Do not show the borrowed ones in the rent tab (only show the ones you can borrow)
-13. Only let approve all, if hasn't approved all before
-14. (Optional) let approve individual ones
-15. Show the maxDuration, borrowPrice, nftPrice on the UI
-16. Do not show the faces that do not have a valid uri
-17. Show the faces in the most recent minted order
-18. Add a button to refresh the faces
-19. UI for fetching faces (show they are loading)
-20. (Optional) cache faces for user sessions
-21. (Optional) authenticate users with their crypto wallet signature
-22. Better Lend one UI
-23. Fix the production build scrollbar issue
-24. ! Make it responsive
-25. Can you make it mobile / non-crypto friendly?
-26. (Optional) If GAN faces are in mainnet, add them to backlog for future batch mint
-27. When clicking on a picture, open the IPFS picture
-28. Add another tab to remove the lent out NFTs from the platform
-29. Move to ethers.js before it is too late
-30. Add tooltip in the rent screen (for when the price is too low, show what it actually is)
-31. Add payment token faucet for testnet people
-32. upgrades persist the existing NFTs (thegraph)
-33. forbid lending the rented out NFT for now
-34. Add currently borrowing tab
-35. Add currently lending tab (so that you can return)
+1 - most important
+5 - least important
+
+1. [1] Sometimes IPFS does not give all the faces (503 error) and we are left with some unloaded ones. Also, show the skeleton when image is loading (ask Naz)
+2. [2] Don't let generating too many per day (browser cache solution is better than state, but still not great; we can assign credits per account, and they can only generate if they have credits; like loopbomb)
+3. [3] Don't show the NFTs that do not have an image
+4. [1] Generalise to work with ANY NFT
+5. [1] Better UX / UI when minting. Say it is minting. What if it fails to mint? Show Try again
+6. [2] Approve once and for all button show it only if the user hasn't approved before
+7. [5] like minting NFTs in Gitcoin, give animation here
+8. Do not show / fetch all the faces. Someone may have too many NFTs, do the background fetches and store in state and load as they press "Load More" / scroll down
+9. [1] let approve individual ones
+10. [5] authenticate users with their crypto wallet signature (can't remember why we need this)
+11. [1] Make it responsive
+12. [4] Can you make it mobile / non-crypto friendly?
+13. [5] If GAN faces are in mainnet, add them to backlog for future batch mint
+14. [1] Ability to take the NFT back into your posession (remove it from platform). I am thinking a "x" cross somewhere on the NFT
+15. [3] Move to ethers.js before it is too late
+16. [1] Add tooltip in the rent screen (for when the price is too low or too high, show what it actually is). Also add text overflow ellipsis if the price is too long
+17. [1] support different stablecoins on the fe. There is no way to specify this right now
+18. [4] Add payment token faucet for testnet people
+19. [3] Upgrades persist the existing NFTs (thegraph. When we redeploy the graph, we must repoint it to the new rent and face addresses, this wipes clean all the previous faces
