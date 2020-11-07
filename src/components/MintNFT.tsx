@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
 
 // contexts
 import GanFacesContext, { GanFaceStages } from "../contexts/GanFaces";
@@ -7,30 +6,12 @@ import GanFacesContext, { GanFaceStages } from "../contexts/GanFaces";
 import FunnySpinner from "./Spinner";
 import Modal from "./Modal";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    swanky: {
-      flex: "0",
-      width: 600,
-      height: 650,
-      backgroundColor: "#663399",
-      margin: "auto",
-      border: "3px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-      color: "white",
-      textAlign: "center",
-    },
-  })
-);
-
 type MintNftProps = {
   open: boolean;
   handleClose: () => void;
 };
 
 const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
-  const classes = useStyles();
   const { getFace, mintFace, numFacesGenerated, stages } = useContext(
     GanFacesContext
   );
@@ -48,12 +29,21 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           flexDirection: "column",
           alignContent: "space-between",
           height: "100%",
+          padding: "32px",
         }}
       >
-        <div>|-: Generate your GAN face :-|</div>
+        <div
+          style={{
+            fontFamily: "Righteous",
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
+        >
+          |-: Generate your GAN face :-|
+        </div>
         <div
           className="Product__image"
-          style={{ maxWidth: "80%", maxHeight: "80%", margin: "32px auto" }}
+          style={{ maxWidth: "90%", maxHeight: "90%", margin: "32px auto" }}
         >
           <img
             id="face"

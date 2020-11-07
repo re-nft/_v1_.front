@@ -91,7 +91,6 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       console.debug("could not complete the lending");
     }
 
-    // ! grab that image and set display to hidden here
     // show green check mark somewhere too
     setIsBusy(false);
     setOpen(false);
@@ -163,6 +162,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             }
             onChange={handleChange}
             name="maxDuration"
+            disabled={isBusy}
           />
           <CssTextField
             required
@@ -181,6 +181,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             }
             onChange={handleChange}
             name="borrowPrice"
+            disabled={isBusy}
           />
           <CssTextField
             required
@@ -197,6 +198,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             }
             onChange={handleChange}
             name="nftPrice"
+            disabled={isBusy}
           />
         </Box>
         <Box>{isBusy && <FunnySpinner />}</Box>

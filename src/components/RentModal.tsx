@@ -52,23 +52,26 @@ const RentModal: React.FC<RentModalProps> = ({
   const [totalRent, setTotalRent] = useState(0);
   const [inputsValid, setInputsValid] = useState(false);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist();
-    try {
-      Number(e.target.value);
-      setInputsValid(true);
-      setTotalRent(Number(e.target.value) * borrowPrice);
-    } catch (err) {
-      setInputsValid(false);
-      console.debug("could not convert rent duration to number");
-      setTotalRent(0);
-    }
-    if (e.target.value.includes(".")) {
-      setInputsValid(false);
-      setTotalRent(0);
-    }
-    setDuration(e.target.value);
-  }, []);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.persist();
+      try {
+        Number(e.target.value);
+        setInputsValid(true);
+        setTotalRent(Number(e.target.value) * borrowPrice);
+      } catch (err) {
+        setInputsValid(false);
+        console.debug("could not convert rent duration to number");
+        setTotalRent(0);
+      }
+      if (e.target.value.includes(".")) {
+        setInputsValid(false);
+        setTotalRent(0);
+      }
+      setDuration(e.target.value);
+    },
+    [borrowPrice]
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -109,7 +112,9 @@ const RentModal: React.FC<RentModalProps> = ({
             name="rentDuration"
             value={duration}
             error={inputsValid}
-            helperText={"Must be a natural number e.g. 1, 2, 3"}
+            helperText={
+              !inputsValid ? "Must be a natural number e.g. 1, 2, 3" : ""
+            }
             onChange={handleChange}
           />
           <TextField

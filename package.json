@@ -5,6 +5,7 @@
   "author": "Nazariy Vavryk <nazariy@inbox.ru>",
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/classnames": "^2.2.11",
     "@types/ramda": "^0.27.32",
     "@types/react-helmet": "^6.1.0",

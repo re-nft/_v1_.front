@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
+import Skeleton from "@material-ui/lab/Skeleton";
 
 import LendModal from "./LendModal";
 import { Face } from "../types";
@@ -59,7 +60,14 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
           data.length > 0 &&
           data.map((face) => {
             if (!face) {
-              return <></>;
+              return (
+                <Skeleton
+                  animation="wave"
+                  variant="rect"
+                  width="219"
+                  height="219"
+                />
+              );
             }
 
             const parts = face.id.split("::");

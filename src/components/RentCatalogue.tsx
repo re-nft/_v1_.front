@@ -22,13 +22,14 @@ type RentButtonProps = {
 type NumericFieldProps = {
   text: string;
   value: string;
+  unit: string;
 };
 
-const NumericField: React.FC<NumericFieldProps> = ({ text, value }) => (
+const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   <div className="Product__details">
     <p className="Product__text_overflow">
       <span className="Product__label">{text}</span>
-      <span className="Product__value">{`${value} fDAI`}</span>
+      <span className="Product__value">{`${value} ${unit}`}</span>
     </p>
   </div>
 );
@@ -126,14 +127,17 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                   <NumericField
                     text="Daily price"
                     value={fromWei(nft.borrowPrice)}
+                    unit="fDAI"
                   />
                   <NumericField
                     text="Max duration"
                     value={fromWei(nft.maxDuration)}
+                    unit="days"
                   />
                   <NumericField
                     text="Collateral"
                     value={fromWei(nft.nftPrice)}
+                    unit="fDAI"
                   />
                   <div className="Product__details">
                     <RentButton
