@@ -99,7 +99,7 @@ const RentModal: React.FC<RentModalProps> = ({
   );
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} handleClose={handleClose}>
       <Box style={{ padding: "32px" }}>
         {busy && <FunnySpinner />}
         <Box className={classes.inputs}>

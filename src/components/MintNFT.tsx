@@ -19,7 +19,7 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      handleClose={handleClose}
       aria-labelledby="generating GAN face"
       aria-describedby="to play around with the website we have given you the ability to generate an NFT"
     >

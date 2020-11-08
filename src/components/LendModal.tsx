@@ -136,7 +136,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const preventDefault = (e: React.FormEvent) => e.preventDefault();
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} handleClose={handleClose}>
       <form
         noValidate
         autoComplete="off"

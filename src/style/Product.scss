@@ -10,7 +10,7 @@
   position: relative;
   margin-bottom: 25px;
   box-shadow: 9px 9px black;
-  cursor: pointer;
+  cursor: auto;
 
   img {
     width: 100%;
@@ -130,6 +130,10 @@
     background-color: #555;
     text-decoration: none;
     color: white;
+  }
+
+  &:hover:disabled {
+    cursor: auto;
   }
 }
 
