@@ -43,7 +43,6 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
       >
         <div
           style={{
-            fontFamily: "Righteous",
             fontSize: "20px",
             fontWeight: "bold",
             textAlign: "center",
