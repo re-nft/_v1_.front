@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { Box } from "@material-ui/core";
+import { Box, Tooltip } from "@material-ui/core";
 
 // contexts
 import DappContext from "../contexts/Dapp";
@@ -31,9 +31,11 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   <div className="Product__details">
     <p className="Product__text_overflow">
       <span className="Product__label">{text}</span>
-      <span className="Product__value">{`${unit} ${Number(value).toFixed(
-        2
-      )}`}</span>
+      <Tooltip title={value}>
+        <span className="Product__value">{`${unit} ${Number(value).toFixed(
+          2
+        )}`}</span>
+      </Tooltip>
     </p>
   </div>
 );
