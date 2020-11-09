@@ -81,7 +81,7 @@ const App: React.FC = () => {
           setTab={setActiveTab}
           isFocused={activeTab === Tabs.STATS}
           thisTab={Tabs.STATS}
-          buttonName="I"
+          buttonName="Stats"
         />
         <Tab
           setTab={setActiveTab}
