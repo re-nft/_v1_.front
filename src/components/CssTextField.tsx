@@ -5,11 +5,9 @@ const CssTextField = withStyles({
   root: {
     "& label": {
       color: "white",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
     },
     "& input": {
       color: "teal",
-      fontFamily: "Righteous, consolas, Menlo, monospace, sans-serif",
       fontWeight: "1000",
     },
     "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
