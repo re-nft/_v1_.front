@@ -46,17 +46,6 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
         {data &&
           data.length > 0 &&
           data.map((face) => {
-            if (!face) {
-              return (
-                <Skeleton
-                  animation="wave"
-                  variant="rect"
-                  width="219"
-                  height="219"
-                />
-              );
-            }
-
             const parts = face.id.split("::");
             let [addr, id] = ["", ""];
             if (parts.length === 2) {
@@ -73,7 +62,16 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
                 >
                   <div className="Product__image">
                     <a href={face.uri}>
-                      <img alt="nft" src={face.uri} />
+                      {face.uri ? (
+                        <img alt="nft" src={face.uri} />
+                      ) : (
+                        <Skeleton
+                          animation="wave"
+                          variant="rect"
+                          width="219"
+                          height="219"
+                        />
+                      )}
                     </a>
                   </div>
 
