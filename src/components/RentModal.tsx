@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useContext, useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { TextField, Box } from "@material-ui/core";
+import { TextField, Box, withStyles } from "@material-ui/core";
 import * as R from "ramda";
 
 // contexts
@@ -29,6 +29,14 @@ const useStyles = makeStyles(() =>
     },
   })
 );
+
+const LegibleTextField = withStyles({
+  root: {
+    "& .MuiFormLabel-root.Mui-disabled": {
+      color: "white",
+    },
+  },
+})(TextField);
 
 type RentModalProps = {
   faceId: string;
@@ -121,12 +129,12 @@ const RentModal: React.FC<RentModalProps> = ({
             }
             onChange={handleChange}
           />
-          <TextField
+          <LegibleTextField
             id="standard-basic"
             label={`Daily rent price: ${borrowPrice}`}
             disabled
           />
-          <TextField
+          <LegibleTextField
             id="standard-basic"
             label={`Rent: ${borrowPrice} x ${
               !duration ? "👾" : duration
@@ -135,7 +143,7 @@ const RentModal: React.FC<RentModalProps> = ({
             }`}
             disabled
           />
-          <TextField
+          <LegibleTextField
             id="standard-basic"
             label={`Collateral: ${nftPrice}`}
             disabled
