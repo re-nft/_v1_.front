@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useMemo } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { addresses } from "../contracts";
@@ -42,10 +42,15 @@ enum lendOneInput {
   nftPrice,
 }
 
+type ValueValid = {
+  value: string;
+  valid: boolean;
+};
+
 type LendOneInputs = {
-  maxDuration: string;
-  borrowPrice: string;
-  nftPrice: string;
+  maxDuration: ValueValid;
+  borrowPrice: ValueValid;
+  nftPrice: ValueValid;
 };
 
 type LendModalProps = {
@@ -60,10 +65,20 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const { web3 } = useContext(DappContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
-    maxDuration: "7",
-    borrowPrice: "10",
-    nftPrice: "100",
+    maxDuration: {
+      value: "7",
+      valid: true,
+    },
+    borrowPrice: {
+      value: "10",
+      valid: true,
+    },
+    nftPrice: {
+      value: "100",
+      valid: true,
+    },
   });
+
   const [isBusy, setIsBusy] = useState(false);
 
   const handleLend = async (e: React.FormEvent) => {
@@ -84,14 +99,17 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         tokenId,
         // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
         web3.utils.toWei(
-          Number(lendOneInputs.maxDuration).toFixed(18),
+          Number(lendOneInputs.maxDuration.value).toFixed(18),
           "ether"
         ),
         web3.utils.toWei(
-          Number(lendOneInputs.borrowPrice).toFixed(18),
+          Number(lendOneInputs.borrowPrice.value).toFixed(18),
           "ether"
         ),
-        web3.utils.toWei(Number(lendOneInputs.nftPrice).toFixed(18), "ether")
+        web3.utils.toWei(
+          Number(lendOneInputs.nftPrice.value).toFixed(18),
+          "ether"
+        )
       );
     } catch (err) {
       console.debug("could not complete the lending");
@@ -105,24 +123,39 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
     e.persist();
+
+    let valid = true;
+    if (e.target.name === "maxDuration") {
+      valid = checkMaxDuration(e.target.value);
+    } else if (
+      e.target.name === "borrowPrice" ||
+      e.target.name === "nftPrice"
+    ) {
+      valid = checkPrice(e.target.value);
+    }
+
     // ! if setting the state based on the previous state values, you should use a function
     setLendOneInputs((lendOneInputs) => ({
       ...lendOneInputs,
-      [e.target.name]: e.target.value,
+      [e.target.name]: {
+        value: e.target.value,
+        valid,
+      },
     }));
   };
 
-  const isValid = (n: string, t: lendOneInput) => {
-    if (t === lendOneInput.maxDuration) {
-      // must be an integer
-      return !n.includes(".") && Number(n) > 0;
-    } else if (t === lendOneInput.borrowPrice || t === lendOneInput.nftPrice) {
-      return Number(n) >= 0;
-    } else {
-      console.debug("exhaustive check failed");
-      return false;
-    }
+  const checkPrice = (n: string) => {
+    console.error(n);
+    return n !== "" && Number(n) >= 0;
   };
+
+  const checkMaxDuration = (n: string) => {
+    return !n.includes(".") && checkPrice(n);
+  };
+
+  const allValid = useMemo(() => {
+    return Object.values(lendOneInputs).every((item) => item.valid);
+  }, [lendOneInputs]);
 
   // this will ensure that spinner halts if the user rejects the txn
   const handleApproveAll = useCallback(async () => {
@@ -153,18 +186,14 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         <Box className={classes.inputs}>
           <CssTextField
             required
-            error={
-              !isValid(lendOneInputs.maxDuration, lendOneInput.maxDuration)
-            }
+            error={!lendOneInputs.maxDuration.valid}
             label="Max lend duration"
             id="maxDuration"
             variant="outlined"
-            value={lendOneInputs.maxDuration}
+            value={lendOneInputs.maxDuration.value}
             type="number"
             helperText={
-              !isValid(lendOneInputs.maxDuration, lendOneInput.maxDuration)
-                ? "Must be a natural number"
-                : ""
+              !lendOneInputs.maxDuration.valid ? "Must be a natural number" : ""
             }
             onChange={handleChange}
             name="maxDuration"
@@ -172,16 +201,14 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           />
           <CssTextField
             required
-            error={
-              !isValid(lendOneInputs.borrowPrice, lendOneInput.borrowPrice)
-            }
+            error={!lendOneInputs.borrowPrice.valid}
             label="Borrow Price"
             id="borrowPrice"
             variant="outlined"
-            value={lendOneInputs.borrowPrice}
+            value={lendOneInputs.borrowPrice.value}
             type="number"
             helperText={
-              !isValid(lendOneInputs.borrowPrice, lendOneInput.borrowPrice)
+              !lendOneInputs.borrowPrice.valid
                 ? "Must be a zero or a positive decimal"
                 : ""
             }
@@ -191,14 +218,14 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           />
           <CssTextField
             required
-            error={!isValid(lendOneInputs.nftPrice, lendOneInput.nftPrice)}
+            error={!lendOneInputs.nftPrice.valid}
             label="Collateral"
             id="nftPrice"
             variant="outlined"
-            value={lendOneInputs.nftPrice}
+            value={lendOneInputs.nftPrice.value}
             type="number"
             helperText={
-              !isValid(lendOneInputs.nftPrice, lendOneInput.nftPrice)
+              !lendOneInputs.nftPrice.valid
                 ? "Must be a zero or a positive decimal"
                 : ""
             }
@@ -221,7 +248,11 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           >
             Approve all
           </button>
-          <RainbowButton type="submit" text="Lend" disabled={isBusy} />
+          <RainbowButton
+            type="submit"
+            text="Lend"
+            disabled={isBusy || !allValid}
+          />
         </Box>
       </form>
     </Modal>
