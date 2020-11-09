@@ -145,7 +145,6 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   };
 
   const checkPrice = (n: string) => {
-    console.error(n);
     return n !== "" && Number(n) >= 0;
   };
 
