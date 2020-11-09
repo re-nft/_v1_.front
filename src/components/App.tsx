@@ -5,11 +5,10 @@ import { Box } from "@material-ui/core";
 import Layout from "../layouts/index";
 import Rent from "./Rent";
 import Lend from "./Lend";
-import ComingSoon from "./ComingSoon";
 import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
-import RentModal from "./RentModal";
+import Leaderboard from "./Leaderboard";
 
 // make enum
 enum Tabs {
@@ -120,7 +119,7 @@ const App: React.FC = () => {
       >
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
-        <ComingSoon hidden={activeTab !== Tabs.LEADER} />
+        <Leaderboard hidden={activeTab !== Tabs.LEADER} />
         <ButHow hidden={activeTab !== Tabs.HOW} />
         <Stats hidden={activeTab !== Tabs.STATS} />
       </Box>
