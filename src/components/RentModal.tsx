@@ -10,6 +10,8 @@ import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
 
+const SENSIBLE_MAX_DURATION = 10 * 365;
+
 const useStyles = makeStyles(() =>
   createStyles({
     inputs: {
@@ -63,8 +65,35 @@ const RentModal: React.FC<RentModalProps> = ({
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       e.persist();
+      let resolvedValue = e.target.value;
       try {
-        Number(e.target.value);
+        if (e.target.value.length > 0 && e.target.value.startsWith("0")) {
+          // we reset to "0" if the user typed in something silly
+          // if they start typing a valid number, we remove "0" and give them their number
+          const val = resolvedValue.match(/[^0*](\d*)/g);
+          if (val) {
+            resolvedValue = val[0];
+          }
+        }
+
+        const num = Number(e.target.value);
+
+        if (e.target.value === "") {
+          setInputsValid(false);
+          setTotalRent(0);
+          setDuration("");
+          return;
+        } else if (num < 1) {
+          setInputsValid(false);
+          setTotalRent(0);
+          setDuration("0");
+          return;
+        } else if (num >= SENSIBLE_MAX_DURATION) {
+          setInputsValid(false);
+          setTotalRent(0);
+          setDuration(String(SENSIBLE_MAX_DURATION));
+          return;
+        }
         setInputsValid(true);
         setTotalRent(Number(e.target.value) * borrowPrice);
       } catch (err) {
@@ -76,7 +105,7 @@ const RentModal: React.FC<RentModalProps> = ({
         setInputsValid(false);
         setTotalRent(0);
       }
-      setDuration(e.target.value);
+      setDuration(resolvedValue);
     },
     [borrowPrice]
   );
