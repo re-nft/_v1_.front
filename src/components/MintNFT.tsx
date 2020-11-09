@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 
 // contexts
 import GanFacesContext, { GanFaceStages } from "../contexts/GanFaces";
@@ -11,10 +11,19 @@ type MintNftProps = {
   handleClose: () => void;
 };
 
+const MAX_ALLOWED_FACE_GENS = 9;
+
 const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
   const { getFace, mintFace, numFacesGenerated, stages } = useContext(
     GanFacesContext
   );
+  const isDisabled = useMemo(() => {
+    return (
+      numFacesGenerated > MAX_ALLOWED_FACE_GENS ||
+      (stages !== GanFaceStages.Idle &&
+        stages !== GanFaceStages.ReadyForMinting)
+    );
+  }, [numFacesGenerated, stages]);
 
   return (
     <Modal
@@ -37,6 +46,7 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
             fontFamily: "Righteous",
             fontSize: "20px",
             fontWeight: "bold",
+            textAlign: "center",
           }}
         >
           |-: Generate your GAN face :-|
@@ -57,11 +67,7 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           <button
             onClick={getFace}
             role="button"
-            disabled={
-              numFacesGenerated > 9 ||
-              (stages !== GanFaceStages.Idle &&
-                stages !== GanFaceStages.ReadyForMinting)
-            }
+            disabled={isDisabled}
             className="Product__button"
             style={{
               marginTop: "auto",
@@ -77,10 +83,7 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           <button
             onClick={mintFace}
             role="button"
-            disabled={
-              stages !== GanFaceStages.Idle &&
-              stages !== GanFaceStages.ReadyForMinting
-            }
+            disabled={isDisabled}
             className="Product__button"
             style={{
               width: "200px",

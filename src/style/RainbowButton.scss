@@ -18,11 +18,12 @@
   font-weight: bold;
   text-decoration: none;
   color: #fff;
+  cursor: cell;
 }
 .rainbow-button:after {
   content: attr(alt);
   width: 86px;
-  height: 40px !important;
+  height: 38px;
   background-color: #191919;
   display: flex;
   align-items: center;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from "react";
+import React, { useCallback, useState, useContext, useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box } from "@material-ui/core";
 import * as R from "ramda";
@@ -50,7 +50,7 @@ const RentModal: React.FC<RentModalProps> = ({
   const [duration, setDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
-  const [inputsValid, setInputsValid] = useState(false);
+  const [inputsValid, setInputsValid] = useState(true);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +98,10 @@ const RentModal: React.FC<RentModalProps> = ({
     [rent, pmtToken, duration, faceId, inputsValid]
   );
 
+  const rentIsDisabled = useMemo(() => {
+    return !inputsValid || !duration || busy;
+  }, [inputsValid, duration, busy]);
+
   return (
     <Modal open={open} handleClose={handleClose}>
       <Box style={{ padding: "32px" }}>
@@ -111,7 +115,7 @@ const RentModal: React.FC<RentModalProps> = ({
             type="number"
             name="rentDuration"
             value={duration}
-            error={inputsValid}
+            error={!inputsValid}
             helperText={
               !inputsValid ? "Must be a natural number e.g. 1, 2, 3" : ""
             }
@@ -157,7 +161,8 @@ const RentModal: React.FC<RentModalProps> = ({
           >
             Approve fDAI
           </button>
-          <RainbowButton type="submit" text="Rent" disabled={busy} />
+          {/* TODO: visual cues to indicate that Rent button is disabled */}
+          <RainbowButton type="submit" text="Rent" disabled={rentIsDisabled} />
         </Box>
       </Box>
     </Modal>

@@ -29,11 +29,8 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
 };
 
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
-  console.log(data);
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState("");
-  const [nftAddress, setNftAddress] = useState("");
-  const [nftTokenId, setNftTokenId] = useState("");
   const handleLend = useCallback(
     (id) => {
       setModalOpen(true);
@@ -41,16 +38,6 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
     },
     [setModalOpen, setFaceId]
   );
-  // useEffect(() => {
-  //   const addrAndId = faceId.split("::");
-  //   console.log(addrAndId)
-  //   if (addrAndId.length !== 2) {
-  //     console.debug("incorrect faceID");
-  //     return;
-  //   }
-  //   setNftAddress(addrAndId[0]);
-  //   setNftTokenId(addrAndId[1]);
-  // }, [faceId])
 
   return (
     <Box>

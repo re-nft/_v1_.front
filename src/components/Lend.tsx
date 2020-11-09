@@ -1,4 +1,10 @@
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, {
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+} from "react";
 import { Box } from "@material-ui/core";
 
 // contexts
@@ -12,33 +18,57 @@ import Switcher from "./Switcher";
 
 import { Face } from "../types";
 
+// with id separator (2 characters)
+const LenOfAddress = 44;
+
 type LendProps = {
   hidden: boolean;
 };
 
-const Lend: React.FC<LendProps> = ({ hidden }) => {
-  const isValid = (data?: Face[]) => {
-    return data != null && data.length > 0;
-  };
+enum LendSpecificity {
+  ALL,
+  LENDING,
+}
 
+const Lend: React.FC<LendProps> = ({ hidden }) => {
   const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
-  const [data, setData] = useState<Face[]>();
-  const dataIsValid = useMemo(() => {
-    return isValid(data);
-  }, [data]);
+  const [currentlyLending, setCurrentlyLending] = useState<Face[]>([]);
+  const [allNfts, setAllNfts] = useState<Face[]>([]);
+  const [specificity, setSpecificiy] = useState<LendSpecificity>(
+    LendSpecificity.ALL
+  );
+
+  const handleSpecificity = useCallback(() => {
+    setSpecificiy((specificity) =>
+      specificity === LendSpecificity.ALL
+        ? LendSpecificity.LENDING
+        : LendSpecificity.ALL
+    );
+  }, []);
   useEffect(() => {
     if (user == null || wallet == null || !wallet.account) {
       console.debug("no user data yet");
       return;
     }
-    // TODO: awful time complexity here too
-    const currentLending = user.lending.map((item) =>
-      item.id.split("::").slice(0, 2).join("::")
-    );
-    // TODO: O(N**2) time complexity is shit
-    setData(user.faces.filter((item) => !currentLending.includes(item.id)));
+
+    const curr: Face[] = [];
+    const currIds: string[] = [];
+    for (let i = 0; i < user.lending.length; i++) {
+      const _id = user.lending[i].id;
+      const resolvedId = _id.slice(0, _id.length - LenOfAddress);
+      const face = { id: resolvedId, uri: user.lending[i].face.uri };
+      curr.push(face);
+      currIds.push(resolvedId);
+    }
+
+    const all = user.faces.filter((face) => !currIds.includes(face.id));
+    setAllNfts(all);
+    setCurrentlyLending(curr);
   }, [nfts, user, wallet]);
+  const data = useMemo(() => {
+    return specificity === LendSpecificity.ALL ? allNfts : currentlyLending;
+  }, [specificity, allNfts, currentlyLending]);
 
   if (hidden) {
     return <></>;
@@ -46,22 +76,33 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
 
   return (
     <Box>
-      {dataIsValid && (
-        <Box>
+      <Box>
+        <Box
+          style={{
+            display: "flex",
+          }}
+        >
+          {data.length > 0 && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              height: "60px",
+              flexDirection: "row",
+              alignItems: "center",
+              marginLeft: "auto",
             }}
           >
-            <ScrollForMore />
-            {/* <Switcher /> */}
+            <span style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+              {specificity.valueOf() === 0 ? "AVAILABLE TO LEND" : "LENDING"}{" "}
+              &nbsp; &nbsp;
+            </span>
+            <Box onClick={handleSpecificity}>
+              <Switcher />
+            </Box>
           </Box>
-          <LendCatalogue data={data} />
         </Box>
-      )}
-      {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
+        <LendCatalogue data={data} />
+      </Box>
+      {data.length < 1 && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };

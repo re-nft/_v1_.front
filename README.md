@@ -26,3 +26,4 @@
 17. [1] support different stablecoins on the fe. There is no way to specify this right now
 18. [4] Add payment token faucet for testnet people
 19. [3] Upgrades persist the existing NFTs (thegraph. When we redeploy the graph, we must repoint it to the new rent and face addresses, this wipes clean all the previous faces
+20. [?] keep track of the addresses for reputation purposes
