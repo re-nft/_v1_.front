@@ -82,7 +82,10 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           <button
             onClick={mintFace}
             role="button"
-            disabled={isDisabled}
+            disabled={
+              stages !== GanFaceStages.Idle &&
+              stages !== GanFaceStages.ReadyForMinting
+            }
             className="Product__button"
             style={{
               width: "200px",
