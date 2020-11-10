@@ -12,11 +12,17 @@ type RentCatalogueProps = {
 };
 
 type RentButtonProps = {
-  handleRent: (id: string, nftPrice: number, borrowPrice: number) => void;
+  handleRent: (
+    id: string,
+    nftPrice: number,
+    borrowPrice: number,
+    maxDuration: number
+  ) => void;
   id: string;
   iBorrow: boolean;
   nftPrice: number;
   borrowPrice: number;
+  maxDuration: number;
 };
 
 type NumericFieldProps = {
@@ -46,10 +52,11 @@ const RentButton: React.FC<RentButtonProps> = ({
   iBorrow,
   nftPrice,
   borrowPrice,
+  maxDuration,
 }) => {
   const handleClick = useCallback(() => {
-    handleRent(id, nftPrice, borrowPrice);
-  }, [handleRent, id, nftPrice, borrowPrice]);
+    handleRent(id, nftPrice, borrowPrice, maxDuration);
+  }, [handleRent, id, nftPrice, borrowPrice, maxDuration]);
 
   return (
     <span
@@ -67,17 +74,24 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
   const [faceId, setFaceId] = useState<string>("");
   const [borrowPrice, setBorrowPrice] = useState<number>(0);
   const [nftPrice, setNftPrice] = useState<number>(0);
+  const [maxDuration, setMaxDuration] = useState<number>(0);
   const { web3 } = useContext(DappContext);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, []);
   const handleRent = useCallback(
-    (faceId: string, nftPrice: number, borrowPrice: number) => {
+    (
+      faceId: string,
+      nftPrice: number,
+      borrowPrice: number,
+      maxDuration: number
+    ) => {
       setModalOpen(true);
       setFaceId(faceId);
       setBorrowPrice(borrowPrice);
       setNftPrice(nftPrice);
+      setMaxDuration(maxDuration);
     },
     []
   );
@@ -93,6 +107,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
         handleClose={handleClose}
         borrowPrice={borrowPrice}
         nftPrice={nftPrice}
+        maxDuration={maxDuration}
       />
       <Box className="Catalogue">
         {data &&
@@ -137,7 +152,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                   />
                   <NumericField
                     text="Max duration"
-                    value={fromWei(nft.maxDuration)}
+                    value={String(nft.maxDuration)}
                     unit="days"
                   />
                   <NumericField
@@ -151,6 +166,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                       id={nft.face.id}
                       borrowPrice={Number(fromWei(nft.borrowPrice))}
                       nftPrice={Number(fromWei(nft.nftPrice))}
+                      maxDuration={Number(nft.maxDuration)}
                       iBorrow={iBorrow}
                     />
                   </div>
