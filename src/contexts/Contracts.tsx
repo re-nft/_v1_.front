@@ -20,6 +20,7 @@ type ContractsContextType = {
   face: {
     contract?: Contract;
     approveOfAllFaces: () => void;
+    approveNft: (tokenId: string) => void;
   };
   rent: {
     contract?: Contract;
@@ -43,6 +44,9 @@ const DefaultContractsContext = {
   },
   face: {
     approveOfAllFaces: () => {
+      throw new Error("must be implemented");
+    },
+    approveNft: () => {
       throw new Error("must be implemented");
     },
   },
@@ -145,6 +149,18 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       .send({ from: wallet?.account });
   }, [face, dappOk, wallet]);
 
+  const approveNft = useCallback(
+    async (tokenId: string) => {
+      if (!dappOk(face)) return;
+
+      // todo: checkdapp typeguard against nulls
+      await face?.methods
+        .approve(addresses.goerli.rent, tokenId)
+        .send({ from: wallet?.account });
+    },
+    [face, dappOk, wallet]
+  );
+
   // infinite approval of the payment token
   const approveDai = useCallback(async () => {
     if (!dappOk(dai)) return;
@@ -208,7 +224,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
             approve: approveDai,
           },
         },
-        face: { contract: face, approveOfAllFaces },
+        face: { contract: face, approveOfAllFaces, approveNft },
         rent: { contract: rent, lendOne, rentOne },
       }}
     >
