@@ -2,6 +2,7 @@ import React, { useCallback, useState, useContext, useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 import * as R from "ramda";
+import moment from "moment";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
@@ -46,7 +47,10 @@ type RentModalProps = {
   handleClose: () => void;
   borrowPrice: number;
   nftPrice: number;
+  maxDuration: number;
 };
+
+const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
 
 const RentModal: React.FC<RentModalProps> = ({
   faceId,
@@ -54,6 +58,7 @@ const RentModal: React.FC<RentModalProps> = ({
   handleClose,
   borrowPrice,
   nftPrice,
+  maxDuration,
 }) => {
   const classes = useStyles();
   const { rent, pmtToken } = useContext(ContractsContext);
@@ -61,83 +66,120 @@ const RentModal: React.FC<RentModalProps> = ({
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
   const [inputsValid, setInputsValid] = useState(true);
+  const [errorText, setErrorText] = useState(DEFAULT_ERROR_TEXT);
+  const [returnDate, setReturnDate] = useState("");
+
+  const resetState = useCallback(() => {
+    setInputsValid(false);
+    setTotalRent(0);
+    setDuration("");
+    setReturnDate("👾");
+    setErrorText(DEFAULT_ERROR_TEXT);
+  }, []);
+
+  // TODO: ensure that the time is correct for different locales
+  const setDate = useCallback((days: string) => {
+    const returnOn = moment().add(days, "day");
+    setReturnDate(returnOn.format("MMMM Do YYYY, h:mm:ss a"));
+  }, []);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       e.persist();
-      let resolvedValue = e.target.value;
+      const val = e.target.value;
+      let resolvedValue = val;
+
       try {
-        if (e.target.value.length > 0 && e.target.value.startsWith("0")) {
+        // some value that has two or more dots in it, will deem the state to be invalid
+        const dots = val.match(/[.]{2,}/g) || [];
+        if (dots.length > 0) {
+          resetState();
+          return;
+        }
+
+        if (val.length > 0 && val.startsWith("0")) {
           // we reset to "0" if the user typed in something silly
           // if they start typing a valid number, we remove "0" and give them their number
           const val = resolvedValue.match(/[^0*](\d*)/g);
-          if (val) {
-            resolvedValue = val[0];
-          }
+          if (val) resolvedValue = val[0];
         }
 
-        const num = Number(e.target.value);
+        const num = Number(val);
 
-        if (e.target.value === "") {
-          setInputsValid(false);
-          setTotalRent(0);
-          setDuration("");
-          return;
-        } else if (num < 1) {
-          setInputsValid(false);
-          setTotalRent(0);
-          setDuration("0");
+        // if we get weird inputs, reset them to sensible values
+        if (val === "" || num < 1) {
+          resetState();
           return;
         } else if (num >= SENSIBLE_MAX_DURATION) {
-          setInputsValid(false);
-          setTotalRent(0);
+          resetState();
           setDuration(String(SENSIBLE_MAX_DURATION));
           return;
+        } else if (num > maxDuration) {
+          resetState();
+          setErrorText(
+            `You cannot borrow this NFT for longer than ${maxDuration} days`
+          );
+          return;
         }
+
+        // if the above conditions weren't caught, everything is fine
         setInputsValid(true);
-        setTotalRent(Number(e.target.value) * borrowPrice);
+        setTotalRent(num * borrowPrice);
       } catch (err) {
-        setInputsValid(false);
         console.debug("could not convert rent duration to number");
-        setTotalRent(0);
+        resetState();
       }
-      if (e.target.value.includes(".")) {
-        setInputsValid(false);
-        setTotalRent(0);
-      }
+
       setDuration(resolvedValue);
+      setDate(resolvedValue);
     },
-    [borrowPrice]
-  );
-
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      // setFaceId(tokenId);
-      const tokenId = faceId.split("::")[1];
-
-      if (
-        !rent ||
-        !pmtToken ||
-        !R.hasPath(["dai", "approve"], pmtToken) ||
-        !inputsValid
-      ) {
-        console.debug("can't rent");
-        return;
-      }
-
-      setIsBusy(true);
-      // TODO: approve conditional (only approve if not approved before)
-      await pmtToken.dai.approve();
-      await rent.rentOne(tokenId, duration!.toString());
-      setIsBusy(false);
-    },
-    [rent, pmtToken, duration, faceId, inputsValid]
+    [borrowPrice, maxDuration, resetState, setDate]
   );
 
   const rentIsDisabled = useMemo(() => {
     return !inputsValid || !duration || busy;
   }, [inputsValid, duration, busy]);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      try {
+        // TODO: to generalise, will need to use tokenAddress here too
+        const tokenId = faceId.split("::")[1];
+
+        if (
+          !rent ||
+          !pmtToken ||
+          !R.hasPath(["dai", "approve"], pmtToken) ||
+          rentIsDisabled
+        ) {
+          console.debug("can't rent");
+          return;
+        }
+
+        setIsBusy(true);
+        // await pmtToken.dai.approve();
+        await rent.rentOne(tokenId, duration);
+      } catch (err) {
+        console.debug("something went wrong");
+        // TODO: give a notification here as well
+      }
+      setIsBusy(false);
+      handleClose();
+    },
+    [rent, pmtToken, duration, faceId, rentIsDisabled, handleClose]
+  );
+
+  const handleApprove = useCallback(async () => {
+    try {
+      setIsBusy(true);
+      await pmtToken.dai.approve();
+    } catch (err) {
+      handleClose();
+      console.debug("could not approve");
+    }
+    setIsBusy(false);
+  }, [pmtToken, handleClose]);
 
   return (
     <Modal open={open} handleClose={handleClose}>
@@ -153,9 +195,7 @@ const RentModal: React.FC<RentModalProps> = ({
             name="rentDuration"
             value={duration}
             error={!inputsValid}
-            helperText={
-              !inputsValid ? "Must be a natural number e.g. 1, 2, 3" : ""
-            }
+            helperText={!inputsValid ? errorText : ""}
             onChange={handleChange}
           />
           <LegibleTextField
@@ -183,7 +223,10 @@ const RentModal: React.FC<RentModalProps> = ({
           ></Box>
           <Box>
             <p>
-              {`You must return the NFT by xxx, or you will lose the collateral`}
+              You <span style={{ fontWeight: "bold" }}>must</span> return the
+              NFT by {returnDate}, or you{" "}
+              <span style={{ fontWeight: "bold" }}>will lose</span> the
+              collateral
             </p>
           </Box>
         </Box>
@@ -195,11 +238,20 @@ const RentModal: React.FC<RentModalProps> = ({
               border: "3px solid black",
             }}
             className="Product__button"
+            onClick={handleApprove}
+            disabled={busy}
           >
             Approve fDAI
           </button>
           {/* TODO: visual cues to indicate that Rent button is disabled */}
-          <RainbowButton type="submit" text="Rent" disabled={rentIsDisabled} />
+          {/* TODO: consider adding form to be consistent (like in LendModal) */}
+          <Box onClick={handleSubmit}>
+            <RainbowButton
+              type="submit"
+              text="Rent"
+              disabled={rentIsDisabled}
+            />
+          </Box>
         </Box>
       </Box>
     </Modal>
