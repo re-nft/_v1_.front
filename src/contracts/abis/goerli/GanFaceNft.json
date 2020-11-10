@@ -478,9 +478,7 @@
   "ast": {
     "absolutePath": "/home/shredder/git/superfluid/contracts/contracts/mocks/GanFaceNft.sol",
     "exportedSymbols": {
-      "GanFaceNft": [
-        770
-      ]
+      "GanFaceNft": [770]
     },
     "id": 771,
     "license": "MIT",
@@ -488,12 +486,7 @@
     "nodes": [
       {
         "id": 700,
-        "literals": [
-          "solidity",
-          "^",
-          "0.6",
-          ".0"
-        ],
+        "literals": ["solidity", "^", "0.6", ".0"],
         "nodeType": "PragmaDirective",
         "src": "32:23:3"
       },
@@ -570,16 +563,7 @@
             "src": "260:15:3"
           }
         ],
-        "contractDependencies": [
-          807,
-          973,
-          985,
-          2910,
-          3026,
-          3057,
-          3084,
-          4237
-        ],
+        "contractDependencies": [807, 973, 985, 2910, 3026, 3057, 3084, 4237],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
@@ -909,9 +893,7 @@
                   "src": "631:22:3"
                 },
                 {
-                  "assignments": [
-                    745
-                  ],
+                  "assignments": [745],
                   "declarations": [
                     {
                       "constant": false,
@@ -1391,9 +1373,7 @@
   "legacyAST": {
     "absolutePath": "/home/shredder/git/superfluid/contracts/contracts/mocks/GanFaceNft.sol",
     "exportedSymbols": {
-      "GanFaceNft": [
-        770
-      ]
+      "GanFaceNft": [770]
     },
     "id": 771,
     "license": "MIT",
@@ -1401,12 +1381,7 @@
     "nodes": [
       {
         "id": 700,
-        "literals": [
-          "solidity",
-          "^",
-          "0.6",
-          ".0"
-        ],
+        "literals": ["solidity", "^", "0.6", ".0"],
         "nodeType": "PragmaDirective",
         "src": "32:23:3"
       },
@@ -1483,16 +1458,7 @@
             "src": "260:15:3"
           }
         ],
-        "contractDependencies": [
-          807,
-          973,
-          985,
-          2910,
-          3026,
-          3057,
-          3084,
-          4237
-        ],
+        "contractDependencies": [807, 973, 985, 2910, 3026, 3057, 3084, 4237],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
@@ -1822,9 +1788,7 @@
                   "src": "631:22:3"
                 },
                 {
-                  "assignments": [
-                    745
-                  ],
+                  "assignments": [745],
                   "declarations": [
                     {
                       "constant": false,
