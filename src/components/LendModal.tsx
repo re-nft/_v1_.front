@@ -35,12 +35,6 @@ const useStyles = makeStyles({
   },
 });
 
-enum lendOneInput {
-  maxDuration,
-  borrowPrice,
-  nftPrice,
-}
-
 type ValueValid = {
   value: string;
   valid: boolean;
@@ -82,9 +76,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
 
   const handleLend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (web3 == null) {
-      return;
-    }
+    if (!web3) return;
 
     setIsBusy(true);
     try {
@@ -92,10 +84,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       await rent.lendOne(
         tokenId,
         // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-        web3.utils.toWei(
-          Number(lendOneInputs.maxDuration.value).toFixed(18),
-          "ether"
-        ),
+        lendOneInputs.maxDuration.value,
         web3.utils.toWei(
           Number(lendOneInputs.borrowPrice.value).toFixed(18),
           "ether"
@@ -106,6 +95,8 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         )
       );
     } catch (err) {
+      // ! TODO: NOTIFICATION THAT SOMETHING WENT WRONG
+      // TRELLO TASK: https://trello.com/c/FUhFdVR4/48-2-add-notifications-anywhere-you-can
       console.debug("could not complete the lending");
     }
 
@@ -117,22 +108,21 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
     e.persist();
+    const target = e.target.name;
+    const val = e.target.value;
 
     let valid = true;
-    if (e.target.name === "maxDuration") {
-      valid = checkMaxDuration(e.target.value);
-    } else if (
-      e.target.name === "borrowPrice" ||
-      e.target.name === "nftPrice"
-    ) {
-      valid = checkPrice(e.target.value);
+    if (target === "maxDuration") {
+      valid = checkMaxDuration(val);
+    } else if (target === "borrowPrice" || target === "nftPrice") {
+      valid = checkPrice(val);
     }
 
     // ! if setting the state based on the previous state values, you should use a function
     setLendOneInputs((lendOneInputs) => ({
       ...lendOneInputs,
-      [e.target.name]: {
-        value: e.target.value,
+      [target]: {
+        value: val,
         valid,
       },
     }));
