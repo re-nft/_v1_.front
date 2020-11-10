@@ -3,8 +3,10 @@ import { Box, Tooltip } from "@material-ui/core";
 
 // contexts
 import DappContext from "../contexts/Dapp";
-import RentModal from "./RentModal";
+import Contracts from "../contexts/Contracts";
+import { addresses } from "../contracts";
 import { Nft } from "../types";
+import RentModal from "./RentModal";
 
 type RentCatalogueProps = {
   data?: Nft[];
@@ -19,10 +21,14 @@ type RentButtonProps = {
     maxDuration: number
   ) => void;
   id: string;
-  iBorrow: boolean;
   nftPrice: number;
   borrowPrice: number;
   maxDuration: number;
+};
+
+type ReturnButtonProps = {
+  handleReturn: (id: string) => void;
+  id: string;
 };
 
 type NumericFieldProps = {
@@ -49,7 +55,6 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
 const RentButton: React.FC<RentButtonProps> = ({
   handleRent,
   id,
-  iBorrow,
   nftPrice,
   borrowPrice,
   maxDuration,
@@ -64,7 +69,23 @@ const RentButton: React.FC<RentButtonProps> = ({
       onClick={handleClick}
       style={{ marginTop: "8px" }}
     >
-      {iBorrow ? "Return" : "Rent"} now
+      Rent now
+    </span>
+  );
+};
+
+const ReturnButton: React.FC<ReturnButtonProps> = ({ handleReturn, id }) => {
+  const handleClick = useCallback(() => {
+    handleReturn(id);
+  }, [handleReturn, id]);
+
+  return (
+    <span
+      className="Product__buy"
+      onClick={handleClick}
+      style={{ marginTop: "8px" }}
+    >
+      Return now
     </span>
   );
 };
@@ -76,6 +97,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
   const [nftPrice, setNftPrice] = useState<number>(0);
   const [maxDuration, setMaxDuration] = useState<number>(0);
   const { web3 } = useContext(DappContext);
+  const { rent } = useContext(Contracts);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -94,6 +116,22 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
       setMaxDuration(maxDuration);
     },
     []
+  );
+  const handleReturn = useCallback(
+    async (tokenId: string) => {
+      try {
+        if (!rent?.returnOne) return;
+        // ! TODO: hack. generalise
+        const resolvedId = tokenId.split("::")[1];
+        // ! TODO: remove this addresses.goerli.face. Generalise
+        await rent?.returnOne(addresses.goerli.face, resolvedId);
+      } catch (err) {
+        // TODO: add the notification here
+        // TODO: add the UX for busy (loading spinner)
+        console.debug("could not return the NFT");
+      }
+    },
+    [rent]
   );
 
   const fromWei = (v?: number): string =>
@@ -161,14 +199,20 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                     unit="fDAI"
                   />
                   <div className="Product__details">
-                    <RentButton
-                      handleRent={handleRent}
-                      id={nft.face.id}
-                      borrowPrice={Number(fromWei(nft.borrowPrice))}
-                      nftPrice={Number(fromWei(nft.nftPrice))}
-                      maxDuration={Number(nft.maxDuration)}
-                      iBorrow={iBorrow}
-                    />
+                    {!iBorrow ? (
+                      <RentButton
+                        handleRent={handleRent}
+                        id={nft.face.id}
+                        borrowPrice={Number(fromWei(nft.borrowPrice))}
+                        nftPrice={Number(fromWei(nft.nftPrice))}
+                        maxDuration={Number(nft.maxDuration)}
+                      />
+                    ) : (
+                      <ReturnButton
+                        id={nft.face.id}
+                        handleReturn={handleReturn}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
