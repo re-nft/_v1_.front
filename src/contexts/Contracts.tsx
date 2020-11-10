@@ -26,6 +26,7 @@ type ContractsContextType = {
   };
   rent: {
     contract?: Contract;
+    // TODO: lendOne and rentOne here need to take NFT address to generalise this
     lendOne: (
       tokenId: string,
       maxDuration: string,
@@ -33,6 +34,7 @@ type ContractsContextType = {
       nftPrice: string
     ) => void;
     rentOne: (tokenId: string, rentDuration: string) => void;
+    returnOne: (nftAddress: string, tokenId: string) => void;
   };
 };
 
@@ -65,6 +67,9 @@ const DefaultContractsContext = {
     rentOne: () => {
       throw new Error("must be implemented");
     },
+    returnOne: () => {
+      throw new Error("must be implemented");
+    },
   },
 };
 
@@ -91,14 +96,12 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   // plus any additional args
   const dappOk = useCallback(
     (...args) => {
-      if (web3 == null || wallet == null || !wallet.account) {
+      if (!web3 || !wallet?.account) {
         console.debug("no web3 or wallet");
         return false;
       }
       for (const arg of args) {
-        if (arg == null) {
-          return false;
-        }
+        if (!arg) return false;
       }
       return true;
     },
@@ -155,7 +158,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     await face?.methods
       .setApprovalForAll(addresses.goerli.rent, true)
       .send({ from: wallet?.account });
-  }, [face, dappOk, wallet]);
+  }, [face, dappOk, wallet?.account]);
 
   const approve = useCallback(
     async (tokenId: string) => {
@@ -197,7 +200,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     await dai?.methods
       .approve(addresses.goerli.rent, UNLIMITED_ALLOWANCE)
       .send({ from: wallet?.account });
-  }, [wallet, dai, dappOk]);
+  }, [wallet?.account, dai, dappOk]);
 
   // ----------------- Contract Interaction -----------------------
 
@@ -216,7 +219,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
         )
         .send({ from: wallet?.account });
     },
-    [rent, wallet, dappOk, web3]
+    [rent, wallet?.account, dappOk, web3]
   );
 
   // lend one NFT
@@ -239,7 +242,18 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
         )
         .send({ from: wallet?.account });
     },
-    [wallet, rent, dappOk]
+    [wallet?.account, rent, dappOk]
+  );
+
+  const returnOne = useCallback(
+    async (nftAddress: string, tokenId: string) => {
+      if (!dappOk(rent)) return;
+
+      await rent?.methods
+        .returnNftOne(nftAddress, tokenId)
+        .send({ from: wallet?.account });
+    },
+    [dappOk, wallet?.account, rent]
   );
 
   // ---------------------------------------------------------------
