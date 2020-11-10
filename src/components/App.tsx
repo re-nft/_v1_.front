@@ -9,6 +9,7 @@ import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
 import Leaderboard from "./Leaderboard";
+import useFakeDai from "../hooks/useFakeDai";
 
 // make enum
 enum Tabs {
@@ -18,6 +19,7 @@ enum Tabs {
   LEADER,
   GETNFT,
   HOW,
+  DAI,
 }
 
 type TabProps = {
@@ -49,6 +51,7 @@ const Tab: React.FC<TabProps> = ({
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
   const [nftModalOpen, setNftModalOpen] = useState(false);
+  const requestDai = useFakeDai();
 
   const handleNftModal = useCallback(() => {
     setNftModalOpen(!nftModalOpen);
@@ -88,6 +91,15 @@ const App: React.FC = () => {
           thisTab={Tabs.LEADER}
           buttonName="Leaderboard"
         />
+        <div role="button" style={{ marginRight: "16px" }} onClick={requestDai}>
+          <span
+            className={
+              activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
+            }
+          >
+            Get fDAI
+          </span>
+        </div>
         <div
           role="button"
           style={{ marginRight: "16px" }}

@@ -4,5 +4,6 @@ export const addresses = {
     face: "0x19f911B243dc1F371Ed34eaB1E24a4545Fa704Ea",
     resolver: "0x2fd5a450995bfaf3199c7d7e7595dd82fb9065a1",
     rent: "0x75CECD8f03BFC6E2899d155d5732638cE97E221c",
+    faucet: "0x6e18BDe18baEC03138538b82263160a3A1Cff3Ed",
   },
 };
