@@ -1,5 +1,6 @@
-import Identicon from "identicon.js";
 import React from "react";
+import { Tooltip } from "@material-ui/core";
+import Identicon from "identicon.js";
 
 type LeaderboardProps = {
   hidden: boolean;
@@ -11,8 +12,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ hidden }) => {
   }
 
   const data = new Identicon("0x59aCDb1115abc2a81A9Be80fBCeD5a").toString();
-  const data2 = new Identicon("0xaac3333221144dd09F18ccc01e1c20").toString();
-  const data3 = new Identicon("0x000000D0D154805503E9D16C4832f9").toString();
+  const data1 = new Identicon("0xk32j4knf239ir2j3fo23jof32fjkfj").toString();
+  const data2 = new Identicon("0xaac3333221144dd09F38ccc01e1c20").toString();
+  const data3 = new Identicon("0x00D03D154845503E9D16C4832f9").toString();
+  const data4 = new Identicon("0x000D0D15305503E9D16C4832f9").toString();
+  const data5 = new Identicon("0x000000D0D124805503E9D16C4832f9").toString();
+  const data6 = new Identicon("0x000000D0D15314805503E9D16C4832f9").toString();
+  const data7 = new Identicon("0x000000D154324805503E9D16C4832f9").toString();
+  const data8 = new Identicon("0x00000012333454805503E9D16C32f9").toString();
+  const data9 = new Identicon("0x000000D0D3334805503E9D16C4832f9").toString();
 
   return (
     <div className="center">
@@ -22,109 +30,87 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ hidden }) => {
           <div className="pic">
             <img src={`data:image/png;base64,${data}`} />
           </div>
-          <div className="name">Edgar Soto</div>
-          <div className="score">6453</div>
+          <Tooltip title="0xk32j4knf239ir2j3fo23jof32fjkfj">
+            <div className="name">0xk32j4k...</div>
+          </Tooltip>
+          <div className="score">10233</div>
         </div>
         <div className="two item">
           <div className="pos">1</div>
           <div className="pic">
-            <img src={`data:image/png;base64,${data2}`} />
+            <img src={`data:image/png;base64,${data1}`} />
           </div>
-          <div className="name">Clifford James</div>
+          <Tooltip title="0x000001D0D124805503E9D16C4832f9">
+            <div className="name">0x000001...</div>
+          </Tooltip>
           <div className="score">6794</div>
         </div>
         <div className="three item">
           <div className="pos">3</div>
           <div className="pic">
-            <img src={`data:image/png;base64,${data3}`} />
+            <img src={`data:image/png;base64,${data2}`} />
           </div>
-          <div className="name">Nevaeh Silva</div>
+          <Tooltip title="0x000000D0D124805503E9D16C4832f9">
+            <div className="name">0x000000...</div>
+          </Tooltip>
           <div className="score">6034</div>
         </div>
       </div>
       <div className="list">
         <div className="item">
           <div className="pos">4</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/men/88.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Clayton Watson</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data3}`} />
+          </div>
+          <div className="name">0x000D0D15305503E9D16C4832f9</div>
           <div className="score">5980</div>
         </div>
         <div className="item">
           <div className="pos">5</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/women/29.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Debbie Lane</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data4}`} />
+          </div>
+          <div className="name">0xk32j4knf239ir2j3fo23jof32fjkfj</div>
           <div className="score">5978</div>
         </div>
         <div className="item">
           <div className="pos">6</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/women/85.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Gabriella Steward</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data5}`} />
+          </div>
+          <div className="name">0x000000D154324805503E9D16C4832f9</div>
           <div className="score">5845</div>
         </div>
         <div className="item">
           <div className="pos">7</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/women/39.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Nina Perkins</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data6}`} />
+          </div>
+          <div className="name">0xaac3333221144dd09F38ccc01e1c20</div>
           <div className="score">5799</div>
         </div>
         <div className="item">
           <div className="pos">8</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/men/77.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Dennis Henry</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data7}`} />
+          </div>
+          <div className="name">0xaac3333221144dd09F38ccc01e1c20</div>
           <div className="score">5756</div>
         </div>
         <div className="item">
           <div className="pos">9</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/women/49.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Courtney Fuller</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data8}`} />
+          </div>
+          <div className="name">0xaac3333221144dd09F38ccc01e1c20</div>
           <div className="score">5713</div>
         </div>
         <div className="item">
           <div className="pos">10</div>
-          <div
-            className="pic"
-            style={{
-              backgroundImage:
-                "url(&#39;https://randomuser.me/api/portraits/women/30.jpg&#39;)",
-            }}
-          ></div>
-          <div className="name">Joan Wood</div>
+          <div className="pic">
+            <img src={`data:image/png;base64,${data9}`} />
+          </div>
+          <div className="name">0xaac3333221144dd09F38ccc01e1c20</div>
           <div className="score">5674</div>
         </div>
       </div>

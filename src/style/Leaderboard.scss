@@ -1,24 +1,6 @@
 $beige: #663399;
 $purple: #4b4168;
 
-// body,
-// html {
-//   height: 100%;
-//   width: 100%;
-//   overflow: hidden;
-//   background: $purple;
-//   color: #333;
-// }
-
-// .center {
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-
-//   z-index: 10;
-// }
-
 .top3 {
   display: flex;
   justify-content: center;
@@ -145,6 +127,7 @@ $purple: #4b4168;
     .score {
       margin-right: 1.5rem;
       opacity: 0.5;
+      color: white;
 
       &:before {
         margin-right: 1rem;
