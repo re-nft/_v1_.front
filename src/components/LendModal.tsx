@@ -76,7 +76,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       const tokenId = faceId.split("::")[1];
       const account = await face.getApproved(tokenId);
       const wallet = await web3.eth.getAccounts();
-      if (account === wallet[0]) {
+      if (account !== wallet[0]) {
         await face.approveNft(tokenId);
       }
       await rent.lendOne(
