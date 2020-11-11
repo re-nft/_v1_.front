@@ -5,10 +5,13 @@ import { makeStyles } from "@material-ui/core/styles";
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
+import GraphContext from "../contexts/Graph";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
+import { Address } from "../types";
+import { addresses } from "../contracts";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -52,10 +55,16 @@ type LendModalProps = {
   setOpen: (open: boolean) => void;
 };
 
+type NftAndId = {
+  nftAddress: Address;
+  tokenId: string;
+};
+
 const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const classes = useStyles();
   const { rent, face } = useContext(ContractsContext);
   const { web3 } = useContext(DappContext);
+  const { isApproved: _isApproved } = useContext(GraphContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -71,6 +80,27 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
       valid: true,
     },
   });
+
+  const getNftAndId: NftAndId = useMemo(() => {
+    const parts = faceId.split("::");
+    if (parts.length < 2) {
+      return {
+        nftAddress: "",
+        tokenId: "",
+      };
+    }
+    return {
+      nftAddress: parts[0],
+      tokenId: parts[1],
+    };
+  }, [faceId]);
+
+  // TODO: to avoid complexity of sustaining the approve events and this additional logic around
+  // checking if approved, just add a call to the ERC721 to check if approved and keep in state
+  const isApproved = useMemo(() => {
+    const { nftAddress, tokenId } = getNftAndId;
+    return _isApproved(addresses.goerli.rent, nftAddress, tokenId);
+  }, [_isApproved, getNftAndId]);
 
   const [isBusy, setIsBusy] = useState(false);
 
@@ -223,19 +253,21 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             type="button"
             style={{
               border: "3px solid black",
+              display: isApproved ? "none" : "inherit",
             }}
             className="Product__button"
             onClick={handleApproveAll}
-            disabled={isBusy}
             onSubmit={preventDefault}
           >
             Approve all
           </button>
-          <RainbowButton
-            type="submit"
-            text="Lend"
-            disabled={isBusy || !allValid}
-          />
+          <Box style={{ display: isApproved ? "inherit" : "none" }}>
+            <RainbowButton
+              type="submit"
+              text="Lend"
+              disabled={isBusy || !allValid}
+            />
+          </Box>
         </Box>
       </form>
     </Modal>
