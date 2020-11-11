@@ -16,9 +16,18 @@ import { Nft, User } from "../types";
 type GraphContextType = {
   nfts?: Nft[];
   user?: User;
+  isApproved: (
+    address: string,
+    nftAddress: string,
+    tokenId?: string
+  ) => boolean;
 };
 
-const DefaultGraphContext: GraphContextType = {};
+const DefaultGraphContext: GraphContextType = {
+  isApproved: () => {
+    throw new Error("must be implemented");
+  },
+};
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
@@ -44,7 +53,7 @@ const queryNft = `{
 
 const queryUser = (user: string, web3: Web3): string => {
   return `{
-    user(id: "${web3.utils.toHex(user)}") {
+    user(id: "${web3.utils.toHex(user).toLowerCase()}") {
       id
       lending {
         id
@@ -78,6 +87,19 @@ const queryUser = (user: string, web3: Web3): string => {
         id
         uri
       }
+      approvals {
+        id,
+        nftAddress,
+        tokenId,
+        owner,
+        approved
+      }
+      approvedAll {
+        id,
+        nftAddress,
+        owner,
+        approved
+      }
     }
   }`;
 };
@@ -101,14 +123,64 @@ export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
   }, []);
 
   const getUser = useCallback(async () => {
-    if (web3 == null || wallet == null || !wallet.account) {
+    if (!web3 || !wallet?.account) {
       console.debug("connect to goerli network");
       return;
     }
     const userQuery = queryUser(wallet.account, web3);
     const data = await request(ENDPOINT, userQuery);
     setUser(data.user);
-  }, [wallet, web3]);
+  }, [wallet?.account, web3]);
+
+  const _isApprovedAll = useCallback(
+    (address: string, nftAddress: string) => {
+      if (!web3 || !wallet?.account || !user) {
+        console.debug("can't verify if approved");
+        return false;
+      }
+      let allApproved = false;
+      try {
+        const allApprovals = user.approvedAll;
+        allApproved = allApprovals.some(
+          (all) =>
+            all.approved.toLowerCase() === address.toLowerCase() &&
+            all.nftAddress.toLowerCase() === nftAddress.toLowerCase()
+        );
+      } catch (err) {
+        console.debug("unexpected error when checking if user is approved");
+        return false;
+      }
+      return allApproved;
+    },
+    [wallet?.account, web3, user]
+  );
+
+  // checks if wallet.account has approved address
+  // to handle nftAddress and optionally tokenId
+  const isApproved = useCallback(
+    (address: string, nftAddress: string, tokenId?: string) => {
+      if (!web3 || !wallet?.account || !user) {
+        console.debug("can't verify if approved");
+        return false;
+      }
+      let approved = false;
+      try {
+        approved = _isApprovedAll(address, nftAddress);
+        if (approved) return true;
+        if (!tokenId) return false;
+        approved = user.approvals.some(
+          (approval) =>
+            approval.approved.toLowerCase() === address.toLowerCase() &&
+            approval.nftAddress.toLowerCase() === nftAddress.toLowerCase()
+        );
+      } catch (err) {
+        console.debug("unexpected error when checking if user is approved");
+        return false;
+      }
+      return approved;
+    },
+    [wallet?.account, web3, user, _isApprovedAll]
+  );
 
   const refresh = useCallback(async () => {
     await Promise.all([getNfts(), getUser()]);
@@ -119,7 +191,7 @@ export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
   }, [refresh]);
 
   return (
-    <GraphContext.Provider value={{ nfts, user }}>
+    <GraphContext.Provider value={{ nfts, user, isApproved }}>
       {children}
     </GraphContext.Provider>
   );
