@@ -74,7 +74,11 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
     try {
       const tokenId = faceId.split("::")[1];
-      await face.approveNft(tokenId);
+      const account = await face.getApproved(tokenId);
+      const wallet = await web3.eth.getAccounts();
+      if (account === wallet[0]) {
+        await face.approveNft(tokenId);
+      }
       await rent.lendOne(
         tokenId,
         // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
