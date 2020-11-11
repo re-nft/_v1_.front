@@ -10,8 +10,14 @@ type LendButtonProps = {
   id: string;
 };
 
+type StopLendButtonProps = {
+  handleStopLend: (id: string) => void;
+  id: string;
+};
+
 type LendCatalogueProps = {
   data?: Face[];
+  iLend: boolean;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
@@ -28,7 +34,18 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
   );
 };
 
-const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
+const StopLendButton: React.FC<StopLendButtonProps> = ({
+  handleStopLend,
+  id,
+}) => {
+  return (
+    <div className="Product__details">
+      <span className="Product__buy">Stop Lending</span>
+    </div>
+  );
+};
+
+const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState("");
   const handleLend = useCallback(
@@ -97,7 +114,12 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data }) => {
                     className="Product__details"
                     style={{ marginTop: "8px" }}
                   >
-                    <LendButton id={face.id} handleLend={handleLend} />
+                    {!iLend ? (
+                      <LendButton id={face.id} handleLend={handleLend} />
+                    ) : (
+                      <StopLendButton id={face.id} handleStopLend={() => {}} />
+                    )}
+                    {/* TODO: ^ placeholder for stop lend */}
                   </div>
                 </div>
               </div>

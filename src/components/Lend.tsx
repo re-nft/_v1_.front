@@ -100,7 +100,10 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
             </Box>
           </Box>
         </Box>
-        <LendCatalogue data={data} />
+        <LendCatalogue
+          data={data}
+          iLend={specificity === LendSpecificity.LENDING}
+        />
       </Box>
       {data.length < 1 && <Cold fancyText="One day it will be warm here..." />}
     </Box>
