@@ -61,6 +61,8 @@ export const GanFacesProvider: React.FC<GanFacesProps> = ({ children }) => {
       const img = document.getElementById("face");
       if (img != null) {
         img.setAttribute("src", url);
+        img.style.width = "100%";
+        img.style.height = "100%";
       }
 
       setFace(ganFace);
