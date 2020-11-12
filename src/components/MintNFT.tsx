@@ -56,7 +56,12 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
         >
           <img
             id="face"
-            style={{ width: "100%", height: "100%" }}
+            style={{
+              width: "75%",
+              height: "75%",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
             src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Anonymous_SVG.svg"
           ></img>
         </div>
