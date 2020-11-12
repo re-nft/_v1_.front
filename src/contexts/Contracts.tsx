@@ -170,9 +170,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       if (!dappOk(face)) return;
 
       // todo: checkdapp typeguard against nulls
-      const account = await face?.methods
-        .getApproved(tokenId)
-        .send({ from: wallet?.account });
+      const account = await face?.methods.getApproved(tokenId).call();
       return account;
     },
     [face, dappOk, wallet]
