@@ -1,6 +1,7 @@
 import React, { useContext, useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { addresses } from "../contracts";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
@@ -75,8 +76,8 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     try {
       const tokenId = faceId.split("::")[1];
       const account = await face.getApproved(tokenId);
-      const wallet = await web3.eth.getAccounts();
-      if (account !== wallet[0]) {
+      const isApproved = await face.isApprovedForAll();
+      if (!(isApproved || account === addresses.goerli.rent)) {
         await face.approveNft(tokenId);
       }
       await rent.lendOne(
