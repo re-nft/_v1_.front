@@ -19,10 +19,10 @@ type ContractsContextType = {
   };
   face: {
     contract?: Contract;
-    approveOfAllFaces: () => void;
-    approveNft: (tokenId: string) => void;
-    getApproved: (tokenId: string) => Promise<string>;
-    isApprovedForAll: () => Promise<boolean>;
+    approveAll: () => void;
+    approve: (tokenId: string) => void;
+    isApproved: (tokenId: string) => Promise<string>;
+    isApprovedAll: () => Promise<boolean>;
   };
   rent: {
     contract?: Contract;
@@ -51,10 +51,10 @@ const DefaultContractsContext = {
     approveNft: () => {
       throw new Error("must be implemented");
     },
-    getApproved: () => {
+    isApproved: () => {
       throw new Error("must be implemented");
     },
-    isApprovedForAll: () => {
+    isApprovedAll: () => {
       throw new Error("must be implemented");
     },
   },
@@ -148,7 +148,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [getAllContracts]);
 
   // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
-  const approveOfAllFaces = useCallback(async () => {
+  const approveAll = useCallback(async () => {
     if (!dappOk(face)) return;
 
     // todo: checkdapp typeguard against nulls
@@ -157,7 +157,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       .send({ from: wallet?.account });
   }, [face, dappOk, wallet]);
 
-  const approveNft = useCallback(
+  const approve = useCallback(
     async (tokenId: string) => {
       if (!dappOk(face)) return;
 
@@ -169,7 +169,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     [face, dappOk, wallet]
   );
 
-  const getApproved = useCallback(
+  const isApproved = useCallback(
     async (tokenId: string) => {
       if (!dappOk(face)) return;
 
@@ -180,7 +180,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     [face, dappOk, wallet]
   );
 
-  const isApprovedForAll = useCallback(async () => {
+  const isApprovedAll = useCallback(async () => {
     if (!dappOk(face)) return;
 
     // todo: checkdapp typeguard against nulls
@@ -255,10 +255,10 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
         },
         face: {
           contract: face,
-          approveOfAllFaces,
-          approveNft,
-          getApproved,
-          isApprovedForAll,
+          approveAll,
+          approve,
+          isApproved,
+          isApprovedAll,
         },
         rent: { contract: rent, lendOne, rentOne },
       }}

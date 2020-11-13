@@ -75,10 +75,10 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
     try {
       const tokenId = faceId.split("::")[1];
-      const account = await face.getApproved(tokenId);
-      const isApproved = await face.isApprovedForAll();
+      const account = await face.isApproved(tokenId);
+      const isApproved = await face.isApprovedAll();
       if (!(isApproved || account === addresses.goerli.rent)) {
-        await face.approveNft(tokenId);
+        await face.approve(tokenId);
       }
       await rent.lendOne(
         tokenId,
@@ -129,7 +129,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
 
     try {
-      await face.approveOfAllFaces();
+      await face.approveAll();
     } catch (e) {
       console.debug("could not approve all the faces");
     }
