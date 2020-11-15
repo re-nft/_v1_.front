@@ -32,6 +32,7 @@ type ContractsContextType = {
     ) => void;
     rentOne: (tokenId: string, rentDuration: string) => void;
     returnOne: (nftAddress: string, tokenId: string) => void;
+    claimCollateral: (nftAddress: string, tokenId: string) => void;
   };
 };
 
@@ -56,6 +57,9 @@ const DefaultContractsContext = {
       throw new Error("must be implemented");
     },
     returnOne: () => {
+      throw new Error("must be implemented");
+    },
+    claimCollateral: () => {
       throw new Error("must be implemented");
     },
   },
@@ -211,6 +215,17 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     [dappOk, wallet?.account, rent]
   );
 
+  const claimCollateral = useCallback(
+    async (nftAddress: string, tokenId: string) => {
+      if (!dappOk(rent)) return;
+
+      await rent?.methods
+        .claimCollateral(nftAddress, tokenId)
+        .send({ from: wallet?.account });
+    },
+    [dappOk, wallet?.account, rent]
+  );
+
   // ---------------------------------------------------------------
 
   return (
@@ -223,7 +238,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           },
         },
         face: { contract: face, approveOfAllFaces },
-        rent: { contract: rent, lendOne, rentOne, returnOne },
+        rent: { contract: rent, lendOne, rentOne, returnOne, claimCollateral },
       }}
     >
       {children}

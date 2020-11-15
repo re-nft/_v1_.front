@@ -44,12 +44,11 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
     // and there is no borrower
     // this query might become heavy eventually (the query behind this data)
     // and I may need to fetch it in multiple calls
-    const resolvedData = nfts.filter(
-      (item) =>
-        item.lender !== wallet.account?.toLowerCase() &&
-        (!showIBorrow
-          ? item.borrower == null
-          : item.borrower === wallet.account?.toLowerCase())
+    const resolvedData = nfts.filter((item) =>
+      // item.lender !== wallet.account?.toLowerCase() &&
+      !showIBorrow
+        ? item.borrower == null
+        : item.borrower === wallet.account?.toLowerCase()
     );
     setData(resolvedData);
   }, [nfts, user, wallet, showIBorrow]);
@@ -84,7 +83,11 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             </Box>
           </Box>
         </Box>
-        <RentCatalogue data={data} iBorrow={showIBorrow} />
+        <RentCatalogue
+          data={data}
+          iBorrow={showIBorrow}
+          account={wallet?.account}
+        />
       </Box>
       {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
     </Box>

@@ -11,6 +11,7 @@ import RentModal from "./RentModal";
 type RentCatalogueProps = {
   data?: Nft[];
   iBorrow: boolean;
+  account: string | null | undefined;
 };
 
 type RentButtonProps = {
@@ -24,6 +25,12 @@ type RentButtonProps = {
   nftPrice: number;
   borrowPrice: number;
   maxDuration: number;
+};
+
+type ClaimCollateralButtonProps = {
+  handleClaim: (id: string, nftAddress: string) => void;
+  id: string;
+  nftAddress: string;
 };
 
 type ReturnButtonProps = {
@@ -74,6 +81,26 @@ const RentButton: React.FC<RentButtonProps> = ({
   );
 };
 
+const ClaimButton: React.FC<ClaimCollateralButtonProps> = ({
+  handleClaim,
+  id,
+  nftAddress,
+}) => {
+  const handleClick = useCallback(() => {
+    handleClaim(id, nftAddress);
+  }, [handleClaim, id, nftAddress]);
+
+  return (
+    <span
+      className="Product__buy"
+      onClick={handleClick}
+      style={{ marginTop: "8px" }}
+    >
+      Claim Collateral
+    </span>
+  );
+};
+
 const ReturnButton: React.FC<ReturnButtonProps> = ({ handleReturn, id }) => {
   const handleClick = useCallback(() => {
     handleReturn(id);
@@ -90,7 +117,11 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({ handleReturn, id }) => {
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
+const RentCatalogue: React.FC<RentCatalogueProps> = ({
+  data,
+  iBorrow,
+  account,
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState<string>("");
   const [borrowPrice, setBorrowPrice] = useState<number>(0);
@@ -125,6 +156,22 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
         const resolvedId = tokenId.split("::")[1];
         // ! TODO: remove this addresses.goerli.face. Generalise
         await rent?.returnOne(addresses.goerli.face, resolvedId);
+      } catch (err) {
+        // TODO: add the notification here
+        // TODO: add the UX for busy (loading spinner)
+        console.debug("could not return the NFT");
+      }
+    },
+    [rent]
+  );
+
+  const handleClaim = useCallback(
+    async (tokenId: string, address: string) => {
+      try {
+        if (!rent?.claimCollateral) return;
+        // ! TODO: hack. generalise
+        const resolvedId = tokenId.split("::")[1];
+        await rent?.claimCollateral(address, resolvedId);
       } catch (err) {
         // TODO: add the notification here
         // TODO: add the UX for busy (loading spinner)
@@ -198,8 +245,16 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                     value={fromWei(nft.nftPrice)}
                     unit="fDAI"
                   />
+
                   <div className="Product__details">
-                    {!iBorrow ? (
+                    {account &&
+                    account?.toLowerCase() === nft.lender.toLowerCase() ? (
+                      <ClaimButton
+                        handleClaim={handleClaim}
+                        id={nft.face.id}
+                        nftAddress={nft.address}
+                      />
+                    ) : !iBorrow ? (
                       <RentButton
                         handleRent={handleRent}
                         id={nft.face.id}
@@ -214,6 +269,8 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
                       />
                     )}
                   </div>
+
+                  <div className="Product__details"></div>
                 </div>
               </div>
             );
