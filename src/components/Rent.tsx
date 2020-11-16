@@ -45,6 +45,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
     // this query might become heavy eventually (the query behind this data)
     // and I may need to fetch it in multiple calls
     const resolvedData = nfts.filter((item) =>
+      // commented this in order to display claim collateral for lender
       // item.lender !== wallet.account?.toLowerCase() &&
       !showIBorrow
         ? item.borrower == null
@@ -86,7 +87,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
         <RentCatalogue
           data={data}
           iBorrow={showIBorrow}
-          account={wallet?.account}
+          account={wallet?.account!}
         />
       </Box>
       {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}

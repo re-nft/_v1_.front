@@ -1,7 +1,6 @@
 import React, { useContext, useState, useCallback, useMemo } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
@@ -111,6 +110,11 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
     try {
       const tokenId = faceId.split("::")[1];
+      const account = await face.isApproved(tokenId);
+      const isApproved = await face.isApprovedAll();
+      if (!(isApproved || account === addresses.goerli.rent)) {
+        await face.approve(tokenId);
+      }
       await rent.lendOne(
         tokenId,
         // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
@@ -175,7 +179,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
 
     try {
-      await face.approveOfAllFaces();
+      await face.approveAll();
     } catch (e) {
       console.debug("could not approve all the faces");
     }

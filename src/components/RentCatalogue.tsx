@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useMemo } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 // contexts
@@ -11,7 +11,7 @@ import RentModal from "./RentModal";
 type RentCatalogueProps = {
   data?: Nft[];
   iBorrow: boolean;
-  account: string | null | undefined;
+  account: string;
 };
 
 type RentButtonProps = {
@@ -27,7 +27,7 @@ type RentButtonProps = {
   maxDuration: number;
 };
 
-type ClaimCollateralButtonProps = {
+type ClaimButtonProps = {
   handleClaim: (id: string, nftAddress: string) => void;
   id: string;
   nftAddress: string;
@@ -81,7 +81,7 @@ const RentButton: React.FC<RentButtonProps> = ({
   );
 };
 
-const ClaimButton: React.FC<ClaimCollateralButtonProps> = ({
+const ClaimButton: React.FC<ClaimButtonProps> = ({
   handleClaim,
   id,
   nftAddress,
@@ -184,6 +184,8 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({
   const fromWei = (v?: number): string =>
     v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
+  // issue with using useMemo inside the array since will have to use map on the nftaddressandid refer to the pr comment here https://github.com/RENTFT/front/pull/2, added useMemo in lent catalogue
+
   return (
     <Box>
       <RentModal
@@ -251,7 +253,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({
                     account?.toLowerCase() === nft.lender.toLowerCase() ? (
                       <ClaimButton
                         handleClaim={handleClaim}
-                        id={nft.face.id}
+                        id={nft.id}
                         nftAddress={nft.address}
                       />
                     ) : !iBorrow ? (

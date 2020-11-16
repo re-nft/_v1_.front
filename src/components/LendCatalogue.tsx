@@ -1,6 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext, useMemo } from "react";
 import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
+import Contracts from "../contexts/Contracts";
+import { Address } from "../types";
 
 import LendModal from "./LendModal";
 import { Face } from "../types";
@@ -18,6 +20,17 @@ type StopLendButtonProps = {
 type LendCatalogueProps = {
   data?: Face[];
   iLend: boolean;
+};
+
+type ClaimButtonProps = {
+  handleClaim: (id: string, nftAddress: string) => void;
+  id: string;
+  nftAddress: string;
+};
+
+type NftAndId = {
+  nftAddress: Address;
+  tokenId: string;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
@@ -45,9 +58,31 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
   );
 };
 
+const ClaimButton: React.FC<ClaimButtonProps> = ({
+  handleClaim,
+  id,
+  nftAddress,
+}) => {
+  const handleClick = useCallback(() => {
+    handleClaim(id, nftAddress);
+  }, [handleClaim, id, nftAddress]);
+
+  return (
+    <span
+      className="Product__buy"
+      onClick={handleClick}
+      style={{ marginTop: "8px" }}
+    >
+      Claim Collateral
+    </span>
+  );
+};
+
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState("");
+  const { rent } = useContext(Contracts);
+
   const handleLend = useCallback(
     (id) => {
       setModalOpen(true);
@@ -55,6 +90,36 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
     },
     [setModalOpen, setFaceId]
   );
+
+  const handleClaim = useCallback(
+    async (tokenId: string, address: string) => {
+      try {
+        if (!rent?.claimCollateral) return;
+        // ! TODO: hack. generalise
+        const resolvedId = tokenId.split("::")[1];
+        await rent?.claimCollateral(address, resolvedId);
+      } catch (err) {
+        // TODO: add the notification here
+        // TODO: add the UX for busy (loading spinner)
+        console.debug("could not return the NFT");
+      }
+    },
+    [rent]
+  );
+
+  const getNftAndId: NftAndId = useMemo(() => {
+    const parts = faceId.split("::");
+    if (parts.length < 2) {
+      return {
+        nftAddress: "",
+        tokenId: "",
+      };
+    }
+    return {
+      nftAddress: parts[0],
+      tokenId: parts[1],
+    };
+  }, [faceId]);
 
   return (
     <Box>
@@ -117,7 +182,18 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
                     {!iLend ? (
                       <LendButton id={face.id} handleLend={handleLend} />
                     ) : (
-                      <StopLendButton id={face.id} handleStopLend={() => {}} />
+                      // need claim collateral option here as well since the lent nft's are shown here once someone rents it
+                      <div>
+                        <StopLendButton
+                          id={face.id}
+                          handleStopLend={() => {}}
+                        />
+                        <ClaimButton
+                          handleClaim={handleClaim}
+                          id={getNftAndId.tokenId}
+                          nftAddress={getNftAndId.nftAddress}
+                        />
+                      </div>
                     )}
                     {/* TODO: ^ placeholder for stop lend */}
                   </div>

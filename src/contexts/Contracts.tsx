@@ -19,7 +19,10 @@ type ContractsContextType = {
   };
   face: {
     contract?: Contract;
-    approveOfAllFaces: () => void;
+    approveAll: () => void;
+    approve: (tokenId: string) => void;
+    isApproved: (tokenId: string) => Promise<string>;
+    isApprovedAll: () => Promise<boolean>;
   };
   rent: {
     contract?: Contract;
@@ -45,7 +48,16 @@ const DefaultContractsContext = {
     },
   },
   face: {
-    approveOfAllFaces: () => {
+    approveAll: () => {
+      throw new Error("must be implemented");
+    },
+    approve: () => {
+      throw new Error("must be implemented");
+    },
+    isApproved: () => {
+      throw new Error("must be implemented");
+    },
+    isApprovedAll: () => {
       throw new Error("must be implemented");
     },
   },
@@ -143,7 +155,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [getAllContracts]);
 
   // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
-  const approveOfAllFaces = useCallback(async () => {
+  const approveAll = useCallback(async () => {
     if (!dappOk(face)) return;
 
     // todo: checkdapp typeguard against nulls
@@ -151,6 +163,39 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       .setApprovalForAll(addresses.goerli.rent, true)
       .send({ from: wallet?.account });
   }, [face, dappOk, wallet?.account]);
+
+  const approve = useCallback(
+    async (tokenId: string) => {
+      if (!dappOk(face)) return;
+
+      // todo: checkdapp typeguard against nulls
+      await face?.methods
+        .approve(addresses.goerli.rent, tokenId)
+        .send({ from: wallet?.account });
+    },
+    [face, dappOk, wallet]
+  );
+
+  const isApproved = useCallback(
+    async (tokenId: string) => {
+      if (!dappOk(face)) return;
+
+      // todo: checkdapp typeguard against nulls
+      const account = await face?.methods.getApproved(tokenId).call();
+      return account;
+    },
+    [face, dappOk, wallet]
+  );
+
+  const isApprovedAll = useCallback(async () => {
+    if (!dappOk(face)) return;
+
+    // todo: checkdapp typeguard against nulls
+    const bool = await face?.methods
+      .isApprovedForAll(wallet?.account, addresses.goerli.rent)
+      .call();
+    return bool;
+  }, [face, dappOk, wallet]);
 
   // infinite approval of the payment token
   const approveDai = useCallback(async () => {
@@ -237,8 +282,14 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
             approve: approveDai,
           },
         },
-        face: { contract: face, approveOfAllFaces },
         rent: { contract: rent, lendOne, rentOne, returnOne, claimCollateral },
+        face: {
+          contract: face,
+          approveAll,
+          approve,
+          isApproved,
+          isApprovedAll,
+        },
       }}
     >
       {children}
