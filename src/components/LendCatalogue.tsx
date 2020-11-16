@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 import Contracts from "../contexts/Contracts";
-import { Address } from "../types";
 
 import LendModal from "./LendModal";
 import { Face } from "../types";
@@ -26,11 +25,6 @@ type ClaimButtonProps = {
   handleClaim: (id: string, nftAddress: string) => void;
   id: string;
   nftAddress: string;
-};
-
-type NftAndId = {
-  nftAddress: Address;
-  tokenId: string;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
@@ -96,8 +90,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
       try {
         if (!rent?.claimCollateral) return;
         // ! TODO: hack. generalise
-        const resolvedId = tokenId.split("::")[1];
-        await rent?.claimCollateral(address, resolvedId);
+        await rent?.claimCollateral(address, tokenId);
       } catch (err) {
         // TODO: add the notification here
         // TODO: add the UX for busy (loading spinner)
@@ -107,19 +100,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
     [rent]
   );
 
-  const getNftAndId: NftAndId = useMemo(() => {
-    const parts = faceId.split("::");
-    if (parts.length < 2) {
-      return {
-        nftAddress: "",
-        tokenId: "",
-      };
-    }
-    return {
-      nftAddress: parts[0],
-      tokenId: parts[1],
-    };
-  }, [faceId]);
+  // face id is only getting set on lend click hence removed getnftandid function for now
 
   return (
     <Box>
@@ -190,8 +171,8 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
                         />
                         <ClaimButton
                           handleClaim={handleClaim}
-                          id={getNftAndId.tokenId}
-                          nftAddress={getNftAndId.nftAddress}
+                          id={id}
+                          nftAddress={addr}
                         />
                       </div>
                     )}
