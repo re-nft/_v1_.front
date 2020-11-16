@@ -47,10 +47,10 @@ const DefaultContractsContext = {
     },
   },
   face: {
-    approveOfAllFaces: () => {
+    approveAll: () => {
       throw new Error("must be implemented");
     },
-    approveNft: () => {
+    approve: () => {
       throw new Error("must be implemented");
     },
     isApproved: () => {
@@ -180,7 +180,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       const account = await face?.methods.getApproved(tokenId).call();
       return account;
     },
-    [face, dappOk, wallet]
+    [face, dappOk]
   );
 
   const isApprovedAll = useCallback(async () => {
@@ -274,7 +274,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           isApproved,
           isApprovedAll,
         },
-        rent: { contract: rent, lendOne, rentOne },
+        rent: { contract: rent, lendOne, rentOne, returnOne },
       }}
     >
       {children}
