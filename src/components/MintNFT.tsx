@@ -84,12 +84,14 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           >
             Give me a face
           </button>
+          {/* NOTE: we should be able to generate when Idle, because we may want two or more copies of the same face */}
           <button
             onClick={mintFace}
             role="button"
             disabled={
-              stages === GanFaceStages.Idle ||
-              stages === GanFaceStages.Generating
+              stages === GanFaceStages.Generating ||
+              stages === GanFaceStages.PinningToIpfs ||
+              stages === GanFaceStages.Minting
             }
             className="Product__button"
             style={{
