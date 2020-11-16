@@ -1,4 +1,4 @@
-export const getGanFace = async () => {
+export const getGanFace = async (): Promise<Blob> => {
   const response = await fetch(
     "https://face-generator.p.rapidapi.com/faces/random",
     {
