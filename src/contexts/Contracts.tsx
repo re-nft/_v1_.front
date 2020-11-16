@@ -60,6 +60,9 @@ const DefaultContractsContext = {
     isApprovedAll: () => {
       throw new Error("must be implemented");
     },
+    approveNft: () => {
+      throw new Error("must be implemented");
+    },
   },
   rent: {
     lendOne: () => {
