@@ -12,7 +12,6 @@ import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
 import { Address } from "../types";
-import { addresses } from "../contracts";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
