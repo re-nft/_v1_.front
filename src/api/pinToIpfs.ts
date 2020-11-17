@@ -1,7 +1,11 @@
-export const pinToIpfs = async ({ blob }) => {
+export const pinToIpfs = async ({
+  blob,
+}: {
+  blob: string | Blob;
+}): Promise<Response | undefined> => {
   const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
   try {
-    let data = new FormData();
+    const data = new FormData();
     data.append("file", blob);
     const pinataOptions = JSON.stringify({
       cidVersion: 0,
@@ -39,5 +43,5 @@ export const pinToIpfs = async ({ blob }) => {
   } catch (error) {
     console.debug("captured pinning to IPFS with Pinata error", error);
   }
-  return null;
+  return;
 };

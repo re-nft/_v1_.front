@@ -187,7 +187,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       const account = await face?.methods.getApproved(tokenId).call();
       return account;
     },
-    [face, dappOk, wallet]
+    [face, dappOk]
   );
 
   const isApprovedAll = useCallback(async () => {
