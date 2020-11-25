@@ -22,8 +22,12 @@ type ContractsContextType = {
   };
   face: {
     contract?: Contract;
-    approveAll: () => void;
-    approve: (nftAddress: Address, tokenId: string) => void;
+    approveAll: (nftAddress: Address, whoApprove: Address) => void;
+    approve: (
+      nftAddress: Address,
+      tokenId: string,
+      whoApprove: Address
+    ) => void;
     isApproved: (
       nftAddress: Address,
       tokenId: string,
@@ -44,13 +48,6 @@ type ContractsContextType = {
 };
 
 const DefaultContractsContext = {
-  pmtToken: {
-    dai: {
-      approve: () => {
-        throw new Error("must be implemented");
-      },
-    },
-  },
   face: {
     approveAll: () => {
       throw new Error("must be implemented");
@@ -113,7 +110,6 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   const { web3, wallet } = useContext(DappContext);
   const [face, setFace] = useState<Contract>();
   const [rent, setRent] = useState<Contract>();
-  const [dai, setDai] = useState<Contract>();
 
   // checks that there is web3 and wallet
   // plus any additional args
@@ -131,23 +127,23 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     [web3, wallet]
   );
 
-  const getDaiContract = useCallback(async () => {
-    if (!dappOk()) return;
-    if (dai != null) return;
+  // const getDaiContract = useCallback(async () => {
+  //   if (!dappOk()) return;
+  //   if (dai != null) return;
 
-    // todo: checkDapp as typeguard that web3 is not null
-    const contract = new web3!.eth.Contract(
-      abis.erc20.abi,
-      addresses.goerli.dai
-    );
-    setDai(contract);
-  }, [web3, dai, dappOk]);
+  //   // todo: checkDapp as typeguard that web3 is not null
+  //   const contract = new web3!.eth.Contract(
+  //     abis.erc20.abi,
+  //     addresses.goerli.dai
+  //   );
+  //   setDai(contract);
+  // }, [web3, dai, dappOk]);
 
   const getFaceContract = useCallback(async () => {
     if (!dappOk()) return;
     if (face != null) return;
 
-    const contract = new web3!.eth.Contract(
+    const contract = new web3.eth.Contract(
       abis.goerli.face.abi,
       addresses.goerli.face
     );
@@ -158,7 +154,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     if (!dappOk()) return;
     if (rent != null) return;
 
-    const contract = new web3!.eth.Contract(
+    const contract = new web3.eth.Contract(
       abis.goerli.rent.abi,
       addresses.goerli.rent
     );
@@ -166,14 +162,13 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [web3, rent, dappOk]);
 
   const getAllContracts = useCallback(async () => {
-    await Promise.all([getDaiContract(), getFaceContract(), getRentContract()]);
-  }, [getDaiContract, getFaceContract, getRentContract]);
+    await Promise.all([getFaceContract(), getRentContract()]);
+  }, [getFaceContract, getRentContract]);
 
   useEffect(() => {
     getAllContracts();
   }, [getAllContracts]);
 
-  // TODO: get graph field for all approvals for checkz. and make a bool field somewhere
   const approveAll = useCallback(async () => {
     if (!dappOk(face)) return;
 
@@ -184,7 +179,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [face, dappOk, wallet?.account]);
 
   const approve = useCallback(
-    async (tokenId: string) => {
+    async (nftAddress: string, tokenId: string, approveWho: Address) => {
       if (!dappOk(face)) return;
 
       // todo: checkdapp typeguard against nulls
