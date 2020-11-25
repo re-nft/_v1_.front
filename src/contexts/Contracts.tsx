@@ -9,24 +9,29 @@ import { Contract } from "web3-eth-contract";
 
 import DappContext from "./Dapp";
 import { abis, addresses } from "../contracts";
+import { Address } from "../types";
 
 type ContractsContextType = {
-  pmtToken: {
-    dai: {
-      contract?: Contract;
-      approve: () => void;
-    };
+  erc20: {
+    contract?: Contract;
+    approve: () => void;
+  };
+  erc721: {
+    contract?: Contract;
+    approve: () => void;
   };
   face: {
     contract?: Contract;
     approveAll: () => void;
-    approve: (tokenId: string) => void;
-    isApproved: (tokenId: string) => Promise<string>;
-    isApprovedAll: () => Promise<boolean>;
+    approve: (nftAddress: Address, tokenId: string) => void;
+    isApproved: (
+      nftAddress: Address,
+      tokenId: string,
+      whoIsApproved: Address
+    ) => Promise<boolean>;
   };
   rent: {
     contract?: Contract;
-    // TODO: lendOne and rentOne here need to take NFT address to generalise this
     lendOne: (
       tokenId: string,
       maxDuration: string,
@@ -56,9 +61,6 @@ const DefaultContractsContext = {
     isApproved: () => {
       throw new Error("must be implemented");
     },
-    isApprovedAll: () => {
-      throw new Error("must be implemented");
-    },
   },
   rent: {
     lendOne: () => {
@@ -68,6 +70,27 @@ const DefaultContractsContext = {
       throw new Error("must be implemented");
     },
     returnOne: () => {
+      throw new Error("must be implemented");
+    },
+    claimCollateralOne: () => {
+      throw new Error("must be implemented");
+    },
+    stopLendingOne: () => {
+      throw new Error("must be implemented");
+    },
+    lendMultiple: () => {
+      throw new Error("must be implemented");
+    },
+    rentMultiple: () => {
+      throw new Error("must be implemented");
+    },
+    returnMultiple: () => {
+      throw new Error("must be implemented");
+    },
+    claimCollateralMultiple: () => {
+      throw new Error("must be implemented");
+    },
+    stopLendingMultiple: () => {
       throw new Error("must be implemented");
     },
   },
@@ -173,7 +196,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   );
 
   const isApproved = useCallback(
-    async (tokenId: string) => {
+    async (nftAddress: Address, tokenId: string) => {
       if (!dappOk(face)) return;
 
       // todo: checkdapp typeguard against nulls
