@@ -2,12 +2,22 @@ import React, { createContext, useEffect, useState, useCallback } from "react";
 import { useWallet, Wallet } from "use-wallet";
 import Web3 from "web3";
 
+import { THROWS } from "../utils";
+import {
+  getAll,
+  NetworkSpecificAbis,
+  NetworkSpecificAddresses,
+} from "../contracts";
+
 type DappContextType = {
   wallet?: Wallet<"injected">;
   web3?: Web3;
+  connectWallet: () => void;
+  addresses?: NetworkSpecificAddresses;
+  abis?: NetworkSpecificAbis;
 };
 
-const DefaultDappContext: DappContextType = {};
+const DefaultDappContext: DappContextType = { connectWallet: THROWS };
 
 const DappContext = createContext<DappContextType>(DefaultDappContext);
 
@@ -16,39 +26,50 @@ type DappProviderProps = {
 };
 
 export const DappProvider: React.FC<DappProviderProps> = ({ children }) => {
-  // state & provider related
   const [web3, setWeb3] = useState<Web3>();
   const wallet = useWallet<"injected">();
+  const [addresses, setAddresses] = useState<NetworkSpecificAddresses>();
+  const [abis, setAbis] = useState<NetworkSpecificAbis>();
 
-  // callbacks
+  const connectWeb3 = useCallback(() => {
+    if (
+      wallet.status !== "connected" ||
+      !("web3" in window) ||
+      // @ts-ignore
+      !window.web3.currentProvider
+    )
+      return;
+    // @ts-ignore
+    setWeb3(new Web3(window.web3.currentProvider));
+  }, [wallet.status]);
+
   const connectWallet = useCallback(() => {
-    if (wallet != null && wallet.account) {
-      console.debug("already connected");
+    try {
+      wallet.connect("injected");
+    } catch (err) {
+      console.error("could not connect the injected wallet");
       return;
     }
-    wallet.connect("injected");
+  }, [wallet]);
 
-    if (web3 == null) {
-      if ("web3" in window) {
-        //@ts-ignore
-        if (!window.web3.currentProvider) {
-          return;
-        }
-        //@ts-ignore
-        setWeb3(new Web3(window.web3.currentProvider));
-      }
-    }
-    // ! could not add window here. compile time error that window is not defined
-    //@ts-ignore
-  }, [wallet, web3]);
+  const fetchNetworkContext = useCallback(async () => {
+    if (wallet.status !== "connected") return;
+    const all = getAll(wallet?.account || "");
+    if (!all) return;
+    setAddresses(all.addresses);
+    setAbis(all.abis);
+  }, [wallet.status, wallet.account]);
 
-  // ---------------
   useEffect(() => {
-    connectWallet();
-  }, [connectWallet]);
+    connectWeb3();
+    fetchNetworkContext();
+    // if the network or the account has changed -> re-connect the web3
+  }, [wallet.networkName, wallet.account, connectWeb3, fetchNetworkContext]);
 
   return (
-    <DappContext.Provider value={{ web3, wallet }}>
+    <DappContext.Provider
+      value={{ web3, wallet, connectWallet, addresses, abis }}
+    >
       {children}
     </DappContext.Provider>
   );

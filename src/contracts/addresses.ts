@@ -1,4 +1,11 @@
-export const addresses = {
+export type NetworkSpecificAddresses = {
+  face: string;
+  rent: string;
+  resolver: string;
+  faucet: string;
+};
+
+export default {
   goerli: {
     face: "0x06fD0A6B70B937813BCCEFeaA9E5eDDbb9685d69",
     rent: "0x6E796A927a7BE9D844616D593053F6491C93Aa34",
