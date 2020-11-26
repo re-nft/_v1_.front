@@ -5,11 +5,11 @@ import { Box, Tooltip } from "@material-ui/core";
 import DappContext from "../contexts/Dapp";
 import Contracts from "../contexts/Contracts";
 import { addresses } from "../contracts";
-import { Nft } from "../types";
+import { Lending } from "../types";
 import RentModal from "./RentModal";
 
 type RentCatalogueProps = {
-  data?: Nft[];
+  data?: Lending[];
   iBorrow: boolean;
 };
 

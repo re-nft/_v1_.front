@@ -9,9 +9,16 @@ import { Contract } from "web3-eth-contract";
 
 import DappContext from "./Dapp";
 import { abis, addresses } from "../contracts";
-import { Address } from "../types";
+import { Address, Lending, PaymentToken } from "../types";
+import { MAX_UINT256 } from "../constants";
+import { THROWS } from "../utils";
 
 type ContractsContextType = {
+  helpers: {
+    getOpenSeaNfts: () => Lending[];
+    setExternalNfts: () => Promise<void>;
+    getExternalNfts: () => Promise<void>;
+  };
   erc20: {
     contract?: Contract;
     approve: () => void;
@@ -22,83 +29,114 @@ type ContractsContextType = {
   };
   face: {
     contract?: Contract;
-    approveAll: (nftAddress: Address, whoApprove: Address) => void;
-    approve: (
-      nftAddress: Address,
-      tokenId: string,
-      whoApprove: Address
-    ) => void;
-    isApproved: (
-      nftAddress: Address,
-      tokenId: string,
-      whoIsApproved: Address
-    ) => Promise<boolean>;
+    isApproved: (tokenId: string, whichOperator: Address) => Promise<boolean>;
+    approve: (tokenId: string, operator: Address) => void;
+    approveAll: (operator: Address) => void;
   };
   rent: {
     contract?: Contract;
     lendOne: (
+      nftAddress: Address,
       tokenId: string,
-      maxDuration: string,
-      borrowPrice: string,
-      nftPrice: string
+      maxRentDuration: string,
+      dailyRentPrice: string,
+      nftPrice: string,
+      paymentToken: PaymentToken,
+      gasSponsor?: Address
     ) => void;
-    rentOne: (tokenId: string, rentDuration: string) => void;
-    returnOne: (nftAddress: string, tokenId: string) => void;
+    lendMultiple: (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      maxRentDurations: string[],
+      dailyRentPrices: string[],
+      nftPrices: string[],
+      paymentTokens: PaymentToken[],
+      gasSponsors?: Address[]
+    ) => void;
+    rentOne: (
+      nftAddress: Address,
+      tokenId: string,
+      lendingShortId: string,
+      lendingLongId: string,
+      rentDuration: string,
+      gasSponsor?: Address
+    ) => void;
+    rentMultiple: (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      lendingShortIds: string[],
+      lendingLongIds: string[],
+      rentDurations: string[],
+      gasSponsors?: Address[]
+    ) => void;
+    returnOne: (
+      nftAddress: Address,
+      tokenId: string,
+      lendingShortId: string,
+      lendingLongId: string,
+      gasSponsor?: Address
+    ) => void;
+    returnMultiple: (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      lendingShortIds: string[],
+      lendingLongIds: string[],
+      gasSponsors?: Address[]
+    ) => void;
+    claimCollateralOne: (
+      nftAddress: Address[],
+      tokenId: string,
+      lendingShortId: string,
+      lendingLongId: string,
+      gasSponsor?: Address
+    ) => void;
+    claimCollateralMultiple: (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      lendingShortIds: string[],
+      lendingLongIds: string[],
+      gasSponsors?: Address[]
+    ) => void;
+    stopLendingOne: (
+      nftAddress: Address[],
+      tokenId: string,
+      lendingShortId: string,
+      lendingLongId: string,
+      gasSponsor?: Address
+    ) => void;
+    stopLendingMultiple: (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      lendingShortIds: string[],
+      lendingLongIds: string[],
+      gasSponsors?: Address[]
+    ) => void;
   };
 };
 
 const DefaultContractsContext = {
   face: {
-    approveAll: () => {
-      throw new Error("must be implemented");
-    },
-    approve: () => {
-      throw new Error("must be implemented");
-    },
-    isApproved: () => {
-      throw new Error("must be implemented");
-    },
+    isApproved: THROWS,
+    approve: THROWS,
+    approveAll: THROWS,
   },
   rent: {
-    lendOne: () => {
-      throw new Error("must be implemented");
-    },
-    rentOne: () => {
-      throw new Error("must be implemented");
-    },
-    returnOne: () => {
-      throw new Error("must be implemented");
-    },
-    claimCollateralOne: () => {
-      throw new Error("must be implemented");
-    },
-    stopLendingOne: () => {
-      throw new Error("must be implemented");
-    },
-    lendMultiple: () => {
-      throw new Error("must be implemented");
-    },
-    rentMultiple: () => {
-      throw new Error("must be implemented");
-    },
-    returnMultiple: () => {
-      throw new Error("must be implemented");
-    },
-    claimCollateralMultiple: () => {
-      throw new Error("must be implemented");
-    },
-    stopLendingMultiple: () => {
-      throw new Error("must be implemented");
-    },
+    lendOne: THROWS,
+    lendMultiple: THROWS,
+    rentOne: THROWS,
+    rentMultiple: THROWS,
+    returnOne: THROWS,
+    returnMultiple: THROWS,
+    claimCollateralOne: THROWS,
+    claimCollateralMultiple: THROWS,
+    stopLendingOne: THROWS,
+    stopLendingMultiple: THROWS,
   },
 };
 
 const ContractsContext = createContext<ContractsContextType>(
   DefaultContractsContext
 );
-
-// ! 1bn (18 d.p.)
-const UNLIMITED_ALLOWANCE = "1000000000000000000000000000";
 
 type ContractsProviderProps = {
   children: React.ReactNode;
@@ -212,13 +250,13 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [face, dappOk, wallet]);
 
   // infinite approval of the payment token
-  const approveDai = useCallback(async () => {
-    if (!dappOk(dai)) return;
+  // const approveDai = useCallback(async () => {
+  //   if (!dappOk(dai)) return;
 
-    await dai?.methods
-      .approve(addresses.goerli.rent, UNLIMITED_ALLOWANCE)
-      .send({ from: wallet?.account });
-  }, [wallet?.account, dai, dappOk]);
+  //   await dai?.methods
+  //     .approve(addresses.goerli.rent, UNLIMITED_ALLOWANCE)
+  //     .send({ from: wallet?.account });
+  // }, [wallet?.account, dai, dappOk]);
 
   // ----------------- Contract Interaction -----------------------
 
