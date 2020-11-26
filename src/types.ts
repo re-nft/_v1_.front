@@ -2,7 +2,7 @@ export type Optional<T> = undefined | T;
 
 export type Address = string;
 
-export type Nft = {
+export type Lending = {
   id: string;
   address: Address;
   lender: Address;
@@ -37,9 +37,20 @@ export type ApprovedAll = {
 
 export type User = {
   id: string;
-  lending: Nft[];
-  borrowing: Nft[];
+  lending: Lending[];
+  borrowing: Lending[];
   faces: Face[];
   approvals: Approval[];
   approvedAll: ApprovedAll[];
 };
+
+export enum PaymentToken {
+  DAI, // 0
+  USDC, // 1
+  USDT, // 2
+  TUSD, // 3
+  ETH, // 4
+  UNI, // 5
+  YFI, // 6
+  NAZ, // 7
+}

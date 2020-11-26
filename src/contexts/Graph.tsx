@@ -11,10 +11,10 @@ import Web3 from "web3";
 // contexts
 import DappContext from "./Dapp";
 
-import { Nft, User } from "../types";
+import { Lending, User } from "../types";
 
 type GraphContextType = {
-  nfts?: Nft[];
+  nfts?: Lending[];
   user?: User;
   isApproved: (
     address: string,
@@ -111,7 +111,7 @@ type GraphProviderProps = {
 export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
 
-  const [nfts, setNfts] = useState<Nft[]>();
+  const [nfts, setNfts] = useState<Lending[]>();
   const [user, setUser] = useState<User>();
 
   const getNfts = useCallback(async () => {

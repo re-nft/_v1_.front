@@ -13,7 +13,7 @@ import GraphContext from "../contexts/Graph";
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import RentCatalogue from "./RentCatalogue";
-import { Nft } from "../types";
+import { Lending } from "../types";
 import Switcher from "./Switcher";
 
 type RentProps = {
@@ -21,13 +21,13 @@ type RentProps = {
 };
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
-  const isValid = (data?: Nft[]) => {
+  const isValid = (data?: Lending[]) => {
     return data != null && data.length > 0;
   };
 
   const { wallet } = useContext(DappContext);
   const { nfts, user } = useContext(GraphContext);
-  const [data, setData] = useState<Nft[]>();
+  const [data, setData] = useState<Lending[]>();
   const [showIBorrow, setShowIborrow] = useState(false);
   const dataIsValid = useMemo(() => {
     return isValid(data);
