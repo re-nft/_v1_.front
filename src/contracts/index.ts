@@ -18,4 +18,4 @@ export const getAll = (
   }
 };
 
-export { NetworkSpecificAddresses, NetworkSpecificAbis };
+export { NetworkSpecificAddresses, NetworkSpecificAbis, abis, addresses };
