@@ -11,45 +11,18 @@ import Web3 from "web3";
 // contexts
 import DappContext from "./Dapp";
 
-import { Lending, User } from "../types";
+import { User } from "../types";
 
 type GraphContextType = {
-  nfts?: Lending[];
   user?: User;
-  isApproved: (
-    address: string,
-    nftAddress: string,
-    tokenId?: string
-  ) => boolean;
 };
 
-const DefaultGraphContext: GraphContextType = {
-  isApproved: () => {
-    throw new Error("must be implemented");
-  },
-};
+const DefaultGraphContext: GraphContextType = {};
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
+// TODO: move to production endpoint
 const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
-
-const queryNft = `{
-  nfts {
-    id
-    address
-    lender
-    borrower
-    maxDuration
-    actualDuration
-    borrowedAt
-    borrowPrice
-    nftPrice
-    face {
-      id
-      uri
-    }
-  }
-}`;
 
 const queryUser = (user: string, web3: Web3): string => {
   return `{
@@ -111,16 +84,7 @@ type GraphProviderProps = {
 export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
 
-  const [nfts, setNfts] = useState<Lending[]>();
   const [user, setUser] = useState<User>();
-
-  const getNfts = useCallback(async () => {
-    const data = await request(ENDPOINT, queryNft);
-    if ("nfts" in data && data["nfts"].length !== 0) {
-      const nftsData = data["nfts"];
-      setNfts(nftsData);
-    }
-  }, []);
 
   const getUser = useCallback(async () => {
     if (!web3 || !wallet?.account) {
@@ -132,68 +96,16 @@ export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
     setUser(data.user);
   }, [wallet?.account, web3]);
 
-  const _isApprovedAll = useCallback(
-    (address: string, nftAddress: string) => {
-      if (!web3 || !wallet?.account || !user) {
-        console.debug("can't verify if approved");
-        return false;
-      }
-      let allApproved = false;
-      try {
-        const allApprovals = user.approvedAll;
-        allApproved = allApprovals.some(
-          (all) =>
-            all.approved.toLowerCase() === address.toLowerCase() &&
-            all.nftAddress.toLowerCase() === nftAddress.toLowerCase()
-        );
-      } catch (err) {
-        console.debug("unexpected error when checking if user is approved");
-        return false;
-      }
-      return allApproved;
-    },
-    [wallet?.account, web3, user]
-  );
-
-  // checks if wallet.account has approved address
-  // to handle nftAddress and optionally tokenId
-  const isApproved = useCallback(
-    (address: string, nftAddress: string, tokenId?: string) => {
-      if (!web3 || !wallet?.account || !user) {
-        console.debug("can't verify if approved");
-        return false;
-      }
-      let approved = false;
-      try {
-        approved = _isApprovedAll(address, nftAddress);
-        if (approved) return true;
-        if (!tokenId) return false;
-        approved = user.approvals.some(
-          (approval) =>
-            approval.approved.toLowerCase() === address.toLowerCase() &&
-            approval.nftAddress.toLowerCase() === nftAddress.toLowerCase()
-        );
-      } catch (err) {
-        console.debug("unexpected error when checking if user is approved");
-        return false;
-      }
-      return approved;
-    },
-    [wallet?.account, web3, user, _isApprovedAll]
-  );
-
   const refresh = useCallback(async () => {
-    await Promise.all([getNfts(), getUser()]);
-  }, [getNfts, getUser]);
+    await getUser();
+  }, [getUser]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
 
   return (
-    <GraphContext.Provider value={{ nfts, user, isApproved }}>
-      {children}
-    </GraphContext.Provider>
+    <GraphContext.Provider value={{ user }}>{children}</GraphContext.Provider>
   );
 };
 
