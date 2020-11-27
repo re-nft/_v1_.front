@@ -1,14 +1,9 @@
-import React, {
-  useContext,
-  useState,
-  useMemo,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import DappContext from "../contexts/Dapp";
-import GraphContext from "../contexts/Graph";
+// import GraphContext from "../contexts/Graph";
+import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
@@ -21,42 +16,37 @@ type RentProps = {
 };
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
-  const isValid = (data?: Lending[]) => {
-    return data != null && data.length > 0;
-  };
-
   const { wallet } = useContext(DappContext);
-  const { nfts, user } = useContext(GraphContext);
-  const [data, setData] = useState<Lending[]>();
+  // const { user } = useContext(GraphContext);
+  const { helpers } = useContext(ContractsContext);
+  const { fetchOpenSeaNfts } = helpers;
+  const [data, setData] = useState<Lending[]>([]);
   const [showIBorrow, setShowIborrow] = useState(false);
-  const dataIsValid = useMemo(() => {
-    return isValid(data);
-  }, [data]);
+
   const handleShowIBorrow = useCallback(() => {
     setShowIborrow((showIBorrow) => !showIBorrow);
   }, []);
   useEffect(() => {
-    if (!nfts || !wallet || !wallet.account) {
-      console.debug("no nfts or wallet or account");
+    if (!wallet?.account) {
+      console.debug("no wallet or account");
       return;
     }
+    fetchOpenSeaNfts(wallet?.account);
     // ! only pulling NFTs where we are not the lender
     // and there is no borrower
     // this query might become heavy eventually (the query behind this data)
     // and I may need to fetch it in multiple calls
-    const resolvedData = nfts.filter(
-      (item) =>
-        item.lender !== wallet.account?.toLowerCase() &&
-        (!showIBorrow
-          ? item.borrower == null
-          : item.borrower === wallet.account?.toLowerCase())
-    );
-    setData(resolvedData);
-  }, [nfts, user, wallet, showIBorrow]);
+    // const resolvedData = nfts.filter(
+    //   (item) =>
+    //     item.lender !== wallet.account?.toLowerCase() &&
+    //     (!showIBorrow
+    //       ? item.borrower == null
+    //       : item.borrower === wallet.account?.toLowerCase())
+    // );
+    // setData(resolvedData);
+  }, [wallet?.account, showIBorrow, fetchOpenSeaNfts]);
 
-  if (hidden) {
-    return <></>;
-  }
+  if (hidden) return <></>;
 
   return (
     <Box>
@@ -66,7 +56,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {dataIsValid && <ScrollForMore />}
+          {data.length > 0 && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -86,7 +76,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
         </Box>
         <RentCatalogue data={data} iBorrow={showIBorrow} />
       </Box>
-      {!dataIsValid && <Cold fancyText="One day it will be warm here..." />}
+      {data.length < 1 && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };

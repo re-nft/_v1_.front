@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useMemo, useContext } from "react";
 import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
 import Link from "gatsby-link";
@@ -14,11 +14,9 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { wallet } = useContext(DappContext);
-  const userAddress = useCallback(() => {
-    if (wallet == null || !wallet.account) {
-      return "";
-    }
+  const { wallet, connectWallet } = useContext(DappContext);
+  const userAddress = useMemo(() => {
+    if (!wallet?.account) return "Connect to Görli";
     return short(wallet.account);
   }, [wallet]);
 
@@ -34,8 +32,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   Rent NFT
                 </Link>
               </h1>
-              <div className="Header__summary">
-                {userAddress() !== "" ? userAddress() : "Connect to Görli"}
+              <div className="Header__summary" onClick={connectWallet}>
+                {userAddress}
               </div>
             </div>
           </div>
