@@ -10,12 +10,13 @@ import { Box } from "@material-ui/core";
 // contexts
 import DappContext from "../contexts/Dapp";
 import GraphContext from "../contexts/Graph";
+import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 import Switcher from "./Switcher";
-import { Lending, Nft } from "types";
+import { Lending } from "types";
 
 // with id separator (2 characters)
 const LenOfAddress = 44;
@@ -32,8 +33,14 @@ enum LendSpecificity {
 const Lend: React.FC<LendProps> = ({ hidden }) => {
   const { wallet } = useContext(DappContext);
   const { user } = useContext(GraphContext);
+  const { helpers } = useContext(ContractsContext);
+  const {
+    fetchOpenSeaNfts,
+    externalNftAddresses,
+    fetchExternalNfts,
+    nfts,
+  } = helpers;
   const [currentlyLending, setCurrentlyLending] = useState<Lending[]>([]);
-  const [allMyNfts, setAllMyNfts] = useState<Nft[]>([]);
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
@@ -51,23 +58,21 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
       return;
     }
 
-    // const curr: Face[] = [];
-    // const currIds: string[] = [];
-    // for (let i = 0; i < user.lending.length; i++) {
-    //   const _id = user.lending[i].id;
-    //   const resolvedId = _id.slice(0, _id.length - LenOfAddress);
-    //   const face = { id: resolvedId, uri: user.lending[i].face.uri };
-    //   curr.push(face);
-    //   currIds.push(resolvedId);
-    // }
-
-    // const all = user.faces.filter((face) => !currIds.includes(face.id));
-    // setAllNfts(all);
-    // setCurrentlyLending(curr);
-  }, [user, wallet]);
+    // todo: find a better way to avoid constant re-fetching
+    fetchOpenSeaNfts(wallet.account);
+    if (externalNftAddresses && externalNftAddresses.length > 0)
+      fetchExternalNfts();
+  }, [
+    user,
+    wallet?.account,
+    wallet?.networkName,
+    fetchOpenSeaNfts,
+    fetchExternalNfts,
+    externalNftAddresses,
+  ]);
   const data = useMemo(() => {
-    return specificity === LendSpecificity.ALL ? allMyNfts : currentlyLending;
-  }, [specificity, allMyNfts, currentlyLending]);
+    return specificity === LendSpecificity.ALL ? nfts : currentlyLending;
+  }, [specificity, nfts, currentlyLending]);
 
   if (hidden) return <></>;
 

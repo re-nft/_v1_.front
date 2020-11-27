@@ -5,6 +5,7 @@ export type Address = string;
 export type Nft = {
   nftAddress: Address;
   tokenId: string;
+  imageUrl?: string;
 };
 
 export enum PaymentToken {

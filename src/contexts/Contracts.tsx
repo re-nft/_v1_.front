@@ -26,7 +26,8 @@ type ContractsContextType = {
     externalNftAddresses?: Address[];
     // these are the resolved nfts that the user owns from the addresses
     // above
-    externalNfts?: Nft[];
+    externalNfts: Nft[];
+    nfts: Nft[];
   };
   erc20: {
     contract: (at: Address) => Optional<Contract>;
@@ -144,6 +145,8 @@ const DefaultContractsContext = {
       console.error("must be implemented");
       return;
     },
+    nfts: [],
+    externalNfts: [],
   },
   erc20: {
     contract: () => {
@@ -204,7 +207,8 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   const [face, setFace] = useState<Contract>();
   const [rent, setRent] = useState<Contract>();
   const [nftAddresses, setNftAddresses] = useState<Set<Address>>(new Set());
-  const [nfts, setNfts] = useState<Nft[]>();
+  const [externalNfts, setExternalNfts] = useState<Nft[]>([]);
+  const [nfts, setNfts] = useState<Nft[]>([]);
 
   const getContract = useCallback(
     (abi: AbiItem, address: Address): Optional<Contract> => {
@@ -225,6 +229,8 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   }, [getContract, abis?.rent, addresses?.rent]);
 
   // --------------------------- Helpers ----------------------------
+  // todo: right now this will be called each time the useEffect is triggered
+  // in Lend. This is poor performance. Improve in the future
   const fetchOpenSeaNfts = useCallback(async (owner: Address) => {
     // todo: remove the limit + add load more
     try {
@@ -236,13 +242,22 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
         }
       );
       const { assets }: { assets: OpenSeaNft[] } = await response.json();
-      console.log(assets);
+      const resolved = resolveOpenSeaNfts(assets);
+      setNfts(resolved);
     } catch (err) {
       console.error("could not fetch the opensea nfts");
       return;
     }
-    // todo: parse and set
   }, []);
+
+  const resolveOpenSeaNfts = (_nfts: OpenSeaNft[]) => {
+    const resolved: Nft[] = _nfts.map((nft) => ({
+      nftAddress: nft.asset_contract.address,
+      tokenId: nft.token_id,
+      imageUrl: nft.image_url,
+    }));
+    return resolved;
+  };
 
   const setExternalNftAddresses = useCallback((addresses: Address[]) => {
     setNftAddresses((prev) => {
@@ -260,6 +275,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   // costly function
   const fetchExternalNfts = useCallback(async () => {
     // todo
+    // setExternalNfts(...);
     return;
   }, []);
   // ----------------------------------------------------------------
@@ -657,7 +673,8 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           fetchExternalNfts,
           // ? is thi OK
           externalNftAddresses: Array.from(nftAddresses.values()),
-          externalNfts: nfts,
+          externalNfts,
+          nfts,
         },
         face: {
           contract: face,
