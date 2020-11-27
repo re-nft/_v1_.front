@@ -11,7 +11,9 @@ import { Contract } from "web3-eth-contract";
 import DappContext from "./Dapp";
 import { Address, PaymentToken } from "../types";
 import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
+import { abis as genericAbis } from "../contracts";
 import { THROWS } from "../utils";
+import BN from "bn.js";
 
 type ContractsContextType = {
   helpers: {
@@ -19,14 +21,24 @@ type ContractsContextType = {
     setExternalNfts: () => void;
     getExternalNfts: () => void;
   };
-  // erc20: {
-  //   contract?: Contract;
-  //   approve: () => void;
-  // };
-  // erc721: {
-  //   contract?: Contract;
-  //   approve: () => void;
-  // };
+  erc20: {
+    contract: (at: Address) => Contract | undefined;
+    approve: (at: Address, operator: Address, amount?: string) => void;
+    isApproved: (
+      at: Address,
+      operator: Address,
+      amount: string
+    ) => Promise<boolean>;
+  };
+  erc721: {
+    contract: (at: Address) => Contract | undefined;
+    approve: (at: Address, operator: Address, tokenId?: string) => void;
+    isApproved: (
+      at: Address,
+      operator: Address,
+      tokenId?: string
+    ) => Promise<boolean>;
+  };
   face: {
     contract?: Contract;
     isApproved: (tokenId: string) => Promise<boolean>;
@@ -120,12 +132,28 @@ const DefaultContractsContext = {
     setExternalNfts: THROWS,
     getExternalNfts: THROWS,
   },
-  // erc20: {
-  //   approve: THROWS,
-  // },
-  // erc721: {
-  //   approve: THROWS,
-  // },
+  erc20: {
+    contract: () => {
+      console.error("must be implemented");
+      return undefined;
+    },
+    approve: THROWS,
+    isApproved: async () => {
+      console.error("must be implemented");
+      return false;
+    },
+  },
+  erc721: {
+    contract: () => {
+      console.error("must be implemented");
+      return undefined;
+    },
+    approve: THROWS,
+    isApproved: async () => {
+      console.error("must be implemented");
+      return false;
+    },
+  },
   face: {
     isApproved: async () => {
       console.error("must be implemented");
@@ -450,6 +478,112 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
 
   // ---------------------------------------------------------------
 
+  // --------------------------- ERC20 -------------------------------
+  const getContractErc20 = useCallback(
+    (at: Address) => {
+      const contract = getContract(genericAbis.erc20, at);
+      return contract;
+    },
+    [getContract]
+  );
+
+  const approveErc20 = useCallback(
+    async (at: Address, operator: Address, amount?: string) => {
+      const contract = getContractErc20(at);
+      if (!contract) {
+        console.info("could not get erc20 contract");
+        return;
+      }
+
+      await contract.methods
+        .approve(operator, amount || MAX_UINT256)
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, getContractErc20]
+  );
+
+  const isApprovedErc20 = useCallback(
+    async (at: Address, operator: Address, amount?: string) => {
+      const contract = getContractErc20(at);
+      if (!contract) {
+        console.info("could not get erc20 contract");
+        return false;
+      }
+
+      const allowance: BN = await contract.methods
+        .allowance(operator)
+        .call({ from: wallet?.account });
+
+      if (!amount) return allowance.gte(MAX_UINT256);
+      try {
+        return allowance.gte(new BN(amount));
+      } catch (err) {
+        console.error("could not compare the numbers");
+        return false;
+      }
+    },
+    [wallet?.account, getContractErc20]
+  );
+  // ---------------------------------------------------------------
+
+  // --------------------------- ERC721 -------------------------------
+  const getContractErc721 = useCallback(
+    (at: Address) => {
+      const contract = getContract(genericAbis.erc721, at);
+      return contract;
+    },
+    [getContract]
+  );
+
+  const approveErc721 = useCallback(
+    async (at: Address, operator: Address, tokenId?: string) => {
+      const contract = getContractErc721(at);
+      if (!contract) {
+        console.info("could not get erc721 contract");
+        return;
+      }
+
+      if (tokenId) {
+        await contract.methods
+          .approve(operator, tokenId)
+          .send({ from: wallet?.account });
+      } else {
+        await contract.methods
+          .setApprovalForAll(operator, true)
+          .send({ from: wallet?.account });
+      }
+    },
+    [wallet?.account, getContractErc721]
+  );
+
+  const _isApprovedErc721 = useCallback(
+    async (tokenId: string) => {
+      const account = await face?.methods.getApproved(tokenId).call();
+      return account.toLowerCase() === addresses?.rent.toLowerCase();
+    },
+    [face, addresses?.rent]
+  );
+
+  const isApprovedErc721 = useCallback(
+    async (at: Address, operator: Address, tokenId?: string) => {
+      const contract = getContractErc721(at);
+      if (!contract) {
+        console.info("could not get erc721 contract");
+        return;
+      }
+
+      let itIs = await contract?.methods
+        .isApprovedForAll(wallet?.account, operator)
+        .call();
+      if (itIs) return true;
+      if (!tokenId) return false;
+      itIs = await _isApprovedErc721(tokenId);
+      return itIs;
+    },
+    [wallet?.account, getContractErc721, _isApprovedErc721]
+  );
+  // ---------------------------------------------------------------
+
   const getAllContracts = useCallback(async () => {
     await Promise.all([getFaceContract(), getRentContract()]);
     // * all contracts should be re-fetched when network or an account change
@@ -468,15 +602,16 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           approve: approveFace,
           approveAll: approveAllFace,
         },
-        // erc20: {
-        //   // * may fail if the transaction amount is higher than allowance
-        //   isApproved: isApprovedErc20,
-        //   approve: approveErc20,
-        // },
-        // erc721: {
-        //   isApproved: isApprovedErc721,
-        //   approve: approveErc721,
-        // },
+        erc20: {
+          contract: getContractErc20,
+          approve: approveErc20,
+          isApproved: isApprovedErc20,
+        },
+        erc721: {
+          contract: getContractErc721,
+          isApproved: isApprovedErc721,
+          approve: approveErc721,
+        },
         rent: {
           contract: rent,
           lendOne,
