@@ -10,10 +10,8 @@ import { Contract } from "web3-eth-contract";
 
 import DappContext from "./Dapp";
 import { Address, PaymentToken } from "../types";
-import { MAX_UINT256 } from "../constants";
+import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
 import { THROWS } from "../utils";
-import Web3 from "web3";
-import addresses from "contracts/addresses";
 
 type ContractsContextType = {
   helpers: {
@@ -21,14 +19,14 @@ type ContractsContextType = {
     setExternalNfts: () => void;
     getExternalNfts: () => void;
   };
-  erc20: {
-    contract?: Contract;
-    approve: () => void;
-  };
-  erc721: {
-    contract?: Contract;
-    approve: () => void;
-  };
+  // erc20: {
+  //   contract?: Contract;
+  //   approve: () => void;
+  // };
+  // erc721: {
+  //   contract?: Contract;
+  //   approve: () => void;
+  // };
   face: {
     contract?: Contract;
     isApproved: (tokenId: string) => Promise<boolean>;
@@ -86,7 +84,7 @@ type ContractsContextType = {
       gasSponsors?: Address[]
     ) => void;
     claimCollateralOne: (
-      nftAddress: Address[],
+      nftAddress: Address,
       tokenId: string,
       lendingShortId: string,
       lendingLongId: string,
@@ -100,7 +98,7 @@ type ContractsContextType = {
       gasSponsors?: Address[]
     ) => void;
     stopLendingOne: (
-      nftAddress: Address[],
+      nftAddress: Address,
       tokenId: string,
       lendingShortId: string,
       lendingLongId: string,
@@ -122,12 +120,12 @@ const DefaultContractsContext = {
     setExternalNfts: THROWS,
     getExternalNfts: THROWS,
   },
-  erc20: {
-    approve: THROWS,
-  },
-  erc721: {
-    approve: THROWS,
-  },
+  // erc20: {
+  //   approve: THROWS,
+  // },
+  // erc721: {
+  //   approve: THROWS,
+  // },
   face: {
     isApproved: async () => {
       console.error("must be implemented");
@@ -232,50 +230,222 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   );
   // ----------------------------------------------------------------
 
-  // rent one NFT
+  // --------------------------- Rent -------------------------------
   const rentOne = useCallback(
-    async (tokenId: string, rentDuration: string) => {
-      // ! TODO: change for the address of the NFT
-      // await rent?.methods
-      //   .rentOne(
-      //     wallet?.account,
-      //     addresses.goerli.face,
-      //     web3?.utils.hexToNumberString(tokenId),
-      //     rentDuration
-      //   )
-      //   .send({ from: wallet?.account });
+    async (
+      nftAddress: Address,
+      tokenId: string,
+      id: string,
+      rentDuration: string,
+      gasSponsor?: Address
+    ) => {
+      await rent?.methods
+        .rentOne(
+          nftAddress,
+          tokenId,
+          id,
+          rentDuration,
+          // ZERO_ADDRESS untested here
+          gasSponsor || addresses?.rent || ZERO_ADDRESS
+        )
+        .send({ from: wallet?.account });
     },
-    [rent, wallet?.account, dappOk, web3]
+    [rent, wallet?.account, addresses?.rent]
   );
 
-  // lend one NFT
+  const rentMultiple = useCallback(
+    async (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      ids: string[],
+      rentDurations: string[],
+      gasSponsors?: Address[]
+    ) => {
+      await rent?.methods
+        .rentMultiple(
+          nftAddresses,
+          tokenIds,
+          ids,
+          rentDurations,
+          gasSponsors ||
+            Array(ids?.length).fill(addresses?.rent) ||
+            Array(ids?.length).fill(ZERO_ADDRESS)
+        )
+        .send({ from: wallet?.account });
+    },
+    [rent, wallet?.account, addresses?.rent]
+  );
+
   const lendOne = useCallback(
     async (
+      nftAddress: Address,
       tokenId: string,
-      maxDuration: string,
-      borrowPrice: string,
-      nftPrice: string
+      maxRentDuration: string,
+      dailyRentPrice: string,
+      nftPrice: string,
+      paymentToken: PaymentToken,
+      gasSponsor?: Address
     ) => {
-      // await rent?.methods
-      //   .lendOne(
-      //     addresses.goerli.face,
-      //     tokenId,
-      //     maxDuration,
-      //     borrowPrice,
-      //     nftPrice
-      //   )
-      //   .send({ from: wallet?.account });
+      await rent?.methods
+        .lendOne(
+          nftAddress,
+          tokenId,
+          maxRentDuration,
+          dailyRentPrice,
+          nftPrice,
+          paymentToken,
+          gasSponsor || addresses?.rent || ZERO_ADDRESS
+        )
+        .send({ from: wallet?.account });
     },
-    [wallet?.account, rent, dappOk]
+    [rent, wallet?.account, addresses?.rent]
+  );
+
+  const lendMultiple = useCallback(
+    async (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      maxRentDurations: string[],
+      dailyRentPrices: string[],
+      nftPrices: string[],
+      paymentTokens: PaymentToken[],
+      gasSponsors?: Address[]
+    ) => {
+      await rent?.methods
+        .lendMuliple(
+          nftAddresses,
+          tokenIds,
+          maxRentDurations,
+          dailyRentPrices,
+          nftPrices,
+          paymentTokens,
+          gasSponsors ||
+            Array(tokenIds?.length).fill(addresses?.rent) ||
+            Array(tokenIds?.length).fill(ZERO_ADDRESS)
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
   );
 
   const returnOne = useCallback(
-    async (nftAddress: string, tokenId: string) => {
+    async (
+      nftAddress: Address,
+      tokenId: string,
+      id: string,
+      gasSponsor?: Address
+    ) => {
       await rent?.methods
-        .returnNftOne(nftAddress, tokenId)
+        .returnOne(
+          nftAddress,
+          tokenId,
+          id,
+          gasSponsor || addresses?.rent || ZERO_ADDRESS
+        )
         .send({ from: wallet?.account });
     },
-    [dappOk, wallet?.account, rent]
+    [wallet?.account, rent, addresses?.rent]
+  );
+
+  const returnMultiple = useCallback(
+    async (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      ids: string[],
+      gasSponsors?: Address[]
+    ) => {
+      await rent?.methods
+        .returnMultiple(
+          nftAddresses,
+          tokenIds,
+          ids,
+          gasSponsors ||
+            Array(tokenIds?.length).fill(addresses?.rent) ||
+            Array(tokenIds?.length).fill(ZERO_ADDRESS)
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
+  );
+
+  const claimCollateralOne = useCallback(
+    async (
+      nftAddress: Address,
+      tokenId: string,
+      id: string,
+      gasSponsor?: Address
+    ) => {
+      await rent?.methods
+        .claimCollateralOne(
+          nftAddress,
+          tokenId,
+          id,
+          gasSponsor || addresses?.rent || ZERO_ADDRESS
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
+  );
+
+  const claimCollateralMultiple = useCallback(
+    async (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      ids: string[],
+      gasSponsors?: Address[]
+    ) => {
+      await rent?.methods
+        .claimCollateralMultiple(
+          nftAddresses,
+          tokenIds,
+          ids,
+          gasSponsors ||
+            Array(tokenIds?.length).fill(addresses?.rent) ||
+            Array(tokenIds?.length).fill(ZERO_ADDRESS)
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
+  );
+
+  const stopLendingOne = useCallback(
+    async (
+      nftAddress: Address,
+      tokenId: string,
+      id: string,
+      gasSponsor?: Address
+    ) => {
+      await rent?.methods
+        .stopLendingOne(
+          nftAddress,
+          tokenId,
+          id,
+          gasSponsor || addresses?.rent || ZERO_ADDRESS
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
+  );
+
+  const stopLendingMultiple = useCallback(
+    async (
+      nftAddresses: Address[],
+      tokenIds: string[],
+      ids: string[],
+      gasSponsors?: Address[]
+    ) => {
+      await rent?.methods
+        .stopLendingMultiple(
+          nftAddresses,
+          tokenIds,
+          ids,
+          gasSponsors ||
+            Array(tokenIds?.length).fill(addresses?.rent) ||
+            Array(tokenIds?.length).fill(ZERO_ADDRESS)
+        )
+        .send({ from: wallet?.account });
+    },
+    [wallet?.account, rent, addresses?.rent]
   );
 
   // ---------------------------------------------------------------
@@ -298,24 +468,24 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           approve: approveFace,
           approveAll: approveAllFace,
         },
-        erc20: {
-          // * may fail if the transaction amount is higher than allowance
-          isApproved: isApprovedErc20,
-          approve: approveErc20,
-        },
-        erc721: {
-          isApproved: isApprovedErc721,
-          approve: approveErc721,
-        },
+        // erc20: {
+        //   // * may fail if the transaction amount is higher than allowance
+        //   isApproved: isApprovedErc20,
+        //   approve: approveErc20,
+        // },
+        // erc721: {
+        //   isApproved: isApprovedErc721,
+        //   approve: approveErc721,
+        // },
         rent: {
           contract: rent,
           lendOne,
-          lendMultiple,
           rentOne,
           rentMultiple,
+          lendMultiple,
           returnOne,
           returnMultiple,
-          stopLednginOne,
+          stopLendingOne,
           stopLendingMultiple,
           claimCollateralOne,
           claimCollateralMultiple,
