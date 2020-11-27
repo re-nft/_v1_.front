@@ -15,8 +15,7 @@ import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 import Switcher from "./Switcher";
-
-import { Face } from "../types";
+import { Lending, Nft } from "types";
 
 // with id separator (2 characters)
 const LenOfAddress = 44;
@@ -32,9 +31,9 @@ enum LendSpecificity {
 
 const Lend: React.FC<LendProps> = ({ hidden }) => {
   const { wallet } = useContext(DappContext);
-  const { nfts, user } = useContext(GraphContext);
-  const [currentlyLending, setCurrentlyLending] = useState<Face[]>([]);
-  const [allNfts, setAllNfts] = useState<Face[]>([]);
+  const { user } = useContext(GraphContext);
+  const [currentlyLending, setCurrentlyLending] = useState<Lending[]>([]);
+  const [allMyNfts, setAllMyNfts] = useState<Nft[]>([]);
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
@@ -47,32 +46,30 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
     );
   }, []);
   useEffect(() => {
-    if (user == null || wallet == null || !wallet.account) {
-      console.debug("no user data yet");
+    if (!user || !wallet?.account) {
+      console.debug("no user or wallet");
       return;
     }
 
-    const curr: Face[] = [];
-    const currIds: string[] = [];
-    for (let i = 0; i < user.lending.length; i++) {
-      const _id = user.lending[i].id;
-      const resolvedId = _id.slice(0, _id.length - LenOfAddress);
-      const face = { id: resolvedId, uri: user.lending[i].face.uri };
-      curr.push(face);
-      currIds.push(resolvedId);
-    }
+    // const curr: Face[] = [];
+    // const currIds: string[] = [];
+    // for (let i = 0; i < user.lending.length; i++) {
+    //   const _id = user.lending[i].id;
+    //   const resolvedId = _id.slice(0, _id.length - LenOfAddress);
+    //   const face = { id: resolvedId, uri: user.lending[i].face.uri };
+    //   curr.push(face);
+    //   currIds.push(resolvedId);
+    // }
 
-    const all = user.faces.filter((face) => !currIds.includes(face.id));
-    setAllNfts(all);
-    setCurrentlyLending(curr);
-  }, [nfts, user, wallet]);
+    // const all = user.faces.filter((face) => !currIds.includes(face.id));
+    // setAllNfts(all);
+    // setCurrentlyLending(curr);
+  }, [user, wallet]);
   const data = useMemo(() => {
-    return specificity === LendSpecificity.ALL ? allNfts : currentlyLending;
-  }, [specificity, allNfts, currentlyLending]);
+    return specificity === LendSpecificity.ALL ? allMyNfts : currentlyLending;
+  }, [specificity, allMyNfts, currentlyLending]);
 
-  if (hidden) {
-    return <></>;
-  }
+  if (hidden) return <></>;
 
   return (
     <Box>

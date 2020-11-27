@@ -6,12 +6,10 @@ import { addresses } from "../contracts";
 // contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
-import GraphContext from "../contexts/Graph";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
-import { Address } from "../types";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -55,16 +53,10 @@ type LendModalProps = {
   setOpen: (open: boolean) => void;
 };
 
-type NftAndId = {
-  nftAddress: Address;
-  tokenId: string;
-};
-
 const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
   const classes = useStyles();
   const { rent, face } = useContext(ContractsContext);
   const { web3 } = useContext(DappContext);
-  const { isApproved: _isApproved } = useContext(GraphContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -81,27 +73,6 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     },
   });
 
-  const getNftAndId: NftAndId = useMemo(() => {
-    const parts = faceId.split("::");
-    if (parts.length < 2) {
-      return {
-        nftAddress: "",
-        tokenId: "",
-      };
-    }
-    return {
-      nftAddress: parts[0],
-      tokenId: parts[1],
-    };
-  }, [faceId]);
-
-  // TODO: to avoid complexity of sustaining the approve events and this additional logic around
-  // checking if approved, just add a call to the ERC721 to check if approved and keep in state
-  const isApproved = useMemo(() => {
-    const { nftAddress, tokenId } = getNftAndId;
-    return _isApproved(addresses.goerli.rent, nftAddress, tokenId);
-  }, [_isApproved, getNftAndId]);
-
   const [isBusy, setIsBusy] = useState(false);
 
   const handleLend = async (e: React.FormEvent) => {
@@ -111,24 +82,22 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
     setIsBusy(true);
     try {
       const tokenId = faceId.split("::")[1];
-      const account = await face.isApproved(tokenId);
-      const isApproved = await face.isApprovedAll();
-      if (!(isApproved || account === addresses.goerli.rent)) {
-        await face.approve(tokenId);
-      }
-      await rent.lendOne(
-        tokenId,
-        // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-        lendOneInputs.maxDuration.value,
-        web3.utils.toWei(
-          Number(lendOneInputs.borrowPrice.value).toFixed(18),
-          "ether"
-        ),
-        web3.utils.toWei(
-          Number(lendOneInputs.nftPrice.value).toFixed(18),
-          "ether"
-        )
-      );
+      // if (!(isApproved || account === addresses.goerli.rent)) {
+      await face.approve(tokenId);
+      // }
+      // await rent.lendOne(
+      //   tokenId,
+      //   // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
+      //   lendOneInputs.maxDuration.value,
+      //   web3.utils.toWei(
+      //     Number(lendOneInputs.borrowPrice.value).toFixed(18),
+      //     "ether"
+      //   ),
+      //   web3.utils.toWei(
+      //     Number(lendOneInputs.nftPrice.value).toFixed(18),
+      //     "ether"
+      //   )
+      // );
     } catch (err) {
       // ! TODO: NOTIFICATION THAT SOMETHING WENT WRONG
       // TRELLO TASK: https://trello.com/c/FUhFdVR4/48-2-add-notifications-anywhere-you-can
@@ -258,7 +227,8 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
             type="button"
             style={{
               border: "3px solid black",
-              display: isApproved ? "none" : "inherit",
+              display: "inherit",
+              // display: isApproved ? "none" : "inherit",
             }}
             className="Product__button"
             onClick={handleApproveAll}
@@ -266,7 +236,12 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           >
             Approve all
           </button>
-          <Box style={{ display: isApproved ? "inherit" : "none" }}>
+          <Box
+            style={{
+              display: "inherit",
+              // display: true ? "inherit" : "none"
+            }}
+          >
             <RainbowButton
               type="submit"
               text="Lend"

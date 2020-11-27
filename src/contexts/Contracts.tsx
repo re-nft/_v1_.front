@@ -9,7 +9,7 @@ import { AbiItem } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 
 import DappContext from "./Dapp";
-import { Address, PaymentToken, Optional, Nft } from "../types";
+import { Address, PaymentToken, Optional, Nft, OpenSeaNft } from "../types";
 import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
 import { abis as genericAbis } from "../contracts";
 import { THROWS } from "../utils";
@@ -18,7 +18,7 @@ import BN from "bn.js";
 type ContractsContextType = {
   helpers: {
     // todo: need to resolve this
-    fetchOpenSeaNfts: (ownder: Address) => Promise<void>;
+    fetchOpenSeaNfts: (owner: Address) => Promise<void>;
     setExternalNftAddresses: (addresses: Address[]) => void;
     fetchExternalNfts: () => Promise<void>;
     // if open sea does not fetch all the required NFTs,
@@ -227,14 +227,20 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   // --------------------------- Helpers ----------------------------
   const fetchOpenSeaNfts = useCallback(async (owner: Address) => {
     // todo: remove the limit + add load more
-    const response = await fetch(
-      `https://api.opensea.io/api/v1/assets?owner=${owner}&order_direction=desc&offset=0&limit=20`,
-      {
-        method: "GET",
-        headers: {},
-      }
-    );
-    const jsonResponse = await response.json();
+    try {
+      const response = await fetch(
+        `https://api.opensea.io/api/v1/assets?owner=${owner}&order_direction=desc&offset=0&limit=20`,
+        {
+          method: "GET",
+          headers: {},
+        }
+      );
+      const { assets }: { assets: OpenSeaNft[] } = await response.json();
+      console.log(assets);
+    } catch (err) {
+      console.error("could not fetch the opensea nfts");
+      return;
+    }
     // todo: parse and set
   }, []);
 

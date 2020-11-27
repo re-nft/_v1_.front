@@ -55,3 +55,24 @@ export type User = {
   lending?: Lending[];
   renting?: Renting[];
 };
+
+// * note that this is NOT the full type!
+export type OpenSeaNft = {
+  id: string;
+  token_id: string;
+  num_sales: string;
+  image_url: string;
+  name: string;
+  description: string;
+  asset_contract: {
+    address: Address;
+    owner: number;
+  };
+  owner: {
+    user: {
+      username: string;
+    };
+    profile_img_url: string;
+    address: Address;
+  };
+};
