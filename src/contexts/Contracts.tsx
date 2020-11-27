@@ -9,7 +9,7 @@ import { AbiItem } from "web3-utils";
 import { Contract } from "web3-eth-contract";
 
 import DappContext from "./Dapp";
-import { Address, PaymentToken } from "../types";
+import { Address, PaymentToken, Optional, Nft } from "../types";
 import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
 import { abis as genericAbis } from "../contracts";
 import { THROWS } from "../utils";
@@ -17,12 +17,19 @@ import BN from "bn.js";
 
 type ContractsContextType = {
   helpers: {
-    getOpenSeaNfts: () => void;
-    setExternalNfts: () => void;
-    getExternalNfts: () => void;
+    // todo: need to resolve this
+    fetchOpenSeaNfts: (ownder: Address) => Promise<void>;
+    setExternalNftAddresses: (addresses: Address[]) => void;
+    fetchExternalNfts: () => Promise<void>;
+    // if open sea does not fetch all the required NFTs,
+    // users are free to set the addresses themselves
+    externalNftAddresses?: Address[];
+    // these are the resolved nfts that the user owns from the addresses
+    // above
+    externalNfts?: Nft[];
   };
   erc20: {
-    contract: (at: Address) => Contract | undefined;
+    contract: (at: Address) => Optional<Contract>;
     approve: (at: Address, operator: Address, amount?: string) => void;
     isApproved: (
       at: Address,
@@ -31,7 +38,7 @@ type ContractsContextType = {
     ) => Promise<boolean>;
   };
   erc721: {
-    contract: (at: Address) => Contract | undefined;
+    contract: (at: Address) => Optional<Contract>;
     approve: (at: Address, operator: Address, tokenId?: string) => void;
     isApproved: (
       at: Address,
@@ -128,9 +135,15 @@ type ContractsContextType = {
 
 const DefaultContractsContext = {
   helpers: {
-    getOpenSeaNfts: THROWS,
-    setExternalNfts: THROWS,
-    getExternalNfts: THROWS,
+    fetchOpenSeaNfts: async () => {
+      console.error("must be implemented");
+      return;
+    },
+    setExternalNftAddresses: THROWS,
+    fetchExternalNfts: async () => {
+      console.error("must be implemented");
+      return;
+    },
   },
   erc20: {
     contract: () => {
@@ -190,9 +203,11 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   const { web3, wallet, addresses, abis } = useContext(DappContext);
   const [face, setFace] = useState<Contract>();
   const [rent, setRent] = useState<Contract>();
+  const [nftAddresses, setNftAddresses] = useState<Set<Address>>(new Set());
+  const [nfts, setNfts] = useState<Nft[]>();
 
   const getContract = useCallback(
-    (abi: AbiItem, address: Address): Contract | undefined => {
+    (abi: AbiItem, address: Address): Optional<Contract> => {
       if (!web3) return;
       const contract = new web3.eth.Contract(abi, address);
       return contract;
@@ -208,6 +223,40 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
 
     setRent(contract);
   }, [getContract, abis?.rent, addresses?.rent]);
+
+  // --------------------------- Helpers ----------------------------
+  const fetchOpenSeaNfts = useCallback(async (owner: Address) => {
+    // todo: remove the limit + add load more
+    const response = await fetch(
+      `https://api.opensea.io/api/v1/assets?owner=${owner}&order_direction=desc&offset=0&limit=20`,
+      {
+        method: "GET",
+        headers: {},
+      }
+    );
+    const jsonResponse = await response.json();
+    // todo: parse and set
+  }, []);
+
+  const setExternalNftAddresses = useCallback((addresses: Address[]) => {
+    setNftAddresses((prev) => {
+      const newAddresses = new Set(prev);
+      for (const address of addresses) {
+        newAddresses.add(address);
+      }
+      return newAddresses;
+    });
+  }, []);
+
+  // uses the addresses from the external nft addresses set
+  // and calls the NFT contracts directly to figure out which
+  // token ids the user owns, and fetches those. This is a very
+  // costly function
+  const fetchExternalNfts = useCallback(async () => {
+    // todo
+    return;
+  }, []);
+  // ----------------------------------------------------------------
 
   // --------------------------- Face -------------------------------
   const getFaceContract = useCallback(async () => {
@@ -596,6 +645,14 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   return (
     <ContractsContext.Provider
       value={{
+        helpers: {
+          fetchOpenSeaNfts,
+          setExternalNftAddresses,
+          fetchExternalNfts,
+          // ? is thi OK
+          externalNftAddresses: Array.from(nftAddresses.values()),
+          externalNfts: nfts,
+        },
         face: {
           contract: face,
           isApproved: isApprovedFace,

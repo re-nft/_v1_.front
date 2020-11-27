@@ -2,46 +2,9 @@ export type Optional<T> = undefined | T;
 
 export type Address = string;
 
-export type Lending = {
-  id: string;
-  address: Address;
-  lender: Address;
-  borrower?: Address;
-  maxDuration: number;
-  actualDuration?: number;
-  borrowedAt?: number;
-  borrowPrice?: number;
-  nftPrice: number;
-  face: Face;
-};
-
-export type Face = {
-  id: string;
-  uri: string;
-};
-
-export type Approval = {
-  id: string;
+export type Nft = {
   nftAddress: Address;
   tokenId: string;
-  owner: Address;
-  approved: Address;
-};
-
-export type ApprovedAll = {
-  id: string;
-  nftAddress: Address;
-  owner: Address;
-  approved: Address;
-};
-
-export type User = {
-  id: string;
-  lending: Lending[];
-  borrowing: Lending[];
-  faces: Face[];
-  approvals: Approval[];
-  approvedAll: ApprovedAll[];
 };
 
 export enum PaymentToken {
@@ -54,3 +17,41 @@ export enum PaymentToken {
   YFI, // 6
   NAZ, // 7
 }
+
+export type Lending = {
+  id: string;
+  nftAddress: Nft["nftAddress"];
+  tokenId: Nft["tokenId"];
+  lenderAddress: Address;
+  maxRentDuration: string;
+  dailyRentPrice: string;
+  nftPrice: string;
+  paymentToken: PaymentToken;
+  renting: Renting;
+  collateralClaimed: boolean;
+};
+
+export type Renting = {
+  id: string;
+  renterAddress: string;
+  rentDuration: string;
+  rentedAt: string;
+  lending: Lending;
+};
+
+// will always have at least one lending, that is how this type
+// is created in graph
+// tracks a particular NFT's-tokenId's all lending and renting
+export type LendingRenting = {
+  id: string;
+  lending: Lending[];
+  renting?: Renting[];
+};
+
+// in comparison to the above, this tracks all of the user's
+// lending and renting
+export type User = {
+  id: string;
+  lending?: Lending[];
+  renting?: Renting[];
+};
