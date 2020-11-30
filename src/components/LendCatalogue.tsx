@@ -3,27 +3,28 @@ import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 
 import LendModal from "./LendModal";
-import { Face } from "../types";
+import { Nft } from "../types";
 
 type LendButtonProps = {
-  handleLend: (id: string) => void;
-  id: string;
+  handleLend: (nft: Nft) => void;
+  nft: Nft;
 };
 
 type StopLendButtonProps = {
-  handleStopLend: (id: string) => void;
-  id: string;
+  handleStopLend: (nft: Nft) => void;
+  nft: Nft;
 };
 
+// todo: maybe worth supplying both: all and the ones that I lend at the same time
 type LendCatalogueProps = {
-  data?: Face[];
+  nfts: Nft[];
   iLend: boolean;
 };
 
-const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
+const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
   const handleClick = useCallback(() => {
-    handleLend(id);
-  }, [handleLend, id]);
+    handleLend(nft);
+  }, [handleLend, nft]);
 
   return (
     <div className="Product__details">
@@ -34,10 +35,7 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, id }) => {
   );
 };
 
-const StopLendButton: React.FC<StopLendButtonProps> = ({
-  handleStopLend,
-  id,
-}) => {
+const StopLendButton: React.FC<StopLendButtonProps> = () => {
   return (
     <div className="Product__details">
       <span className="Product__buy">Stop Lending</span>
@@ -45,7 +43,7 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
   );
 };
 
-const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
+const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState("");
   const handleLend = useCallback(
@@ -60,27 +58,21 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
     <Box>
       <LendModal faceId={faceId} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
-        {data &&
-          data.length > 0 &&
-          data.map((face) => {
-            const parts = face.id.split("::");
-            let [addr, id] = ["", ""];
-            if (parts.length === 2) {
-              addr = parts[0];
-              id = parts[1];
-            }
-
+        {nfts?.length &&
+          nfts.map((nft) => {
+            const nftId = `${nft.nftAddress}-${nft.tokenId}`;
             return (
-              <div className="Catalogue__item" key={face.id}>
+              <div className="Catalogue__item" key={nftId}>
                 <div
                   className="Product"
-                  data-item-id={face.id}
-                  data-item-image={face.uri}
+                  data-item-id={nftId}
+                  data-item-image={nft.imageUrl}
                 >
+                  {/* TODO: the skeleton animation here does not work */}
                   <div className="Product__image">
-                    <a href={face.uri}>
-                      {face.uri ? (
-                        <img alt="nft" src={face.uri} />
+                    <a href={nft.imageUrl}>
+                      {nft.imageUrl ? (
+                        <img alt="nft" src={nft.imageUrl} />
                       ) : (
                         <Skeleton
                           animation="wave"
@@ -100,14 +92,14 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
                         rel="noreferrer"
                         style={{ textDecoration: "none", color: "black" }}
                       >
-                        {addr}
+                        {nft.nftAddress}
                       </a>
                     </p>
                   </div>
                   <div className="Product__details">
                     <p className="Product__text_overflow">
                       <span className="Product__label">Token id</span>
-                      <span className="Product__value">{id}</span>
+                      <span className="Product__value">{nft.tokenId}</span>
                     </p>
                   </div>
                   <div
@@ -115,9 +107,12 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ data, iLend }) => {
                     style={{ marginTop: "8px" }}
                   >
                     {!iLend ? (
-                      <LendButton id={face.id} handleLend={handleLend} />
+                      <LendButton nft={nft} handleLend={handleLend} />
                     ) : (
-                      <StopLendButton id={face.id} handleStopLend={() => {}} />
+                      <StopLendButton
+                        nft={nft}
+                        handleStopLend={(nft) => ({})}
+                      />
                     )}
                     {/* TODO: ^ placeholder for stop lend */}
                   </div>

@@ -4,7 +4,7 @@ export type Address = string;
 
 export type Nft = {
   nftAddress: Address;
-  tokenId: string;
+  tokenId?: string;
   imageUrl?: string;
 };
 

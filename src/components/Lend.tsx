@@ -9,7 +9,6 @@ import { Box } from "@material-ui/core";
 
 // contexts
 import DappContext from "../contexts/Dapp";
-import GraphContext from "../contexts/Graph";
 import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
@@ -17,9 +16,6 @@ import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 import Switcher from "./Switcher";
 import { Lending } from "types";
-
-// with id separator (2 characters)
-const LenOfAddress = 44;
 
 type LendProps = {
   hidden: boolean;
@@ -32,7 +28,6 @@ enum LendSpecificity {
 
 const Lend: React.FC<LendProps> = ({ hidden }) => {
   const { wallet } = useContext(DappContext);
-  const { user } = useContext(GraphContext);
   const { helpers } = useContext(ContractsContext);
   const {
     fetchOpenSeaNfts,
@@ -52,24 +47,22 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
         : LendSpecificity.ALL
     );
   }, []);
+
   useEffect(() => {
-    if (!user || !wallet?.account) {
+    if (!wallet?.account) {
       console.debug("no user or wallet");
       return;
     }
 
     // todo: find a better way to avoid constant re-fetching
-    fetchOpenSeaNfts(wallet.account);
-    if (externalNftAddresses && externalNftAddresses.length > 0)
-      fetchExternalNfts();
+    if (externalNftAddresses.length > 0) fetchExternalNfts();
   }, [
-    user,
     wallet?.account,
     wallet?.networkName,
-    fetchOpenSeaNfts,
     fetchExternalNfts,
     externalNftAddresses,
   ]);
+
   const data = useMemo(() => {
     return specificity === LendSpecificity.ALL ? nfts : currentlyLending;
   }, [specificity, nfts, currentlyLending]);
