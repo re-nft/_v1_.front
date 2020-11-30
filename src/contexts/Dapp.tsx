@@ -50,8 +50,7 @@ export const DappProvider: React.FC<DappProviderProps> = ({ children }) => {
       console.error("could not connect the injected wallet");
       return;
     }
-    // ?
-  }, [wallet, wallet?.account, wallet?.networkName]);
+  }, [wallet]);
 
   const fetchNetworkContext = useCallback(async () => {
     if (wallet.status !== "connected") return;
