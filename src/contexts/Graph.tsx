@@ -8,7 +8,6 @@ import React, {
 import { request } from "graphql-request";
 import Web3 from "web3";
 
-// contexts
 import DappContext from "./Dapp";
 
 import { User } from "../types";
@@ -30,58 +29,41 @@ const queryUser = (user: string, web3: Web3): string => {
       id
       lending {
         id
-        address
-        lender
-        borrower
-        maxDuration
-        actualDuration
-        borrowedAt
-        borrowPrice
+        nftAddress
+        tokenId
+        lenderAddress
+        maxRentDuration
+        dailyRentPrice
         nftPrice
-        face {
-          uri
+        paymentToken
+        renting {
+          id
+          renterAddress
+          rentDuration
+          rentedAt
         }
       }
-      borrowing {
+      renting {
         id
-        address
-        lender
-        borrower
-        maxDuration
-        actualDuration
-        borrowedAt
-        borrowPrice
-        nftPrice
-        face {
-          uri
+        rentDuration
+        rentedAt
+        lending {
+          id
+          nftAddress
+          tokenId
+          lenderAddress
+          maxRentDuration
+          dailyRentPrice
+          nftPrice
+          paymentToken
+          collateralClaimed
         }
-      }
-      faces {
-        id
-        uri
-      }
-      approvals {
-        id,
-        nftAddress,
-        tokenId,
-        owner,
-        approved
-      }
-      approvedAll {
-        id,
-        nftAddress,
-        owner,
-        approved
       }
     }
   }`;
 };
 
-type GraphProviderProps = {
-  children: React.ReactNode;
-};
-
-export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
+export const GraphProvider: React.FC = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
 
   const [user, setUser] = useState<User>();
