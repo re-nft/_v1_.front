@@ -1,4 +1,10 @@
-import React, { useContext, useState, useCallback, useMemo } from "react";
+import React, {
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { addresses } from "../contracts";
@@ -10,6 +16,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
+import { Nft } from "types";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -48,15 +55,16 @@ type LendOneInputs = {
 };
 
 type LendModalProps = {
-  faceId: string;
+  nft?: Nft;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
 
-const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
+const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
-  const { rent, face } = useContext(ContractsContext);
+  const { face } = useContext(ContractsContext);
   const { web3 } = useContext(DappContext);
+  const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -75,15 +83,28 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
 
   const [isBusy, setIsBusy] = useState(false);
 
+  useEffect(() => {
+    if (!nft?.tokenId) return;
+    face
+      .isApproved(nft.tokenId)
+      .then((_isApproved) => {
+        setIsApproved(_isApproved);
+      })
+      .catch((_) => {
+        console.debug("could not check if the NFT is approved");
+        setIsApproved(false);
+      });
+  }, [face, nft?.tokenId]);
+
   const handleLend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!web3) return;
 
     setIsBusy(true);
     try {
-      const tokenId = faceId.split("::")[1];
+      if (!nft?.tokenId) return;
       // if (!(isApproved || account === addresses.goerli.rent)) {
-      await face.approve(tokenId);
+      await face.approve(nft?.tokenId);
       // }
       // await rent.lendOne(
       //   tokenId,
@@ -225,10 +246,10 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
         <Box className={classes.buttons}>
           <button
             type="button"
+            disabled={isBusy}
             style={{
               border: "3px solid black",
-              display: "inherit",
-              // display: isApproved ? "none" : "inherit",
+              display: isApproved ? "none" : "inherit",
             }}
             className="Product__button"
             onClick={handleApproveAll}
@@ -238,8 +259,7 @@ const LendModal: React.FC<LendModalProps> = ({ faceId, open, setOpen }) => {
           </button>
           <Box
             style={{
-              display: "inherit",
-              // display: true ? "inherit" : "none"
+              display: isApproved ? "inherit" : "none",
             }}
           >
             <RainbowButton
