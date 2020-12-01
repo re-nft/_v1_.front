@@ -45,18 +45,18 @@ const StopLendButton: React.FC<StopLendButtonProps> = () => {
 
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [faceId, setFaceId] = useState("");
+  const [nft, setNft] = useState<Nft>();
   const handleLend = useCallback(
-    (id) => {
+    (_nft: Nft) => {
       setModalOpen(true);
-      setFaceId(id);
+      setNft(_nft);
     },
-    [setModalOpen, setFaceId]
+    [setModalOpen, setNft]
   );
 
   return (
     <Box>
-      <LendModal faceId={faceId} open={modalOpen} setOpen={setModalOpen} />
+      <LendModal nft={nft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
         {nfts?.length > 0 &&
           nfts.map((nft) => {
