@@ -46,6 +46,11 @@ const StopLendButton: React.FC<StopLendButtonProps> = () => {
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [nft, setNft] = useState<Nft>();
+  const [freshlyLent, setFreshlyLent] = useState<Nft>({
+    nftAddress: "",
+    tokenId: "",
+  });
+
   const handleLend = useCallback(
     (_nft: Nft) => {
       setModalOpen(true);
@@ -54,13 +59,27 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
     [setModalOpen, setNft]
   );
 
+  const handleLendModal = useCallback((_nft: Nft) => {
+    setFreshlyLent(_nft);
+  }, []);
+
   return (
     <Box>
-      <LendModal nft={nft} open={modalOpen} setOpen={setModalOpen} />
+      <LendModal
+        nft={nft}
+        open={modalOpen}
+        setOpen={setModalOpen}
+        onLend={handleLendModal}
+      />
       <Box className="Catalogue">
         {nfts?.length > 0 &&
           nfts.map((nft) => {
-            const nftId = `${nft.nftAddress}-${nft.tokenId}`;
+            if (
+              nft.nftAddress === freshlyLent.nftAddress &&
+              nft.tokenId === freshlyLent.tokenId
+            )
+              return <></>;
+            const nftId = `${nft.nftAddress}::${nft.tokenId}`;
             return (
               <div className="Catalogue__item" key={nftId}>
                 <div

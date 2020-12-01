@@ -56,9 +56,15 @@ type LendModalProps = {
   nft?: Nft;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onLend: (nft: Nft) => void;
 };
 
-const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
+const LendModal: React.FC<LendModalProps> = ({
+  nft,
+  open,
+  setOpen,
+  onLend,
+}) => {
   const classes = useStyles();
   const { face, erc721, rent, helpers } = useContext(ContractsContext);
   const { packPrice } = helpers;
@@ -99,10 +105,9 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     e.preventDefault();
     if (!web3) return;
 
-    let isSuccessfulLend = false;
-
     setIsBusy(true);
     try {
+      if (!nft) return;
       if (!nft?.tokenId || !addresses?.rent) return;
 
       if (!isApproved) {
@@ -131,7 +136,8 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
         PaymentToken.DAI
       );
 
-      isSuccessfulLend = true;
+      // when successfully lent out, hide the NFT from the front-end
+      onLend(nft);
     } catch (err) {
       // TODO: notification that something went wrong
       // TRELLO TASK: https://trello.com/c/FUhFdVR4/48-2-add-notifications-anywhere-you-can
@@ -141,11 +147,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     // show green check mark somewhere too
     setIsBusy(false);
     setOpen(false);
-
-    // when successfully lent out, hide the NFT from the front-end
-    if (isSuccessfulLend) {
-      // todo:
-    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
