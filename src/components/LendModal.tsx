@@ -8,14 +8,13 @@ import React, {
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-// contexts
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
+import { Nft, PaymentToken } from "../types";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
-import { Nft } from "../types";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -61,8 +60,9 @@ type LendModalProps = {
 
 const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
-  const { face } = useContext(ContractsContext);
-  const { web3 } = useContext(DappContext);
+  const { face, erc721, rent, helpers } = useContext(ContractsContext);
+  const { packPrice } = helpers;
+  const { web3, addresses } = useContext(DappContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
@@ -99,27 +99,41 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     e.preventDefault();
     if (!web3) return;
 
+    let isSuccessfulLend = false;
+
     setIsBusy(true);
     try {
-      if (!nft?.tokenId) return;
-      // if (!(isApproved || account === addresses.goerli.rent)) {
-      await face.approve(nft?.tokenId);
-      // }
-      // await rent.lendOne(
-      //   tokenId,
-      //   // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-      //   lendOneInputs.maxDuration.value,
-      //   web3.utils.toWei(
-      //     Number(lendOneInputs.borrowPrice.value).toFixed(18),
-      //     "ether"
-      //   ),
-      //   web3.utils.toWei(
-      //     Number(lendOneInputs.nftPrice.value).toFixed(18),
-      //     "ether"
-      //   )
-      // );
+      if (!nft?.tokenId || !addresses?.rent) return;
+
+      if (!isApproved) {
+        await erc721.approve(nft.nftAddress, addresses.rent, nft.tokenId);
+      }
+
+      const packedDailyRentPrice = packPrice(
+        Number(lendOneInputs.borrowPrice.value)
+      );
+      const packedNftPrice = packPrice(Number(lendOneInputs.nftPrice.value));
+      if (!packedDailyRentPrice || !packedNftPrice) {
+        console.warn("the price is too high");
+        return;
+      }
+
+      // nftAddress, tokenId, maxRentDuration, dailyRentPrice
+      // nftPrice, paymentToken, gasSponsor?
+      await rent.lendOne(
+        nft.nftAddress,
+        nft.tokenId,
+        // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
+        lendOneInputs.maxDuration.value,
+        packedDailyRentPrice,
+        packedNftPrice,
+        // TODO: change for whatever token. add the dropdown on the front-end
+        PaymentToken.DAI
+      );
+
+      isSuccessfulLend = true;
     } catch (err) {
-      // ! TODO: NOTIFICATION THAT SOMETHING WENT WRONG
+      // TODO: notification that something went wrong
       // TRELLO TASK: https://trello.com/c/FUhFdVR4/48-2-add-notifications-anywhere-you-can
       console.debug("could not complete the lending");
     }
@@ -127,6 +141,11 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     // show green check mark somewhere too
     setIsBusy(false);
     setOpen(false);
+
+    // when successfully lent out, hide the NFT from the front-end
+    if (isSuccessfulLend) {
+      // todo:
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,13 +186,16 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   // this will ensure that spinner halts if the user rejects the txn
   const handleApproveAll = useCallback(async () => {
     setIsBusy(true);
+    let updateSuccess = false;
 
     try {
       await face.approveAll();
+      updateSuccess = true;
     } catch (e) {
       console.debug("could not approve all the faces");
     }
 
+    if (updateSuccess) setIsApproved(true);
     setIsBusy(false);
   }, [face]);
 
