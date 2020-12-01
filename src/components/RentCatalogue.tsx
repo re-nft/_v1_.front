@@ -1,15 +1,14 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
-// contexts
 import DappContext from "../contexts/Dapp";
 import Contracts from "../contexts/Contracts";
 import { addresses } from "../contracts";
-import { Lending } from "../types";
+import { Nft } from "../types";
 import RentModal from "./RentModal";
 
 type RentCatalogueProps = {
-  data?: Lending[];
+  nfts?: Nft[];
   iBorrow: boolean;
 };
 
@@ -90,7 +89,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({ handleReturn, id }) => {
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
+const RentCatalogue: React.FC<RentCatalogueProps> = ({ nfts, iBorrow }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [faceId, setFaceId] = useState<string>("");
   const [borrowPrice, setBorrowPrice] = useState<number>(0);
@@ -102,6 +101,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, []);
+
   const handleRent = useCallback(
     (
       faceId: string,
@@ -117,6 +117,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
     },
     []
   );
+
   const handleReturn = useCallback(
     async (tokenId: string) => {
       try {
@@ -148,15 +149,14 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ data, iBorrow }) => {
         maxDuration={maxDuration}
       />
       <Box className="Catalogue">
-        {data &&
-          data.length > 0 &&
-          data.map((nft) => {
+        {nfts.length > 0 &&
+          nfts.map((nft) => {
             return (
               <div className="Catalogue__item" key={nft.id}>
                 <div
                   className="Product"
                   data-item-id={nft.id}
-                  data-item-image={nft.face.uri}
+                  data-item-image={nft.imageUrl}
                 >
                   <div className="Product__image">
                     <a href={nft.face.uri}>

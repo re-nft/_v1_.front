@@ -3,7 +3,6 @@ import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
 import Link from "gatsby-link";
 
-// contexts
 import DappContext from "../contexts/Dapp";
 import { short } from "../utils";
 
@@ -41,9 +40,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="Wrap">
           <Box style={{ minWidth: "1000px" }}>{children}</Box>
         </div>
-        {/* <div className="Footer" style={{ textAlign: "center" }}>
-          ♦ See me in openverse soon... ♦
-        </div> */}
       </div>
     </div>
   );

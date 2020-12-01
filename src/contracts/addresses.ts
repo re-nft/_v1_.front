@@ -1,15 +1,9 @@
-export type NetworkSpecificAddresses = {
-  face: string;
-  rent: string;
-  resolver: string;
-  faucet: string;
-};
-
 export default {
   goerli: {
-    face: "0x06fD0A6B70B937813BCCEFeaA9E5eDDbb9685d69",
-    rent: "0x6E796A927a7BE9D844616D593053F6491C93Aa34",
-    resolver: "0x6d36Ab6682dcE07cE2b584eAbF99902971DB95bB",
-    faucet: "0xF83d2C4eC5068Bb67C1F9Bd823accDd27435A31f",
+    face: "0xF13f7afE1cCE232970F8bE75C5541D78cE55d1E6",
+    rent: "0x810D3Cf7CEd8eAa40688580Fb8727575b1aa5B75",
+    resolver: "0x398ed2B636640119047DE82c679fBBb7bE292bD9",
+    faucet: "0x5A745BbAF6884feAD1bCfEA2f3D7ad04922DA383",
+    pmtToken: "0xa8642D0fA5cC2DA9679D8929091893dF3EcDBd5c",
   },
 };
