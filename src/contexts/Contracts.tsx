@@ -17,6 +17,7 @@ import BN from "bn.js";
 
 type ContractsContextType = {
   helpers: {
+    packPrice: (n: number) => Optional<string>;
     openSeaNfts: Nft[];
     nonOpenSeaNfts: Nft[];
   };
@@ -120,6 +121,10 @@ type ContractsContextType = {
 
 const DefaultContractsContext = {
   helpers: {
+    packPrice: () => {
+      console.error("must be implemented");
+      return undefined;
+    },
     openSeaNfts: [],
     nonOpenSeaNfts: [],
   },
@@ -175,6 +180,10 @@ type ContractsProviderProps = {
   children: React.ReactNode;
 };
 
+const MAX_HEXBYTES = 4;
+const MAX_DECIMAL = 0.9999;
+const MAX_PRICE = Math.pow(16, 4) - 1 + MAX_DECIMAL;
+
 export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   children,
 }) => {
@@ -201,6 +210,42 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
 
     setRent(contract);
   }, [getContract, abis?.rent, addresses?.rent]);
+
+  const _padLeft = (v: string, totalNumOfHexBytes: number) => {
+    const vLen = v.length;
+    if (vLen >= totalNumOfHexBytes) {
+      console.debug("nothing to padLeft");
+      return v;
+    }
+
+    let newV = v;
+    for (let i = 0; i < totalNumOfHexBytes - vLen; i++) {
+      newV = `0${newV}`;
+    }
+
+    return newV;
+  };
+
+  // takes the number price such as 15.2211 and converts it into
+  // the hexadecimal version that can be unpacked by our
+  // smart contract
+  const packPrice = (n: number) => {
+    if (n > MAX_PRICE) {
+      console.error("the price is too high");
+      return;
+    }
+
+    const wholePart = Math.floor(n);
+    const decimalPart = n - wholePart;
+
+    let wholePartHex = wholePart.toString(16);
+    let decimalPartHex = decimalPart.toString(16);
+
+    wholePartHex = _padLeft(wholePartHex, MAX_HEXBYTES);
+    decimalPartHex = _padLeft(decimalPartHex, MAX_HEXBYTES);
+
+    return `0x${wholePartHex.concat(decimalPartHex)}`;
+  };
 
   // --------------------------- Helpers ----------------------------
   // todo: right now this will be called each time the useEffect is triggered
@@ -699,6 +744,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     <ContractsContext.Provider
       value={{
         helpers: {
+          packPrice,
           openSeaNfts,
           nonOpenSeaNfts,
         },
