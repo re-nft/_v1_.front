@@ -4,15 +4,10 @@ import face from "./abis/goerli/GanFaceNft.json";
 import rent from "./abis/goerli/RentNft.json";
 import faucet from "./abis/goerli/Faucet.json";
 import resolver from "./abis/goerli/Resolver.json";
-import erc20 from "./abis/IERC20.json";
-import erc721 from "./abis/IERC721.json";
+import erc20 from "./abis/ERC20.json";
+import erc721 from "./abis/ERC721.json";
 
-export type NetworkSpecificAbis = {
-  face: AbiItem;
-  rent: AbiItem;
-  faucet: AbiItem;
-  resolver: AbiItem;
-};
+import { NetworkSpecificAbis } from "./types";
 
 type AbisType = {
   erc20: AbiItem;

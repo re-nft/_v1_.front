@@ -7,15 +7,13 @@ import React, {
 } from "react";
 import { Box } from "@material-ui/core";
 
-// contexts
-import DappContext from "../contexts/Dapp";
 import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 import Switcher from "./Switcher";
-import { Lending } from "types";
+import { Nft } from "../types";
 
 type LendProps = {
   hidden: boolean;
@@ -27,15 +25,10 @@ enum LendSpecificity {
 }
 
 const Lend: React.FC<LendProps> = ({ hidden }) => {
-  const { wallet } = useContext(DappContext);
   const { helpers } = useContext(ContractsContext);
-  const {
-    fetchOpenSeaNfts,
-    externalNftAddresses,
-    fetchExternalNfts,
-    nfts,
-  } = helpers;
-  const [currentlyLending, setCurrentlyLending] = useState<Lending[]>([]);
+  const { openSeaNfts, nonOpenSeaNfts } = helpers;
+  const [myNfts, setMyNfts] = useState<Nft[]>([]);
+  const [myLendingNfts, setMyLendingNfts] = useState<Nft[]>([]);
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
@@ -49,23 +42,13 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
   }, []);
 
   useEffect(() => {
-    if (!wallet?.account) {
-      console.debug("no user or wallet");
-      return;
-    }
+    const _myNfts = openSeaNfts.concat(nonOpenSeaNfts);
+    setMyNfts(_myNfts);
+  }, [openSeaNfts, nonOpenSeaNfts]);
 
-    // todo: find a better way to avoid constant re-fetching
-    if (externalNftAddresses.length > 0) fetchExternalNfts();
-  }, [
-    wallet?.account,
-    wallet?.networkName,
-    fetchExternalNfts,
-    externalNftAddresses,
-  ]);
-
-  const data = useMemo(() => {
-    return specificity === LendSpecificity.ALL ? nfts : currentlyLending;
-  }, [specificity, nfts, currentlyLending]);
+  const nfts = useMemo(() => {
+    return specificity === LendSpecificity.ALL ? myNfts : myLendingNfts;
+  }, [specificity, myNfts, myLendingNfts]);
 
   if (hidden) return <></>;
 
@@ -77,7 +60,7 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {data.length > 0 && <ScrollForMore />}
+          {nfts.length > 0 && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -96,11 +79,11 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
           </Box>
         </Box>
         <LendCatalogue
-          data={data}
+          nfts={nfts}
           iLend={specificity === LendSpecificity.LENDING}
         />
       </Box>
-      {data.length < 1 && <Cold fancyText="One day it will be warm here..." />}
+      {nfts.length < 1 && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };

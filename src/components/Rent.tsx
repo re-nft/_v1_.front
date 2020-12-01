@@ -1,14 +1,18 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { Box } from "@material-ui/core";
 
 import DappContext from "../contexts/Dapp";
-import GraphContext from "../contexts/Graph";
 import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import RentCatalogue from "./RentCatalogue";
-import { Lending } from "../types";
 import Switcher from "./Switcher";
 
 type RentProps = {
@@ -17,10 +21,8 @@ type RentProps = {
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
   const { wallet } = useContext(DappContext);
-  const { user } = useContext(GraphContext);
   const { helpers } = useContext(ContractsContext);
   const { openSeaNfts, nonOpenSeaNfts } = helpers;
-  const [data, setData] = useState<Lending[]>([]);
   const [showIBorrow, setShowIborrow] = useState(false);
 
   const handleShowIBorrow = useCallback(() => {
@@ -28,10 +30,6 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
   }, []);
 
   useEffect(() => {
-    if (!wallet?.account) {
-      console.debug("no wallet or account");
-      return;
-    }
     // ! only pulling NFTs where we are not the lender
     // const resolvedData = nfts.filter(
     //   (item) =>
@@ -41,7 +39,11 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
     //       : item.borrower === wallet.account?.toLowerCase())
     // );
     // setData(resolvedData);
-  }, [wallet?.account, showIBorrow, fetchOpenSeaNfts]);
+  }, [wallet?.account, showIBorrow]);
+
+  const nfts = useMemo(() => {
+    return openSeaNfts.concat(nonOpenSeaNfts);
+  }, [openSeaNfts, nonOpenSeaNfts]);
 
   if (hidden) return <></>;
 
@@ -53,7 +55,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {data.length > 0 && <ScrollForMore />}
+          {nfts.length > 0 && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -71,9 +73,9 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             </Box>
           </Box>
         </Box>
-        <RentCatalogue data={data} iBorrow={showIBorrow} />
+        <RentCatalogue nfts={nfts} iBorrow={showIBorrow} />
       </Box>
-      {data.length < 1 && <Cold fancyText="One day it will be warm here..." />}
+      {nfts.length < 1 && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };

@@ -266,13 +266,20 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           await nftContract.methods.balanceOf(wallet.account).call()
         );
         for (let i = 0; i < numOwned; i++) {
-          const ownersTokenId = await nftContract.methods.tokenOfOwnerByIndex(
-            i
-          );
+          const ownersTokenId = await nftContract.methods
+            .tokenOfOwnerByIndex(wallet.account, i)
+            .call();
+
+          // todo: for non-face contracts this will be different
+          const imageUrl: string = await nftContract.methods
+            .tokenURI(ownersTokenId)
+            .call();
+
           // todo: fetch imageUrl
           ownersNfts.push({
             nftAddress: address,
             tokenId: ownersTokenId,
+            imageUrl,
           });
         }
       } catch (err) {

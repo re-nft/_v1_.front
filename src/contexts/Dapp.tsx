@@ -3,11 +3,11 @@ import { useWallet, Wallet } from "use-wallet";
 import Web3 from "web3";
 
 import { THROWS } from "../utils";
+import { getAll } from "../contracts";
 import {
-  getAll,
   NetworkSpecificAbis,
   NetworkSpecificAddresses,
-} from "../contracts";
+} from "../contracts/types";
 
 type DappContextType = {
   wallet?: Wallet<"injected">;
@@ -54,11 +54,13 @@ export const DappProvider: React.FC<DappProviderProps> = ({ children }) => {
 
   const fetchNetworkContext = useCallback(async () => {
     if (wallet.status !== "connected") return;
-    const all = getAll(wallet?.account || "");
+    const resolvedNetwork = wallet?.networkName ? wallet.networkName : "goerli";
+    console.debug(`fetching data for ${resolvedNetwork}`);
+    const all = getAll(resolvedNetwork);
     if (!all) return;
     setAddresses(all.addresses);
     setAbis(all.abis);
-  }, [wallet.status, wallet.account]);
+  }, [wallet.status, wallet.networkName]);
 
   useEffect(() => {
     connectWeb3();

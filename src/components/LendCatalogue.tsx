@@ -58,7 +58,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
     <Box>
       <LendModal faceId={faceId} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
-        {nfts?.length &&
+        {nfts?.length > 0 &&
           nfts.map((nft) => {
             const nftId = `${nft.nftAddress}-${nft.tokenId}`;
             return (
@@ -87,7 +87,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
                   <div className="Product__details">
                     <p className="Product__text_overflow">
                       <a
-                        href={`https://goerli.etherscan.io/address/${addr}`}
+                        href={`https://goerli.etherscan.io/address/${nft.nftAddress}`}
                         target="_blank"
                         rel="noreferrer"
                         style={{ textDecoration: "none", color: "black" }}

@@ -1,5 +1,6 @@
-import abis, { NetworkSpecificAbis } from "./abis";
-import addresses, { NetworkSpecificAddresses } from "./addresses";
+import abis from "./abis";
+import addresses from "./addresses";
+import { NetworkSpecificAbis, NetworkSpecificAddresses } from "./types";
 
 export const getAll = (
   networkName: string
@@ -19,5 +20,3 @@ export const getAll = (
 };
 
 export { abis, addresses };
-
-export { NetworkSpecificAbis, NetworkSpecificAddresses };
