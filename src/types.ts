@@ -19,42 +19,37 @@ export enum PaymentToken {
   NAZ, // 7
 }
 
-export type Lending = {
-  id: string;
-  nftAddress: Nft["nftAddress"];
-  tokenId: Nft["tokenId"];
-  lenderAddress: Address;
-  maxRentDuration: string;
-  dailyRentPrice: string;
-  nftPrice: string;
-  paymentToken: PaymentToken;
-  renting: Renting;
-  collateralClaimed: boolean;
-};
-
 export type Renting = {
-  id: string;
-  renterAddress: string;
-  rentDuration: string;
-  rentedAt: string;
+  id: number;
+  renterAddress: Address;
+  rentDuration: number;
+  rentedAt: number;
   lending: Lending;
 };
 
-// will always have at least one lending, that is how this type
-// is created in graph
-// tracks a particular NFT's-tokenId's all lending and renting
+export type Lending = {
+  id: number;
+  nftAddress: string;
+  tokenId: number;
+  lenderAddress: Address;
+  maxRentDuration: number;
+  dailyRentPrice: number;
+  nftPrice: number;
+  paymentToken: PaymentToken;
+  renting?: Renting;
+  collateralClaimed: boolean;
+};
+
 export type LendingRenting = {
   id: string;
   lending: Lending[];
-  renting?: Renting[];
+  renting: Renting[]; // not required in graph, if that is the case, will default to zero length here
 };
 
-// in comparison to the above, this tracks all of the user's
-// lending and renting
 export type User = {
-  id: string;
-  lending?: Lending[];
-  renting?: Renting[];
+  id: Address;
+  lending: Lending[]; // both are not required. If that is the case will default to the zero length
+  renting: Renting[];
 };
 
 // * note that this is NOT the full type!

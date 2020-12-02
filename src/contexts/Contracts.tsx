@@ -67,31 +67,27 @@ type ContractsContextType = {
     rentOne: (
       nftAddress: Address,
       tokenId: string,
-      lendingShortId: string,
-      lendingLongId: string,
+      lendingId: string,
       rentDuration: string,
       gasSponsor?: Address
     ) => void;
     rentMultiple: (
       nftAddresses: Address[],
       tokenIds: string[],
-      lendingShortIds: string[],
-      lendingLongIds: string[],
+      lendingIds: string[],
       rentDurations: string[],
       gasSponsors?: Address[]
     ) => void;
     returnOne: (
       nftAddress: Address,
       tokenId: string,
-      lendingShortId: string,
-      lendingLongId: string,
+      lendingId: string,
       gasSponsor?: Address
     ) => void;
     returnMultiple: (
       nftAddresses: Address[],
       tokenIds: string[],
-      lendingShortIds: string[],
-      lendingLongIds: string[],
+      lendingIds: string[],
       gasSponsors?: Address[]
     ) => void;
     claimCollateralOne: (
@@ -104,22 +100,19 @@ type ContractsContextType = {
     claimCollateralMultiple: (
       nftAddresses: Address[],
       tokenIds: string[],
-      lendingShortIds: string[],
-      lendingLongIds: string[],
+      lendingIds: string[],
       gasSponsors?: Address[]
     ) => void;
     stopLendingOne: (
       nftAddress: Address,
       tokenId: string,
-      lendingShortId: string,
-      lendingLongId: string,
+      lendingId: string,
       gasSponsor?: Address
     ) => void;
     stopLendingMultiple: (
       nftAddresses: Address[],
       tokenIds: string[],
-      lendingShortIds: string[],
-      lendingLongIds: string[],
+      lendingIds: string[],
       gasSponsors?: Address[]
     ) => void;
   };
