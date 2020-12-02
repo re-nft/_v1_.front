@@ -38,6 +38,7 @@ type ContractsContextType = {
       operator: Address,
       tokenId?: string
     ) => Promise<boolean>;
+    tokenURI: (at: Address, tokenId: string) => Promise<string>;
   };
   face: {
     contract?: Contract;
@@ -149,6 +150,10 @@ const DefaultContractsContext = {
       console.error("must be implemented");
       return false;
     },
+    tokenURI: async () => {
+      console.error("must be implemented");
+      return "";
+    },
   },
   face: {
     isApproved: async () => {
@@ -195,7 +200,10 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
 
   const getContract = useCallback(
     (abi: AbiItem, address: Address): Optional<Contract> => {
-      if (!web3) return;
+      if (!web3) {
+        console.log("please connect a wallet to proceed");
+        return;
+      }
       const contract = new web3.eth.Contract(abi, address);
       return contract;
     },
@@ -673,6 +681,19 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     [getContract]
   );
 
+  const tokenURI = useCallback(
+    async (at: Address, tokenId: string) => {
+      const contract = getContract(genericAbis.erc721, at);
+      if (!contract) {
+        console.info("could not get the contract");
+        return "";
+      }
+      const uri: string = await contract.methods.tokenURI(tokenId).call();
+      return uri;
+    },
+    [getContract]
+  );
+
   const approveErc721 = useCallback(
     async (at: Address, operator: Address, tokenId?: string) => {
       const contract = getContractErc721(at);
@@ -763,6 +784,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           contract: getContractErc721,
           isApproved: isApprovedErc721,
           approve: approveErc721,
+          tokenURI: tokenURI,
         },
         rent: {
           contract: rent,

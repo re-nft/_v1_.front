@@ -10,6 +10,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
+import { Lending } from "../types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -42,26 +43,20 @@ const LegibleTextField = withStyles({
 })(TextField);
 
 type RentModalProps = {
-  faceId: string;
   open: boolean;
   handleClose: () => void;
-  borrowPrice: number;
-  nftPrice: number;
-  maxDuration: number;
+  lending: Lending;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
 
 const RentModal: React.FC<RentModalProps> = ({
-  faceId,
   open,
   handleClose,
-  borrowPrice,
-  nftPrice,
-  maxDuration,
+  lending,
 }) => {
   const classes = useStyles();
-  const { rent, pmtToken } = useContext(ContractsContext);
+  const { rent } = useContext(ContractsContext);
   const [duration, setDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
@@ -114,17 +109,17 @@ const RentModal: React.FC<RentModalProps> = ({
           resetState();
           setDuration(String(SENSIBLE_MAX_DURATION));
           return;
-        } else if (num > maxDuration) {
+        } else if (num > lending.maxRentDuration) {
           resetState();
           setErrorText(
-            `You cannot borrow this NFT for longer than ${maxDuration} days`
+            `You cannot borrow this NFT for longer than ${lending.maxRentDuration} days`
           );
           return;
         }
 
         // if the above conditions weren't caught, everything is fine
         setInputsValid(true);
-        setTotalRent(num * borrowPrice);
+        setTotalRent(num * lending.dailyRentPrice);
       } catch (err) {
         console.debug("could not convert rent duration to number");
         resetState();
@@ -133,7 +128,7 @@ const RentModal: React.FC<RentModalProps> = ({
       setDuration(resolvedValue);
       setDate(resolvedValue);
     },
-    [borrowPrice, maxDuration, resetState, setDate]
+    [lending, resetState, setDate]
   );
 
   const rentIsDisabled = useMemo(() => {
@@ -145,12 +140,10 @@ const RentModal: React.FC<RentModalProps> = ({
       e.preventDefault();
       try {
         // TODO: to generalise, will need to use tokenAddress here too
-        const tokenId = faceId.split("::")[1];
 
         if (
           !rent ||
-          !pmtToken ||
-          !R.hasPath(["dai", "approve"], pmtToken) ||
+          // !R.hasPath(["dai", "approve"], pmtToken) ||
           rentIsDisabled
         ) {
           console.debug("can't rent");
@@ -158,8 +151,14 @@ const RentModal: React.FC<RentModalProps> = ({
         }
 
         setIsBusy(true);
+        // todo: approve
         // await pmtToken.dai.approve();
-        await rent.rentOne(tokenId, duration);
+        await rent.rentOne(
+          lending.nftAddress,
+          String(lending.tokenId),
+          String(lending.id),
+          duration // todo: add gas sponsor
+        );
       } catch (err) {
         console.debug("something went wrong");
         // TODO: give a notification here as well
@@ -167,19 +166,27 @@ const RentModal: React.FC<RentModalProps> = ({
       setIsBusy(false);
       handleClose();
     },
-    [rent, pmtToken, duration, faceId, rentIsDisabled, handleClose]
+    [
+      rent,
+      duration,
+      rentIsDisabled,
+      lending.id,
+      lending.tokenId,
+      lending.nftAddress,
+      handleClose,
+    ]
   );
 
-  const handleApprove = useCallback(async () => {
-    try {
-      setIsBusy(true);
-      await pmtToken.dai.approve();
-    } catch (err) {
-      handleClose();
-      console.debug("could not approve");
-    }
-    setIsBusy(false);
-  }, [pmtToken, handleClose]);
+  // const handleApprove = useCallback(async () => {
+  //   try {
+  //     setIsBusy(true);
+  //     await pmtToken.dai.approve();
+  //   } catch (err) {
+  //     handleClose();
+  //     console.debug("could not approve");
+  //   }
+  //   setIsBusy(false);
+  // }, [pmtToken, handleClose]);
 
   return (
     <Modal open={open} handleClose={handleClose}>
@@ -200,12 +207,12 @@ const RentModal: React.FC<RentModalProps> = ({
           />
           <LegibleTextField
             id="standard-basic"
-            label={`Daily rent price: ${borrowPrice}`}
+            label={`Daily rent price: ${lending.dailyRentPrice}`}
             disabled
           />
           <LegibleTextField
             id="standard-basic"
-            label={`Rent: ${borrowPrice} x ${
+            label={`Rent: ${lending.dailyRentPrice} x ${
               !duration ? "👾" : duration
             } days = ${
               totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
@@ -214,7 +221,7 @@ const RentModal: React.FC<RentModalProps> = ({
           />
           <LegibleTextField
             id="standard-basic"
-            label={`Collateral: ${nftPrice}`}
+            label={`Collateral: ${lending.nftPrice}`}
             disabled
           />
           <Box
@@ -238,7 +245,7 @@ const RentModal: React.FC<RentModalProps> = ({
               border: "3px solid black",
             }}
             className="Product__button"
-            onClick={handleApprove}
+            // onClick={handleApprove}
             disabled={busy}
           >
             Approve fDAI

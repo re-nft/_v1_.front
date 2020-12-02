@@ -38,6 +38,7 @@ export type Lending = {
   paymentToken: PaymentToken;
   renting?: Renting;
   collateralClaimed: boolean;
+  imageUrl: string;
 };
 
 export type LendingRenting = {

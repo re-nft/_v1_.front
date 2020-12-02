@@ -9,6 +9,7 @@ import { request } from "graphql-request";
 import Web3 from "web3";
 
 import DappContext from "./Dapp";
+import ContractsContext from "./Contracts";
 
 import { Lending, User, Optional } from "../types";
 import { toPaymentToken, toUnpackedPrice } from "../contracts";
@@ -96,6 +97,7 @@ type RawLending = {
 
 export const GraphProvider: React.FC = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
+  const { erc721 } = useContext(ContractsContext);
 
   const [user, setUser] = useState<User>();
   const [lending, setLending] = useState<Lending[]>([]);
@@ -110,22 +112,38 @@ export const GraphProvider: React.FC = ({ children }) => {
     setUser(data.user);
   }, [wallet?.account, web3]);
 
-  const _parseLending = ({ data }: { data: RawLending[] }) => {
-    const resolvedData: Lending[] = data.map((datum) => ({
-      id: Number(datum.id),
-      nftAddress: datum.nftAddress,
-      tokenId: Number(datum.tokenId),
-      lenderAddress: datum.lenderAddress,
-      maxRentDuration: Number(datum.maxRentDuration),
-      dailyRentPrice: toUnpackedPrice(datum.dailyRentPrice),
-      nftPrice: toUnpackedPrice(datum.nftPrice),
-      paymentToken: toPaymentToken(datum.paymentToken),
-      collateralClaimed: Boolean(datum.collateralClaimed),
-    }));
-    console.log("resolved data is");
-    console.log(resolvedData);
-    return resolvedData;
-  };
+  const _parseLending = useCallback(
+    async ({ data }: { data: RawLending[] }) => {
+      const fetchImagesFor: Promise<string>[] = [];
+
+      const resolvedData: Omit<Lending, "imageUrl">[] = data.map((datum) => {
+        fetchImagesFor.push(erc721.tokenURI(datum.nftAddress, datum.tokenId));
+        // todo: this will only work for gan addresses
+        // * make this work for for open sea too
+        return {
+          id: Number(datum.id),
+          nftAddress: datum.nftAddress,
+          tokenId: Number(datum.tokenId),
+          lenderAddress: datum.lenderAddress,
+          maxRentDuration: Number(datum.maxRentDuration),
+          dailyRentPrice: toUnpackedPrice(datum.dailyRentPrice),
+          nftPrice: toUnpackedPrice(datum.nftPrice),
+          paymentToken: toPaymentToken(datum.paymentToken),
+          collateralClaimed: Boolean(datum.collateralClaimed),
+        };
+      });
+
+      const imageUrls = await Promise.all(fetchImagesFor);
+
+      const resolvedLending: Lending[] = resolvedData.map((datum, index) => ({
+        ...datum,
+        imageUrl: imageUrls[index],
+      }));
+
+      return resolvedLending;
+    },
+    [erc721]
+  );
 
   const fetchLending = useCallback(async () => {
     const query = queryLending();
@@ -133,10 +151,10 @@ export const GraphProvider: React.FC = ({ children }) => {
       .lendings;
     if (!data) return [];
 
-    const resolvedData = _parseLending({ data });
+    const resolvedData = await _parseLending({ data });
 
     setLending(resolvedData);
-  }, []);
+  }, [_parseLending]);
 
   const refresh = useCallback(async () => {
     await getUser();
