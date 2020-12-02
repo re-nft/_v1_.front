@@ -8,7 +8,7 @@ import Lend from "./Lend";
 import ButHow from "./ButHow";
 import Stats from "./Stats";
 import MintNft from "./MintNFT";
-import Leaderboard from "./Leaderboard";
+// import Leaderboard from "./Leaderboard";
 import useFakeDai from "../hooks/useFakeDai";
 
 // make enum
@@ -85,12 +85,12 @@ const App: React.FC = () => {
           thisTab={Tabs.STATS}
           buttonName="Stats"
         />
-        <Tab
+        {/* <Tab
           setTab={setActiveTab}
           isFocused={activeTab === Tabs.LEADER}
           thisTab={Tabs.LEADER}
           buttonName="Leaderboard"
-        />
+        /> */}
         <div role="button" style={{ marginRight: "16px" }} onClick={requestDai}>
           <span
             className={
@@ -131,7 +131,7 @@ const App: React.FC = () => {
       >
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
-        <Leaderboard hidden={activeTab !== Tabs.LEADER} />
+        {/* <Leaderboard hidden={activeTab !== Tabs.LEADER} /> */}
         <ButHow hidden={activeTab !== Tabs.HOW} />
         <Stats hidden={activeTab !== Tabs.STATS} />
       </Box>
