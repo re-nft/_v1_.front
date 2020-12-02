@@ -27,15 +27,15 @@ const Index: React.FC = () => {
   return (
     <UseWalletProvider chainId={5}>
       <DappProvider>
-        <GraphProvider>
-          <ContractsProvider>
+        <ContractsProvider>
+          <GraphProvider>
             <GanFacesProvider>
               <ThemeProvider theme={theme}>
                 <App />
               </ThemeProvider>
             </GanFacesProvider>
-          </ContractsProvider>
-        </GraphProvider>
+          </GraphProvider>
+        </ContractsProvider>
       </DappProvider>
     </UseWalletProvider>
   );

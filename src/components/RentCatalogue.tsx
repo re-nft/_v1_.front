@@ -1,44 +1,29 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
-import DappContext from "../contexts/Dapp";
 import Contracts from "../contexts/Contracts";
-import { Nft } from "../types";
+import { Lending } from "../types";
 import RentModal from "./RentModal";
+import GraphContext from "../contexts/Graph";
 
 type RentCatalogueProps = {
-  nfts: Nft[];
   iBorrow: boolean;
 };
 
 type RentButtonProps = {
-  handleRent: (
-    id: string,
-    nftPrice: number,
-    borrowPrice: number,
-    maxDuration: number
-  ) => void;
-  id: string;
-  nftPrice: number;
-  borrowPrice: number;
-  maxDuration: number;
+  handleRent: (lending: Lending) => void;
+  lending: Lending;
 };
 
 type handleReturnArgs = {
-  nft: Nft;
-  lendingId: string;
+  lending: Lending;
   gasSponsor?: string;
 };
-type handleReturnFunc = ({
-  nft,
-  lendingId,
-  gasSponsor,
-}: handleReturnArgs) => void;
+type handleReturnFunc = ({ lending, gasSponsor }: handleReturnArgs) => void;
 
 type ReturnButtonProps = {
   handleReturn: handleReturnFunc;
-  nft: Nft;
-  lendingId: handleReturnArgs["lendingId"];
+  lending: Lending;
   gasSponsor?: handleReturnArgs["gasSponsor"];
 };
 
@@ -63,16 +48,10 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   </div>
 );
 
-const RentButton: React.FC<RentButtonProps> = ({
-  handleRent,
-  id,
-  nftPrice,
-  borrowPrice,
-  maxDuration,
-}) => {
+const RentButton: React.FC<RentButtonProps> = ({ handleRent, lending }) => {
   const handleClick = useCallback(() => {
-    handleRent(id, nftPrice, borrowPrice, maxDuration);
-  }, [handleRent, id, nftPrice, borrowPrice, maxDuration]);
+    handleRent(lending);
+  }, [handleRent, lending]);
 
   return (
     <span
@@ -87,13 +66,12 @@ const RentButton: React.FC<RentButtonProps> = ({
 
 const ReturnButton: React.FC<ReturnButtonProps> = ({
   handleReturn,
-  nft,
-  lendingId,
+  lending,
   gasSponsor,
 }) => {
   const handleClick = useCallback(() => {
-    handleReturn({ nft, lendingId, gasSponsor });
-  }, [handleReturn, nft, lendingId, gasSponsor]);
+    handleReturn({ lending, gasSponsor });
+  }, [lending, gasSponsor, handleReturn]);
 
   return (
     <span
@@ -106,52 +84,36 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = ({ nfts, iBorrow }) => {
+const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [faceId, setFaceId] = useState<string>("");
-  const [borrowPrice, setBorrowPrice] = useState<number>(0);
-  const [nftPrice, setNftPrice] = useState<number>(0);
-  const [maxDuration, setMaxDuration] = useState<number>(0);
-  const { web3 } = useContext(DappContext);
+  const [lending, setLending] = useState<Lending>();
+  // const { web3 } = useContext(DappContext);
   const { rent } = useContext(Contracts);
+  const { lending: lendings } = useContext(GraphContext);
 
-  const handleClose = useCallback(() => {
+  const handleModalClose = useCallback(() => {
     setModalOpen(false);
   }, []);
 
-  const handleRent = useCallback(
-    (
-      faceId: string,
-      nftPrice: number,
-      borrowPrice: number,
-      maxDuration: number
-    ) => {
-      setModalOpen(true);
-      setFaceId(faceId);
-      setBorrowPrice(borrowPrice);
-      setNftPrice(nftPrice);
-      setMaxDuration(maxDuration);
-    },
-    []
-  );
+  const handleRent = useCallback((_lending: Lending) => {
+    setModalOpen(true);
+    setLending(_lending);
+  }, []);
 
   const handleReturn = useCallback(
     async ({
-      nft,
-      lendingId,
+      lending,
       gasSponsor,
     }: {
-      nft: Nft;
-      lendingId: string;
+      lending: Lending;
       gasSponsor?: string;
     }) => {
-      // async (nft: Nft, lendingId: string, gasSponsor?: string) => {
       try {
-        if (!rent?.returnOne || !nft?.tokenId) return;
+        if (!rent?.returnOne) return;
         await rent?.returnOne(
-          nft.nftAddress,
-          nft.tokenId,
-          lendingId,
+          lending.nftAddress,
+          String(lending.tokenId),
+          String(lending.id),
           gasSponsor
         );
       } catch (err) {
@@ -161,85 +123,75 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ nfts, iBorrow }) => {
     [rent]
   );
 
-  const fromWei = (v?: number): string =>
-    v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
+  // const fromWei = (v?: number): string =>
+  //   v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
   return (
     <Box>
-      <RentModal
-        faceId={faceId}
-        open={modalOpen}
-        handleClose={handleClose}
-        borrowPrice={borrowPrice}
-        nftPrice={nftPrice}
-        maxDuration={maxDuration}
-      />
+      {lending && (
+        <RentModal
+          open={modalOpen}
+          handleClose={handleModalClose}
+          lending={lending}
+        />
+      )}
       <Box className="Catalogue">
-        {nfts.length > 0 &&
-          nfts.map((nft) => {
-            if (!nft.tokenId) return <></>;
-            const id = `${nft.nftAddress}::${nft.tokenId}`;
+        {lendings.length > 0 &&
+          lendings.map((lending) => {
+            const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
 
             return (
               <div className="Catalogue__item" key={id}>
                 <div
                   className="Product"
                   data-item-id={id}
-                  data-item-image={nft.imageUrl}
+                  data-item-image={lending.imageUrl}
                 >
                   <div className="Product__image">
-                    <a href={nft.face.uri}>
-                      <img alt="nft" src={nft.face.uri} />
+                    <a href={lending.imageUrl}>
+                      <img alt="nft" src={lending.imageUrl} />
                     </a>
                   </div>
                   <div className="Product__details">
                     <p className="Product__text_overflow">
                       <a
-                        href={`https://goerli.etherscan.io/address/${nft.address}`}
+                        href={`https://goerli.etherscan.io/address/${lending.nftAddress}`}
                         target="_blank"
                         rel="noreferrer"
                         style={{ textDecoration: "none", color: "black" }}
                       >
-                        {nft.address}
+                        {lending.nftAddress}
                       </a>
                     </p>
                   </div>
                   <div className="Product__details">
                     <p className="Product__text_overflow">
                       <span className="Product__label">Token id</span>
-                      <span className="Product__value">
-                        {nft.id.split("::")[1]}
-                      </span>
+                      <span className="Product__value">{lending.tokenId}</span>
                     </p>
                   </div>
                   <NumericField
                     text="Daily price"
-                    value={fromWei(nft.borrowPrice)}
+                    value={String(lending.dailyRentPrice)}
                     unit="fDAI"
                   />
                   <NumericField
                     text="Max duration"
-                    value={String(nft.maxDuration)}
+                    value={String(lending.maxRentDuration)}
                     unit="days"
                   />
                   <NumericField
                     text="Collateral"
-                    value={fromWei(nft.nftPrice)}
+                    value={String(lending.nftPrice)}
                     unit="fDAI"
                   />
                   <div className="Product__details">
                     {!iBorrow ? (
-                      <RentButton
-                        handleRent={handleRent}
-                        id={nft.face.id}
-                        borrowPrice={Number(fromWei(nft.borrowPrice))}
-                        nftPrice={Number(fromWei(nft.nftPrice))}
-                        maxDuration={Number(nft.maxDuration)}
-                      />
+                      <RentButton handleRent={handleRent} lending={lending} />
                     ) : (
                       <ReturnButton
-                        id={nft.face.id}
                         handleReturn={handleReturn}
+                        lending={lending}
                       />
                     )}
                   </div>
