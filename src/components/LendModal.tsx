@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { addresses } from "../contracts";
 
 // contexts
 import ContractsContext from "../contexts/Contracts";
@@ -16,7 +15,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
 import CssTextField from "./CssTextField";
-import { Nft } from "types";
+import { Nft } from "../types";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({

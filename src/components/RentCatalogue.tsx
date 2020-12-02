@@ -3,12 +3,11 @@ import { Box, Tooltip } from "@material-ui/core";
 
 import DappContext from "../contexts/Dapp";
 import Contracts from "../contexts/Contracts";
-import { addresses } from "../contracts";
 import { Nft } from "../types";
 import RentModal from "./RentModal";
 
 type RentCatalogueProps = {
-  nfts?: Nft[];
+  nfts: Nft[];
   iBorrow: boolean;
 };
 
@@ -25,9 +24,22 @@ type RentButtonProps = {
   maxDuration: number;
 };
 
+type handleReturnArgs = {
+  nft: Nft;
+  lendingId: string;
+  gasSponsor?: string;
+};
+type handleReturnFunc = ({
+  nft,
+  lendingId,
+  gasSponsor,
+}: handleReturnArgs) => void;
+
 type ReturnButtonProps = {
-  handleReturn: (id: string) => void;
-  id: string;
+  handleReturn: handleReturnFunc;
+  nft: Nft;
+  lendingId: handleReturnArgs["lendingId"];
+  gasSponsor?: handleReturnArgs["gasSponsor"];
 };
 
 type NumericFieldProps = {
@@ -73,10 +85,15 @@ const RentButton: React.FC<RentButtonProps> = ({
   );
 };
 
-const ReturnButton: React.FC<ReturnButtonProps> = ({ handleReturn, id }) => {
+const ReturnButton: React.FC<ReturnButtonProps> = ({
+  handleReturn,
+  nft,
+  lendingId,
+  gasSponsor,
+}) => {
   const handleClick = useCallback(() => {
-    handleReturn(id);
-  }, [handleReturn, id]);
+    handleReturn({ nft, lendingId, gasSponsor });
+  }, [handleReturn, nft, lendingId, gasSponsor]);
 
   return (
     <span
@@ -119,16 +136,25 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ nfts, iBorrow }) => {
   );
 
   const handleReturn = useCallback(
-    async (tokenId: string) => {
+    async ({
+      nft,
+      lendingId,
+      gasSponsor,
+    }: {
+      nft: Nft;
+      lendingId: string;
+      gasSponsor?: string;
+    }) => {
+      // async (nft: Nft, lendingId: string, gasSponsor?: string) => {
       try {
-        if (!rent?.returnOne) return;
-        // ! TODO: hack. generalise
-        const resolvedId = tokenId.split("::")[1];
-        // ! TODO: remove this addresses.goerli.face. Generalise
-        await rent?.returnOne(addresses.goerli.face, resolvedId);
+        if (!rent?.returnOne || !nft?.tokenId) return;
+        await rent?.returnOne(
+          nft.nftAddress,
+          nft.tokenId,
+          lendingId,
+          gasSponsor
+        );
       } catch (err) {
-        // TODO: add the notification here
-        // TODO: add the UX for busy (loading spinner)
         console.debug("could not return the NFT");
       }
     },
@@ -151,11 +177,14 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ nfts, iBorrow }) => {
       <Box className="Catalogue">
         {nfts.length > 0 &&
           nfts.map((nft) => {
+            if (!nft.tokenId) return <></>;
+            const id = `${nft.nftAddress}::${nft.tokenId}`;
+
             return (
-              <div className="Catalogue__item" key={nft.id}>
+              <div className="Catalogue__item" key={id}>
                 <div
                   className="Product"
-                  data-item-id={nft.id}
+                  data-item-id={id}
                   data-item-image={nft.imageUrl}
                 >
                   <div className="Product__image">
