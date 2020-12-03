@@ -15,7 +15,7 @@ type LayoutProps = {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { wallet, connectWallet } = useContext(DappContext);
   const userAddress = useMemo(() => {
-    if (!wallet?.account) return "Connect to Görli";
+    if (!wallet?.account) return "Connect to Görli or Mainnet";
     return short(wallet.account);
   }, [wallet]);
 

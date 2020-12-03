@@ -244,10 +244,11 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     }
 
     const wholePart = Math.floor(n);
+
     const decimalPart = n - wholePart;
 
     let wholePartHex = wholePart.toString(16);
-    let decimalPartHex = decimalPart.toString(16);
+    let decimalPartHex = Math.floor(decimalPart * 10_000).toString(16);
 
     wholePartHex = _padLeft(wholePartHex, MAX_HEXBYTES);
     decimalPartHex = _padLeft(decimalPartHex, MAX_HEXBYTES);

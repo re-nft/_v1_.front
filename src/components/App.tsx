@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { Box } from "@material-ui/core";
 
 // components and other
@@ -10,8 +10,8 @@ import Stats from "./Stats";
 import MintNft from "./MintNFT";
 // import Leaderboard from "./Leaderboard";
 import useFakeDai from "../hooks/useFakeDai";
+import DappContext from "../contexts/Dapp";
 
-// make enum
 enum Tabs {
   RENT,
   LEND,
@@ -49,6 +49,7 @@ const Tab: React.FC<TabProps> = ({
 };
 
 const App: React.FC = () => {
+  const { wallet } = useContext(DappContext);
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
   const [nftModalOpen, setNftModalOpen] = useState(false);
   const requestTokens = useFakeDai();
@@ -91,32 +92,37 @@ const App: React.FC = () => {
           thisTab={Tabs.LEADER}
           buttonName="Leaderboard"
         /> */}
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={requestTokens}
-        >
-          <span
-            className={
-              activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
-            }
-          >
-            Free tokens
-          </span>
-        </div>
-        <div
-          role="button"
-          style={{ marginRight: "16px" }}
-          onClick={handleNftModal}
-        >
-          <span
-            className={
-              activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
-            }
-          >
-            Get NFT
-          </span>
-        </div>
+        {wallet?.networkName.toLowerCase() === "goerli" && (
+          <>
+            <div
+              role="button"
+              style={{ marginRight: "16px" }}
+              onClick={requestTokens}
+            >
+              <span
+                className={
+                  activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
+                }
+              >
+                Free tokens
+              </span>
+            </div>
+
+            <div
+              role="button"
+              style={{ marginRight: "16px" }}
+              onClick={handleNftModal}
+            >
+              <span
+                className={
+                  activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
+                }
+              >
+                Get NFT
+              </span>
+            </div>
+          </>
+        )}
         <MintNft open={nftModalOpen} handleClose={handleNftModal} />
         <Tab
           setTab={setActiveTab}
