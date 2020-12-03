@@ -3,9 +3,6 @@ import addresses from "./addresses";
 import { NetworkSpecificAbis, NetworkSpecificAddresses } from "./types";
 import { PaymentToken } from "../types";
 
-const MAX_WHOLE = 65536; // 0x00010000
-const MAX_DECIMAL = 9999; // ...
-
 const getAll = (
   networkName: string
 ): {
@@ -23,7 +20,7 @@ const getAll = (
   }
 };
 
-const toPaymentToken = (v: string) => {
+const toPaymentToken: (v: string) => PaymentToken = (v: string) => {
   switch (v.toLowerCase()) {
     case "0":
       return PaymentToken.DAI;
