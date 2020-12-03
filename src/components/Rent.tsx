@@ -61,7 +61,6 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-
               marginLeft: "auto",
             }}
           >

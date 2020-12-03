@@ -51,7 +51,7 @@ const Tab: React.FC<TabProps> = ({
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
   const [nftModalOpen, setNftModalOpen] = useState(false);
-  const requestDai = useFakeDai();
+  const requestTokens = useFakeDai();
 
   const handleNftModal = useCallback(() => {
     setNftModalOpen(!nftModalOpen);
@@ -91,13 +91,17 @@ const App: React.FC = () => {
           thisTab={Tabs.LEADER}
           buttonName="Leaderboard"
         /> */}
-        <div role="button" style={{ marginRight: "16px" }} onClick={requestDai}>
+        <div
+          role="button"
+          style={{ marginRight: "16px" }}
+          onClick={requestTokens}
+        >
           <span
             className={
               activeTab === Tabs.GETNFT ? "active-tab" : "Product__button"
             }
           >
-            Get fDAI
+            Free tokens
           </span>
         </div>
         <div
