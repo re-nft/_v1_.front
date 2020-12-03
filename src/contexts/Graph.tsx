@@ -15,11 +15,16 @@ import { Lending, Renting, User, Optional, Address } from "../types";
 import { toPaymentToken, toUnpackedPrice } from "../contracts";
 
 type GraphContextType = {
-  user?: User;
+  user: User;
   lending: Lending[];
 };
 
 const DefaultGraphContext: GraphContextType = {
+  user: {
+    id: "",
+    lending: [],
+    renting: [],
+  },
   lending: [],
 };
 
@@ -108,7 +113,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const { wallet, web3 } = useContext(DappContext);
   const { erc721 } = useContext(ContractsContext);
 
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>({ id: "", lending: [], renting: [] });
   const [lending, setLending] = useState<Lending[]>([]);
 
   const _parseLending = useCallback(
