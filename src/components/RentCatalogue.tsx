@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Box, Tooltip } from "@material-ui/core";
+import { toUnpackedPrice } from "../contracts/index";
 
 import Contracts from "../contexts/Contracts";
 import { Lending } from "../types";
@@ -138,7 +139,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
       )}
       <Box className="Catalogue">
         {lendings.length > 0 &&
-          wallet.status === "connected" &&
+          wallet?.status === "connected" &&
           lendings.map((lending) => {
             const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
 

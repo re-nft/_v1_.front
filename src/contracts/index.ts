@@ -3,6 +3,9 @@ import addresses from "./addresses";
 import { NetworkSpecificAbis, NetworkSpecificAddresses } from "./types";
 import { PaymentToken } from "../types";
 
+const MAX_WHOLE = 65536; // 0x00010000
+const MAX_DECIMAL = 9999; // ...
+
 const getAll = (
   networkName: string
 ): {
@@ -44,10 +47,11 @@ const toPaymentToken = (v: string) => {
 };
 
 const toUnpackedPrice: (v: number | string) => number = (v) => {
-  let resolvedV = 0;
-  if (typeof v === "string") {
-    resolvedV = Number(v);
-  }
+  const resolvedV = typeof v === "string" ? Number(v) : v;
+
+  // decimal part cannot exceed 9999
+  // smallest whole part when converted from hex to decimal is 0x00010000 i.e. 65536
+
   let hexPrice = resolvedV.toString(16);
   if (hexPrice.length > 8) {
     console.error("unknown price");
