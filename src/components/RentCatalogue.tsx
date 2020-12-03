@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
 import { Box, Tooltip } from "@material-ui/core";
-import { toUnpackedPrice } from "../contracts/index";
 
 import Contracts from "../contexts/Contracts";
 import { Lending } from "../types";

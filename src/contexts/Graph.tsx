@@ -11,7 +11,7 @@ import Web3 from "web3";
 import DappContext from "./Dapp";
 import ContractsContext from "./Contracts";
 
-import { Lending, User, Optional } from "../types";
+import { Lending, Renting, User, Optional, Address } from "../types";
 import { toPaymentToken, toUnpackedPrice } from "../contracts";
 
 type GraphContextType = {
@@ -84,15 +84,24 @@ const queryUser = (user: string, web3: Web3): string => {
 };
 
 type RawLending = {
-  collateralClaimed: string;
-  dailyRentPrice: string;
   id: string;
+  nftAddress: string;
+  tokenId: string;
   lenderAddress: string;
   maxRentDuration: string;
-  nftAddress: string;
+  dailyRentPrice: string;
   nftPrice: string;
   paymentToken: string;
-  tokenId: string;
+  collateralClaimed: string;
+  renting: Omit<RawRenting, "lending">;
+};
+
+type RawRenting = {
+  id: string;
+  rentDuration: string;
+  rentedAt: string;
+  renterAddress: string;
+  lending: RawLending;
 };
 
 export const GraphProvider: React.FC = ({ children }) => {
@@ -102,18 +111,9 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User>();
   const [lending, setLending] = useState<Lending[]>([]);
 
-  const getUser = useCallback(async () => {
-    if (!web3 || !wallet?.account) {
-      console.debug("connect to goerli network");
-      return;
-    }
-    const userQuery = queryUser(wallet.account, web3);
-    const data = await request(ENDPOINT, userQuery);
-    setUser(data.user);
-  }, [wallet?.account, web3]);
-
   const _parseLending = useCallback(
-    async ({ data }: { data: RawLending[] }) => {
+    async ({ data }: { data?: RawLending[] }) => {
+      if (!data || data.length < 1) return [];
       const fetchImagesFor: Promise<string>[] = [];
 
       const resolvedData: Omit<Lending, "imageUrl">[] = data.map((datum) => {
@@ -145,6 +145,71 @@ export const GraphProvider: React.FC = ({ children }) => {
     [erc721]
   );
 
+  // todo: bad time complexity. O(2N + M)
+  const _parseRenting = useCallback(
+    async ({ data }: { data?: RawRenting[] }) => {
+      if (!data || data.length < 1) return [];
+      const lendingsToParse: RawLending[] = [];
+
+      const resolvedData: Omit<Renting, "lending">[] = data.map((datum) => {
+        lendingsToParse.push(datum.lending);
+        return {
+          id: Number(datum.id),
+          renterAddress: datum.renterAddress,
+          rentedAt: Number(datum.rentedAt),
+          rentDuration: Number(datum.rentDuration),
+        };
+      });
+
+      const parsedLending = await _parseLending({ data: lendingsToParse });
+
+      const _resolvedData: Renting[] = resolvedData.map((v, ix) => ({
+        ...v,
+        lending: parsedLending[ix],
+      }));
+
+      return _resolvedData;
+    },
+    [_parseLending]
+  );
+
+  // parses user's lendings and rentings
+  const _parseUser = useCallback(
+    async ({
+      data,
+    }: {
+      data: {
+        id: Address;
+        lending: RawLending[];
+        renting: RawRenting[];
+      };
+    }) => {
+      const lendings = await _parseLending({ data: data.lending });
+      const rentings = await _parseRenting({ data: data.renting });
+
+      const user: User = {
+        id: data.id,
+        lending: lendings,
+        renting: rentings,
+      };
+
+      return user;
+    },
+    [_parseLending, _parseRenting]
+  );
+
+  const getUser = useCallback(async () => {
+    if (!web3 || !wallet?.account) {
+      console.debug("connect to goerli network");
+      return;
+    }
+    const userQuery = queryUser(wallet.account, web3);
+    const data = await request(ENDPOINT, userQuery);
+    const resovledData = await _parseUser({ data: data.user });
+    setUser(resovledData);
+  }, [wallet?.account, web3, _parseUser]);
+
+  // queries ALL of the lendings in reNFT
   const fetchLending = useCallback(async () => {
     const query = queryLending();
     const data: Optional<RawLending[]> = (await request(ENDPOINT, query))
