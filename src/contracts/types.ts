@@ -6,6 +6,7 @@ export type NetworkSpecificAbis = {
   rent: AbiItem;
   faucet: AbiItem;
   resolver: AbiItem;
+  token: AbiItem;
 };
 
 export type NetworkSpecificAddresses = {
@@ -13,4 +14,5 @@ export type NetworkSpecificAddresses = {
   rent: Address;
   resolver: Address;
   faucet: Address;
+  token: Address;
 };

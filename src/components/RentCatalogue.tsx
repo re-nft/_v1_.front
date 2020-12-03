@@ -5,6 +5,7 @@ import Contracts from "../contexts/Contracts";
 import { Lending } from "../types";
 import RentModal from "./RentModal";
 import GraphContext from "../contexts/Graph";
+import DappContext from "../contexts/Dapp";
 
 type RentCatalogueProps = {
   iBorrow: boolean;
@@ -87,7 +88,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
 const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lending, setLending] = useState<Lending>();
-  // const { web3 } = useContext(DappContext);
+  const { wallet } = useContext(DappContext);
   const { rent } = useContext(Contracts);
   const { lending: lendings } = useContext(GraphContext);
 
@@ -137,6 +138,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
       )}
       <Box className="Catalogue">
         {lendings.length > 0 &&
+          wallet.status === "connected" &&
           lendings.map((lending) => {
             const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
 
