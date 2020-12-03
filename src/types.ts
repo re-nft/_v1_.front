@@ -24,7 +24,7 @@ export type Renting = {
   renterAddress: Address;
   rentDuration: number;
   rentedAt: number;
-  lending: Lending;
+  lending: Omit<Lending, "renting">;
 };
 
 export type Lending = {
@@ -36,7 +36,7 @@ export type Lending = {
   dailyRentPrice: number;
   nftPrice: number;
   paymentToken: PaymentToken;
-  renting?: Renting;
+  renting?: Omit<Renting, "lending">;
   collateralClaimed: boolean;
   imageUrl: string;
 };
