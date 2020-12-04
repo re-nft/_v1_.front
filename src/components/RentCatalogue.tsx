@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState, useMemo } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import Contracts from "../contexts/Contracts";
-import { Lending } from "../types";
+import { Lending, Renting } from "../types";
 import RentModal from "./RentModal";
 import GraphContext from "../contexts/Graph";
 import DappContext from "../contexts/Dapp";
@@ -91,10 +91,26 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
   const { wallet } = useContext(DappContext);
   const { rent } = useContext(Contracts);
   const { lending: allLendings, user } = useContext(GraphContext);
+  const myRentings = user.renting;
+  const myData: Lending[] = iBorrow
+    ? myRentings.map((r) => ({ ...r.lending }))
+    : allLendings;
 
   const userLendingIds = useMemo(() => {
     return user.lending.map((l) => l.id);
   }, [user.lending]);
+
+  // todo: smack in the renting specific data here: (Lending & Omit<Renting, "lending">)[]
+  // const nfts: Lending[] = useMemo(() => {
+  //   if (iBorrow) {
+  //     console.log(allLendings);
+  //     return allLendings;
+  //   } else {
+  //     return user.renting.map((datum) => ({
+  //       ...datum.lending,
+  //     }));
+  //   }
+  // }, [allLendings, iBorrow, user.renting]);
 
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
@@ -141,14 +157,16 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
         />
       )}
       <Box className="Catalogue">
-        {allLendings.length > 0 &&
+        {myData.length > 0 &&
           wallet?.status === "connected" &&
-          allLendings.map((lending) => {
+          myData.map((lending) => {
             // todo: poor time complexity, turn into sets for O(1) access
             // this line avoids showing the user currently lent NFT
             // this code will not show the user's rented NFT, because that gets
             // taken out of the currently available NFTs
-            if (userLendingIds.includes(lending.id)) return <></>;
+            if (!iBorrow) {
+              if (userLendingIds.includes(lending.id)) return <></>;
+            }
 
             const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
 
