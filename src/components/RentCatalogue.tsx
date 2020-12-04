@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState, useMemo } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import Contracts from "../contexts/Contracts";
-import { Lending } from "../types";
+import { Lending, PaymentToken } from "../types";
 import RentModal from "./RentModal";
 import GraphContext from "../contexts/Graph";
 import DappContext from "../contexts/Dapp";
@@ -105,18 +105,6 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
     return _usersNfts;
   }, [user.lending, user.renting]);
 
-  // todo: smack in the renting specific data here: (Lending & Omit<Renting, "lending">)[]
-  // const nfts: Lending[] = useMemo(() => {
-  //   if (iBorrow) {
-  //     console.log(allLendings);
-  //     return allLendings;
-  //   } else {
-  //     return user.renting.map((datum) => ({
-  //       ...datum.lending,
-  //     }));
-  //   }
-  // }, [allLendings, iBorrow, user.renting]);
-
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
   }, []);
@@ -169,11 +157,12 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
             // this line avoids showing the user currently lent NFT
             // this code will not show the user's rented NFT, because that gets
             // taken out of the currently available NFTs
-            if (!iBorrow) {
-              if (usersNfts.includes(lending.id)) return <></>;
-            }
-
             const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
+
+            if (!iBorrow) {
+              if (usersNfts.includes(lending.id))
+                return <React.Fragment key={id}></React.Fragment>;
+            }
 
             return (
               <div className="Catalogue__item" key={id}>
@@ -208,7 +197,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
                   <NumericField
                     text="Daily price"
                     value={String(lending.dailyRentPrice)}
-                    unit="fDAI"
+                    unit={PaymentToken[lending.paymentToken]}
                   />
                   <NumericField
                     text="Max duration"
@@ -218,7 +207,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
                   <NumericField
                     text="Collateral"
                     value={String(lending.nftPrice)}
-                    unit="fDAI"
+                    unit={PaymentToken[lending.paymentToken]}
                   />
                   <div className="Product__details">
                     {!iBorrow ? (

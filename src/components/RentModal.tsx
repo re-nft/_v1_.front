@@ -269,19 +269,6 @@ const RentModal: React.FC<RentModalProps> = ({
         </Box>
 
         <Box className={classes.buttons}>
-          {/* <button
-            type="button"
-            style={{
-              border: "3px solid black",
-            }}
-            className="Product__button"
-            // onClick={handleApprove}
-            disabled={busy}
-          >
-            Approve fDAI
-          </button> */}
-          {/* TODO: visual cues to indicate that Rent button is disabled */}
-          {/* TODO: consider adding form to be consistent (like in LendModal) */}
           <Box onClick={handleSubmit}>
             <RainbowButton
               type="submit"
