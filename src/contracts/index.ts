@@ -50,11 +50,12 @@ const toUnpackedPrice: (v: number | string) => number = (v) => {
   // smallest whole part when converted from hex to decimal is 0x00010000 i.e. 65536
 
   let hexPrice = resolvedV.toString(16);
+  const hexPriceLen = hexPrice.length;
   if (hexPrice.length > 8) {
     console.error("unknown price");
     return resolvedV;
   } else {
-    for (let i = 0; i < 8 - hexPrice.length; i++) {
+    for (let i = 0; i < 8 - hexPriceLen; i++) {
       hexPrice = `0${hexPrice}`;
     }
   }

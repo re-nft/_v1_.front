@@ -1,7 +1,11 @@
-import React from "react";
-import { Box, Tooltip } from "@material-ui/core";
+import React, { useContext } from "react";
+import { Box } from "@material-ui/core";
+import moment from "moment";
 
 import Table from "./Table";
+import GraphContext from "../contexts/Graph";
+import { short } from "../utils";
+import { PaymentToken } from "../types";
 
 type StatsProps = {
   hidden: boolean;
@@ -21,13 +25,14 @@ const TableHead: React.FC<TableHeadProps> = ({ tableType }) => {
     <thead>
       <tr>
         {/* <th>Preview</th> */}
-        <th>NFT Address</th>
-        <th>Token id</th>
-        <th>Daily borrow price</th>
+        <th>NFT Addr</th>
+        <th>Token</th>
+        <th>ID</th>
+        <th>Rate</th>
         <th>Collateral</th>
-        <th>Max Duration</th>
-        <th>Actual Duration</th>
-        <th>{tableType === TableType.BORROW ? "Paid" : "Earned"}</th>
+        {tableType === TableType.LEND && <th>Max Duration</th>}
+        {/* <th>{tableType === TableType.BORROW ? "Paid" : "Earned"}</th> */}
+        {tableType === TableType.BORROW && <th>Return by</th>}
       </tr>
     </thead>
   );
@@ -36,52 +41,51 @@ const TableHead: React.FC<TableHeadProps> = ({ tableType }) => {
 type TableRowProps = {
   address: string;
   tokenId: string;
+  id: string;
   dailyPrice: string;
   collateral: string;
   maxDuration: string;
-  actualDuration: string;
-  amount: string;
 };
 
 const TableRow: React.FC<TableRowProps> = ({
   address,
   tokenId,
+  id,
   dailyPrice,
   collateral,
   maxDuration,
-  actualDuration,
-  amount,
 }) => {
   return (
     <tr>
-      <td>{address}</td>
+      <td>{short(address)}</td>
       <td>{tokenId}</td>
+      <td>{id}</td>
       <td>{dailyPrice}</td>
       <td>{collateral}</td>
       <td>{maxDuration}</td>
-      <td>{actualDuration}</td>
-      {/* TODO: tooltip will show what day this is */}
-      <td>{amount}</td>
     </tr>
   );
 };
 
 const Stats: React.FC<StatsProps> = ({ hidden }) => {
-  if (hidden) {
-    return <></>;
-  }
+  // todo:
+  // total earned
+  // collateral claimed
+  // # nfts lost
+
+  const { user } = useContext(GraphContext);
+  const { lending, renting } = user;
+
+  const returnBy = (rentedAt: number, rentDuration: number) => {
+    return moment.unix(rentedAt).add(rentDuration, "days");
+  };
+
+  if (hidden) return <></>;
 
   return (
     <Box
       style={{ display: "flex", flexDirection: "column", padding: "1.5rem 0" }}
     >
-      <div>Total earned from lending: $1222 (in rent prices)</div>
-      <div># of NFTs currently lending: 2</div>
-      <div># of NFTS currently renting: 1</div>
-      <div>Earning: dynamic numbers</div>
-      <div>Spending: dynamic numbers</div>
-      <div>Net: dynamic numbers</div>
-
       <br />
       <div>------------------</div>
       <div>LENDING</div>
@@ -90,45 +94,50 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.LEND} />
           <tbody>
-            <TableRow
-              address="0xkjkj3k2423"
-              tokenId="0x2"
-              dailyPrice="$100"
-              collateral="$1000"
-              maxDuration="10"
-              actualDuration="5"
-              amount="$6.25/$10"
-            />
-            <TableRow
-              address="0xkjkjffssx3"
-              tokenId="0x3"
-              dailyPrice="$121.2"
-              collateral="$1200"
-              maxDuration="12"
-              actualDuration="4"
-              amount="$6.25/$10"
-            />
+            {lending.length > 0 &&
+              lending.map((l) => (
+                <TableRow
+                  key={`${l.nftAddress}::${l.tokenId}::${l.id}`}
+                  address={l.nftAddress}
+                  tokenId={String(l.tokenId)}
+                  id={String(l.id)}
+                  dailyPrice={`${PaymentToken[l.paymentToken]} ${String(
+                    l.dailyRentPrice
+                  )}`}
+                  collateral={`${PaymentToken[l.paymentToken]} ${String(
+                    l.nftPrice
+                  )}`}
+                  maxDuration={String(l.maxRentDuration)}
+                />
+              ))}
           </tbody>
         </Table>
       </Box>
 
       <br />
       <div>------------------</div>
-      <div>BORROWING</div>
+      <div>RENTING</div>
       <div>------------------</div>
       <Box style={{ padding: "1rem" }}>
         <Table>
           <TableHead tableType={TableType.BORROW} />
           <tbody>
-            <TableRow
-              address="0xkjkjffssx3"
-              tokenId="0x3"
-              dailyPrice="$121.2"
-              collateral="$1200"
-              maxDuration="12"
-              actualDuration="4"
-              amount="$6.25/$10"
-            />
+            {renting.length > 0 &&
+              renting.map((r) => (
+                <TableRow
+                  key={`${r.lending.nftAddress}::${r.lending.tokenId}::${r.lending.id}`}
+                  address={r.lending.nftAddress}
+                  tokenId={String(r.lending.tokenId)}
+                  id={String(r.lending.id)}
+                  dailyPrice={`${PaymentToken[r.lending.paymentToken]} ${String(
+                    r.lending.dailyRentPrice
+                  )}`}
+                  collateral={`${PaymentToken[r.lending.paymentToken]} ${String(
+                    r.lending.nftPrice
+                  )}`}
+                  maxDuration={String(returnBy(r.rentedAt, r.rentDuration))}
+                />
+              ))}
           </tbody>
         </Table>
       </Box>

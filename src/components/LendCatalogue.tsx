@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 
@@ -21,6 +21,7 @@ type StopLendButtonProps = {
 type LendCatalogueProps = {
   nfts: Nft[];
   iLend: boolean;
+  setCold: (cold: boolean) => void;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
@@ -128,7 +129,11 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 // iLend can be inferred from the type of nfts. Moreover,
 // we should not use the union type here for NFT and Lending.
 // Cleanly separate these two, potentially into different components
-const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
+const LendCatalogue: React.FC<LendCatalogueProps> = ({
+  nfts,
+  iLend,
+  setCold,
+}) => {
   const { user } = useContext(GraphContext);
   const { rent } = useContext(ContractsContext);
   const [modalOpen, setModalOpen] = useState(false);
@@ -137,6 +142,14 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
     nftAddress: "",
     tokenId: "",
   });
+
+  useEffect(() => {
+    if (iLend) {
+      user.lending.length > 0 ? setCold(false) : setCold(true);
+    } else {
+      nfts?.length > 0 ? setCold(false) : setCold(true);
+    }
+  }, [nfts, iLend, user.lending, setCold]);
 
   const handleLend = useCallback(
     (_nft: Nft) => {

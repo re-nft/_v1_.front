@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useState, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import Contracts from "../contexts/Contracts";
@@ -9,6 +15,7 @@ import DappContext from "../contexts/Dapp";
 
 type RentCatalogueProps = {
   iBorrow: boolean;
+  setCold: (cold: boolean) => void;
 };
 
 type RentButtonProps = {
@@ -85,16 +92,26 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
+const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow, setCold }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lending, setLending] = useState<Lending>();
+  const [myData, setMyData] = useState<Lending[]>([]);
   const { wallet, addresses } = useContext(DappContext);
   const { rent, erc721 } = useContext(Contracts);
   const { lending: allLendings, user } = useContext(GraphContext);
-  const myRentings = user.renting;
-  const myData: Lending[] = iBorrow
-    ? myRentings.map((r) => ({ ...r.lending }))
-    : allLendings;
+
+  useEffect(() => {
+    let resolvedData: Lending[] = [];
+    if (myData.length === 0) {
+      resolvedData = iBorrow
+        ? user.renting.map((r) => ({ ...r.lending }))
+        : allLendings;
+      setMyData(resolvedData);
+    } else {
+      resolvedData = myData;
+    }
+    resolvedData.length < 1 ? setCold(true) : setCold(false);
+  }, [myData, setCold, iBorrow, user.renting, allLendings]);
 
   // we filter out the nfts that the user is either lending or renting
   const usersNfts = useMemo(() => {

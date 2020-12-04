@@ -29,6 +29,7 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
   const { openSeaNfts, nonOpenSeaNfts } = helpers;
   const [myNfts, setMyNfts] = useState<Nft[]>([]);
   const [myLendingNfts, setMyLendingNfts] = useState<Nft[]>([]);
+  const [cold, setCold] = useState(true);
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
@@ -60,7 +61,7 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {nfts.length > 0 && <ScrollForMore />}
+          {!cold && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -81,9 +82,10 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
         <LendCatalogue
           nfts={nfts}
           iLend={specificity === LendSpecificity.LENDING}
+          setCold={setCold}
         />
       </Box>
-      {nfts.length < 1 && <Cold fancyText="One day it will be warm here..." />}
+      {cold && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };
