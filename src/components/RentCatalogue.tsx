@@ -96,9 +96,14 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
     ? myRentings.map((r) => ({ ...r.lending }))
     : allLendings;
 
-  const userLendingIds = useMemo(() => {
-    return user.lending.map((l) => l.id);
-  }, [user.lending]);
+  // we filter out the nfts that the user is either lending or renting
+  const usersNfts = useMemo(() => {
+    const userLending = user.lending.map((l) => l.id);
+    const userRenting = user.renting.map((r) => r.lending.id);
+
+    const _usersNfts = userLending.concat(userRenting);
+    return _usersNfts;
+  }, [user.lending, user.renting]);
 
   // todo: smack in the renting specific data here: (Lending & Omit<Renting, "lending">)[]
   // const nfts: Lending[] = useMemo(() => {
@@ -165,7 +170,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
             // this code will not show the user's rented NFT, because that gets
             // taken out of the currently available NFTs
             if (!iBorrow) {
-              if (userLendingIds.includes(lending.id)) return <></>;
+              if (usersNfts.includes(lending.id)) return <></>;
             }
 
             const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
