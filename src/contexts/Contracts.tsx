@@ -46,6 +46,10 @@ type ContractsContextType = {
     approve: (tokenId: string) => void;
     approveAll: () => void;
   };
+  resolver: {
+    contract?: Contract;
+    getPaymentToken: (token: PaymentToken) => Promise<Address>;
+  };
   rent: {
     contract?: Contract;
     lendOne: (
@@ -155,6 +159,12 @@ const DefaultContractsContext = {
       return "";
     },
   },
+  resolver: {
+    getPaymentToken: async () => {
+      console.error("must be implemented");
+      return "";
+    },
+  },
   face: {
     isApproved: async () => {
       console.error("must be implemented");
@@ -197,6 +207,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   const [rent, setRent] = useState<Contract>();
   const [openSeaNfts, setOpenSeaNfts] = useState<Nft[]>([]);
   const [nonOpenSeaNfts, setNonOpenSeaNfts] = useState<Nft[]>([]);
+  const [resolver, setResolver] = useState<Contract>();
 
   const getContract = useCallback(
     (abi: AbiItem, address: Address): Optional<Contract> => {
@@ -322,7 +333,6 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
             .tokenURI(ownersTokenId)
             .call();
 
-          // todo: fetch imageUrl
           ownersNfts.push({
             nftAddress: address,
             tokenId: ownersTokenId,
@@ -352,6 +362,32 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       setNonOpenSeaNfts(nonOpenSeaNfts);
     },
     [_fetchNonOpenSeaNfts]
+  );
+
+  // ----------------------------------------------------------------
+
+  // --------------------------- Resolver -------------------------------
+
+  const getResolverContract = useCallback(async () => {
+    if (!abis?.resolver || !addresses?.resolver) return;
+
+    const contract = getContract(abis.resolver, addresses.resolver);
+    if (!contract) return;
+
+    setResolver(contract);
+  }, [getContract, addresses?.resolver, abis?.resolver]);
+
+  const getPaymentToken = useCallback(
+    async (pmtToken: PaymentToken) => {
+      if (!resolver) return "";
+
+      const tokenAddress: string = await resolver.methods
+        .getPaymentToken(pmtToken)
+        .call();
+
+      return tokenAddress;
+    },
+    [resolver]
   );
 
   // ----------------------------------------------------------------
@@ -745,9 +781,13 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
   // ---------------------------------------------------------------
 
   const getAllContracts = useCallback(async () => {
-    await Promise.all([getFaceContract(), getRentContract()]);
+    await Promise.all([
+      getFaceContract(),
+      getRentContract(),
+      getResolverContract(),
+    ]);
     // * all contracts should be re-fetched when network or an account change
-  }, [getFaceContract, getRentContract]);
+  }, [getFaceContract, getRentContract, getResolverContract]);
 
   useEffect(() => {
     getAllContracts();
@@ -769,6 +809,10 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
           packPrice,
           openSeaNfts,
           nonOpenSeaNfts,
+        },
+        resolver: {
+          contract: resolver,
+          getPaymentToken,
         },
         face: {
           contract: face,

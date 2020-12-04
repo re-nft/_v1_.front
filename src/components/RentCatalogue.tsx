@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState, useMemo } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import Contracts from "../contexts/Contracts";
-import { Lending, Renting } from "../types";
+import { Lending } from "../types";
 import RentModal from "./RentModal";
 import GraphContext from "../contexts/Graph";
 import DappContext from "../contexts/Dapp";
