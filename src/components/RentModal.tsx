@@ -269,7 +269,7 @@ const RentModal: React.FC<RentModalProps> = ({
         </Box>
 
         <Box className={classes.buttons}>
-          <button
+          {/* <button
             type="button"
             style={{
               border: "3px solid black",
@@ -279,7 +279,7 @@ const RentModal: React.FC<RentModalProps> = ({
             disabled={busy}
           >
             Approve fDAI
-          </button>
+          </button> */}
           {/* TODO: visual cues to indicate that Rent button is disabled */}
           {/* TODO: consider adding form to be consistent (like in LendModal) */}
           <Box onClick={handleSubmit}>
