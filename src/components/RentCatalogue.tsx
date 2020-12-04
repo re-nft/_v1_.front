@@ -100,18 +100,23 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow, setCold }) => {
   const { rent, erc721 } = useContext(Contracts);
   const { lending: allLendings, user } = useContext(GraphContext);
 
-  useEffect(() => {
+  const _setMyData = useCallback(() => {
+    if (!wallet || !wallet?.account) return;
     let resolvedData: Lending[] = [];
-    if (myData.length === 0) {
-      resolvedData = iBorrow
-        ? user.renting.map((r) => ({ ...r.lending }))
-        : allLendings;
-      setMyData(resolvedData);
+    resolvedData = iBorrow
+      ? user.renting.map((r) => ({ ...r.lending }))
+      : allLendings;
+    if (resolvedData.length < 1) {
+      setCold(true);
     } else {
-      resolvedData = myData;
+      setCold(false);
     }
-    resolvedData.length < 1 ? setCold(true) : setCold(false);
-  }, [myData, setCold, iBorrow, user.renting, allLendings]);
+    setMyData(resolvedData);
+  }, [allLendings, iBorrow, setCold, user.renting, wallet]);
+
+  useEffect(() => {
+    _setMyData();
+  }, [_setMyData]);
 
   // we filter out the nfts that the user is either lending or renting
   const usersNfts = useMemo(() => {
