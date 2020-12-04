@@ -35,16 +35,18 @@ const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 // queries all of the lendings on the platform
 const queryLending = (): string => {
   return `{
-    lendings {
-      id
-      nftAddress
-      tokenId
-      lenderAddress
-      maxRentDuration
-      dailyRentPrice
-      nftPrice
-      paymentToken
-      collateralClaimed
+    lendingRentings {
+      lending {
+        id
+        nftAddress
+        tokenId
+        lenderAddress
+        maxRentDuration
+        dailyRentPrice
+        nftPrice
+        paymentToken
+        collateralClaimed
+      }
     }
   }`;
 };
@@ -100,6 +102,12 @@ type RawLending = {
   paymentToken: string;
   collateralClaimed: string;
   renting: Omit<RawRenting, "lending">;
+};
+
+type RawLendingRenting = {
+  id: string; // this is set as `nftAddress::tokenId`
+  lending: RawLending[];
+  renting?: RawRenting[];
 };
 
 type RawRenting = {
@@ -218,9 +226,30 @@ export const GraphProvider: React.FC = ({ children }) => {
   // queries ALL of the lendings in reNFT
   const fetchLending = useCallback(async () => {
     const query = queryLending();
-    const data: Optional<RawLending[]> = (await request(ENDPOINT, query))
-      .lendings;
-    if (!data) return [];
+    const __data: Optional<{
+      lendingRentings: RawLendingRenting[];
+    }> = await request(ENDPOINT, query);
+    if (!__data) return [];
+    const _data = __data.lendingRentings;
+
+    const data: RawLending[] = [];
+
+    // the same NFT could be re-lent multiple times
+    // only the last in the queue can be available
+    for (let i = 0; i < _data.length; i++) {
+      const numOfLendings = _data[i].lending.length;
+      const numOfRentings = _data[i].renting?.length || 0;
+      const isAvailable = numOfLendings - 1 === numOfRentings;
+
+      // if there is one extra lending, then that means it is avilable
+      if (!isAvailable) continue;
+
+      if (numOfLendings > 1) {
+        data.push(_data[i].lending[numOfLendings - 1]);
+      } else if (numOfLendings === 1) {
+        data.push(_data[i].lending[0]);
+      }
+    }
 
     const resolvedData = await _parseLending({ data });
 
