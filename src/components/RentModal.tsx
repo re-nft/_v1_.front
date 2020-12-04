@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useContext, useMemo } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
-import * as R from "ramda";
 import moment from "moment";
 
 // contexts
@@ -11,6 +10,7 @@ import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
 import { Lending } from "../types";
+import DappContext from "../contexts/Dapp";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -56,7 +56,8 @@ const RentModal: React.FC<RentModalProps> = ({
   lending,
 }) => {
   const classes = useStyles();
-  const { rent } = useContext(ContractsContext);
+  const { web3, addresses } = useContext(DappContext);
+  const { rent, resolver, erc20 } = useContext(ContractsContext);
   const [duration, setDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
@@ -143,6 +144,8 @@ const RentModal: React.FC<RentModalProps> = ({
 
         if (
           !rent ||
+          !web3 ||
+          !addresses ||
           // !R.hasPath(["dai", "approve"], pmtToken) ||
           rentIsDisabled
         ) {
@@ -155,9 +158,22 @@ const RentModal: React.FC<RentModalProps> = ({
         const pmtTokenAddress = await resolver.getPaymentToken(
           lending.paymentToken
         );
+        const pmtAmount = web3.utils.toBN(
+          web3.utils.toWei(
+            (lending.dailyRentPrice + lending.nftPrice).toString(),
+            "ether"
+          )
+        );
+        const isApproved = await erc20.isApproved(
+          pmtTokenAddress,
+          addresses.rent,
+          pmtAmount.toString()
+        );
+        if (!isApproved) {
+          // approves for max
+          await erc20.approve(pmtTokenAddress, addresses.rent);
+        }
 
-        // todo: approve
-        // await pmtToken.dai.approve();
         await rent.rentOne(
           lending.nftAddress,
           String(lending.tokenId),
@@ -165,11 +181,13 @@ const RentModal: React.FC<RentModalProps> = ({
           duration // todo: add gas sponsor
         );
       } catch (err) {
+        console.error(err);
         console.debug("something went wrong");
         // TODO: give a notification here as well
       }
       setIsBusy(false);
       handleClose();
+      // todo: the deps list looks a bit too much
     },
     [
       rent,
@@ -179,6 +197,13 @@ const RentModal: React.FC<RentModalProps> = ({
       lending.tokenId,
       lending.nftAddress,
       handleClose,
+      addresses,
+      erc20,
+      resolver,
+      web3,
+      lending.dailyRentPrice,
+      lending.nftPrice,
+      lending.paymentToken,
     ]
   );
 

@@ -14,6 +14,7 @@ import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
 import { abis as genericAbis } from "../contracts";
 import { THROWS } from "../utils";
 import BN from "bn.js";
+import { all } from "ramda";
 
 type ContractsContextType = {
   helpers: {
@@ -49,6 +50,8 @@ type ContractsContextType = {
   resolver: {
     contract?: Contract;
     getPaymentToken: (token: PaymentToken) => Promise<Address>;
+    approve: (operator: Address, amount?: string) => void;
+    isApproved: (operator: Address, amount: string) => Promise<boolean>;
   };
   rent: {
     contract?: Contract;
@@ -679,7 +682,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
       }
 
       await contract.methods
-        .approve(operator, amount || MAX_UINT256)
+        .approve(operator, amount || MAX_UINT256.toString())
         .send({ from: wallet?.account });
     },
     [wallet?.account, getContractErc20]
@@ -687,17 +690,22 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
 
   const isApprovedErc20 = useCallback(
     async (at: Address, operator: Address, amount?: string) => {
+      if (!wallet?.account) return false;
       const contract = getContractErc20(at);
       if (!contract) {
         console.info("could not get erc20 contract");
         return false;
       }
 
-      const allowance: BN = await contract.methods
-        .allowance(operator)
-        .call({ from: wallet?.account });
+      const _allowance: string = await contract.methods
+        .allowance(wallet.account, operator)
+        .call({ from: wallet.account });
 
-      if (!amount) return allowance.gte(MAX_UINT256);
+      const allowance = new BN(_allowance);
+
+      // if no amount was provided, check agaisnt the
+      // max
+      if (!amount) return allowance.eq(MAX_UINT256);
       try {
         return allowance.gte(new BN(amount));
       } catch (err) {
