@@ -32,6 +32,7 @@ const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 
+// queries all of the lendings on the platform
 const queryLending = (): string => {
   return `{
     lendings {
@@ -124,7 +125,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const resolvedData: Omit<Lending, "imageUrl">[] = data.map((datum) => {
         fetchImagesFor.push(erc721.tokenURI(datum.nftAddress, datum.tokenId));
         // todo: this will only work for gan addresses
-        // * make this work for for open sea too
+        // * make this work for for OpenSea too
         return {
           id: Number(datum.id),
           nftAddress: datum.nftAddress,
