@@ -88,8 +88,8 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
 const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lending, setLending] = useState<Lending>();
-  const { wallet } = useContext(DappContext);
-  const { rent } = useContext(Contracts);
+  const { wallet, addresses } = useContext(DappContext);
+  const { rent, erc721 } = useContext(Contracts);
   const { lending: allLendings, user } = useContext(GraphContext);
   const myRentings = user.renting;
   const myData: Lending[] = iBorrow
@@ -123,7 +123,25 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
       gasSponsor?: string;
     }) => {
       try {
-        if (!rent?.returnOne) return;
+        if (
+          !rent?.returnOne ||
+          !erc721?.isApproved ||
+          !erc721?.approve ||
+          !addresses?.rent
+        )
+          return;
+
+        const isApproved = await erc721.isApproved(
+          lending.nftAddress,
+          addresses.rent,
+          String(lending.tokenId)
+        );
+
+        if (!isApproved) {
+          // approving for all the future NFTs coming from the lending.nftAddress
+          await erc721.approve(lending.nftAddress, addresses.rent);
+        }
+
         await rent?.returnOne(
           lending.nftAddress,
           String(lending.tokenId),
@@ -134,7 +152,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = ({ iBorrow }) => {
         console.debug("could not return the NFT");
       }
     },
-    [rent]
+    [rent, erc721, addresses?.rent]
   );
 
   // const fromWei = (v?: number): string =>

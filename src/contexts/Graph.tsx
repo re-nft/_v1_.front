@@ -47,6 +47,9 @@ const queryLending = (): string => {
         paymentToken
         collateralClaimed
       }
+      renting {
+        id
+      }
     }
   }`;
 };
@@ -192,12 +195,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     async ({
       data,
     }: {
-      data: {
+      data: Optional<{
         id: Address;
         lending: RawLending[];
         renting: RawRenting[];
-      };
+      }>;
     }) => {
+      if (!data) return { id: "", lending: [], renting: [] };
       const lendings = await _parseLending({ data: data.lending });
       const rentings = await _parseRenting({ data: data.renting });
 

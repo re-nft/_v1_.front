@@ -14,7 +14,6 @@ import { MAX_UINT256, ZERO_ADDRESS } from "../constants";
 import { abis as genericAbis } from "../contracts";
 import { THROWS } from "../utils";
 import BN from "bn.js";
-import { all } from "ramda";
 
 type ContractsContextType = {
   helpers: {
@@ -50,8 +49,6 @@ type ContractsContextType = {
   resolver: {
     contract?: Contract;
     getPaymentToken: (token: PaymentToken) => Promise<Address>;
-    approve: (operator: Address, amount?: string) => void;
-    isApproved: (operator: Address, amount: string) => Promise<boolean>;
   };
   rent: {
     contract?: Contract;
