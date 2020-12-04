@@ -1,8 +1,7 @@
-import React, { useContext, useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import ContractsContext from "../contexts/Contracts";
-import GraphContext from "../contexts/GraphContext";
+// import ContractsContext from "../contexts/Contracts";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
@@ -14,17 +13,18 @@ type RentProps = {
 };
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
-  const { helpers } = useContext(ContractsContext);
-  const { openSeaNfts, nonOpenSeaNfts } = helpers;
+  // const { helpers } = useContext(ContractsContext);
+  // const { openSeaNfts, nonOpenSeaNfts } = helpers;
   const [showIBorrow, setShowIborrow] = useState(false);
+  const [cold, setCold] = useState(true);
 
   const handleShowIBorrow = useCallback(() => {
     setShowIborrow((showIBorrow) => !showIBorrow);
   }, []);
 
-  const nfts = useMemo(() => {
-    return openSeaNfts.concat(nonOpenSeaNfts);
-  }, [openSeaNfts, nonOpenSeaNfts]);
+  // const nfts = useMemo(() => {
+  //   return openSeaNfts.concat(nonOpenSeaNfts);
+  // }, [openSeaNfts, nonOpenSeaNfts]);
 
   if (hidden) return <></>;
 
@@ -38,7 +38,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {nfts.length > 0 && <ScrollForMore />}
+          {!cold && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -55,9 +55,9 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             </Box>
           </Box>
         </Box>
-        <RentCatalogue iBorrow={showIBorrow} />
+        <RentCatalogue iBorrow={showIBorrow} setCold={setCold} />
       </Box>
-      {nfts.length < 1 && <Cold fancyText="One day it will be warm here..." />}
+      {cold && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };
