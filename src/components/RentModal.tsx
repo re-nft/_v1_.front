@@ -151,6 +151,11 @@ const RentModal: React.FC<RentModalProps> = ({
         }
 
         setIsBusy(true);
+
+        const pmtTokenAddress = await resolver.getPaymentToken(
+          lending.paymentToken
+        );
+
         // todo: approve
         // await pmtToken.dai.approve();
         await rent.rentOne(
