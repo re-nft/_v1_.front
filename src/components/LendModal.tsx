@@ -22,11 +22,7 @@ import Modal from "./Modal";
 import CssTextField, { CssSelect } from "./CssTextField";
 
 // TODO: this is a copy of what we have in RentModal
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
+const useStyles = makeStyles({
   form: {
     height: "100%",
     display: "flex",
@@ -48,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-}));
+});
 
 type ValueValid = {
   value: string;
@@ -283,27 +279,32 @@ const LendModal: React.FC<LendModalProps> = ({
             name="nftPrice"
             disabled={isBusy}
           />
+          <FormControl variant="outlined">
+            <InputLabel id="pmtToken" style={{ color: "white" }}>
+              Pmt. Token *&nbsp;
+            </InputLabel>
+            <CssSelect
+              required
+              labelId="pmtToken"
+              id="pmtToken"
+              name="pmtToken"
+              value={pmtToken}
+              onChange={handleTokenChange}
+              label="Payment Token"
+              variant="outlined"
+            >
+              <MenuItem value={PaymentToken.DAI}>DAI</MenuItem>
+              <MenuItem value={PaymentToken.ETH}>ETH</MenuItem>
+              <MenuItem value={PaymentToken.NAZ}>NAZ</MenuItem>
+              <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
+              <MenuItem value={PaymentToken.UNI}>UNI</MenuItem>
+              <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
+              <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
+              <MenuItem value={PaymentToken.YFI}>YFI</MenuItem>
+            </CssSelect>
+          </FormControl>
         </Box>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="pmtToken">Payment Token</InputLabel>
-          <CssSelect
-            labelId="pmtToken"
-            id="pmtToken"
-            name="pmtToken"
-            value={pmtToken}
-            onChange={handleTokenChange}
-            label="Payment Token"
-          >
-            <MenuItem value={PaymentToken.DAI}>DAI</MenuItem>
-            <MenuItem value={PaymentToken.ETH}>ETH</MenuItem>
-            <MenuItem value={PaymentToken.NAZ}>NAZ</MenuItem>
-            <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
-            <MenuItem value={PaymentToken.UNI}>UNI</MenuItem>
-            <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
-            <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
-            <MenuItem value={PaymentToken.YFI}>YFI</MenuItem>
-          </CssSelect>
-        </FormControl>
+
         <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
           <button
