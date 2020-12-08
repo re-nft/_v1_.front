@@ -7,6 +7,10 @@ import React, {
 } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+// import Select from "@material-ui/core/Select";
+import FormControl from "@material-ui/core/FormControl";
 
 import ContractsContext from "../contexts/Contracts";
 import DappContext from "../contexts/Dapp";
@@ -14,10 +18,15 @@ import { Nft, PaymentToken } from "../types";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import Modal from "./Modal";
-import CssTextField from "./CssTextField";
+// todo: ugh. remove CssSelect from there. need 4 speed, therefore I hack
+import CssTextField, { CssSelect } from "./CssTextField";
 
 // TODO: this is a copy of what we have in RentModal
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
   form: {
     height: "100%",
     display: "flex",
@@ -39,7 +48,7 @@ const useStyles = makeStyles({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-});
+}));
 
 type ValueValid = {
   value: string;
@@ -70,6 +79,7 @@ const LendModal: React.FC<LendModalProps> = ({
   const { packPrice } = helpers;
   const { web3, addresses } = useContext(DappContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -132,8 +142,7 @@ const LendModal: React.FC<LendModalProps> = ({
         lendOneInputs.maxDuration.value,
         packedDailyRentPrice,
         packedNftPrice,
-        // TODO: change for whatever token. add the dropdown on the front-end
-        PaymentToken.DAI
+        pmtToken
       );
 
       // when successfully lent out, hide the NFT from the front-end
@@ -171,6 +180,17 @@ const LendModal: React.FC<LendModalProps> = ({
       },
     }));
   };
+
+  const handleTokenChange = useCallback(
+    (
+      event: React.ChangeEvent<{
+        value: unknown;
+      }>
+    ) => {
+      setPmtToken(event.target.value as PaymentToken);
+    },
+    []
+  );
 
   const checkPrice = (n: string) => {
     return n !== "" && Number(n) >= 0;
@@ -264,6 +284,26 @@ const LendModal: React.FC<LendModalProps> = ({
             disabled={isBusy}
           />
         </Box>
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel id="pmtToken">Payment Token</InputLabel>
+          <CssSelect
+            labelId="pmtToken"
+            id="pmtToken"
+            name="pmtToken"
+            value={pmtToken}
+            onChange={handleTokenChange}
+            label="Payment Token"
+          >
+            <MenuItem value={PaymentToken.DAI}>DAI</MenuItem>
+            <MenuItem value={PaymentToken.ETH}>ETH</MenuItem>
+            <MenuItem value={PaymentToken.NAZ}>NAZ</MenuItem>
+            <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
+            <MenuItem value={PaymentToken.UNI}>UNI</MenuItem>
+            <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
+            <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
+            <MenuItem value={PaymentToken.YFI}>YFI</MenuItem>
+          </CssSelect>
+        </FormControl>
         <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
           <button
