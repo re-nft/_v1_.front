@@ -13,10 +13,10 @@ export enum PaymentToken {
   USDC, // 1
   USDT, // 2
   TUSD, // 3
-  ETH, // 4
   UNI, // 5
   YFI, // 6
   NAZ, // 7
+  HOLY, // 8
 }
 
 export type Renting = {

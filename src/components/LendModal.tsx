@@ -294,12 +294,12 @@ const LendModal: React.FC<LendModalProps> = ({
               variant="outlined"
             >
               <MenuItem value={PaymentToken.DAI}>DAI</MenuItem>
-              <MenuItem value={PaymentToken.ETH}>ETH</MenuItem>
-              <MenuItem value={PaymentToken.NAZ}>NAZ</MenuItem>
-              <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
-              <MenuItem value={PaymentToken.UNI}>UNI</MenuItem>
               <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
               <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
+              <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
+              <MenuItem value={PaymentToken.HOLY}>HOLY</MenuItem>
+              <MenuItem value={PaymentToken.UNI}>UNI</MenuItem>
+              <MenuItem value={PaymentToken.NAZ}>NAZ</MenuItem>
               <MenuItem value={PaymentToken.YFI}>YFI</MenuItem>
             </CssSelect>
           </FormControl>

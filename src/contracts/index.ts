@@ -31,13 +31,13 @@ const toPaymentToken: (v: string) => PaymentToken = (v: string) => {
     case "3":
       return PaymentToken.TUSD;
     case "4":
-      return PaymentToken.ETH;
-    case "5":
       return PaymentToken.UNI;
-    case "6":
+    case "5":
       return PaymentToken.YFI;
-    case "7":
+    case "6":
       return PaymentToken.NAZ;
+    case "7":
+      return PaymentToken.HOLY;
     default:
       return PaymentToken.NAZ;
   }

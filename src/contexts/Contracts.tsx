@@ -99,8 +99,7 @@ type ContractsContextType = {
     claimCollateralOne: (
       nftAddress: Address,
       tokenId: string,
-      lendingShortId: string,
-      lendingLongId: string,
+      lendingId: string,
       gasSponsor?: Address
     ) => void;
     claimCollateralMultiple: (
@@ -583,14 +582,14 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({
     async (
       nftAddress: Address,
       tokenId: string,
-      id: string,
+      lendingId: string,
       gasSponsor?: Address
     ) => {
       await rent?.methods
         .claimCollateralOne(
           nftAddress,
           tokenId,
-          id,
+          lendingId,
           gasSponsor || addresses?.rent || ZERO_ADDRESS
         )
         .send({ from: wallet?.account });
