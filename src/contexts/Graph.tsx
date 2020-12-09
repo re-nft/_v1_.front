@@ -135,6 +135,15 @@ export const GraphProvider: React.FC = ({ children }) => {
 
       const resolvedData: Omit<Lending, "imageUrl">[] = data.map((datum) => {
         fetchImagesFor.push(erc721.tokenURI(datum.nftAddress, datum.tokenId));
+        let renting: Optional<Omit<Renting, "lending">> = undefined;
+        if (datum.renting) {
+          renting = {
+            id: Number(datum.renting.id),
+            rentDuration: Number(datum.renting.rentDuration),
+            rentedAt: Number(datum.renting.rentedAt),
+            renterAddress: datum.renting.renterAddress,
+          };
+        }
         // todo: this will only work for gan addresses
         // * make this work for for OpenSea too
         return {
@@ -147,6 +156,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           nftPrice: toUnpackedPrice(datum.nftPrice),
           paymentToken: toPaymentToken(datum.paymentToken),
           collateralClaimed: Boolean(datum.collateralClaimed),
+          renting,
         };
       });
 
