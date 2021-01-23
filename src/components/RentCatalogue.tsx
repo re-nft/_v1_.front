@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useState,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import { Lending, PaymentToken } from "../types";

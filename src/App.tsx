@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
-import { UseWalletProvider } from "use-wallet";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 
 // components and other
@@ -62,73 +61,70 @@ const theme = createMuiTheme({
 });
 
 const App: React.FC = () => {
-  // const { wallet } = useContext(DappContext);
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
 
   // TODO: rewrite with a router
   return (
-    <UseWalletProvider chainId={5}>
-      <Symfoni>
-        <GraphProvider>
-          <ThemeProvider theme={theme}>
-            <Layout>
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  padding: "0 0 32px 0",
-                }}
-              >
-                <Tab
-                  setTab={setActiveTab}
-                  isFocused={activeTab === Tabs.RENT}
-                  thisTab={Tabs.RENT}
-                  buttonName="Rent NFT"
-                />
-                <Tab
-                  setTab={setActiveTab}
-                  isFocused={activeTab === Tabs.LEND}
-                  thisTab={Tabs.LEND}
-                  buttonName="Lend NFT"
-                />
-                <Tab
-                  setTab={setActiveTab}
-                  isFocused={activeTab === Tabs.STATS}
-                  thisTab={Tabs.STATS}
-                  buttonName="My Dashboard"
-                />
-                <Tab
-                  setTab={setActiveTab}
-                  isFocused={activeTab === Tabs.LEADER}
-                  thisTab={Tabs.LEADER}
-                  buttonName="Leaderboard?"
-                />
-                <Tab
-                  setTab={setActiveTab}
-                  isFocused={activeTab === Tabs.HOW}
-                  thisTab={Tabs.HOW}
-                  buttonName="FAQ"
-                />
-              </Box>
-              <Box
-                style={{
-                  padding: "32px 64px",
-                  border: "3px solid black",
-                  overflowY: "scroll",
-                  height: "80vh",
-                }}
-              >
-                <Rent hidden={activeTab !== Tabs.RENT} />
-                <Lend hidden={activeTab !== Tabs.LEND} />
-                <Leaderboard hidden={activeTab !== Tabs.LEADER} />
-                <ButHow hidden={activeTab !== Tabs.HOW} />
-                <Stats hidden={activeTab !== Tabs.STATS} />
-              </Box>
-            </Layout>
-          </ThemeProvider>
-        </GraphProvider>
-      </Symfoni>
-    </UseWalletProvider>
+    <Symfoni>
+      <GraphProvider>
+        <ThemeProvider theme={theme}>
+          <Layout>
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                padding: "0 0 32px 0",
+              }}
+            >
+              <Tab
+                setTab={setActiveTab}
+                isFocused={activeTab === Tabs.RENT}
+                thisTab={Tabs.RENT}
+                buttonName="Rent NFT"
+              />
+              <Tab
+                setTab={setActiveTab}
+                isFocused={activeTab === Tabs.LEND}
+                thisTab={Tabs.LEND}
+                buttonName="Lend NFT"
+              />
+              <Tab
+                setTab={setActiveTab}
+                isFocused={activeTab === Tabs.STATS}
+                thisTab={Tabs.STATS}
+                buttonName="My Dashboard"
+              />
+              <Tab
+                setTab={setActiveTab}
+                isFocused={activeTab === Tabs.LEADER}
+                thisTab={Tabs.LEADER}
+                buttonName="Leaderboard?"
+              />
+              <Tab
+                setTab={setActiveTab}
+                isFocused={activeTab === Tabs.HOW}
+                thisTab={Tabs.HOW}
+                buttonName="FAQ"
+              />
+            </Box>
+            <Box
+              style={{
+                padding: "32px 64px",
+                border: "3px solid black",
+                overflowY: "scroll",
+                height: "80vh",
+              }}
+            >
+              <Rent hidden={activeTab !== Tabs.RENT} />
+              <Lend hidden={activeTab !== Tabs.LEND} />
+              <Leaderboard hidden={activeTab !== Tabs.LEADER} />
+              <ButHow hidden={activeTab !== Tabs.HOW} />
+              <Stats hidden={activeTab !== Tabs.STATS} />
+            </Box>
+          </Layout>
+        </ThemeProvider>
+      </GraphProvider>
+    </Symfoni>
   );
 };
 
