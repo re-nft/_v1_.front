@@ -1,0 +1,146 @@
+$beige: #663399;
+$purple: #4b4168;
+
+.top3 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  color: $purple;
+
+  .item {
+    box-sizing: border-box;
+    position: relative;
+    background: white;
+    width: 9rem;
+    height: 10rem;
+    text-align: center;
+    padding: 2.8rem 0 0;
+    margin: 1rem 1rem 2rem;
+    border-radius: 0.5rem;
+    transform-origin: bottom;
+    cursor: pointer;
+    transition: transform 200ms ease-in-out;
+    box-shadow: 0 0 4rem 0 rgba(black, 0.1), 0 1rem 2rem -1rem rgba(black, 0.3);
+
+    .pic {
+      position: absolute;
+      top: -2rem;
+      left: 2.5rem;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      margin-right: 1rem;
+      box-shadow: 0 0 1rem 0 rgba(black, 0.2),
+        0 1rem 1rem -0.5rem rgba(black, 0.3);
+    }
+
+    .pos {
+      font-weight: 900;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .name {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .score {
+      opacity: 0.5;
+
+      &:before {
+        display: block;
+        opacity: 0.5;
+      }
+    }
+
+    &.one {
+      width: 10rem;
+      height: 11rem;
+      padding-top: 3.5rem;
+
+      .pic {
+        width: 5rem;
+        height: 5rem;
+        left: 2.5rem;
+      }
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.list {
+  padding-left: 2rem;
+  margin: 0 auto;
+  // width: fit-content;
+
+  .item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    height: 3rem;
+    // width: fit-content;
+    border-radius: 4rem;
+    margin-bottom: 2rem;
+    background: $beige;
+    transform-origin: left;
+    cursor: pointer;
+    transition: transform 200ms ease-in-out;
+    box-shadow: 0 0 4rem 0 rgba(black, 0.1), 0 1rem 2rem -1rem rgba(black, 0.3);
+
+    .pos {
+      font-weight: 900;
+      position: absolute;
+      left: -2rem;
+      text-align: center;
+      font-size: 1.25rem;
+      width: 1.5rem;
+      color: black;
+      opacity: 0.6;
+      transition: opacity 200ms ease-in-out;
+    }
+
+    .pic {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      background-size: cover;
+      background-position: center;
+      margin-right: 1rem;
+      box-shadow: 0 0 1rem 0 rgba(black, 0.2),
+        0 1rem 1rem -0.5rem rgba(black, 0.3);
+    }
+
+    .name {
+      flex-grow: 2;
+      flex-basis: 10rem;
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .score {
+      margin-right: 1.5rem;
+      opacity: 0.5;
+      color: white;
+
+      &:before {
+        margin-right: 1rem;
+        opacity: 0.5;
+      }
+    }
+
+    &:hover {
+      transform: scale(1.05);
+
+      .pos {
+        opacity: 0.8;
+      }
+    }
+  }
+}
