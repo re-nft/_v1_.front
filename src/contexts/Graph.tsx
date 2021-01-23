@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useEffect } from "react";
 import { request } from "graphql-request";
 
-import { Lending, User, Optional } from "../types";
+import { Optional } from "../types";
 
 // type GraphContextType = {
 //   user: User;
