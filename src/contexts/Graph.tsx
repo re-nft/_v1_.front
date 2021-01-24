@@ -1,7 +1,8 @@
-import React, { createContext, useCallback, useEffect } from "react";
+import React, { createContext, useCallback, useContext } from "react";
 import { request } from "graphql-request";
 
 import { Optional } from "../types";
+import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 
 // type GraphContextType = {
 //   user: User;
@@ -25,6 +26,12 @@ const DefaultGraphContext: GraphContextType = {
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+
+// kudos to Luis: https://github.com/microchipgnu
+// check out his latest on: https://twitter.com/microchipgnu
+// and of course kudos to the Solidity God: wighawag
+const EIP721_ENDPOINT =
+  "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 
 // queries all of the lendings on the platform
 const queryLending = (): string => {
@@ -117,6 +124,8 @@ type RawRenting = {
 };
 
 export const GraphProvider: React.FC = ({ children }) => {
+  const [currentAddress] = useContext(CurrentAddressContext);
+
   // queries ALL of the lendings in reNFT
   const fetchLending = useCallback(async () => {
     const query = queryLending();
@@ -145,14 +154,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
     }
   }, []);
-
-  const refresh = useCallback(async () => {
-    await fetchLending();
-  }, [fetchLending]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
 
   return (
     <GraphContext.Provider value={{ user: null, lending: null }}>

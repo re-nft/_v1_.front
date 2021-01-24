@@ -3,6 +3,7 @@ import { Box, Tooltip } from "@material-ui/core";
 
 import { Lending, PaymentToken } from "../types";
 import RentModal from "./RentModal";
+import { pull } from "../ipfs";
 
 type RentCatalogueProps = {
   iBorrow: boolean;

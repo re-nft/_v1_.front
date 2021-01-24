@@ -8,3 +8,7 @@ export const THROWS = (): void => {
 export const ASYNC_THROWS = async (): Promise<void> => {
   throw new Error("must be implemented");
 };
+
+export const getRandomInt = (max: number): number => {
+  return Math.floor(Math.random() * Math.floor(max));
+};

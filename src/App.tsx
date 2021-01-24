@@ -10,7 +10,7 @@ import ButHow from "./components/ButHow";
 import Stats from "./components/Stats";
 import Leaderboard from "./components/Leaderboard";
 import { GraphProvider } from "./contexts/Graph";
-import { Symfoni } from "./contexts/Symfoni";
+import { Symfoni } from "./hardhat/SymfoniContext";
 
 enum Tabs {
   RENT,

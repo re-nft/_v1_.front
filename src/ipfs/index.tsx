@@ -1,0 +1,57 @@
+import { getRandomInt } from "../utils";
+import { backOff } from "exponential-backoff";
+
+// taken from https://ipfs.github.io/public-gateway-checker/
+const GATEWAYS = [
+  "ipfs.io",
+  "gateway.ipfs.io",
+  "ipfs.2read.net",
+  "ipfs.sloppyta.co",
+  "gateway.pinata.cloud",
+  "ninetailed.ninja",
+  "ipfs.best-practice.se",
+  "10.via0.com",
+  "jorropo.ovh",
+  "gateway.ravenland.org",
+  "ipfs.eternum.io",
+  "dweb.link",
+  "ipfs.greyh.at",
+  "robotizing.net",
+];
+
+type pullArgs = {
+  cids: string[];
+};
+
+const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
+  if (!cids.length) {
+    console.warn("requested to pull from ipfs, but nothing to pull");
+  }
+  // gen 3 distinct indices and pull from the respective gateways
+  const gatewayIndices: number[] = [];
+  let indicesToPullFrom = 3;
+  while (indicesToPullFrom) {
+    const rn = getRandomInt(GATEWAYS.length);
+    if (gatewayIndices.includes(rn)) continue;
+    gatewayIndices.push(rn);
+    indicesToPullFrom--;
+  }
+  const reqs: Promise<Response>[][] = [];
+  console.debug("reqs", reqs);
+  // now we want to make the gateways race for each requested link
+  // that means calling promise.race on 3 gateways for all links at the same time
+  // and gathering the raced ones into the promise.all
+  // [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]
+  // 4 links and 3 gateways
+  for (const cid of cids) {
+    reqs.push(
+      gatewayIndices.map((ix) => fetch(`https://${GATEWAYS[ix]}/ipfs/${cid}`))
+    );
+  }
+  const res = await Promise.all(reqs.map((req) => Promise.race(req)));
+  return res;
+};
+
+export const pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
+  return await backOff(async () => await _pull({ cids }));
+};
