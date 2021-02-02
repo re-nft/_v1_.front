@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { GraphProvider } from "./contexts/Graph";
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import "./index.css";
 
 const theme = createMuiTheme({
   typography: {

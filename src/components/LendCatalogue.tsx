@@ -162,10 +162,6 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
         setOpen={setModalOpen}
         onLend={handleLend}
       />
-      <div className="bg-white overflow-hidden shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6"></div>
-        <div className="bg-gray-50 px-4 py-4 sm:px-6"></div>
-      </div>
     </Box>
   );
 };
