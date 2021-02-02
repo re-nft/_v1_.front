@@ -162,6 +162,42 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
         setOpen={setModalOpen}
         onLend={handleLend}
       />
+      <Box className="Catalogue">
+        {!iLend &&
+          nfts?.length > 0 &&
+          nfts.map((nft) => {
+            // const nftId = `${nft.nftAddress}::${nft.tokenId}`;
+            // if (
+            //   nft.nftAddress === freshlyLent.nftAddress &&
+            //   nft.tokenId === freshlyLent.tokenId
+            // )
+            //   return <React.Fragment key={nftId} />;
+
+            return (
+              <CatalogueItem
+                key={nft.tokenId}
+                nftId={nft.tokenId ?? ""}
+                nft={nft}
+                handleLend={handleLend}
+                handleStopLend={handleStopLend}
+              />
+            );
+          })}
+        {/* {iLend &&
+          user.lending.length > 0 &&
+          user.lending.map((lending) => {
+            const nftId = `${lending.nftAddress}::${lending.tokenId}`;
+            return (
+              <CatalogueItem
+                key={nftId}
+                nftId={nftId}
+                nft={lending}
+                handleLend={handleLend}
+                handleStopLend={handleStopLend}
+              />
+            );
+          })} */}
+      </Box>
     </Box>
   );
 };

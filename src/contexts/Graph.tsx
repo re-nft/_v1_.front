@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useContext } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { request } from "graphql-request";
 
 import { Optional } from "../types";
@@ -9,11 +15,6 @@ import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 //   lending: Lending[];
 // };
 
-type GraphContextType = {
-  user: any;
-  lending: any;
-};
-
 const DefaultGraphContext: GraphContextType = {
   user: {
     id: "",
@@ -21,6 +22,7 @@ const DefaultGraphContext: GraphContextType = {
     renting: [],
   },
   lending: [],
+  erc721s: [],
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -32,6 +34,19 @@ const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 // and of course kudos to the Solidity God: wighawag
 const ENDPOINT_EIP721 =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
+
+type queryAllERC721T = {
+  tokens: {
+    id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
+    tokenURI: string; // e.g. "https://nft.service.cometh.io/3000013"
+  }[];
+};
+
+type GraphContextType = {
+  user: any;
+  lending: any;
+  erc721s: queryAllERC721T["tokens"];
+};
 
 const queryAllERC721 = (user: string): string => {
   return `{
@@ -134,9 +149,19 @@ type RawRenting = {
 
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
+  const [myERC721s, setMyERC721s] = useState<queryAllERC721T["tokens"]>([]);
+
+  const fetchAllERC721 = useCallback(async () => {
+    if (!currentAddress) return [];
+    const query = queryAllERC721(currentAddress);
+    const response: queryAllERC721T = await request(ENDPOINT_EIP721, query);
+    if (!response) return [];
+    if (response.tokens.length == 0) return [];
+    setMyERC721s(response.tokens);
+  }, [currentAddress]);
 
   // queries ALL of the lendings in reNFT
-  const fetchLending = useCallback(async () => {
+  const fetchLending = async () => {
     const query = queryLending();
     const __data: Optional<{
       lendingRentings: RawLendingRenting[];
@@ -162,10 +187,16 @@ export const GraphProvider: React.FC = ({ children }) => {
         data.push(_data[i].lending[0]);
       }
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchAllERC721();
+  }, [fetchAllERC721]);
 
   return (
-    <GraphContext.Provider value={{ user: null, lending: null }}>
+    <GraphContext.Provider
+      value={{ user: null, lending: null, erc721s: myERC721s }}
+    >
       {children}
     </GraphContext.Provider>
   );
