@@ -3,20 +3,19 @@ import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
 import Link from "gatsby-link";
 
-import { short } from "../utils";
-
 import "../style/index.scss";
+import {
+  SymfoniContext,
+  CurrentAddressContext,
+} from "../../src/hardhat/SymfoniContext";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const userAddress = useMemo(() => {
-    // if (!wallet?.account) return "Connect Wallet";
-    // return short(wallet.account);
-    return "userAddres";
-  }, []);
+  const { init } = useContext(SymfoniContext);
+  const [currentAddress] = useContext(CurrentAddressContext);
 
   return (
     <div style={{ marginBottom: "100px" }}>
@@ -30,10 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   Rent NFT
                 </Link>
               </h1>
-              <div className="Header__summary">
-                {/* <div className="Header__summary" onClick={connectWallet}> */}
-                {userAddress}
-              </div>
+              <div className="Header__summary">{currentAddress}</div>
             </div>
           </div>
         </div>

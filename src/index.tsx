@@ -2,10 +2,31 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { GraphProvider } from "./contexts/Graph";
+import { Symfoni } from "./hardhat/SymfoniContext";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: [
+      "Righteous",
+      "consolas",
+      "Menlo",
+      "monospace",
+      "sans-serif",
+    ].join(","),
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Symfoni>
+      <GraphProvider>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </GraphProvider>
+    </Symfoni>
   </React.StrictMode>,
   document.getElementById("root")
 );
