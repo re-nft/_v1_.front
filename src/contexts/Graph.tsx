@@ -30,8 +30,17 @@ const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 // kudos to Luis: https://github.com/microchipgnu
 // check out his latest on: https://twitter.com/microchipgnu
 // and of course kudos to the Solidity God: wighawag
-const EIP721_ENDPOINT =
+const ENDPOINT_EIP721 =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
+
+const queryAllERC721 = (user: string): string => {
+  return `{
+    tokens(where: {owner: "${user.toLowerCase()}"}) {
+      id
+		  tokenURI
+    }
+  }`;
+};
 
 // queries all of the lendings on the platform
 const queryLending = (): string => {

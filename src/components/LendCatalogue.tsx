@@ -19,7 +19,6 @@ type StopLendButtonProps = {
 type LendCatalogueProps = {
   nfts: Nft[];
   iLend: boolean;
-  setCold: (cold: boolean) => void;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
@@ -127,19 +126,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 // iLend can be inferred from the type of nfts. Moreover,
 // we should not use the union type here for NFT and Lending.
 // Cleanly separate these two, potentially into different components
-const LendCatalogue: React.FC<LendCatalogueProps> = ({
-  nfts,
-  iLend,
-  setCold,
-}) => {
-  // const { user } = useContext(GraphContext);
-  // const { rent } = useContext(ContractsContext);
+const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [nft, setNft] = useState<Nft>();
-  const [freshlyLent, setFreshlyLent] = useState<Nft>({
-    nftAddress: "",
-    tokenId: "",
-  });
 
   useEffect(() => {
     // if (iLend) {
@@ -165,54 +154,18 @@ const LendCatalogue: React.FC<LendCatalogueProps> = ({
     // );
   }, []);
 
-  const handleLendModal = useCallback((_nft: Nft) => {
-    setFreshlyLent(_nft);
-  }, []);
-
   return (
     <Box>
       <LendModal
         nft={nft}
         open={modalOpen}
         setOpen={setModalOpen}
-        onLend={handleLendModal}
+        onLend={handleLend}
       />
-      <Box className="Catalogue">
-        {!iLend &&
-          nfts?.length > 0 &&
-          nfts.map((nft) => {
-            const nftId = `${nft.nftAddress}::${nft.tokenId}`;
-            if (
-              nft.nftAddress === freshlyLent.nftAddress &&
-              nft.tokenId === freshlyLent.tokenId
-            )
-              return <React.Fragment key={nftId} />;
-
-            return (
-              <CatalogueItem
-                key={nftId}
-                nftId={nftId}
-                nft={nft}
-                handleLend={handleLend}
-                handleStopLend={handleStopLend}
-              />
-            );
-          })}
-        {/* {iLend &&
-          user.lending.length > 0 &&
-          user.lending.map((lending) => {
-            const nftId = `${lending.nftAddress}::${lending.tokenId}`;
-            return (
-              <CatalogueItem
-                key={nftId}
-                nftId={nftId}
-                nft={lending}
-                handleLend={handleLend}
-                handleStopLend={handleStopLend}
-              />
-            );
-          })} */}
-      </Box>
+      <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6"></div>
+        <div className="bg-gray-50 px-4 py-4 sm:px-6"></div>
+      </div>
     </Box>
   );
 };

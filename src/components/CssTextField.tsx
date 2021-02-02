@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 const fancyStyle = {
   root: {
     "& label": {
-      color: "white",
+      color: "black",
     },
     "& input": {
       color: "teal",
@@ -14,10 +14,10 @@ const fancyStyle = {
       transform: "translate(14px, -4px) scale(0.55)",
     },
     "& label.Mui-focused": {
-      color: "white",
+      color: "black",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "white",
+      borderBottomColor: "black",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
@@ -25,10 +25,10 @@ const fancyStyle = {
         border: "2px solid black",
       },
       "&:hover fieldset": {
-        borderColor: "white",
+        borderColor: "black",
       },
       "&.Mui-focused fieldset": {
-        borderColor: "white",
+        borderColor: "black",
       },
     },
   },

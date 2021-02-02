@@ -1,23 +1,15 @@
-import React, {
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-// import Select from "@material-ui/core/Select";
 import FormControl from "@material-ui/core/FormControl";
 
 import { Nft, PaymentToken } from "../types";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
-import Modal from "./Modal";
-// todo: ugh. remove CssSelect from there. need 4 speed, therefore I hack
 import CssTextField, { CssSelect } from "./CssTextField";
+import Modal from "./Modal";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -53,6 +45,8 @@ type LendOneInputs = {
   maxDuration: ValueValid;
   borrowPrice: ValueValid;
   nftPrice: ValueValid;
+  nftAddress: ValueValid;
+  tokenId: ValueValid;
 };
 
 type LendModalProps = {
@@ -62,16 +56,8 @@ type LendModalProps = {
   onLend: (nft: Nft) => void;
 };
 
-const LendModal: React.FC<LendModalProps> = ({
-  nft,
-  open,
-  setOpen,
-  onLend,
-}) => {
+const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
-  // const { face, erc721, rent, helpers } = useContext(ContractsContext);
-  // const { packPrice } = helpers;
-  // const { web3, addresses } = useContext(DappContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
 
@@ -88,68 +74,20 @@ const LendModal: React.FC<LendModalProps> = ({
       value: "100",
       valid: true,
     },
+    nftAddress: {
+      value: "0x123...789",
+      valid: true,
+    },
+    tokenId: {
+      value: "1",
+      valid: true,
+    },
   });
 
   const [isBusy, setIsBusy] = useState(false);
 
-  useEffect(() => {
-    if (!nft?.tokenId) return;
-    // face
-    //   .isApproved(nft.tokenId)
-    //   .then((_isApproved) => {
-    //     setIsApproved(_isApproved);
-    //   })
-    //   .catch((_) => {
-    //     console.debug("could not check if the NFT is approved");
-    //     setIsApproved(false);
-    //   });
-  }, [nft?.tokenId]);
-
   const handleLend = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!web3) return;
-
-    // setIsBusy(true);
-    // try {
-    //   if (!nft) return;
-    //   if (!nft?.tokenId || !addresses?.rent) return;
-
-    //   if (!isApproved) {
-    //     await erc721.approve(nft.nftAddress, addresses.rent, nft.tokenId);
-    //   }
-
-    //   const packedDailyRentPrice = packPrice(
-    //     Number(lendOneInputs.borrowPrice.value)
-    //   );
-    //   const packedNftPrice = packPrice(Number(lendOneInputs.nftPrice.value));
-    //   if (!packedDailyRentPrice || !packedNftPrice) {
-    //     console.warn("the price is too high");
-    //     return;
-    //   }
-
-    //   // nftAddress, tokenId, maxRentDuration, dailyRentPrice
-    //   // nftPrice, paymentToken, gasSponsor?
-    //   await rent.lendOne(
-    //     nft.nftAddress,
-    //     nft.tokenId,
-    //     // ! careful. will fail if the stablecoin / ERC20 is not 18 decimals
-    //     lendOneInputs.maxDuration.value,
-    //     packedDailyRentPrice,
-    //     packedNftPrice,
-    //     pmtToken
-    //   );
-
-    //   // when successfully lent out, hide the NFT from the front-end
-    //   onLend(nft);
-    // } catch (err) {
-    //   // TODO: notification that something went wrong
-    //   // TRELLO TASK: https://trello.com/c/FUhFdVR4/48-2-add-notifications-anywhere-you-can
-    //   console.debug("could not complete the lending");
-    // }
-
-    // show green check mark somewhere too
-    // setIsBusy(false);
-    // setOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,19 +96,19 @@ const LendModal: React.FC<LendModalProps> = ({
     const target = e.target.name;
     const val = e.target.value;
 
-    let valid = true;
-    if (target === "maxDuration") {
-      valid = checkMaxDuration(val);
-    } else if (target === "borrowPrice" || target === "nftPrice") {
-      valid = checkPrice(val);
-    }
+    // let valid = true;
+    // if (target === "maxDuration") {
+    //   valid = checkMaxDuration(val);
+    // } else if (target === "borrowPrice" || target === "nftPrice") {
+    //   valid = checkPrice(val);
+    // }
 
     // ! if setting the state based on the previous state values, you should use a function
     setLendOneInputs((lendOneInputs) => ({
       ...lendOneInputs,
       [target]: {
         value: val,
-        valid,
+        valid: true,
       },
     }));
   };
@@ -194,9 +132,9 @@ const LendModal: React.FC<LendModalProps> = ({
     return !n.includes(".") && checkPrice(n);
   };
 
-  const allValid = useMemo(() => {
-    return Object.values(lendOneInputs).every((item) => item.valid);
-  }, [lendOneInputs]);
+  // const allValid = useMemo(() => {
+  //   return Object.values(lendOneInputs).every((item) => item.valid);
+  // }, [lendOneInputs]);
 
   // this will ensure that spinner halts if the user rejects the txn
   // const handleApproveAll = useCallback(async () => {
@@ -228,6 +166,30 @@ const LendModal: React.FC<LendModalProps> = ({
         style={{ padding: "32px" }}
       >
         <Box className={classes.inputs}>
+          <CssTextField
+            required
+            error={!lendOneInputs.nftAddress.valid}
+            label="NFT Address"
+            id="nftAddress"
+            variant="outlined"
+            value={lendOneInputs.nftAddress.value}
+            type="text"
+            onChange={handleChange}
+            name="nftAddress"
+            disabled={isBusy}
+          />
+          <CssTextField
+            required
+            error={!lendOneInputs.tokenId.valid}
+            label="Token Id"
+            id="tokenId"
+            variant="outlined"
+            value={lendOneInputs.tokenId.value}
+            type="text"
+            onChange={handleChange}
+            name="tokenId"
+            disabled={isBusy}
+          />
           <CssTextField
             required
             error={!lendOneInputs.maxDuration.valid}
@@ -298,7 +260,6 @@ const LendModal: React.FC<LendModalProps> = ({
             </CssSelect>
           </FormControl>
         </Box>
-
         <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
           <button
@@ -309,7 +270,6 @@ const LendModal: React.FC<LendModalProps> = ({
               display: isApproved ? "none" : "inherit",
             }}
             className="Product__button"
-            // onClick={handleApproveAll}
             onSubmit={preventDefault}
           >
             Approve all
@@ -319,11 +279,7 @@ const LendModal: React.FC<LendModalProps> = ({
               display: isApproved ? "inherit" : "none",
             }}
           >
-            <RainbowButton
-              type="submit"
-              text="Lend"
-              disabled={isBusy || !allValid}
-            />
+            <RainbowButton type="submit" text="Lend" disabled={isBusy} />
           </Box>
         </Box>
       </form>

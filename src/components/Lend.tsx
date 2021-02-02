@@ -1,11 +1,8 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import ScrollForMore from "./ScrollForMore";
-import Cold from "./Cold";
 import LendCatalogue from "./LendCatalogue";
 import Switcher from "./Switcher";
-import { Nft } from "../types";
 
 type LendProps = {
   hidden: boolean;
@@ -17,16 +14,13 @@ enum LendSpecificity {
 }
 
 const Lend: React.FC<LendProps> = ({ hidden }) => {
-  // const { helpers } = useContext(ContractsContext);
-  // const { openSeaNfts, nonOpenSeaNfts } = helpers;
-  const [myNfts, setMyNfts] = useState<Nft[]>([]);
-  const [myLendingNfts, setMyLendingNfts] = useState<Nft[]>([]);
-  const [cold, setCold] = useState(true);
+  // todo: will be coming from the graph
+  // const [myLendingNfts, setMyLendingNfts] = useState<Nft[]>([]);
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
 
-  const handleSpecificity = useCallback(() => {
+  const switchSpecificity = useCallback(() => {
     setSpecificiy((specificity) =>
       specificity === LendSpecificity.ALL
         ? LendSpecificity.LENDING
@@ -34,14 +28,8 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
     );
   }, []);
 
-  // useEffect(() => {
-  //   const _myNfts = openSeaNfts.concat(nonOpenSeaNfts);
-  //   setMyNfts(_myNfts);
-  // }, [openSeaNfts, nonOpenSeaNfts]);
-
-  const nfts = useMemo(() => {
-    return specificity === LendSpecificity.ALL ? myNfts : myLendingNfts;
-  }, [specificity, myNfts, myLendingNfts]);
+  // @ts-ignore
+  const nfts: Nft[] = [];
 
   if (hidden) return <></>;
 
@@ -53,7 +41,6 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {!cold && <ScrollForMore />}
           <Box
             style={{
               display: "flex",
@@ -66,7 +53,7 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
               {specificity.valueOf() === 0 ? "AVAILABLE TO LEND" : "LENDING"}{" "}
               &nbsp; &nbsp;
             </span>
-            <Box onClick={handleSpecificity}>
+            <Box onClick={switchSpecificity}>
               <Switcher />
             </Box>
           </Box>
@@ -74,10 +61,8 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
         <LendCatalogue
           nfts={nfts}
           iLend={specificity === LendSpecificity.LENDING}
-          setCold={setCold}
         />
       </Box>
-      {cold && <Cold fancyText="One day it will be warm here..." />}
     </Box>
   );
 };

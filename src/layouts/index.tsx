@@ -1,7 +1,6 @@
-import React, { useMemo, useContext } from "react";
+import React, { useContext } from "react";
 import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
-import Link from "gatsby-link";
 
 import "../style/index.scss";
 import {
@@ -25,9 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="Wrap">
             <div className="Header__body">
               <h1 className="Header__title">
-                <Link data-text="Rent NFT" to="/">
-                  Rent NFT
-                </Link>
+                <div data-text="Rent NFT">Rent NFT</div>
               </h1>
               <div className="Header__summary">{currentAddress}</div>
             </div>
