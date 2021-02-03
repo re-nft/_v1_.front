@@ -144,10 +144,13 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
     return nfts;
   }, [erc721s]);
 
-  const handleLend = useCallback((nft?: DummyNft) => {
+  const handleStartLend = useCallback((nft?: DummyNft) => {
+    setSelectedNft(nft);
     setModalOpen(true);
-    console.log(nft);
-    return;
+  }, []);
+  const handleLend = useCallback(() => {
+    console.log("handle lend");
+    // actual logic of lending goes here
   }, []);
   const handleStopLend = useCallback(() => {
     return;
@@ -159,18 +162,17 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
         nft={selectedNft}
         open={modalOpen}
         setOpen={setModalOpen}
-        // onLend={handleLend}
+        onLend={handleLend}
       />
       <Box className="Catalogue">
         {nftTokenId.map((nft) => {
           const nftId = `${nft.address}::${nft.tokenId}`;
           return (
-            // todo: this is super bad, but I don't have time
             <CatalogueItem
               key={nftId}
               nftId={nftId}
               nft={nft}
-              handleLend={handleLend}
+              handleLend={handleStartLend}
               handleStopLend={handleStopLend}
             />
           );

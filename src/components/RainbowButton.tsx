@@ -12,11 +12,9 @@ const RainBowButton: React.FC<RainbowButtonProps> = ({
   disabled,
 }) => {
   return (
-    <button
-      type="button"
-      className="rainbow-button"
-      disabled={disabled}
-    ></button>
+    <button type="submit" className="rainbow-button" disabled={disabled}>
+      {text}
+    </button>
   );
 };
 

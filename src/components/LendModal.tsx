@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -10,6 +10,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import CssTextField, { CssSelect } from "./CssTextField";
 import Modal from "./Modal";
+import { RentNftContext } from "../hardhat/SymfoniContext";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -70,6 +71,7 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
+  const { instance } = useContext(RentNftContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -96,9 +98,22 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
 
   const [isBusy, setIsBusy] = useState(false);
 
-  const handleLend = async (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const handleLend = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!nft || !instance) return;
+      // need to approve if it wasn't: nft
+      await instance.lend(
+        [nft.address],
+        [nft.tokenId],
+        ["3"],
+        ["0x00000011"],
+        ["0x00000101"],
+        ["6"]
+      );
+    },
+    [nft, instance]
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
@@ -284,13 +299,13 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           >
             Approve all
           </button>
-          <Box
+          {/* <Box
             style={{
               display: isApproved ? "inherit" : "none",
             }}
-          >
-            <RainbowButton type="submit" text="Lend" disabled={isBusy} />
-          </Box>
+          > */}
+          <RainbowButton type="submit" text="Lend" disabled={false} />
+          {/* </Box> */}
         </Box>
       </form>
     </Modal>
