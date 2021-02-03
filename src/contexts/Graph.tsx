@@ -231,9 +231,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
-        console.log(`setting to ${i}`, { ...prev, ...setTo });
+        // console.log(`setting to ${i}`, { ...prev, ...setTo });
         // console.log("setting to", setTo);
-        return { ...prev, ...setTo };
+        return setTo;
       });
     }
   }, [currentAddress]);

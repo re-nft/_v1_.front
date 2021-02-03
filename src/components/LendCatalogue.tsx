@@ -1,10 +1,18 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
+import * as R from "ramda";
 
 import GraphContext from "../contexts/Graph";
 import LendModal from "./LendModal";
 import { Nft, Lending } from "../types";
+import { Token } from "graphql/language/ast";
 
 type LendButtonProps = {
   handleLend: (nft: Nft) => void;
@@ -20,6 +28,16 @@ type StopLendButtonProps = {
 type LendCatalogueProps = {
   nfts: Nft[];
   iLend: boolean;
+};
+
+type Address = string;
+type TokenId = string;
+type URI = string;
+
+type DummyNft = {
+  address: Address;
+  tokenId: TokenId;
+  image: URI;
 };
 
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
@@ -55,7 +73,7 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
 
 type CatalogueItemProps = {
   nftId: string;
-  nft: Nft | Lending;
+  nft: DummyNft;
   handleLend: (nft: Nft) => void;
   handleStopLend: (lending: Lending) => void;
 };
@@ -67,41 +85,27 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   handleStopLend,
 }) => {
   // todo: not fully correct but sufficient
-  const isLending = (nft: Nft | Lending): nft is Lending => {
-    return (nft as Lending).dailyRentPrice !== undefined;
-  };
+  // const isLending = (nft: Nft | Lending): nft is Lending => {
+  //   return (nft as Lending).dailyRentPrice !== undefined;
+  // };
 
   return (
     <div className="Catalogue__item" key={nftId}>
-      <div
-        className="Product"
-        data-item-id={nftId}
-        data-item-image={nft.imageUrl}
-      >
-        {/* TODO: the skeleton animation here does not work */}
+      <div className="Product" data-item-id={nftId} data-item-image={nft.image}>
         <div className="Product__image">
-          <a href={nft.imageUrl}>
-            {nft.imageUrl ? (
-              <img alt="nft" src={nft.imageUrl} />
-            ) : (
-              <Skeleton
-                animation="wave"
-                variant="rect"
-                width="219"
-                height="219"
-              />
-            )}
+          <a href={nft.image}>
+            <img alt="nft" src={nft.image} />
           </a>
         </div>
         <div className="Product__details">
           <p className="Product__text_overflow">
             <a
-              href={`https://etherscan.io/address/${nft.nftAddress}`}
+              href={`https://etherscan.io/address/${nft.address}`}
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: "none", color: "black" }}
             >
-              {nft.nftAddress}
+              {nft.address}
             </a>
           </p>
         </div>
@@ -112,11 +116,11 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </p>
         </div>
         <div className="Product__details" style={{ marginTop: "8px" }}>
-          {isLending(nft) ? (
+          {/* {isLending(nft) ? (
             <StopLendButton lending={nft} handleStopLend={handleStopLend} />
           ) : (
             <LendButton nft={nft} handleLend={handleLend} />
-          )}
+          )} */}
         </div>
       </div>
     </div>
@@ -129,62 +133,74 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 // Cleanly separate these two, potentially into different components
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [nft, setNft] = useState<Nft>();
+  // all of the erc721s and erc1155s that I own
   const { erc721s } = useContext(GraphContext);
+  const nftTokenId = useMemo(() => {
+    const nfts: DummyNft[] = [];
 
-  useEffect(() => {
-    // if (iLend) {
-    //   user.lending.length > 0 ? setCold(false) : setCold(true);
-    // } else {
-    //   nfts?.length > 0 ? setCold(false) : setCold(true);
-    // }
-  }, []);
+    if (!erc721s) return nfts;
 
-  const handleLend = useCallback(
-    (_nft: Nft) => {
-      setModalOpen(true);
-      setNft(_nft);
-    },
-    [setModalOpen, setNft]
-  );
+    console.log("erc721s", erc721s);
 
-  const handleStopLend = useCallback(async (lending: Lending) => {
-    // await rent.stopLendingOne(
-    //   lending.nftAddress,
-    //   String(lending.tokenId),
-    //   String(lending.id)
-    // );
-  }, []);
+    for (const address of Object.keys(erc721s)) {
+      if (!R.hasPath([address, "tokenIds"], erc721s)) continue;
+      for (const tokenId of Object.keys(erc721s[address]?.tokenIds)) {
+        nfts.push({
+          address,
+          tokenId,
+          image: R.pathOr("", [address, "tokenIds", tokenId, "image"], erc721s),
+          // //@ts-ignore
+          // image: erc721s[address].tokenIds[tokenId].meta?.image ?? "",
+        });
+      }
+    }
+
+    return nfts;
+  }, [erc721s]);
 
   return (
     <Box>
-      <LendModal
+      {/* <LendModal
         nft={nft}
         open={modalOpen}
         setOpen={setModalOpen}
         onLend={handleLend}
-      />
+      /> */}
       <Box className="Catalogue">
-        {!iLend &&
-          nfts?.length > 0 &&
-          nfts.map((nft) => {
-            // const nftId = `${nft.nftAddress}::${nft.tokenId}`;
-            // if (
-            //   nft.nftAddress === freshlyLent.nftAddress &&
-            //   nft.tokenId === freshlyLent.tokenId
-            // )
-            //   return <React.Fragment key={nftId} />;
+        {nftTokenId.map((nft) => {
+          const nftId = `${nft.address}::${nft.tokenId}`;
+          return (
+            <CatalogueItem
+              key={nftId}
+              nftId={nftId}
+              nft={nft}
+              handleLend={() => {
+                return;
+              }}
+              handleStopLend={() => {
+                return;
+              }}
+            />
+          );
+        })}
+        {/* {erc721s.map((nft) => {
+          // const nftId = `${nft.nftAddress}::${nft.tokenId}`;
+          // if (
+          //   nft.nftAddress === freshlyLent.nftAddress &&
+          //   nft.tokenId === freshlyLent.tokenId
+          // )
+          //   return <React.Fragment key={nftId} />;
 
-            return (
-              <CatalogueItem
-                key={nft.tokenId}
-                nftId={nft.tokenId ?? ""}
-                nft={nft}
-                handleLend={handleLend}
-                handleStopLend={handleStopLend}
-              />
-            );
-          })}
+          return (
+            <CatalogueItem
+              key={nft.tokenId}
+              nftId={nft.tokenId ?? ""}
+              nft={nft}
+              handleLend={handleLend}
+              handleStopLend={handleStopLend}
+            />
+          );
+        })} */}
         {/* {iLend &&
           user.lending.length > 0 &&
           user.lending.map((lending) => {
