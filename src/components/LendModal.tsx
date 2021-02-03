@@ -49,8 +49,18 @@ type LendOneInputs = {
   tokenId: ValueValid;
 };
 
+type Address = string;
+type TokenId = string;
+type URI = string;
+
+type DummyNft = {
+  address: Address;
+  tokenId: TokenId;
+  image: URI;
+};
+
 type LendModalProps = {
-  nft?: Nft;
+  nft?: DummyNft;
   open: boolean;
   setOpen: (open: boolean) => void;
   onLend: (nft: Nft) => void;

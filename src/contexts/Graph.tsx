@@ -175,6 +175,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     for (const uri of uris) {
       if (!uri.href) continue;
+      // todo: only fetch if https or http
       toFetch.push(
         fetch(uri.href)
           .then(async (dat) => await dat.json())
