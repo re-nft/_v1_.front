@@ -2,6 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import Skeleton from "@material-ui/lab/Skeleton";
 
+import GraphContext from "../contexts/Graph";
 import LendModal from "./LendModal";
 import { Nft, Lending } from "../types";
 
@@ -95,7 +96,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Product__details">
           <p className="Product__text_overflow">
             <a
-              href={`https://goerli.etherscan.io/address/${nft.nftAddress}`}
+              href={`https://etherscan.io/address/${nft.nftAddress}`}
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: "none", color: "black" }}
@@ -129,6 +130,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 const LendCatalogue: React.FC<LendCatalogueProps> = ({ nfts, iLend }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [nft, setNft] = useState<Nft>();
+  const { erc721s } = useContext(GraphContext);
 
   useEffect(() => {
     // if (iLend) {

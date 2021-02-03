@@ -6,28 +6,24 @@ import React, {
   useCallback,
 } from "react";
 import { request } from "graphql-request";
+import { ethers } from "ethers";
+import parse from "url-parse";
+import { set as ramdaSet, lensPath, hasPath } from "ramda";
 
 import { Optional } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
+import { getERC1155, getERC721 } from "../utils";
+import { copyFileSync } from "fs";
+import { isConstructorDeclaration } from "typescript";
 
 // type GraphContextType = {
 //   user: User;
 //   lending: Lending[];
 // };
 
-const DefaultGraphContext: GraphContextType = {
-  user: {
-    id: "",
-    lending: [],
-    renting: [],
-  },
-  lending: [],
-  erc721s: [],
-};
-
-const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
-
 const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+const HTTPS_PROTOCOL = "https:";
+const HTTP_PROTOCOL = "http:";
 
 // kudos to Luis: https://github.com/microchipgnu
 // check out his latest on: https://twitter.com/microchipgnu
@@ -42,11 +38,30 @@ type queryAllERC721T = {
   }[];
 };
 
-type GraphContextType = {
-  user: any;
-  lending: any;
-  erc721s: queryAllERC721T["tokens"];
+type Path = string[];
+
+// '0x123...456': { tokenIds: { '1': ..., '2': ... } }
+type AddressToErc721 = {
+  [key: string]: {
+    contract?: ethers.Contract;
+    // tokenId string to response
+    tokenIds: {
+      [key: string]: {
+        meta?: Response;
+      };
+    };
+  };
 };
+
+type GraphContextType = {
+  erc721s: AddressToErc721;
+};
+
+const DefaultGraphContext: GraphContextType = {
+  erc721s: {},
+};
+
+const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 const queryAllERC721 = (user: string): string => {
   return `{
@@ -80,7 +95,7 @@ const queryLending = (): string => {
 };
 
 // user(id: "${web3.utils.toHex(user).toLowerCase()}") {
-const queryUser = (user: string, web3: any): string => {
+const queryUser = (user: string): string => {
   return `{
     user(id: "${user.toLowerCase()}") {
       id
@@ -149,7 +164,32 @@ type RawRenting = {
 
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const [myERC721s, setMyERC721s] = useState<queryAllERC721T["tokens"]>([]);
+  const [erc721s, setErc721s] = useState<AddressToErc721>({});
+
+  const fetchNftMeta = async (uris: parse[]) => {
+    const toFetch: Promise<Response>[] = [];
+
+    if (uris.length < 1) return [];
+
+    // console.log("uris", uris);
+
+    for (const uri of uris) {
+      if (!uri.href) continue;
+      toFetch.push(
+        fetch(uri.href)
+          .then(async (dat) => await dat.json())
+          .catch(() => ({}))
+      );
+    }
+
+    // console.log("toFetch", toFetch);
+
+    const res = await Promise.all(toFetch);
+
+    // console.log(res);
+
+    return res;
+  };
 
   const fetchAllERC721 = useCallback(async () => {
     if (!currentAddress) return [];
@@ -157,7 +197,45 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: queryAllERC721T = await request(ENDPOINT_EIP721, query);
     if (!response) return [];
     if (response.tokens.length == 0) return [];
-    setMyERC721s(response.tokens);
+
+    const toFetchPaths: Path[] = [];
+    const toFetchLinks: parse[] = [];
+
+    // O(n)
+    for (const token of response.tokens) {
+      const { id, tokenURI } = token;
+      const [address, tokenId] = id.split("_");
+      if (!address || !tokenId) continue;
+      // this avoids having redundant instantiations of the same ERC721
+      if (!erc721s[address]?.contract) {
+        // React will bundle up these individual setStates
+        setErc721s((prev) => ({
+          ...prev,
+          [address]: {
+            ...prev.address,
+            contract: getERC721(address),
+          },
+        }));
+      }
+
+      if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
+        toFetchPaths.push([address, "tokenIds", tokenId]);
+        toFetchLinks.push(parse(tokenURI, true));
+      }
+      // toFetch.push([[address, "tokenIds", tokenId], parse(tokenURI, true)]);
+      // toFetchLinks.push(parse(tokenURI, true));
+    }
+
+    const meta = await fetchNftMeta(toFetchLinks);
+
+    for (let i = 0; i < meta.length; i++) {
+      setErc721s((prev) => {
+        const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+        console.log(`setting to ${i}`, { ...prev, ...setTo });
+        // console.log("setting to", setTo);
+        return { ...prev, ...setTo };
+      });
+    }
   }, [currentAddress]);
 
   // queries ALL of the lendings in reNFT
@@ -194,9 +272,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, [fetchAllERC721]);
 
   return (
-    <GraphContext.Provider
-      value={{ user: null, lending: null, erc721s: myERC721s }}
-    >
+    <GraphContext.Provider value={{ erc721s }}>
       {children}
     </GraphContext.Provider>
   );

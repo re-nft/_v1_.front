@@ -23,6 +23,8 @@ type pullArgs = {
   cids: string[];
 };
 
+// makes 3 separate batch requests with the same request content
+// whoever comes back with the response faster is what we return
 const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
   if (!cids.length) {
     console.warn("requested to pull from ipfs, but nothing to pull");
@@ -37,7 +39,6 @@ const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
     indicesToPullFrom--;
   }
   const reqs: Promise<Response>[][] = [];
-  console.debug("reqs", reqs);
   // now we want to make the gateways race for each requested link
   // that means calling promise.race on 3 gateways for all links at the same time
   // and gathering the raced ones into the promise.all

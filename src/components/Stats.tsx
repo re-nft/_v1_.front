@@ -118,7 +118,7 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
   // collateral claimed
   // # nfts lost
 
-  const { user } = useContext(GraphContext);
+  // const { user } = useContext(GraphContext);
   // const { lending, renting } = user;
 
   if (hidden) return <></>;

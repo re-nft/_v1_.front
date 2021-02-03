@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import Layout from "./layouts/index";
