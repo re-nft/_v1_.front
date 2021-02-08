@@ -11,7 +11,11 @@ import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
 
 import { Optional } from "../types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
+// todo: to be removed in prod (myERC721Context)
+import {
+  CurrentAddressContext,
+  MyERC721Context,
+} from "../hardhat/SymfoniContext";
 import { getERC1155, getERC721 } from "../utils";
 
 // type GraphContextType = {
@@ -162,13 +166,56 @@ type RawRenting = {
   lending: RawLending;
 };
 
+const DEV_ENVIRONMENT =
+  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
+
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
 
+  // todo: only in dev
+  const myERC721 = useContext(MyERC721Context);
+
+  const fetchNftMetaDev = useCallback(async () => {
+    if (!myERC721.instance) return [];
+    const toFetch: Promise<Response>[] = [];
+    const tokenIds: string[] = [];
+    const contract = myERC721.instance;
+    // * won't fetch in prod
+    // pull all of the tokens of the current address
+    const numNfts = (await contract.balanceOf(currentAddress)) ?? 0;
+    // console.log("I am", currentAddress, ", I have", numNfts, "NFTs");
+    for (let i = 0; i < numNfts.toNumber(); i++) {
+      // get the tokenId, and then fetch the metadata uri, then push this to toFetch
+      const tokenId =
+        (await contract.tokenOfOwnerByIndex(currentAddress, i)) ?? -1;
+      tokenIds.push(tokenId.toString());
+      const metaURI = await contract.tokenURI(tokenId);
+      if (metaURI)
+        toFetch.push(
+          fetch(metaURI)
+            .then(async (dat) => await dat.json())
+            .catch(() => ({}))
+        );
+    }
+    const res = await Promise.all(toFetch);
+    const tokenIdsObj = {};
+    for (let i = 0; i < res.length; i++) {
+      Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
+    }
+
+    setErc721s({
+      [contract.address]: {
+        contract: contract,
+        tokenIds: tokenIdsObj,
+      },
+    });
+
+    return res;
+  }, [currentAddress, myERC721.instance]);
+
   const fetchNftMeta = async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
-
     if (uris.length < 1) return [];
 
     for (const uri of uris) {
@@ -181,12 +228,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       );
     }
 
-    // console.log("toFetch", toFetch);
-
     const res = await Promise.all(toFetch);
-
-    // console.log(res);
-
     return res;
   };
 
@@ -226,7 +268,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
 
     const meta = await fetchNftMeta(toFetchLinks);
-
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
@@ -266,7 +307,8 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     fetchAllERC721();
-  }, [fetchAllERC721]);
+    if (DEV_ENVIRONMENT) fetchNftMetaDev();
+  }, [fetchAllERC721, fetchNftMetaDev]);
 
   return (
     <GraphContext.Provider value={{ erc721s }}>

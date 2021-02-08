@@ -5,7 +5,11 @@ import reportWebVitals from "./reportWebVitals";
 import { GraphProvider } from "./contexts/Graph";
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import dotenv from "dotenv";
 import "./index.css";
+
+// pulls the config from .env file
+dotenv.config();
 
 const theme = createMuiTheme({
   typography: {
