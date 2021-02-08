@@ -4,7 +4,9 @@
   "author": "Nazariy Vavryk <nazariy@inbox.ru>",
   "dependencies": {
     "@craco/craco": "^6.1.0",
-    "@material-ui/core": "^4.11.0",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
+    "@material-ui/core": "^5.0.0-alpha.24",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@tailwindcss/postcss7-compat": "^2.0.2",
     "@testing-library/jest-dom": "^5.11.4",

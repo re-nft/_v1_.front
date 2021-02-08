@@ -86,7 +86,6 @@ const ApproveButton: React.FC<ApproveButtonProps> = ({ nft }) => {
 
 const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
-  const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
   const { instance: renft } = useContext(RentNftContext);
 
@@ -112,7 +111,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       e.preventDefault();
       if (!nft || !renft) return;
       // need to approve if it wasn't: nft
-      // console.log(instance.lend);
 
       await renft.lend(
         [nft.contract.address],

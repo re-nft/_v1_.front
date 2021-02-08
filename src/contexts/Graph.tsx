@@ -187,7 +187,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     // * won't fetch in prod
     // pull all of the tokens of the current address
     const numNfts = (await contract.balanceOf(currentAddress)) ?? 0;
-    // console.log("I am", currentAddress, ", I have", numNfts, "NFTs");
     for (let i = 0; i < numNfts.toNumber(); i++) {
       // get the tokenId, and then fetch the metadata uri, then push this to toFetch
       const tokenId =
