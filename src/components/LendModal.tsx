@@ -1,21 +1,42 @@
 import React, { useState, useCallback, useContext } from "react";
-import { Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box, Select } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+import InputBase from "@material-ui/core/InputBase";
 
 import { Nft, PaymentToken } from "../types";
 import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
-import CssTextField, { CssSelect } from "./CssTextField";
+import CssTextField from "./CssTextField";
 import Modal from "./Modal";
 import {
   RentNftContext,
   CurrentAddressContext,
 } from "../hardhat/SymfoniContext";
 
-// TODO: this is a copy of what we have in RentModal
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    "label + &": {
+      marginTop: theme.spacing(2),
+    },
+  },
+  input: {
+    borderRadius: 4,
+    position: "relative",
+    // backgroundColor: theme.palette.background.paper,
+    border: "2px solid black",
+    fontSize: 16,
+    padding: "10px 26px 10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    "&:focus": {
+      borderRadius: 4,
+      borderColor: "black",
+      // boxShadow: "0 0 0 0.2rem black",
+    },
+  },
+}))(InputBase);
+
 const useStyles = makeStyles({
   form: {
     height: "100%",
@@ -247,24 +268,32 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
             disabled={isBusy}
           />
           <FormControl variant="outlined">
-            <InputLabel id="pmtToken" style={{ color: "white" }}>
-              Pmt. Token *&nbsp;
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Payment Token*
             </InputLabel>
-            <CssSelect
+            <Select
+              native
               required
-              labelId="pmtToken"
-              id="pmtToken"
-              name="pmtToken"
               value={pmtToken}
               onChange={handleTokenChange}
-              label="Payment Token"
-              variant="outlined"
+              label="Payment Token*"
+              input={<BootstrapInput />}
+              inputProps={{
+                name: "pmtToken",
+                id: "pmtToken",
+              }}
             >
+              <option aria-label="None" value="" />
+              <option value={PaymentToken.DAI}>DAI</option>
+              <option value={PaymentToken.USDC}>USDC</option>
+              <option value={PaymentToken.USDT}>USDT</option>
+              <option value={PaymentToken.TUSD}>TUSD</option>
+              {/* <MenuItem aria-label="None" value="" />
               <MenuItem value={PaymentToken.DAI}>DAI</MenuItem>
               <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
               <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
-              <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem>
-            </CssSelect>
+              <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem> */}
+            </Select>
           </FormControl>
         </Box>
         <Box>{isBusy && <FunnySpinner />}</Box>

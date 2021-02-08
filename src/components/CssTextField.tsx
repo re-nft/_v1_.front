@@ -1,4 +1,4 @@
-import { Select, TextField } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
 const fancyStyle = {
@@ -10,9 +10,9 @@ const fancyStyle = {
       color: "teal",
       fontWeight: "1000",
     },
-    "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
-      transform: "translate(14px, -4px) scale(0.55)",
-    },
+    // "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
+    //   transform: "translate(14px, -4px) scale(0.55)",
+    // },
     "& label.Mui-focused": {
       color: "black",
     },
@@ -35,6 +35,5 @@ const fancyStyle = {
 };
 
 const CssTextField = withStyles(fancyStyle)(TextField);
-export const CssSelect = withStyles(fancyStyle)(Select);
 
 export default CssTextField;

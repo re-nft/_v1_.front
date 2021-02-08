@@ -6,15 +6,14 @@ type RainbowButtonProps = {
   disabled: boolean;
 };
 
-const RainBowButton: React.FC<RainbowButtonProps> = ({
-  text,
-  type,
-  disabled,
-}) => {
+const RainBowButton: React.FC<RainbowButtonProps> = ({ disabled }) => {
   return (
-    <button type="submit" className="rainbow-button" disabled={disabled}>
-      {text}
-    </button>
+    <button
+      type="submit"
+      className="rainbow-button"
+      disabled={disabled}
+      data-text="LEND"
+    />
   );
 };
 
