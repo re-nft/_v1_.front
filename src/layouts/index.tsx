@@ -3,17 +3,13 @@ import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
 
 import "../style/index.scss";
-import {
-  SymfoniContext,
-  CurrentAddressContext,
-} from "../../src/hardhat/SymfoniContext";
+import { CurrentAddressContext } from "../../src/hardhat/SymfoniContext";
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { init } = useContext(SymfoniContext);
   const [currentAddress] = useContext(CurrentAddressContext);
 
   return (
@@ -24,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="Wrap">
             <div className="Header__body">
               <h1 className="Header__title">
-                <div data-text="Rent NFT">Rent NFT</div>
+                <div data-text="ReNFT">ReNFT</div>
               </h1>
               <div className="Header__summary">{currentAddress}</div>
             </div>

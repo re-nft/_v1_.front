@@ -187,8 +187,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
 
   const handleClose = useCallback(() => setOpen(false), [setOpen]);
 
-  const preventDefault = (e: React.FormEvent) => e.preventDefault();
-
   return (
     <Modal open={open} handleClose={handleClose}>
       <form
