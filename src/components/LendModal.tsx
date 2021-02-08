@@ -10,7 +10,10 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import CssTextField, { CssSelect } from "./CssTextField";
 import Modal from "./Modal";
-import { RentNftContext } from "../hardhat/SymfoniContext";
+import {
+  RentNftContext,
+  CurrentAddressContext,
+} from "../hardhat/SymfoniContext";
 
 // TODO: this is a copy of what we have in RentModal
 const useStyles = makeStyles({
@@ -48,27 +51,44 @@ type LendOneInputs = {
   nftPrice: ValueValid;
 };
 
-type Address = string;
-type TokenId = string;
-type URI = string;
-
-type DummyNft = {
-  address: Address;
-  tokenId: TokenId;
-  image: URI;
-};
-
 type LendModalProps = {
-  nft?: DummyNft;
+  nft: Nft;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
 
+type ApproveButtonProps = {
+  nft: Nft;
+};
+
+const ApproveButton: React.FC<ApproveButtonProps> = ({ nft }) => {
+  const [currentAddress] = useContext(CurrentAddressContext);
+  const { instance: renft } = useContext(RentNftContext);
+
+  const handleApproveAll = useCallback(async () => {
+    if (!currentAddress || !renft) return;
+    await nft.contract.setApprovalForAll(renft.address, true);
+  }, [currentAddress, renft, nft.contract]);
+
+  return (
+    <button
+      type="button"
+      style={{
+        border: "3px solid black",
+      }}
+      className="Product__button"
+      onClick={handleApproveAll}
+    >
+      Approve all
+    </button>
+  );
+};
+
 const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
-  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
-  const { instance } = useContext(RentNftContext);
+  const { instance: renft } = useContext(RentNftContext);
 
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({
     maxDuration: {
@@ -90,20 +110,20 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const handleLend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!nft || !instance) return;
+      if (!nft || !renft) return;
       // need to approve if it wasn't: nft
       // console.log(instance.lend);
 
-      await instance.lend(
-        [nft.address],
+      await renft.lend(
+        [nft.contract.address],
         [nft.tokenId],
         ["3"],
         ["0x00000011"],
         ["0x00000101"],
-        ["6"]
+        ["1"]
       );
     },
-    [nft, instance]
+    [nft, renft]
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -253,25 +273,8 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
         </Box>
         <Box>{isBusy && <FunnySpinner />}</Box>
         <Box className={classes.buttons}>
-          <button
-            type="button"
-            disabled={isBusy}
-            style={{
-              border: "3px solid black",
-              display: isApproved ? "none" : "inherit",
-            }}
-            className="Product__button"
-            onSubmit={preventDefault}
-          >
-            Approve all
-          </button>
-          {/* <Box
-            style={{
-              display: isApproved ? "inherit" : "none",
-            }}
-          > */}
+          {!nft.isApprovedForAll && <ApproveButton nft={nft} />}
           <RainbowButton type="submit" text="Lend" disabled={false} />
-          {/* </Box> */}
         </Box>
       </form>
     </Modal>

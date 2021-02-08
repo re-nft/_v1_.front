@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { ERC721 } from "./hardhat/typechain/ERC721";
 
 export const short = (s: string): string =>
   `${s.substr(0, 5)}...${s.substr(s.length - 5, 5)}`;
@@ -43,22 +44,19 @@ const erc1155abi = [
   "function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external",
 ];
 
-export const getERC721 = (
-  address: string,
-  signer?: ethers.Signer
-): ethers.Contract | undefined => {
+export const getERC721 = (address: string, signer?: ethers.Signer): ERC721 => {
   const erc721Contract = new ethers.Contract(
     address.toLowerCase(),
     erc721abi,
     signer
-  );
+  ) as ERC721;
   return erc721Contract;
 };
 
 export const getERC1155 = (
   address: string,
   signer?: ethers.Signer
-): ethers.Contract | undefined => {
+): ethers.Contract => {
   const erc1155Contract = new ethers.Contract(
     address.toLowerCase(),
     erc1155abi,

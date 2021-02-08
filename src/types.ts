@@ -1,12 +1,7 @@
+import { ERC721 } from "./hardhat/typechain/ERC721";
+
 export type Optional<T> = undefined | T;
-
 export type Address = string;
-
-export type Nft = {
-  nftAddress: Address;
-  tokenId?: string;
-  imageUrl?: string;
-};
 
 // TODO: think this should be in typechain
 export enum PaymentToken {
@@ -50,24 +45,12 @@ export type User = {
   renting: Renting[];
 };
 
-// todo: nuke this
-// * note that this is NOT the full type!
-export type OpenSeaNft = {
-  id: string;
-  token_id: string;
-  num_sales: string;
-  image_url: string;
-  name: string;
-  description: string;
-  asset_contract: {
-    address: Address;
-    owner: number;
-  };
-  owner: {
-    user: {
-      username: string;
-    };
-    profile_img_url: string;
-    address: Address;
-  };
+export type TokenId = string;
+export type URI = string;
+
+export type Nft = {
+  contract: ERC721;
+  tokenId: TokenId;
+  image: URI;
+  isApprovedForAll: boolean;
 };

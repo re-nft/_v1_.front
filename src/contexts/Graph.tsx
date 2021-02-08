@@ -15,7 +15,9 @@ import { Optional } from "../types";
 import {
   CurrentAddressContext,
   MyERC721Context,
+  RentNftContext,
 } from "../hardhat/SymfoniContext";
+import { ERC721 } from "../hardhat/typechain/ERC721";
 import { getERC1155, getERC721 } from "../utils";
 
 // type GraphContextType = {
@@ -26,8 +28,6 @@ import { getERC1155, getERC721 } from "../utils";
 // TODO
 // const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 const ENDPOINT = "http://localhost:8000/subgraphs/name/nazariyv/ReNFT/graphql";
-const HTTPS_PROTOCOL = "https:";
-const HTTP_PROTOCOL = "http:";
 
 // kudos to Luis: https://github.com/microchipgnu
 // check out his latest on: https://twitter.com/microchipgnu
@@ -47,7 +47,8 @@ type Path = string[];
 // '0x123...456': { tokenIds: { '1': ..., '2': ... } }
 type AddressToErc721 = {
   [key: string]: {
-    contract?: ethers.Contract;
+    contract: ERC721;
+    isApprovedForAll: boolean;
     // tokenId string to response
     tokenIds: {
       [key: string]: {
@@ -175,9 +176,11 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // todo: only in dev
   const myERC721 = useContext(MyERC721Context);
+  const renft = useContext(RentNftContext);
 
   const fetchNftMetaDev = useCallback(async () => {
     if (!myERC721.instance) return [];
+    if (!renft.instance) return [];
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const contract = myERC721.instance;
@@ -207,12 +210,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     setErc721s({
       [contract.address]: {
         contract: contract,
+        isApprovedForAll: await contract.isApprovedForAll(
+          currentAddress,
+          renft.instance.address
+        ),
         tokenIds: tokenIdsObj,
       },
     });
 
     return res;
-  }, [currentAddress, myERC721.instance]);
+  }, [currentAddress, myERC721.instance, renft]);
 
   const fetchNftMeta = async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
@@ -233,7 +240,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   };
 
   const fetchAllERC721 = useCallback(async () => {
-    if (!currentAddress) return [];
+    if (!currentAddress || !renft.instance) return [];
     const query = queryAllERC721(currentAddress);
     const response: queryAllERC721T = await request(ENDPOINT_EIP721, query);
     if (!response) return [];
@@ -250,11 +257,19 @@ export const GraphProvider: React.FC = ({ children }) => {
       // this avoids having redundant instantiations of the same ERC721
       if (!erc721s[address]?.contract) {
         // React will bundle up these individual setStates
+        const contract = getERC721(address);
+        const isApprovedForAll = contract
+          ? await contract.isApprovedForAll(
+              currentAddress,
+              renft.instance.address
+            )
+          : false;
         setErc721s((prev) => ({
           ...prev,
           [address]: {
             ...prev.address,
-            contract: getERC721(address),
+            contract: contract,
+            isApprovedForAll,
           },
         }));
       }
@@ -274,7 +289,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         return setTo;
       });
     }
-  }, [currentAddress]);
+  }, [currentAddress, renft.instance]);
 
   // queries ALL of the lendings in reNFT
   const fetchLending = async () => {
