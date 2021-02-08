@@ -66,15 +66,13 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
 type CatalogueItemProps = {
   nftId: string;
   nft?: DummyNft;
-  handleLend: (nft?: DummyNft) => void;
-  handleStopLend: (lending: Lending) => void;
+  handleStartLend: (nft?: DummyNft) => void;
 };
 
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nftId,
   nft,
-  handleLend,
-  handleStopLend,
+  handleStartLend,
 }) => {
   return (
     <div className="Catalogue__item" key={nftId}>
@@ -107,7 +105,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </p>
         </div>
         <div className="Product__details" style={{ marginTop: "8px" }}>
-          <LendButton nft={nft} handleLend={handleLend} />
+          <LendButton nft={nft} handleLend={handleStartLend} />
           {/* {isLending(nft) ? (
             <StopLendButton lending={nft} handleStopLend={handleStopLend} />
           ) : (
@@ -134,10 +132,22 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
     for (const address of Object.keys(erc721s)) {
       if (!R.hasPath([address, "tokenIds"], erc721s)) continue;
       for (const tokenId of Object.keys(erc721s[address]?.tokenIds)) {
+        let image = R.pathOr(
+          "",
+          [address, "tokenIds", tokenId, "image"],
+          erc721s
+        );
+        if (image === "") {
+          image = R.pathOr(
+            "",
+            [address, "tokenIds", tokenId, "image_url"],
+            erc721s
+          );
+        }
         nfts.push({
           address,
           tokenId,
-          image: R.pathOr("", [address, "tokenIds", tokenId, "image"], erc721s),
+          image,
         });
       }
     }
@@ -148,22 +158,10 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
     setSelectedNft(nft);
     setModalOpen(true);
   }, []);
-  const handleLend = useCallback(() => {
-    console.log("handle lend");
-    // actual logic of lending goes here
-  }, []);
-  const handleStopLend = useCallback(() => {
-    return;
-  }, []);
 
   return (
     <Box>
-      <LendModal
-        nft={selectedNft}
-        open={modalOpen}
-        setOpen={setModalOpen}
-        onLend={handleLend}
-      />
+      <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
         {nftTokenId.map((nft) => {
           const nftId = `${nft.address}::${nft.tokenId}`;
@@ -172,8 +170,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
               key={nftId}
               nftId={nftId}
               nft={nft}
-              handleLend={handleStartLend}
-              handleStopLend={handleStopLend}
+              handleStartLend={handleStartLend}
             />
           );
         })}

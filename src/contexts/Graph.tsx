@@ -13,15 +13,15 @@ import { set as ramdaSet, lensPath, hasPath } from "ramda";
 import { Optional } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import { getERC1155, getERC721 } from "../utils";
-import { copyFileSync } from "fs";
-import { isConstructorDeclaration } from "typescript";
 
 // type GraphContextType = {
 //   user: User;
 //   lending: Lending[];
 // };
 
-const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+// TODO
+// const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+const ENDPOINT = "http://localhost:8000/subgraphs/name/nazariyv/ReNFT/graphql";
 const HTTPS_PROTOCOL = "https:";
 const HTTP_PROTOCOL = "http:";
 
@@ -171,8 +171,6 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     if (uris.length < 1) return [];
 
-    // console.log("uris", uris);
-
     for (const uri of uris) {
       if (!uri.href) continue;
       // todo: only fetch if https or http
@@ -232,8 +230,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
-        // console.log(`setting to ${i}`, { ...prev, ...setTo });
-        // console.log("setting to", setTo);
         return setTo;
       });
     }

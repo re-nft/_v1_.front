@@ -46,8 +46,6 @@ type LendOneInputs = {
   maxDuration: ValueValid;
   borrowPrice: ValueValid;
   nftPrice: ValueValid;
-  nftAddress: ValueValid;
-  tokenId: ValueValid;
 };
 
 type Address = string;
@@ -64,7 +62,6 @@ type LendModalProps = {
   nft?: DummyNft;
   open: boolean;
   setOpen: (open: boolean) => void;
-  onLend: (nft: Nft) => void;
 };
 
 const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
@@ -86,14 +83,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       value: "100",
       valid: true,
     },
-    nftAddress: {
-      value: "0x123...789",
-      valid: true,
-    },
-    tokenId: {
-      value: "1",
-      valid: true,
-    },
   });
 
   const [isBusy, setIsBusy] = useState(false);
@@ -103,6 +92,8 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       e.preventDefault();
       if (!nft || !instance) return;
       // need to approve if it wasn't: nft
+      // console.log(instance.lend);
+
       await instance.lend(
         [nft.address],
         [nft.tokenId],
@@ -128,7 +119,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     //   valid = checkPrice(val);
     // }
 
-    // ! if setting the state based on the previous state values, you should use a function
     setLendOneInputs((lendOneInputs) => ({
       ...lendOneInputs,
       [target]: {
@@ -191,30 +181,6 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
         style={{ padding: "32px" }}
       >
         <Box className={classes.inputs}>
-          <CssTextField
-            required
-            error={!lendOneInputs.nftAddress.valid}
-            label="NFT Address"
-            id="nftAddress"
-            variant="outlined"
-            value={lendOneInputs.nftAddress.value}
-            type="text"
-            onChange={handleChange}
-            name="nftAddress"
-            disabled={isBusy}
-          />
-          <CssTextField
-            required
-            error={!lendOneInputs.tokenId.valid}
-            label="Token Id"
-            id="tokenId"
-            variant="outlined"
-            value={lendOneInputs.tokenId.value}
-            type="text"
-            onChange={handleChange}
-            name="tokenId"
-            disabled={isBusy}
-          />
           <CssTextField
             required
             error={!lendOneInputs.maxDuration.valid}
