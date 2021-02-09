@@ -187,17 +187,7 @@ const RentModal: React.FC<RentModalProps> = ({
       handleClose();
       // todo: the deps list looks a bit too much
     },
-    [
-      duration,
-      rentIsDisabled,
-      lending.id,
-      lending.tokenId,
-      lending.nftAddress,
-      handleClose,
-      lending.dailyRentPrice,
-      lending.nftPrice,
-      lending.paymentToken,
-    ]
+    [rentIsDisabled, handleClose]
   );
 
   // const handleApprove = useCallback(async () => {
