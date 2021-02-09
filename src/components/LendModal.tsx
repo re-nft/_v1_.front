@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import { Box, Select } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import InputBase from "@material-ui/core/InputBase";
 
@@ -10,6 +9,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
+import MinimalSelect from "./MinimalSelect";
 import {
   RentNftContext,
   CurrentAddressContext,
@@ -268,7 +268,8 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
             disabled={isBusy}
           />
           <FormControl variant="outlined">
-            <InputLabel htmlFor="outlined-age-native-simple">
+            <MinimalSelect />
+            {/* <InputLabel htmlFor="outlined-age-native-simple">
               Payment Token*
             </InputLabel>
             <Select
@@ -293,7 +294,7 @@ const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
               <MenuItem value={PaymentToken.USDC}>USDC</MenuItem>
               <MenuItem value={PaymentToken.USDT}>USDT</MenuItem>
               <MenuItem value={PaymentToken.TUSD}>TUSD</MenuItem> */}
-            </Select>
+            {/* </Select>  */}
           </FormControl>
         </Box>
         <Box>{isBusy && <FunnySpinner />}</Box>
