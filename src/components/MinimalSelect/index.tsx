@@ -7,7 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540
 
-const MinimalSelect = () => {
+const MinimalSelect: React.FC = () => {
   const [val, setVal] = useState(1);
 
   //@ts-ignore
