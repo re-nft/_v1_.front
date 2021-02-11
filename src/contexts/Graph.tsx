@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { request } from "graphql-request";
-import { ethers } from "ethers";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
 
@@ -25,9 +24,16 @@ import { getERC1155, getERC721 } from "../utils";
 //   lending: Lending[];
 // };
 
+const IS_DEV_ENV =
+  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
+
 // TODO
-// const ENDPOINT = "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
-const ENDPOINT = "http://localhost:8000/subgraphs/name/nazariyv/ReNFT/graphql";
+const ENDPOINT_PROD =
+  "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
+const ENDPOINT_DEV =
+  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT/graphql";
+
+const ENDPOINT = IS_DEV_ENV ? ENDPOINT_DEV : ENDPOINT_PROD;
 
 // kudos to Luis: https://github.com/microchipgnu
 // check out his latest on: https://twitter.com/microchipgnu
@@ -167,17 +173,14 @@ type RawRenting = {
   lending: RawLending;
 };
 
-const DEV_ENVIRONMENT =
-  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
-
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
 
-  // todo: only in dev
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
 
+  // ! only used in dev environment
   const fetchNftMetaDev = useCallback(async () => {
     if (!myERC721.instance) return [];
     if (!renft.instance) return [];
@@ -205,7 +208,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (let i = 0; i < res.length; i++) {
       Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
     }
-
     setErc721s({
       [contract.address]: {
         contract: contract,
@@ -216,14 +218,12 @@ export const GraphProvider: React.FC = ({ children }) => {
         tokenIds: tokenIdsObj,
       },
     });
-
     return res;
   }, [currentAddress, myERC721.instance, renft]);
 
   const fetchNftMeta = async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
     if (uris.length < 1) return [];
-
     for (const uri of uris) {
       if (!uri.href) continue;
       // todo: only fetch if https or http
@@ -233,7 +233,6 @@ export const GraphProvider: React.FC = ({ children }) => {
           .catch(() => ({}))
       );
     }
-
     const res = await Promise.all(toFetch);
     return res;
   };
@@ -277,8 +276,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(tokenURI, true));
       }
-      // toFetch.push([[address, "tokenIds", tokenId], parse(tokenURI, true)]);
-      // toFetchLinks.push(parse(tokenURI, true));
     }
 
     const meta = await fetchNftMeta(toFetchLinks);
@@ -288,6 +285,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         return setTo;
       });
     }
+    // this functions updates erc721s, so it cannot have that as a dep
+    /* eslint react-hooks/exhaustive-deps: "off" */
   }, [currentAddress, renft.instance]);
 
   // queries ALL of the lendings in reNFT
@@ -321,7 +320,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     fetchAllERC721();
-    if (DEV_ENVIRONMENT) fetchNftMetaDev();
+    if (IS_DEV_ENV) fetchNftMetaDev();
   }, [fetchAllERC721, fetchNftMetaDev]);
 
   return (

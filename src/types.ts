@@ -60,3 +60,5 @@ export type Nft = {
   image: URI;
   isApprovedForAll: boolean;
 };
+
+export type TransactionHash = string;
