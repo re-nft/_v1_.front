@@ -55,7 +55,7 @@ export type TokenId = string;
 export type URI = string;
 
 export type Nft = {
-  contract: ERC721;
+  contract?: ERC721;
   tokenId: TokenId;
   image: URI;
   isApprovedForAll: boolean;

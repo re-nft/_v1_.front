@@ -24,7 +24,6 @@ type LendCatalogueProps = {
 };
 
 const DEFAULT_NFT: Nft = {
-  contract: {} as ERC721,
   tokenId: "",
   isApprovedForAll: false,
   image: "",
@@ -82,12 +81,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Product__details">
           <p className="Product__text_overflow">
             <a
-              href={`https://etherscan.io/address/${nft.contract.address}`}
+              href={`https://etherscan.io/address/${
+                nft.contract?.address ?? ""
+              }`}
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: "none", color: "black" }}
             >
-              {nft.contract.address}
+              {nft.contract?.address ?? ""}
             </a>
           </p>
         </div>
@@ -155,7 +156,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
       <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
         {nftTokenId.map((nft) => {
-          const nftId = `${nft.contract.address}::${nft.tokenId}`;
+          const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
           return (
             <CatalogueItem
               key={nftId}

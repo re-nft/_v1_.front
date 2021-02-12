@@ -1,17 +1,22 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
+import { ethers } from "ethers";
 
 import { Nft, PaymentToken } from "../../types";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
 import MinimalSelect from "../MinimalSelect";
-import { RentNftContext } from "../../hardhat/SymfoniContext";
+import {
+  CurrentAddressContext,
+  RentNftContext,
+} from "../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../contexts/TransactionState";
-import { TransactionNotifier } from "../TransactionNotifier/TransactionNotifier";
 import ApproveButton from "./ApproveButton";
 import { useStyles } from "./styles";
+
+const SECOND_IN_MILLISECONDS = 1_000;
 
 type ValueValid = {
   value: string;
@@ -49,15 +54,38 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
   const { instance: renft } = useContext(RentNftContext);
   const { isActive, setHash, hash } = useContext(TransactionStateContext);
+  const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>(
     DefaultLendOneInputs
   );
+  const [isOwn, setIsOwn] = useState<boolean>(true);
+
+  const fetchOwnerOfNft = useCallback(
+    async (nft: Nft) => {
+      if (!nft.contract) return;
+      const owner = await nft.contract.ownerOf(nft.tokenId);
+      if (owner.toLowerCase() !== currentAddress.toLowerCase()) {
+        setIsOwn(false);
+      }
+      setIsOwn(true);
+    },
+    [currentAddress]
+  );
+
+  const fetchOwner = useCallback(async () => {
+    fetchOwnerOfNft(nft);
+  }, [nft, fetchOwnerOfNft]);
+
+  useEffect(() => {
+    fetchOwnerOfNft(nft);
+    ethers.utils.poll(fetchOwner, { interval: 5 * SECOND_IN_MILLISECONDS });
+  }, [fetchOwner, fetchOwnerOfNft, nft]);
 
   const handleLend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!nft || !renft || isActive) return;
+      if (!nft || !renft || isActive || !nft.contract) return;
       // need to approve if it wasn't: nft
 
       if (!nft.isApprovedForAll) {
@@ -161,7 +189,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           <RainbowButton
             type="submit"
             text="Lend"
-            disabled={!nft.isApprovedForAll}
+            disabled={!nft.isApprovedForAll || !isOwn}
           />
         </Box>
       </form>

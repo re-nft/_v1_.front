@@ -18,7 +18,7 @@ export const ApproveButton: React.FC<ApproveButtonProps> = ({ nft }) => {
   const { setHash, isActive } = useContext(TransactionStateContext);
 
   const handleApproveAll = useCallback(async () => {
-    if (!currentAddress || !renft || isActive) return;
+    if (!currentAddress || !renft || isActive || !nft.contract) return;
     const tx = await nft.contract.setApprovalForAll(renft.address, true);
     // do not await, call and release
     setHash(tx.hash);
