@@ -7,6 +7,7 @@ import Lend from "./components/Lend";
 import ButHow from "./components/ButHow";
 import Stats from "./components/Stats";
 import Leaderboard from "./components/Leaderboard";
+import { TransactionNotifier } from "./components/TransactionNotifier";
 
 enum Tabs {
   RENT,
@@ -87,6 +88,7 @@ const App: React.FC = () => {
           buttonName="FAQ"
         />
       </Box>
+      <TransactionNotifier />
       <Box
         style={{
           padding: "32px 64px",

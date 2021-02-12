@@ -1,22 +1,34 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
 import Slide from "@material-ui/core/Slide";
 
 import Spinner from "../Spinner";
+import { TransactionStateContext } from "../../contexts/TransactionState";
 import { TransactionState } from "../../types";
 
-type TxnStateProps = {
+const SECOND_IN_MILLISECONDS = 1_000;
+
+type TransactionNotifierProps = {
   state?: TransactionState;
-  txnHash: string;
 };
 
-const TxnState: React.FC<TxnStateProps> = ({
+export const TransactionNotifier: React.FC<TransactionNotifierProps> = ({
   state = TransactionState.PENDING,
-  txnHash,
 }) => {
+  const { hash, isActive } = useContext(TransactionStateContext);
+
+  // delayed slide off
+  const _in = useMemo(() => {
+    if (isActive) return isActive;
+    setTimeout(() => {
+      true;
+    }, 5 * SECOND_IN_MILLISECONDS);
+    return false;
+  }, [isActive]);
+
   return (
-    <Slide direction="up" in={true} mountOnEnter unmountOnExit>
+    <Slide direction="up" in={_in} mountOnEnter unmountOnExit>
       <div
         style={{
           position: "fixed",
@@ -48,7 +60,7 @@ const TxnState: React.FC<TxnStateProps> = ({
               fontSize: "24px",
               marginLeft: "2em",
             }}
-            href="https://etherscan.io/tx/0xaeacf8817b1cab4414caf024264e4005957de58b1415b4dd3a500dfb69306f44"
+            href={`https://etherscan.io/tx/${hash}`}
             target="_blank"
             rel="noreferrer"
           >
@@ -60,4 +72,4 @@ const TxnState: React.FC<TxnStateProps> = ({
   );
 };
 
-export default TxnState;
+export default TransactionNotifier;

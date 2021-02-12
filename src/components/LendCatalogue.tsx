@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import * as R from "ramda";
 
 import GraphContext from "../contexts/Graph";
-import LendModal from "./LendModal";
+import { LendModal } from "./LendModal";
 import { Nft, Lending } from "../types";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 

@@ -1,15 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { GraphProvider } from "./contexts/Graph";
-import { Symfoni } from "./hardhat/SymfoniContext";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
-import "./index.css";
 
 // pulls the config from .env file
 dotenv.config();
+
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { GraphProvider } from "./contexts/Graph";
+import { TransactionStateProvider } from "./contexts/TransactionState";
+import { Symfoni } from "./hardhat/SymfoniContext";
+import "./index.css";
 
 const theme = createMuiTheme({
   typography: {
@@ -27,9 +29,11 @@ ReactDOM.render(
   <React.StrictMode>
     <Symfoni>
       <GraphProvider>
-        <ThemeProvider theme={theme}>
-          <App />
-        </ThemeProvider>
+        <TransactionStateProvider>
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
+        </TransactionStateProvider>
       </GraphProvider>
     </Symfoni>
   </React.StrictMode>,
