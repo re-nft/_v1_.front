@@ -116,7 +116,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
   const [modalOpen, setModalOpen] = useState(false);
   // all of the erc721s and erc1155s that I own
   const { erc721s } = useContext(GraphContext);
-  const nftTokenId = useMemo(() => {
+  const availableNfts = useMemo(() => {
     const nfts: Nft[] = [];
     if (!erc721s) return nfts;
     for (const address of Object.keys(erc721s)) {
@@ -155,7 +155,7 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
     <Box>
       <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
-        {nftTokenId.map((nft) => {
+        {availableNfts.map((nft) => {
           const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
           return (
             <CatalogueItem

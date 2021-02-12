@@ -67,10 +67,14 @@ type AddressToErc721 = {
 
 type GraphContextType = {
   erc721s: AddressToErc721;
+  fetchAvailableNfts: () => void;
 };
 
 const DefaultGraphContext: GraphContextType = {
   erc721s: {},
+  fetchAvailableNfts: () => {
+    throw new Error("must be implemented");
+  },
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -319,13 +323,17 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   };
 
-  useEffect(() => {
+  const fetchAvailableNfts = useCallback(() => {
     fetchAllERC721();
     if (IS_DEV_ENV) fetchNftMetaDev();
-  }, [fetchAllERC721, fetchNftMetaDev]);
+  }, [fetchAllERC721, IS_DEV_ENV, fetchNftMetaDev]);
+
+  useEffect(() => {
+    fetchAvailableNfts();
+  }, []);
 
   return (
-    <GraphContext.Provider value={{ erc721s }}>
+    <GraphContext.Provider value={{ erc721s, fetchAvailableNfts }}>
       {children}
     </GraphContext.Provider>
   );

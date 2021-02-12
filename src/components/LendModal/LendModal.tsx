@@ -13,6 +13,7 @@ import {
   RentNftContext,
 } from "../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../contexts/TransactionState";
+import GraphContext from "../../contexts/Graph";
 import ApproveButton from "./ApproveButton";
 import { useStyles } from "./styles";
 
@@ -55,6 +56,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const { instance: renft } = useContext(RentNftContext);
   const { isActive, setHash, hash } = useContext(TransactionStateContext);
   const [currentAddress] = useContext(CurrentAddressContext);
+  const { fetchAvailableNfts } = useContext(GraphContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>(
     DefaultLendOneInputs
@@ -102,8 +104,9 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       );
 
       setHash(tx.hash);
+      fetchAvailableNfts();
     },
-    [nft, renft, setHash, isActive]
+    [nft, renft, setHash, isActive, fetchAvailableNfts]
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
