@@ -16,8 +16,9 @@ import { TransactionStateContext } from "../../contexts/TransactionState";
 import GraphContext from "../../contexts/Graph";
 import ApproveButton from "./ApproveButton";
 import { useStyles } from "./styles";
-
-const SECOND_IN_MILLISECONDS = 1_000;
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { fetchNftApprovedERC721 } from "../../utils";
+import usePoller from "../../hooks/usePoller";
 
 type ValueValid = {
   value: string;
@@ -62,7 +63,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     DefaultLendOneInputs
   );
   const [isOwn, setIsOwn] = useState<boolean>(true);
-
+  const [approved, setIsApproved] = useState<boolean>(false);
   const fetchOwnerOfNft = useCallback(
     async (nft: Nft) => {
       if (!nft.contract) return;
@@ -90,7 +91,11 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       if (!nft || !renft || isActive || !nft.contract) return;
       // need to approve if it wasn't: nft
 
-      if (!nft.isApprovedForAll) {
+      const nftApproved = await nft.contract.getApproved(nft.tokenId);
+      const isApproved =
+        renft.address.toLowerCase() === nftApproved.toLowerCase();
+
+      if (isApproved) {
         console.warn("nft isn't approved, can't lend");
       }
 
@@ -108,6 +113,21 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     },
     [nft, renft, setHash, isActive, fetchAvailableNfts]
   );
+
+  const fetchNftApproved = useCallback(async () => {
+    if (!nft.contract || !renft || !currentAddress) return;
+    const approved = await nft.contract.isApprovedForAll(
+      currentAddress,
+      renft.address
+    );
+    setIsApproved(approved);
+  }, [nft, renft, currentAddress]);
+
+  useEffect(() => {
+    fetchNftApproved();
+  }, []);
+
+  usePoller(fetchNftApproved, 4 * SECOND_IN_MILLISECONDS);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
@@ -188,11 +208,11 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           </FormControl>
         </Box>
         <Box className={classes.buttons}>
-          {!nft.isApprovedForAll && <ApproveButton nft={nft} />}
+          {!approved && <ApproveButton nft={nft} />}
           <RainbowButton
             type="submit"
             text="Lend"
-            disabled={!nft.isApprovedForAll || !isOwn}
+            disabled={!approved || !isOwn}
           />
         </Box>
       </form>

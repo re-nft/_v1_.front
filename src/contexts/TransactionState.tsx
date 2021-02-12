@@ -89,7 +89,6 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
 
       setIsActive(false);
       setReceipt(receipt);
-      _setHash("");
     },
     [isActive, provider]
   );

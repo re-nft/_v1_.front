@@ -58,7 +58,6 @@ export type Nft = {
   contract?: ERC721;
   tokenId: TokenId;
   image: URI;
-  isApprovedForAll: boolean;
 };
 
 export type TransactionHash = string;

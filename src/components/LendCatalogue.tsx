@@ -25,7 +25,6 @@ type LendCatalogueProps = {
 
 const DEFAULT_NFT: Nft = {
   tokenId: "",
-  isApprovedForAll: false,
   image: "",
 };
 
@@ -139,7 +138,6 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
           contract: erc721s[address].contract,
           tokenId,
           image,
-          isApprovedForAll: erc721s[address].isApprovedForAll,
         });
       }
     }

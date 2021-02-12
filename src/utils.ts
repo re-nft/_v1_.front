@@ -64,3 +64,17 @@ export const getERC1155 = (
   );
   return erc1155Contract;
 };
+
+export const fetchNftApprovedERC721 = async (
+  address: string,
+  tokenId: number,
+  signer?: ethers.Signer
+): Promise<string> => {
+  const erc721Contract = new ethers.Contract(
+    address.toLowerCase(),
+    erc721abi,
+    signer
+  ) as ERC721;
+  const approved = await erc721Contract.getApproved(tokenId);
+  return approved;
+};
