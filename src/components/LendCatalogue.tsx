@@ -6,6 +6,10 @@ import GraphContext from "../contexts/Graph";
 import { LendModal } from "./LendModal";
 import { Nft, Lending } from "../types";
 import { ERC721 } from "../hardhat/typechain/ERC721";
+import {
+  CurrentAddressContext,
+  RentNftContext,
+} from "../hardhat/SymfoniContext";
 
 type LendButtonProps = {
   handleLend: (nft: Nft) => void;
@@ -111,8 +115,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 };
 
 const LendCatalogue: React.FC<LendCatalogueProps> = () => {
-  const [selectedNft, setSelectedNft] = useState<Nft>(DEFAULT_NFT);
+  const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
+    { ...DEFAULT_NFT, isApproved: false }
+  );
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentAddress] = useContext(CurrentAddressContext);
+  const { instance: renft } = useContext(RentNftContext);
   // all of the erc721s and erc1155s that I own
   const { erc721s } = useContext(GraphContext);
   const availableNfts = useMemo(() => {
@@ -144,10 +152,18 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
     return nfts;
   }, [erc721s]);
 
-  const handleStartLend = useCallback((nft: Nft) => {
-    setSelectedNft(nft);
-    setModalOpen(true);
-  }, []);
+  const handleStartLend = useCallback(
+    async (nft: Nft) => {
+      if (!nft.contract || !renft || !currentAddress) return;
+      const isApproved = await nft.contract.isApprovedForAll(
+        currentAddress,
+        renft.address
+      );
+      setSelectedNft({ ...nft, isApproved });
+      setModalOpen(true);
+    },
+    [renft, currentAddress]
+  );
 
   return (
     <Box>
