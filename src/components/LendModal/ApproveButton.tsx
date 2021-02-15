@@ -11,9 +11,13 @@ import {
 
 type ApproveButtonProps = {
   nft: Nft;
+  callback?: () => void;
 };
 
-export const ApproveButton: React.FC<ApproveButtonProps> = ({ nft }) => {
+export const ApproveButton: React.FC<ApproveButtonProps> = ({
+  nft,
+  callback,
+}) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [provider] = useContext(ProviderContext);
   const { instance: renft } = useContext(RentNftContext);
@@ -30,8 +34,17 @@ export const ApproveButton: React.FC<ApproveButtonProps> = ({ nft }) => {
     const status = receipt.status ?? 0;
     if (status === 1) {
       setIsApproved(true);
+      if (callback) callback();
     }
-  }, [currentAddress, renft, nft.contract, isActive, setHash, provider]);
+  }, [
+    currentAddress,
+    renft,
+    nft.contract,
+    isActive,
+    setHash,
+    provider,
+    callback,
+  ]);
 
   if (isApproved) {
     return <></>;
