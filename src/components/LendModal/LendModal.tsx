@@ -69,17 +69,12 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     async (nft: Nft) => {
       if (!nft.contract) return;
       const owner = await nft.contract.ownerOf(nft.tokenId);
-      console.log("owner", owner);
-      console.log("currentAddress", currentAddress);
       if (owner.toLowerCase() !== currentAddress.toLowerCase()) {
-        console.log("isOwn false");
         setIsOwn(false);
       }
-      console.log("isOwn true");
-      console.log("isApproved", isApproved);
       setIsOwn(true);
     },
-    [currentAddress, isApproved]
+    [currentAddress]
   );
 
   const fetchOwner = useCallback(async () => {
