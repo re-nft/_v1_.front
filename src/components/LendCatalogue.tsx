@@ -32,6 +32,10 @@ const DEFAULT_NFT: Nft = {
   image: "",
 };
 
+// todo: add a calculator on how much it will cost our users to lend / rent
+// give the ability to put in the entry gaslimit and price as well as exit
+// then give the breakdown of the cost
+
 const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
   const handleClick = useCallback(() => {
     handleLend(nft);
@@ -116,7 +120,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
 const LendCatalogue: React.FC<LendCatalogueProps> = () => {
   const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
-    { ...DEFAULT_NFT, isApproved: false }
+    { ...DEFAULT_NFT, isApproved: true }
   );
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);

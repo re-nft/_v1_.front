@@ -22,7 +22,7 @@ export const TransactionNotifier: React.FC = () => {
           position: "fixed",
           right: "0",
           top: "0",
-          zIndex: 1,
+          zIndex: 1000,
           marginTop: "4em",
           marginRight: "4em",
         }}

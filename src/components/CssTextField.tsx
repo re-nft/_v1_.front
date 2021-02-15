@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 const fancyStyle = {
   root: {
     "& label": {
-      color: "black",
+      color: "teal",
     },
     "& input": {
       color: "teal",
@@ -14,7 +14,7 @@ const fancyStyle = {
     //   transform: "translate(14px, -4px) scale(0.55)",
     // },
     "& label.Mui-focused": {
-      color: "black",
+      color: "white",
     },
     "& .MuiInput-underline:after": {
       borderBottomColor: "black",

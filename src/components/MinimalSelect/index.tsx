@@ -54,13 +54,27 @@ const MinimalSelect: React.FC = () => {
         value={val}
         onChange={handleChange}
       >
-        <MenuItem value={1}>Payment Token*</MenuItem>
-        <MenuItem value={2}>USDC</MenuItem>
-        <MenuItem value={3}>USDT</MenuItem>
-        <MenuItem value={4}>DAI</MenuItem>
-        <MenuItem value={5}>RENT</MenuItem>
-        <MenuItem value={6}>ETH</MenuItem>
-        <MenuItem value={7}>WETH</MenuItem>
+        <MenuItem value={1} disabled>
+          Payment Token *
+        </MenuItem>
+        <MenuItem value={2} style={{ color: "teal", fontWeight: 1000 }}>
+          USDC
+        </MenuItem>
+        <MenuItem value={3} style={{ color: "teal", fontWeight: 1000 }}>
+          USDT
+        </MenuItem>
+        <MenuItem value={4} style={{ color: "teal", fontWeight: 1000 }}>
+          DAI
+        </MenuItem>
+        <MenuItem value={5} style={{ color: "teal", fontWeight: 1000 }}>
+          RENT
+        </MenuItem>
+        <MenuItem value={6} style={{ color: "teal", fontWeight: 1000 }}>
+          ETH
+        </MenuItem>
+        <MenuItem value={7} style={{ color: "teal", fontWeight: 1000 }}>
+          WETH
+        </MenuItem>
       </Select>
     </FormControl>
   );

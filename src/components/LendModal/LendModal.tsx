@@ -185,11 +185,13 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           </FormControl>
         </Box>
         <Box className={classes.buttons}>
-          {!isApproved && <ApproveButton nft={nft} callback={_setIsApproved} />}
+          {!isApproved && !nft.isApproved && (
+            <ApproveButton nft={nft} callback={_setIsApproved} />
+          )}
           <RainbowButton
             type="submit"
             text="Lend"
-            disabled={!isApproved || !isOwn}
+            disabled={(!isApproved && !nft.isApproved) || !isOwn}
           />
         </Box>
       </form>
