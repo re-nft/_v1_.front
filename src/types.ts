@@ -11,12 +11,6 @@ export enum PaymentToken {
   TUSD, // 3
 }
 
-export enum TransactionState {
-  PENDING,
-  FAILED,
-  SUCCESS,
-}
-
 export type Renting = {
   id: number;
   renterAddress: Address;
@@ -61,3 +55,9 @@ export type Nft = {
 };
 
 export type TransactionHash = string;
+
+export enum TransactionStateEnum {
+  FAILED,
+  SUCCESS,
+  PENDING,
+}

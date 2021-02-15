@@ -78,3 +78,8 @@ export const fetchNftApprovedERC721 = async (
   const approved = await erc721Contract.getApproved(tokenId);
   return approved;
 };
+
+// for testing
+export const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};

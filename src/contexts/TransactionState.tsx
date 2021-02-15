@@ -2,26 +2,22 @@ import React, { createContext, useState, useCallback, useContext } from "react";
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 import { ProviderContext } from "../hardhat/SymfoniContext";
-import { TransactionHash } from "../types";
+import { TransactionHash, TransactionStateEnum } from "../types";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
-enum TransactionStateEnum {
-  FAILED,
-  SUCCESS,
-  PENDING,
-}
+import { sleep } from "../utils";
 
 type TransactionStateType = {
   isActive: boolean; // on if there is an active transaction;
-  txnState?: TransactionStateEnum;
+  txnState: TransactionStateEnum;
   hash?: TransactionHash;
   receipt?: TransactionReceipt;
   setHash: (h: TransactionHash) => Promise<void>;
 };
 
-const SECOND_IN_MILLISECONDS = 1_000;
-
 const TransactionStateDefault: TransactionStateType = {
   isActive: false,
+  txnState: TransactionStateEnum.PENDING,
   setHash: () => {
     throw new Error("must be implemented");
   },
@@ -38,22 +34,32 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 export const TransactionStateProvider: React.FC = ({ children }) => {
   const [provider] = useContext(ProviderContext);
   const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
-  const [txnState, setTxnState] = useState<TransactionStateEnum>();
+  const [txnState, setTxnState] = useState<TransactionStateEnum>(
+    TransactionStateEnum.PENDING
+  );
   const [receipt, setReceipt] = useState<TransactionReceipt>();
   const [hash, _setHash] = useState<TransactionHash>();
+
+  const delayedSetIsActive = useCallback(
+    async (ms: number, _isActive: boolean) => {
+      await sleep(ms);
+      setIsActive(_isActive);
+    },
+    []
+  );
 
   const setHash = useCallback(
     async (h: TransactionHash) => {
       if (!provider) {
         console.warn("cannot set transaction hash. no provider");
-        return;
+        return false;
       }
       // forbid to set if there is an active transaction
       if (isActive) {
         console.warn(
           "can't set the transaction hash when there is one pending"
         );
-        return;
+        return false;
       }
 
       _setHash(h);
@@ -71,26 +77,48 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
 
       if (!receipt.status) {
         console.warn("could not fetch the transaction status");
-        return;
+        return false;
       }
+
+      let isSuccess = false;
 
       // 0 is reverted
       // 1 is successful
       switch (TransactionStateEnum[receipt.status]) {
         case TransactionStateEnum[TransactionStateEnum.SUCCESS]:
-          setTxnState(TransactionStateEnum.SUCCESS);
+          isSuccess = true;
           break;
         case TransactionStateEnum[TransactionStateEnum.FAILED]:
-          setTxnState(TransactionStateEnum.FAILED);
           break;
         default:
           console.warn(`unknown transaction state: ${receipt.status}`);
       }
 
-      setIsActive(false);
       setReceipt(receipt);
+      // setIsActive(false);
+      await sleep(3 * SECOND_IN_MILLISECONDS);
+
+      return isSuccess;
     },
     [isActive, provider]
+  );
+
+  const chainSetHash = useCallback(
+    async (h: TransactionHash) => {
+      const isSuccess = await setHash(h);
+      switch (isSuccess) {
+        case true:
+          setTxnState(TransactionStateEnum.SUCCESS);
+          break;
+        case false:
+          setTxnState(TransactionStateEnum.FAILED);
+          break;
+        default:
+          setTxnState(TransactionStateEnum.FAILED);
+      }
+      delayedSetIsActive(5 * SECOND_IN_MILLISECONDS, false);
+    },
+    [delayedSetIsActive, setHash]
   );
 
   // todo: add a providers listener for a cancelled transaction
@@ -98,7 +126,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
 
   return (
     <TransactionStateContext.Provider
-      value={{ isActive, txnState, hash, receipt, setHash }}
+      value={{ isActive, txnState, hash, receipt, setHash: chainSetHash }}
     >
       {children}
     </TransactionStateContext.Provider>
