@@ -4,7 +4,8 @@ import * as R from "ramda";
 
 import GraphContext from "../contexts/Graph";
 import { LendModal } from "./LendModal";
-import { Nft, Lending } from "../types";
+import { Nft } from "../types";
+import { Lending } from "../types/graph";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import {
   CurrentAddressContext,

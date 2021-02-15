@@ -8,7 +8,7 @@ import FunnySpinner from "./Spinner";
 import RainbowButton from "./RainbowButton";
 import CssTextField from "./CssTextField";
 import Modal from "./Modal";
-import { Lending } from "../types";
+import { Lending } from "../types/graph";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -118,7 +118,7 @@ const RentModal: React.FC<RentModalProps> = ({
 
         // if the above conditions weren't caught, everything is fine
         setInputsValid(true);
-        setTotalRent(num * lending.dailyRentPrice);
+        setTotalRent(num * 1);
       } catch (err) {
         console.debug("could not convert rent duration to number");
         resetState();

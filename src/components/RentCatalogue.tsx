@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
-import { Lending, PaymentToken } from "../types";
+import { PaymentToken } from "../types";
+import { Lending } from "../types/graph";
 import RentModal from "./RentModal";
 import { pull } from "../ipfs";
 
@@ -189,7 +190,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
             // this line avoids showing the user currently lent NFT
             // this code will not show the user's rented NFT, because that gets
             // taken out of the currently available NFTs
-            const id = `${lending.nftAddress}::${lending.tokenId}::${lending.id}`;
+            const id = `${lending.nftAddress}::${lending.tokenId}`;
 
             // if (!iBorrow) {
             //   if (usersNfts.includes(lending.id))
@@ -201,12 +202,12 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
                 <div
                   className="Product"
                   data-item-id={id}
-                  data-item-image={lending.imageUrl}
+                  // data-item-image={lending.imageUrl}
                 >
                   <div className="Product__image">
-                    <a href={lending.imageUrl}>
+                    {/* <a href={lending.imageUrl}>
                       <img alt="nft" src={lending.imageUrl} />
-                    </a>
+                    </a> */}
                   </div>
                   <div className="Product__details">
                     <p className="Product__text_overflow">

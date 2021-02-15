@@ -5,7 +5,8 @@ import moment from "moment";
 import Table from "./Table";
 import GraphContext from "../contexts/Graph";
 import { short } from "../utils";
-import { PaymentToken, Lending } from "../types";
+import { PaymentToken } from "../types";
+import { Lending } from "../types/graph";
 
 type StatsProps = {
   hidden: boolean;

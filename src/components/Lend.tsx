@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import LendCatalogue from "./LendCatalogue";
-import Switcher from "./Switcher";
+import Toggle from "./Toggle";
 
 type LendProps = {
   hidden: boolean;
@@ -54,7 +54,7 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
               &nbsp; &nbsp;
             </span>
             <Box onClick={switchSpecificity}>
-              <Switcher />
+              <Toggle isOn={specificity === LendSpecificity.LENDING} />
             </Box>
           </Box>
         </Box>

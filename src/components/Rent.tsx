@@ -1,10 +1,10 @@
-import React, { useState, useContext, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
 import RentCatalogue from "./RentCatalogue";
-import Switcher from "./Switcher";
+import Toggle from "./Toggle";
 
 type RentProps = {
   hidden: boolean;
@@ -37,21 +37,23 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
           }}
         >
           {!cold && <ScrollForMore />}
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              marginLeft: "auto",
-            }}
-          >
-            <span style={{ textTransform: "uppercase", fontWeight: "bold" }}>
-              {!showIBorrow ? "ALL" : "RENTING"} &nbsp; &nbsp;
-            </span>
-            <Box onClick={handleShowIBorrow}>
-              <Switcher />
+          {!cold && (
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginLeft: "auto",
+              }}
+            >
+              <span style={{ textTransform: "uppercase", fontWeight: "bold" }}>
+                {!showIBorrow ? "ALL" : "RENTING"} &nbsp; &nbsp;
+              </span>
+              <Box onClick={handleShowIBorrow}>
+                <Toggle isOn={!showIBorrow} />
+              </Box>
             </Box>
-          </Box>
+          )}
         </Box>
         <RentCatalogue iBorrow={showIBorrow} setCold={setCold} />
       </Box>

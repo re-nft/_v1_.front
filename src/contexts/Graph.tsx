@@ -9,30 +9,33 @@ import React, {
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
+import { ethers, BigNumber } from "ethers";
 
-import { Optional } from "../types";
-// todo: to be removed in prod (myERC721Context)
 import {
   CurrentAddressContext,
   MyERC721Context,
   RentNftContext,
 } from "../hardhat/SymfoniContext";
 import { ERC721 } from "../hardhat/typechain/ERC721";
-import { getERC1155, getERC721 } from "../utils";
-
-// type GraphContextType = {
-//   user: User;
-//   lending: Lending[];
-// };
+import { getERC1155, getERC721, THROWS, unpackHexPrice } from "../utils";
+import { usePoller } from "../hooks/usePoller";
+import {
+  LendingRentingRaw,
+  LendingRenting,
+  LendingRaw,
+  Lending,
+  Renting,
+  RentingRaw,
+} from "../types/graph";
+import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
+import { PaymentToken } from "../types";
 
 const IS_DEV_ENV =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
 
-// TODO
 const ENDPOINT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
-const ENDPOINT_DEV =
-  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT/graphql";
+const ENDPOINT_DEV = "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
 
 const ENDPOINT = IS_DEV_ENV ? ENDPOINT_DEV : ENDPOINT_PROD;
 
@@ -72,9 +75,7 @@ type GraphContextType = {
 
 const DefaultGraphContext: GraphContextType = {
   erc721s: {},
-  fetchAvailableNfts: () => {
-    throw new Error("must be implemented");
-  },
+  fetchAvailableNfts: THROWS,
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -88,7 +89,6 @@ const queryAllERC721 = (user: string): string => {
   }`;
 };
 
-// queries all of the lendings on the platform
 const queryLending = (): string => {
   return `{
     lendingRentings {
@@ -110,7 +110,6 @@ const queryLending = (): string => {
   }`;
 };
 
-// user(id: "${web3.utils.toHex(user).toLowerCase()}") {
 const queryUser = (user: string): string => {
   return `{
     user(id: "${user.toLowerCase()}") {
@@ -149,33 +148,6 @@ const queryUser = (user: string): string => {
       }
     }
   }`;
-};
-
-type RawLending = {
-  id: string;
-  nftAddress: string;
-  tokenId: string;
-  lenderAddress: string;
-  maxRentDuration: string;
-  dailyRentPrice: string;
-  nftPrice: string;
-  paymentToken: string;
-  collateralClaimed: string;
-  renting: Omit<RawRenting, "lending">;
-};
-
-type RawLendingRenting = {
-  id: string; // this is set as `nftAddress::tokenId`
-  lending: RawLending[];
-  renting?: RawRenting[];
-};
-
-type RawRenting = {
-  id: string;
-  rentDuration: string;
-  rentedAt: string;
-  renterAddress: string;
-  lending: RawLending;
 };
 
 export const GraphProvider: React.FC = ({ children }) => {
@@ -242,6 +214,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   };
 
+  // all of the user's erc721s
+  // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
     if (!currentAddress || !renft.instance) return [];
     const query = queryAllERC721(currentAddress);
@@ -297,31 +271,58 @@ export const GraphProvider: React.FC = ({ children }) => {
   // queries ALL of the lendings in reNFT
   const fetchLending = async () => {
     const query = queryLending();
-    const __data: Optional<{
-      lendingRentings: RawLendingRenting[];
-    }> = await request(ENDPOINT, query);
-    if (!__data) return [];
-    const _data = __data.lendingRentings;
+    const data: {
+      lendingRentings: LendingRentingRaw[];
+    } = await request(ENDPOINT, query);
+    if (!data) return [];
+    const { lendingRentings } = data;
 
-    const data: RawLending[] = [];
+    const resolvedData: Lending[] = [];
 
-    // the same NFT could be re-lent multiple times
-    // only the last in the queue can be available
-    for (let i = 0; i < _data.length; i++) {
-      const numOfLendings = _data[i].lending.length;
-      const numOfRentings = _data[i].renting?.length || 0;
-      const isAvailable = numOfLendings - 1 === numOfRentings;
-
-      // if there is one extra lending, then that means it is avilable
+    for (let i = 0; i < lendingRentings.length; i++) {
+      const numTimesLent = lendingRentings[i].lending.length;
+      const numTimesRented = lendingRentings[i].renting?.length ?? 0;
+      const isAvailable = numTimesLent === numTimesRented + 1;
       if (!isAvailable) continue;
+      const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
+      resolvedData.push(item);
+    }
 
-      if (numOfLendings > 1) {
-        data.push(_data[i].lending[numOfLendings - 1]);
-      } else if (numOfLendings === 1) {
-        data.push(_data[i].lending[0]);
-      }
+    return resolvedData;
+  };
+
+  const parsePaymentToken = (tkn: string): PaymentToken => {
+    switch (tkn) {
+      case "0":
+        return PaymentToken.DAI;
+      case "1":
+        return PaymentToken.USDC;
+      case "2":
+        return PaymentToken.USDT;
+      case "3":
+        return PaymentToken.TUSD;
+      case "4":
+        return PaymentToken.RENT;
+      default:
+        return PaymentToken.RENT;
     }
   };
+
+  const parseLending = (lending: LendingRaw): Lending => {
+    return {
+      nftAddress: ethers.utils.getAddress(lending.nftAddress),
+      tokenId: lending.tokenId,
+      lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
+      maxRentDuration: Number(lending.maxRentDuration),
+      dailyRentPrice: unpackHexPrice(lending.dailyRentPrice, DP18),
+      nftPrice: unpackHexPrice(lending.nftPrice, DP18),
+      paymentToken: parsePaymentToken(lending.paymentToken),
+      renting: lending.renting ?? undefined,
+      collateralClaimed: Boolean(lending.collateralClaimed),
+    };
+  };
+
+  usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
 
   const fetchAvailableNfts = useCallback(() => {
     fetchAllERC721();
