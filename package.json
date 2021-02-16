@@ -25,6 +25,7 @@
     "@types/react-helmet": "^6.1.0",
     "@types/url-parse": "^1.4.3",
     "autoprefixer": "^9",
+    "cids": "^1.1.5",
     "classnames": "^2.2.6",
     "dom-css": "^2.1.0",
     "dotenv": "^8.2.0",

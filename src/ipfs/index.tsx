@@ -1,5 +1,8 @@
 import { getRandomInt } from "../utils";
 import { backOff } from "exponential-backoff";
+import CID from "cids";
+
+const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
 // taken from https://ipfs.github.io/public-gateway-checker/
 const GATEWAYS = [
@@ -46,7 +49,11 @@ const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
   // 4 links and 3 gateways
   for (const cid of cids) {
     reqs.push(
-      gatewayIndices.map((ix) => fetch(`https://${GATEWAYS[ix]}/ipfs/${cid}`))
+      gatewayIndices.map((ix) =>
+        fetch(`${CORS_PROXY}https://${GATEWAYS[ix]}/ipfs/${cid}`)
+          .then(async (dat) => await dat.json())
+          .catch(() => ({}))
+      )
     );
   }
   const res = await Promise.all(reqs.map((req) => Promise.race(req)));
@@ -55,4 +62,13 @@ const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
 
 export const pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
   return await backOff(async () => await _pull({ cids }));
+};
+
+// todo: pretty inefficient
+export const isIpfs = (link: string): boolean => {
+  const containsIpfs = link.includes("ipfs");
+  if (!containsIpfs) return false;
+  const parts = link.split("/");
+  const id = parts[parts.length - 1];
+  return CID.isCID(id);
 };

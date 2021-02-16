@@ -32,6 +32,7 @@ import {
   Renting,
 } from "../types/graph";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
+import { pull } from "../ipfs";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -251,18 +252,27 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchNftMeta = async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
+    const ipfsToFetch: Promise<Response>[] = [];
     if (uris.length < 1) return [];
     for (const uri of uris) {
       if (!uri.href) continue;
+      if (uri.href.startsWith("https://ipfs.daonomic.com")) {
+        const parts = uri.href.split("/");
+        const CID = parts[parts.length - 1];
+        const pulled = pull({ cids: [CID] })
+          .then((dat) => dat[0])
+          .catch(() => ({})) as Promise<any>;
+        toFetch.push(pulled);
+      }
       const uriToPull = uri.href.startsWith("https://api.sandbox.game")
         ? `${CORS_PROXY}${uri.href}`
         : uri.href;
+      console.log("uriToPull", uriToPull);
       // todo: only fetch if https or http
-      toFetch.push(
-        fetch(uriToPull)
-          .then(async (dat) => await dat.json())
-          .catch(() => ({}))
-      );
+      const fetched = fetch(uriToPull)
+        .then(async (dat) => await dat.json())
+        .catch(() => ({}));
+      toFetch.push(fetched);
     }
     const res = await Promise.all(toFetch);
     return res;
@@ -310,7 +320,6 @@ export const GraphProvider: React.FC = ({ children }) => {
           },
         }));
       }
-
       if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(tokenURI, true));
@@ -320,6 +329,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     const meta = await fetchNftMeta(toFetchLinks);
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
+        console.log("------");
+        console.log("i", i);
+        console.log(toFetchPaths[i]);
+        console.log(meta[i]);
+        console.log(prev);
+        console.log("---");
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
         return setTo;
       });
