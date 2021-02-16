@@ -27,11 +27,9 @@ import {
 import { usePoller } from "../hooks/usePoller";
 import {
   LendingRentingRaw,
-  LendingRenting,
   LendingRaw,
   Lending,
   Renting,
-  RentingRaw,
 } from "../types/graph";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 
