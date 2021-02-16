@@ -34,22 +34,21 @@ import {
   RentingRaw,
 } from "../types/graph";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
-import { PaymentToken } from "../types";
-import { LensTwoTone } from "@material-ui/icons";
+
+const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
 const IS_DEV_ENV =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
 
-const ENDPOINT_PROD =
+const ENDPOINT_RENFT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
-const ENDPOINT_DEV = "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
-
-const ENDPOINT = IS_DEV_ENV ? ENDPOINT_DEV : ENDPOINT_PROD;
+const ENDPOINT_RENFT_DEV =
+  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
 
 // kudos to Luis: https://github.com/microchipgnu
 // check out his latest on: https://twitter.com/microchipgnu
 // and of course kudos to the Solidity God: wighawag
-const ENDPOINT_EIP721 =
+const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 
 type queryAllERC721T = {
@@ -222,9 +221,14 @@ export const GraphProvider: React.FC = ({ children }) => {
         (await contract.tokenOfOwnerByIndex(currentAddress, i)) ?? -1;
       tokenIds.push(tokenId.toString());
       const metaURI = await contract.tokenURI(tokenId);
+      // todo: other NFTs might have this CORS issue
+      // todo: load on the proxy server might be too high, that would be a good problem to solve
+      const uriToPull = metaURI.startsWith("https://api.sandbox.game")
+        ? `${CORS_PROXY}${metaURI}`
+        : metaURI;
       if (metaURI)
         toFetch.push(
-          fetch(metaURI)
+          fetch(uriToPull)
             .then(async (dat) => await dat.json())
             .catch(() => ({}))
         );
@@ -252,9 +256,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (uris.length < 1) return [];
     for (const uri of uris) {
       if (!uri.href) continue;
+      const uriToPull = uri.href.startsWith("https://api.sandbox.game")
+        ? `${CORS_PROXY}${uri.href}`
+        : uri.href;
       // todo: only fetch if https or http
       toFetch.push(
-        fetch(uri.href)
+        fetch(uriToPull)
           .then(async (dat) => await dat.json())
           .catch(() => ({}))
       );
@@ -268,7 +275,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   const fetchAllERC721 = useCallback(async () => {
     if (!currentAddress || !renft.instance || !signer) return [];
     const query = queryAllERC721(currentAddress);
-    const response: queryAllERC721T = await request(ENDPOINT_EIP721, query);
+    const response: queryAllERC721T = await request(
+      ENDPOINT_EIP721_PROD,
+      query
+    );
     if (!response) return [];
     if (response.tokens.length == 0) return [];
 
@@ -284,10 +294,15 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (!erc721s[address]?.contract) {
         // React will bundle up these individual setStates
         const contract = getERC721(address, signer);
-        const isApprovedForAll = await contract.isApprovedForAll(
-          currentAddress,
-          renft.instance.address
-        );
+        let isApprovedForAll = false;
+        try {
+          isApprovedForAll = await contract.isApprovedForAll(
+            currentAddress,
+            renft.instance.address
+          );
+        } catch (err) {
+          true;
+        }
         setErc721s((prev) => ({
           ...prev,
           [address]: {
@@ -320,7 +335,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryLending();
     const data: {
       lendingRentings: LendingRentingRaw[];
-    } = await request(ENDPOINT, query);
+    } = await request(
+      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
+      query
+    );
     if (!data) return [];
     const { lendingRentings } = data;
     const resolvedData: Lending[] = [];
