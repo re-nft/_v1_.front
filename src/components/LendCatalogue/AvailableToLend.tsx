@@ -74,6 +74,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Nft__card">
           <p className="Product__text_overflow">
             <span className="Product__label">Token id</span>
+            {/* todo: on click here copy into the clipboard the token id */}
             <span className="Product__value">{nft.tokenId}</span>
           </p>
         </div>

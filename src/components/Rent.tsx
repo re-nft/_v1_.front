@@ -11,8 +11,6 @@ type RentProps = {
 };
 
 const Rent: React.FC<RentProps> = ({ hidden }) => {
-  // const { helpers } = useContext(ContractsContext);
-  // const { openSeaNfts, nonOpenSeaNfts } = helpers;
   const [showIBorrow, setShowIborrow] = useState(false);
   const [cold, setCold] = useState(true);
 
@@ -20,14 +18,8 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
     setShowIborrow((showIBorrow) => !showIBorrow);
   }, []);
 
-  // const nfts = useMemo(() => {
-  //   return openSeaNfts.concat(nonOpenSeaNfts);
-  // }, [openSeaNfts, nonOpenSeaNfts]);
-
   if (hidden) return <></>;
 
-  // todo: a bit inefficient to be fetching the nfts here, and then also inside
-  // of the RentCatalogue
   return (
     <Box>
       <Box>
