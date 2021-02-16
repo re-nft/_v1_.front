@@ -16,11 +16,6 @@ type LendButtonProps = {
   nft: Nft;
 };
 
-type StopLendButtonProps = {
-  handleStopLend: (nft: Lending) => void;
-  lending: Lending;
-};
-
 const DEFAULT_NFT: Nft = {
   tokenId: "",
   image: "",
@@ -35,26 +30,9 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
     handleLend(nft);
   }, [handleLend, nft]);
   return (
-    <div className="Product__details">
-      <span className="Product__buy" onClick={handleClick}>
+    <div className="Nft__card">
+      <span className="Nft__button" onClick={handleClick}>
         Lend now
-      </span>
-    </div>
-  );
-};
-
-const StopLendButton: React.FC<StopLendButtonProps> = ({
-  lending,
-  handleStopLend,
-}) => {
-  const _handleStopLend = useCallback(async () => {
-    await handleStopLend(lending);
-  }, [lending, handleStopLend]);
-
-  return (
-    <div className="Product__details">
-      <span className="Product__buy" onClick={_handleStopLend}>
-        Stop Lending
       </span>
     </div>
   );
@@ -74,12 +52,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   return (
     <div className="Catalogue__item" key={nftId}>
       <div className="Product" data-item-id={nftId} data-item-image={nft.image}>
-        <div className="Product__image">
+        <div className="Nft__image">
           <a href={nft.image} target="_blank" rel="noreferrer">
             <img alt="nft" src={nft.image} />
           </a>
         </div>
-        <div className="Product__details">
+        <div className="Nft__card">
           <p className="Product__text_overflow">
             <a
               href={`https://etherscan.io/address/${
@@ -93,19 +71,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             </a>
           </p>
         </div>
-        <div className="Product__details">
+        <div className="Nft__card">
           <p className="Product__text_overflow">
             <span className="Product__label">Token id</span>
             <span className="Product__value">{nft.tokenId}</span>
           </p>
         </div>
-        <div className="Product__details" style={{ marginTop: "8px" }}>
+        <div className="Nft__card" style={{ marginTop: "8px" }}>
           <LendButton nft={nft} handleLend={handleStartLend} />
-          {/* {isLending(nft) ? (
-            <StopLendButton lending={nft} handleStopLend={handleStopLend} />
-          ) : (
-            <LendButton nft={nft} handleLend={handleLend} />
-          )} */}
         </div>
       </div>
     </div>
@@ -119,8 +92,8 @@ export const AvailableToLend: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  // all of the erc721s and erc1155s that I own, all the lendings on the platform
-  const { erc721s, lendings } = useContext(GraphContext);
+  // all of the erc721s and erc1155s that I own
+  const { erc721s } = useContext(GraphContext);
   const availableNfts = useMemo(() => {
     const nfts: Nft[] = [];
     if (!erc721s) return nfts;

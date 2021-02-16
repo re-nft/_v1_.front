@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { PaymentToken, Address, TokenId } from "../types";
 
 export type LendingRaw = {
-  // id: string;
+  id: string;
   nftAddress: string;
   tokenId: string;
   lenderAddress: string;
@@ -12,11 +12,11 @@ export type LendingRaw = {
   nftPrice: string;
   paymentToken: string;
   renting?: string;
-  collateralClaimed: string;
+  collateralClaimed: boolean;
 };
 
 export type Lending = {
-  // id: string;
+  id: string;
   nftAddress: Address;
   tokenId: TokenId;
   lenderAddress: Address;
@@ -29,7 +29,7 @@ export type Lending = {
 };
 
 export type RentingRaw = {
-  // id: string;
+  id: string;
   renterAddress: string;
   rentDuration: string;
   rentedAt: string;
@@ -37,7 +37,7 @@ export type RentingRaw = {
 };
 
 export type Renting = {
-  // id: string;
+  id: string;
   renterAddress: Address;
   rentDuration: number;
   rentedAt: number;
@@ -45,13 +45,13 @@ export type Renting = {
 };
 
 export type LendingRentingRaw = {
-  // id: string;
+  id: string;
   lending: LendingRaw[];
   renting?: RentingRaw[];
 };
 
 export type LendingRenting = {
-  // id: string;
+  id: string;
   lending: Lending[];
   renting?: Renting[];
 };

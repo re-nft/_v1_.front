@@ -1,38 +1,47 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useContext, useMemo, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import * as R from "ramda";
 
-import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
+import {
+  CurrentAddressContext,
+  RentNftContext,
+} from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
-import { LendModal } from "../LendModal";
 import { Nft } from "../../types";
-import { Lending } from "../../types/graph";
+import { TransactionStateContext } from "../../contexts/TransactionState";
 
 type StopLendButtonProps = {
-  handleStopLend: (nft: Lending) => void;
-  lending: Lending;
+  nft: Nft & { lendingId: string };
 };
 
-const DEFAULT_NFT: Nft = {
-  tokenId: "",
-  image: "",
-};
+// todo: handleStopLend multiple as well
+const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
+  const { instance: renft } = useContext(RentNftContext);
+  const { setHash } = useContext(TransactionStateContext);
 
-const StopLendButton: React.FC = () => {
-  // const _handleStopLend = useCallback(async () => {
-  //   await handleStopLend(lending);
-  // }, [lending, handleStopLend]);
+  const handleStopLend = useCallback(async () => {
+    if (!renft || !nft.contract) return;
+    console.log("nft.contract.address", nft.contract.address);
+    console.log("nft.tokenId", nft.tokenId);
+    console.log("nft.lending", nft.lendingId);
+    const tx = await renft.stopLending(
+      [nft.contract.address],
+      [nft.tokenId],
+      [nft.lendingId]
+    );
+    await setHash(tx.hash);
+  }, [nft, renft, setHash]);
 
   return (
-    <div className="Product__details">
-      <span className="Product__buy">Stop Lending</span>
+    <div className="Nft__card" onClick={handleStopLend}>
+      <span className="Nft__button">Stop Lending</span>
     </div>
   );
 };
 
 type CatalogueItemProps = {
   nftId: string;
-  nft: Nft;
+  nft: Nft & { lendingId: string };
 };
 
 // todo: this is not DRY, same code in AvailableToLend
@@ -40,12 +49,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
   return (
     <div className="Catalogue__item" key={nftId}>
       <div className="Product" data-item-id={nftId} data-item-image={nft.image}>
-        <div className="Product__image">
+        <div className="Nft__image">
           <a href={nft.image} target="_blank" rel="noreferrer">
             <img alt="nft" src={nft.image} />
           </a>
         </div>
-        <div className="Product__details">
+        <div className="Nft__card">
           <p className="Product__text_overflow">
             <a
               href={`https://etherscan.io/address/${
@@ -59,14 +68,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
             </a>
           </p>
         </div>
-        <div className="Product__details">
+        <div className="Nft__card">
           <p className="Product__text_overflow">
             <span className="Product__label">Token id</span>
             <span className="Product__value">{nft.tokenId}</span>
           </p>
         </div>
-        <div className="Product__details" style={{ marginTop: "8px" }}>
-          <StopLendButton />
+        <div className="Nft__card" style={{ marginTop: "8px" }}>
+          <StopLendButton nft={nft} />
         </div>
       </div>
     </div>
@@ -75,16 +84,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
 
 export const AllMyLending: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
-    { ...DEFAULT_NFT, isApproved: true }
-  );
-  const [modalOpen, setModalOpen] = useState(false);
-  // all of the erc721s and erc1155s that I own, all the lendings on the platform
-  // todo: need to filter these by my address as the lender, because these are in fact all the NFTs
   const { lendings } = useContext(GraphContext);
   // todo: this is not DRY, same code in AvailableToLend
   const myNfts = useMemo(() => {
-    const nfts: Nft[] = [];
+    const nfts: (Nft & { lendingId: string })[] = [];
     if (!lendings || !currentAddress) return nfts;
     for (const address of Object.keys(lendings)) {
       if (!lendings[address]) continue;
@@ -110,6 +113,7 @@ export const AllMyLending: React.FC = () => {
           contract: lendings[address].contract,
           tokenId,
           image,
+          lendingId: lendings[address].tokenIds[tokenId].id,
         });
       }
     }
@@ -118,7 +122,6 @@ export const AllMyLending: React.FC = () => {
 
   return (
     <Box>
-      <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
         {myNfts.map((nft) => {
           const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;

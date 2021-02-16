@@ -47,7 +47,7 @@ const MintNft: React.FC<MintNftProps> = ({ open, handleClose }) => {
           |-: Generate your GAN face :-|
         </div>
         <div
-          className="Product__image"
+          className="Nft__image"
           style={{ maxWidth: "90%", maxHeight: "90%", margin: "32px auto" }}
         >
           <img

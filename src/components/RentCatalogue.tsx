@@ -37,7 +37,7 @@ type NumericFieldProps = {
 // ! this number conversion may fail if non-number is passed
 // but since it comes out of blockchain, this should always be correct
 const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
-  <div className="Product__details">
+  <div className="Nft__card">
     <p className="Product__text_overflow">
       <span className="Product__label">{text}</span>
       <Tooltip title={value}>
@@ -56,7 +56,7 @@ const RentButton: React.FC<RentButtonProps> = ({ handleRent, lending }) => {
 
   return (
     <span
-      className="Product__buy"
+      className="Nft__button"
       onClick={handleClick}
       style={{ marginTop: "8px" }}
     >
@@ -76,7 +76,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
 
   return (
     <span
-      className="Product__buy"
+      className="Nft__button"
       onClick={handleClick}
       style={{ marginTop: "8px" }}
     >
@@ -204,12 +204,12 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
                   data-item-id={id}
                   // data-item-image={lending.imageUrl}
                 >
-                  <div className="Product__image">
+                  <div className="Nft__image">
                     {/* <a href={lending.imageUrl}>
                       <img alt="nft" src={lending.imageUrl} />
                     </a> */}
                   </div>
-                  <div className="Product__details">
+                  <div className="Nft__card">
                     <p className="Product__text_overflow">
                       <a
                         href={`https://goerli.etherscan.io/address/${lending.nftAddress}`}
@@ -221,7 +221,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
                       </a>
                     </p>
                   </div>
-                  <div className="Product__details">
+                  <div className="Nft__card">
                     <p className="Product__text_overflow">
                       <span className="Product__label">Token id</span>
                       <span className="Product__value">{lending.tokenId}</span>
@@ -242,7 +242,7 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
                     value={String(lending.nftPrice)}
                     unit={PaymentToken[lending.paymentToken]}
                   />
-                  <div className="Product__details">
+                  <div className="Nft__card">
                     {/* {!iBorrow ? (
                       <RentButton handleRent={handleRent} lending={lending} />
                     ) : (

@@ -3,7 +3,7 @@
   color: black;
 }
 
-.Product__image {
+.Nft__image {
   border: 3px solid black;
   padding: 7px;
   width: 100%;
@@ -18,7 +18,7 @@
   }
 }
 
-.Product:hover .Product__image {
+.Product:hover .Nft__image {
   img {
     transform: skew(-5deg, -5deg) rotate(10deg);
   }
@@ -48,7 +48,7 @@
   }
 }
 
-.Product__details {
+.Nft__card {
   display: flex;
   align-items: center;
   align-content: space-between;
@@ -76,7 +76,7 @@
   text-align: right;
 }
 
-.Product__buy {
+.Nft__button {
   flex: 1;
   text-align: right;
   text-transform: uppercase;

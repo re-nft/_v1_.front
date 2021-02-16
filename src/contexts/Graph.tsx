@@ -193,6 +193,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const parseLending = (lending: LendingRaw): Lending => {
     return {
+      id: lending.id,
       nftAddress: ethers.utils.getAddress(lending.nftAddress),
       tokenId: lending.tokenId,
       lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
@@ -265,7 +266,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   // all of the user's erc721s
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
-    if (!currentAddress || !renft.instance) return [];
+    if (!currentAddress || !renft.instance || !signer) return [];
     const query = queryAllERC721(currentAddress);
     const response: queryAllERC721T = await request(ENDPOINT_EIP721, query);
     if (!response) return [];
@@ -282,13 +283,11 @@ export const GraphProvider: React.FC = ({ children }) => {
       // this avoids having redundant instantiations of the same ERC721
       if (!erc721s[address]?.contract) {
         // React will bundle up these individual setStates
-        const contract = getERC721(address);
-        const isApprovedForAll = contract
-          ? await contract.isApprovedForAll(
-              currentAddress,
-              renft.instance.address
-            )
-          : false;
+        const contract = getERC721(address, signer);
+        const isApprovedForAll = await contract.isApprovedForAll(
+          currentAddress,
+          renft.instance.address
+        );
         setErc721s((prev) => ({
           ...prev,
           [address]: {
@@ -380,6 +379,7 @@ export const GraphProvider: React.FC = ({ children }) => {
             lensPath(toFetchPaths[i]),
             {
               ...meta[i],
+              id: _nfts[i].id,
               lenderAddress: _nfts[i].lenderAddress,
               maxRentDuration: _nfts[i].maxRentDuration,
               dailyRentPrice: _nfts[i].dailyRentPrice,
