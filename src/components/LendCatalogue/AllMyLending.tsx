@@ -1,15 +1,12 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { Box } from "@material-ui/core";
 import * as R from "ramda";
 
+import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
 import { LendModal } from "../LendModal";
 import { Nft } from "../../types";
 import { Lending } from "../../types/graph";
-import {
-  CurrentAddressContext,
-  RentNftContext,
-} from "../../hardhat/SymfoniContext";
 
 type StopLendButtonProps = {
   handleStopLend: (nft: Lending) => void;
@@ -77,19 +74,18 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
 };
 
 export const AllMyLending: React.FC = () => {
+  const [currentAddress] = useContext(CurrentAddressContext);
   const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
     { ...DEFAULT_NFT, isApproved: true }
   );
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContext);
-  const { instance: renft } = useContext(RentNftContext);
   // all of the erc721s and erc1155s that I own, all the lendings on the platform
   // todo: need to filter these by my address as the lender, because these are in fact all the NFTs
   const { lendings } = useContext(GraphContext);
   // todo: this is not DRY, same code in AvailableToLend
-  const availableNfts = useMemo(() => {
+  const myNfts = useMemo(() => {
     const nfts: Nft[] = [];
-    if (!lendings) return nfts;
+    if (!lendings || !currentAddress) return nfts;
     for (const address of Object.keys(lendings)) {
       if (!lendings[address]) continue;
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
@@ -106,6 +102,10 @@ export const AllMyLending: React.FC = () => {
             lendings
           );
         }
+        if (
+          lendings[address].tokenIds[tokenId].lenderAddress !== currentAddress
+        )
+          continue;
         nfts.push({
           contract: lendings[address].contract,
           tokenId,
@@ -114,26 +114,13 @@ export const AllMyLending: React.FC = () => {
       }
     }
     return nfts;
-  }, [lendings]);
-
-  // const handleStartLend = useCallback(
-  //   async (nft: Nft) => {
-  //     if (!nft.contract || !renft || !currentAddress) return;
-  //     const isApproved = await nft.contract.isApprovedForAll(
-  //       currentAddress,
-  //       renft.address
-  //     );
-  //     setSelectedNft({ ...nft, isApproved });
-  //     setModalOpen(true);
-  //   },
-  //   [renft, currentAddress]
-  // );
+  }, [lendings, currentAddress]);
 
   return (
     <Box>
       <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
       <Box className="Catalogue">
-        {availableNfts.map((nft) => {
+        {myNfts.map((nft) => {
           const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
           return <CatalogueItem key={nftId} nftId={nftId} nft={nft} />;
         })}

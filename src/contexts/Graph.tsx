@@ -344,17 +344,16 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
       const toFetchPaths: Path[] = [];
       const toFetchLinks: parse[] = [];
+      // todo: silly
+      const _nfts: Lending[] = [];
       for (const nft of nfts) {
         if (!lendings[nft.nftAddress]?.contract) {
           const contract = getERC721(nft.nftAddress, signer);
-          // const isApprovedForAll = await contract.isApprovedForAll(
-          //   ethers.utils.getAddress(currentAddress),
-          //   ethers.utils.getAddress(renft.instance.address)
-          // );
           if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
             const tokenURI = await contract.tokenURI(nft.tokenId);
             toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
             toFetchLinks.push(parse(tokenURI, true));
+            _nfts.push(nft);
           }
           setLendings((prev) => ({
             ...prev,
@@ -363,12 +362,34 @@ export const GraphProvider: React.FC = ({ children }) => {
               contract: contract,
             },
           }));
+        } else {
+          if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
+            const tokenURI = await lendings[nft.nftAddress].contract.tokenURI(
+              nft.tokenId
+            );
+            toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
+            toFetchLinks.push(parse(tokenURI, true));
+            _nfts.push(nft);
+          }
         }
       }
       const meta = await fetchNftMeta(toFetchLinks);
       for (let i = 0; i < meta.length; i++) {
         setLendings((prev) => {
-          const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+          const setTo = ramdaSet(
+            lensPath(toFetchPaths[i]),
+            {
+              ...meta[i],
+              lenderAddress: _nfts[i].lenderAddress,
+              maxRentDuration: _nfts[i].maxRentDuration,
+              dailyRentPrice: _nfts[i].dailyRentPrice,
+              nftPrice: _nfts[i].nftPrice,
+              paymentToken: _nfts[i].paymentToken,
+              renting: _nfts[i].renting,
+              collateralClaimed: _nfts[i].collateralClaimed,
+            },
+            prev
+          );
           return setTo;
         });
       }
@@ -381,15 +402,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     await _enrichSetLending(nfts);
   }, [_fetchLending, _enrichSetLending]);
 
-  usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
-
   const fetchAvailableNfts = useCallback(() => {
     fetchAllERC721();
     if (IS_DEV_ENV) fetchNftMetaDev();
   }, [fetchAllERC721, IS_DEV_ENV, fetchNftMetaDev]);
 
+  usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
+
   useEffect(() => {
     fetchAvailableNfts();
+    fetchLending();
   }, []);
 
   return (
