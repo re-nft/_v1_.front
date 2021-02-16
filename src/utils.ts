@@ -1,5 +1,6 @@
 import { ethers, BigNumber, BigNumberish } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
+import { PaymentToken } from "./types";
 
 const PRICE_BITSIZE = 32;
 
@@ -31,6 +32,7 @@ const erc721abi = [
   "function setApprovalForAll(address operator, bool _approved) external",
   "function isApprovedForAll(address owner, address operator) external view returns (bool)",
   "function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external",
+  "function tokenURI(uint256 tokenId) external view returns (string address)",
 ];
 
 const erc1155abi = [
@@ -48,7 +50,7 @@ const erc1155abi = [
 
 export const getERC721 = (address: string, signer?: ethers.Signer): ERC721 => {
   const erc721Contract = new ethers.Contract(
-    address.toLowerCase(),
+    ethers.utils.getAddress(address),
     erc721abi,
     signer
   ) as ERC721;
@@ -60,7 +62,7 @@ export const getERC1155 = (
   signer?: ethers.Signer
 ): ethers.Contract => {
   const erc1155Contract = new ethers.Contract(
-    address.toLowerCase(),
+    ethers.utils.getAddress(address),
     erc1155abi,
     signer
   );
@@ -151,4 +153,21 @@ export const packPrice = (price: number): string => {
     res = wholeHex.concat(decimalHex);
   }
   return res;
+};
+
+export const parsePaymentToken = (tkn: string): PaymentToken => {
+  switch (tkn) {
+    case "0":
+      return PaymentToken.DAI;
+    case "1":
+      return PaymentToken.USDC;
+    case "2":
+      return PaymentToken.USDT;
+    case "3":
+      return PaymentToken.TUSD;
+    case "4":
+      return PaymentToken.RENT;
+    default:
+      return PaymentToken.RENT;
+  }
 };

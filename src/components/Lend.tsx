@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import LendCatalogue from "./LendCatalogue";
+import { AvailableToLend, AllMyLending } from "./LendCatalogue";
 import Toggle from "./Toggle";
 
 type LendProps = {
@@ -27,9 +27,6 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
         : LendSpecificity.ALL
     );
   }, []);
-
-  // @ts-ignore
-  const nfts: Nft[] = [];
 
   if (hidden) return <></>;
 
@@ -58,10 +55,8 @@ const Lend: React.FC<LendProps> = ({ hidden }) => {
             </Box>
           </Box>
         </Box>
-        <LendCatalogue
-          nfts={nfts}
-          iLend={specificity === LendSpecificity.LENDING}
-        />
+        {specificity === LendSpecificity.LENDING && <AllMyLending />}
+        {specificity === LendSpecificity.ALL && <AvailableToLend />}
       </Box>
     </Box>
   );

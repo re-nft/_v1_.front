@@ -1,4 +1,3 @@
-/*eslint react-hooks/exhaustive-deps: "off"*/
 import React, {
   createContext,
   useContext,
@@ -9,15 +8,22 @@ import React, {
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { ethers, BigNumber } from "ethers";
+import { ethers } from "ethers";
 
 import {
   CurrentAddressContext,
   MyERC721Context,
   RentNftContext,
+  SignerContext,
 } from "../hardhat/SymfoniContext";
 import { ERC721 } from "../hardhat/typechain/ERC721";
-import { getERC1155, getERC721, THROWS, unpackHexPrice } from "../utils";
+import {
+  getERC1155,
+  getERC721,
+  THROWS,
+  unpackHexPrice,
+  parsePaymentToken,
+} from "../utils";
 import { usePoller } from "../hooks/usePoller";
 import {
   LendingRentingRaw,
@@ -29,6 +35,7 @@ import {
 } from "../types/graph";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { PaymentToken } from "../types";
+import { LensTwoTone } from "@material-ui/icons";
 
 const IS_DEV_ENV =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
@@ -68,13 +75,37 @@ type AddressToErc721 = {
   };
 };
 
+type AddressToLending = {
+  [key: string]: {
+    contract: ERC721;
+    // * these are all approved, since I am lending them
+    tokenIds: {
+      [key: string]: Omit<Lending, "nftAddress" & "tokenId">;
+    };
+  };
+};
+
+type AddressToRenting = {
+  [key: string]: {
+    contract: ERC721;
+    isApprovedForAll: boolean;
+    tokenIds: {
+      [key: string]: Renting;
+    };
+  };
+};
+
 type GraphContextType = {
   erc721s: AddressToErc721;
+  lendings: AddressToLending;
+  rentings: AddressToRenting;
   fetchAvailableNfts: () => void;
 };
 
 const DefaultGraphContext: GraphContextType = {
   erc721s: {},
+  lendings: {},
+  rentings: {},
   fetchAvailableNfts: THROWS,
 };
 
@@ -152,10 +183,27 @@ const queryUser = (user: string): string => {
 
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
+  const [signer] = useContext(SignerContext);
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
+  const [lendings, setLendings] = useState<AddressToLending>({});
+  const [rentings, setRentings] = useState<AddressToRenting>({});
 
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
+
+  const parseLending = (lending: LendingRaw): Lending => {
+    return {
+      nftAddress: ethers.utils.getAddress(lending.nftAddress),
+      tokenId: lending.tokenId,
+      lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
+      maxRentDuration: Number(lending.maxRentDuration),
+      dailyRentPrice: unpackHexPrice(lending.dailyRentPrice, DP18),
+      nftPrice: unpackHexPrice(lending.nftPrice, DP18),
+      paymentToken: parsePaymentToken(lending.paymentToken),
+      renting: lending.renting ?? undefined,
+      collateralClaimed: Boolean(lending.collateralClaimed),
+    };
+  };
 
   // ! only used in dev environment
   const fetchNftMetaDev = useCallback(async () => {
@@ -269,16 +317,14 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, [currentAddress, renft.instance]);
 
   // queries ALL of the lendings in reNFT
-  const fetchLending = async () => {
+  const _fetchLending = useCallback(async () => {
     const query = queryLending();
     const data: {
       lendingRentings: LendingRentingRaw[];
     } = await request(ENDPOINT, query);
     if (!data) return [];
     const { lendingRentings } = data;
-
     const resolvedData: Lending[] = [];
-
     for (let i = 0; i < lendingRentings.length; i++) {
       const numTimesLent = lendingRentings[i].lending.length;
       const numTimesRented = lendingRentings[i].renting?.length ?? 0;
@@ -287,40 +333,53 @@ export const GraphProvider: React.FC = ({ children }) => {
       const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
       resolvedData.push(item);
     }
-
     return resolvedData;
-  };
+  }, [parseLending]);
 
-  const parsePaymentToken = (tkn: string): PaymentToken => {
-    switch (tkn) {
-      case "0":
-        return PaymentToken.DAI;
-      case "1":
-        return PaymentToken.USDC;
-      case "2":
-        return PaymentToken.USDT;
-      case "3":
-        return PaymentToken.TUSD;
-      case "4":
-        return PaymentToken.RENT;
-      default:
-        return PaymentToken.RENT;
-    }
-  };
+  const _enrichSetLending = useCallback(
+    async (nfts: Lending[]): Promise<void> => {
+      if (!currentAddress || !renft.instance || !signer) {
+        console.warn("could not enrich lending, yet.");
+        return;
+      }
+      const toFetchPaths: Path[] = [];
+      const toFetchLinks: parse[] = [];
+      for (const nft of nfts) {
+        if (!lendings[nft.nftAddress]?.contract) {
+          const contract = getERC721(nft.nftAddress, signer);
+          // const isApprovedForAll = await contract.isApprovedForAll(
+          //   ethers.utils.getAddress(currentAddress),
+          //   ethers.utils.getAddress(renft.instance.address)
+          // );
+          if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
+            const tokenURI = await contract.tokenURI(nft.tokenId);
+            toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
+            toFetchLinks.push(parse(tokenURI, true));
+          }
+          setLendings((prev) => ({
+            ...prev,
+            [nft.nftAddress]: {
+              ...prev[nft.nftAddress],
+              contract: contract,
+            },
+          }));
+        }
+      }
+      const meta = await fetchNftMeta(toFetchLinks);
+      for (let i = 0; i < meta.length; i++) {
+        setLendings((prev) => {
+          const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+          return setTo;
+        });
+      }
+    },
+    [currentAddress, renft.instance, getERC721, fetchNftMeta, signer]
+  );
 
-  const parseLending = (lending: LendingRaw): Lending => {
-    return {
-      nftAddress: ethers.utils.getAddress(lending.nftAddress),
-      tokenId: lending.tokenId,
-      lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
-      maxRentDuration: Number(lending.maxRentDuration),
-      dailyRentPrice: unpackHexPrice(lending.dailyRentPrice, DP18),
-      nftPrice: unpackHexPrice(lending.nftPrice, DP18),
-      paymentToken: parsePaymentToken(lending.paymentToken),
-      renting: lending.renting ?? undefined,
-      collateralClaimed: Boolean(lending.collateralClaimed),
-    };
-  };
+  const fetchLending = useCallback(async () => {
+    const nfts = await _fetchLending();
+    await _enrichSetLending(nfts);
+  }, [_fetchLending, _enrichSetLending]);
 
   usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
 
@@ -334,7 +393,9 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <GraphContext.Provider value={{ erc721s, fetchAvailableNfts }}>
+    <GraphContext.Provider
+      value={{ erc721s, fetchAvailableNfts, lendings, rentings }}
+    >
       {children}
     </GraphContext.Provider>
   );

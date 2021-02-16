@@ -2,15 +2,14 @@ import React, { useState, useCallback, useContext, useMemo } from "react";
 import { Box } from "@material-ui/core";
 import * as R from "ramda";
 
-import GraphContext from "../contexts/Graph";
-import { LendModal } from "./LendModal";
-import { Nft } from "../types";
-import { Lending } from "../types/graph";
-import { ERC721 } from "../hardhat/typechain/ERC721";
+import GraphContext from "../../contexts/Graph";
+import { LendModal } from "../LendModal";
+import { Nft } from "../../types";
+import { Lending } from "../../types/graph";
 import {
   CurrentAddressContext,
   RentNftContext,
-} from "../hardhat/SymfoniContext";
+} from "../../hardhat/SymfoniContext";
 
 type LendButtonProps = {
   handleLend: (nft: Nft) => void;
@@ -20,12 +19,6 @@ type LendButtonProps = {
 type StopLendButtonProps = {
   handleStopLend: (nft: Lending) => void;
   lending: Lending;
-};
-
-// todo: maybe worth supplying both: all and the ones that I lend at the same time
-type LendCatalogueProps = {
-  nfts: Nft[];
-  iLend: boolean;
 };
 
 const DEFAULT_NFT: Nft = {
@@ -119,15 +112,15 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 };
 
-const LendCatalogue: React.FC<LendCatalogueProps> = () => {
+export const AvailableToLend: React.FC = () => {
   const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
     { ...DEFAULT_NFT, isApproved: true }
   );
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  // all of the erc721s and erc1155s that I own
-  const { erc721s } = useContext(GraphContext);
+  // all of the erc721s and erc1155s that I own, all the lendings on the platform
+  const { erc721s, lendings } = useContext(GraphContext);
   const availableNfts = useMemo(() => {
     const nfts: Nft[] = [];
     if (!erc721s) return nfts;
@@ -190,4 +183,4 @@ const LendCatalogue: React.FC<LendCatalogueProps> = () => {
   );
 };
 
-export default LendCatalogue;
+export default AvailableToLend;
