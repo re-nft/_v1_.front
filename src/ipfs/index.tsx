@@ -50,7 +50,7 @@ const _pull = async ({ cids = [] }: pullArgs): Promise<Response[]> => {
   for (const cid of cids) {
     reqs.push(
       gatewayIndices.map((ix) =>
-        fetch(`${CORS_PROXY}https://${GATEWAYS[ix]}/ipfs/${cid}`)
+        fetch(`https://${GATEWAYS[ix]}/ipfs/${cid}`)
           .then(async (dat) => await dat.json())
           .catch(() => ({}))
       )

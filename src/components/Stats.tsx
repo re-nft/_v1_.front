@@ -138,7 +138,6 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
           <tbody>
             {/* {lending.length > 0 &&
               lending.map((l) => {
-                console.log(l);
                 return (
                   <TableRow
                     key={`${l.nftAddress}::${l.tokenId}::${l.id}`}

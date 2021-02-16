@@ -21,9 +21,6 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 
   const handleStopLend = useCallback(async () => {
     if (!renft || !nft.contract) return;
-    console.log("nft.contract.address", nft.contract.address);
-    console.log("nft.tokenId", nft.tokenId);
-    console.log("nft.lending", nft.lendingId);
     const tx = await renft.stopLending(
       [nft.contract.address],
       [nft.tokenId],
