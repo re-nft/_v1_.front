@@ -11,7 +11,6 @@ import reportWebVitals from "./reportWebVitals";
 import { GraphProvider } from "./contexts/Graph";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
-import "./index.css";
 
 const theme = createMuiTheme({
   typography: {
