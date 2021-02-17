@@ -8,7 +8,7 @@ import React, {
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { BytesLike, ethers } from "ethers";
+import { BytesLike, ethers, BigNumber } from "ethers";
 
 import {
   CurrentAddressContext,
@@ -181,6 +181,7 @@ const queryUser = (user: string): string => {
 };
 
 export const GraphProvider: React.FC = ({ children }) => {
+  // ! currentAddress can be ""
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
@@ -207,8 +208,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // ! only used in dev environment
   const fetchNftMetaDev = useCallback(async () => {
-    if (!myERC721.instance) return [];
-    if (!renft.instance) return [];
+    if (!myERC721.instance || !renft.instance || !currentAddress) return [];
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const contract = myERC721.instance;
@@ -278,8 +278,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   };
 
-  const parseMeta = (meta: Response[]) => {
+  //todo: super flaky function
+  const parseMeta = async (meta: Response[]) => {
     const parsedMeta: Response[] = JSON.parse(JSON.stringify(meta));
+    const indicesToUpdate: number[] = [];
+    const imagesToFetch: string[] = [];
+    let ix = 0;
     for (const m of meta) {
       let key = "";
       if ("image" in m) {
@@ -290,15 +294,27 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (key) {
         //@ts-ignore
         if (m[key].startsWith("ipfs")) {
-          // try {
-
-          // } catch (e) {
-
-          // }
-          true;
+          indicesToUpdate.push(ix);
+          //@ts-ignore
+          const parts = m[key].split("/");
+          const cid = parts[parts.length - 1];
+          //@ts-ignore
+          imagesToFetch.push(cid);
         }
       }
+      ix++;
     }
+    const fetchedImages = await pull({
+      cids: imagesToFetch,
+      isBytesFetch: true,
+    });
+    console.log(fetchedImages);
+    for (let i = 0; i < indicesToUpdate.length; i++) {
+      const blob = await fetchedImages[i].blob();
+      //@ts-ignore
+      parsedMeta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
+    }
+    return parsedMeta;
   };
 
   // all of the user's erc721s
@@ -313,26 +329,28 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!response) return [];
     if (response.tokens.length == 0) return [];
 
+    // todo: 0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85 is ENS, doesn't have tokenURI
+
     const toFetchPaths: Path[] = [];
     const toFetchLinks: parse[] = [];
 
     // O(n)
     for (const token of response.tokens) {
       const { id, tokenURI } = token;
+      // * sometimes the subgraph does not return the URI. For example, for ZORA
+      let _tokenURI = tokenURI;
       const [address, tokenId] = id.split("_");
       if (!address || !tokenId) continue;
       // this avoids having redundant instantiations of the same ERC721
       if (!erc721s[address]?.contract) {
         // React will bundle up these individual setStates
         const contract = getERC721(address, signer);
-        let isApprovedForAll = false;
-        try {
-          isApprovedForAll = await contract.isApprovedForAll(
-            currentAddress,
-            renft.instance.address
-          );
-        } catch (err) {
-          true;
+        const isApprovedForAll = await contract.isApprovedForAll(
+          currentAddress,
+          renft.instance.address
+        );
+        if (!tokenURI) {
+          _tokenURI = await contract.tokenURI(BigNumber.from(tokenId));
         }
         setErc721s((prev) => ({
           ...prev,
@@ -345,18 +363,17 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
       if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
         toFetchPaths.push([address, "tokenIds", tokenId]);
-        toFetchLinks.push(parse(tokenURI, true));
+        toFetchLinks.push(parse(_tokenURI, true));
       }
     }
 
     const meta = await fetchNftMeta(toFetchLinks);
-
-    console.log("meta", meta);
     // one more pass through the meta to see if any of the images are ipfs
+    const parsedMeta = await parseMeta(meta);
 
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
-        const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+        const setTo = ramdaSet(lensPath(toFetchPaths[i]), parsedMeta[i], prev);
         return setTo;
       });
     }
