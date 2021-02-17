@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import { request } from "graphql-request";
 import parse from "url-parse";
@@ -34,6 +35,7 @@ import {
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
 import { URI } from "../types";
+import { isConstructorDeclaration } from "typescript";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -190,12 +192,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
   const [lendings, setLendings] = useState<AddressToLending>({});
   const [rentings, setRentings] = useState<AddressToRenting>({});
-  const [isHardhatNode, setIsHardhatNode] = useState<boolean>(false);
 
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
 
-  const parseLending = (lending: LendingRaw): Lending => {
+  const parseLending = useCallback((lending: LendingRaw): Lending => {
     return {
       id: lending.id,
       nftAddress: ethers.utils.getAddress(lending.nftAddress),
@@ -208,7 +209,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       renting: lending.renting ?? undefined,
       collateralClaimed: Boolean(lending.collateralClaimed),
     };
-  };
+  }, []);
 
   // ! only used in dev environment
   const fetchNftMetaDev = useCallback(async () => {
@@ -218,19 +219,23 @@ export const GraphProvider: React.FC = ({ children }) => {
     const contract = myERC721.instance;
     // * won't fetch in prod
     // pull all of the tokens of the current address
-    const numNfts = (await contract.balanceOf(currentAddress)) ?? 0;
+    const numNfts = await contract
+      .balanceOf(currentAddress)
+      .catch(() => BigNumber.from("0"));
     for (let i = 0; i < numNfts.toNumber(); i++) {
       // get the tokenId, and then fetch the metadata uri, then push this to toFetch
-      const tokenId =
-        (await contract.tokenOfOwnerByIndex(currentAddress, i)) ?? -1;
+      const tokenId = await contract
+        .tokenOfOwnerByIndex(currentAddress, i)
+        .catch(() => -1);
+      if (tokenId === -1) continue;
       tokenIds.push(tokenId.toString());
-      const metaURI = await contract.tokenURI(tokenId);
+      const metaURI = await contract.tokenURI(tokenId).catch(() => "");
       // todo: other NFTs might have this CORS issue
       // todo: load on the proxy server might be too high, that would be a good problem to solve
       const uriToPull = metaURI.startsWith("https://api.sandbox.game")
         ? `${CORS_PROXY}${metaURI}`
         : metaURI;
-      if (metaURI)
+      if (uriToPull)
         toFetch.push(
           fetch(uriToPull)
             .then(async (dat) => await dat.json())
@@ -242,21 +247,24 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (let i = 0; i < res.length; i++) {
       Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
     }
+    const isApprovedForAll = await contract
+      .isApprovedForAll(
+        currentAddress,
+        /* eslint-disable-next-line */
+        renft.instance!.address
+      )
+      .catch(() => false);
     setErc721s({
       [contract.address]: {
         contract: contract,
-        isApprovedForAll: await contract.isApprovedForAll(
-          currentAddress,
-          /* eslint-disable-next-line */
-          renft.instance!.address
-        ),
+        isApprovedForAll,
         tokenIds: tokenIdsObj,
       },
     });
     return res;
   }, [currentAddress, myERC721.instance, renft]);
 
-  const fetchNftMeta = async (uris: parse[]) => {
+  const fetchNftMeta = useCallback(async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
     if (uris.length < 1) return [];
     for (const uri of uris) {
@@ -295,7 +303,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
     const res = await Promise.all(toFetch);
     return res;
-  };
+  }, []);
 
   // some image URIs are pointing to ipfs
   // therfore after the initial meta fetch, the second
@@ -365,28 +373,19 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (!address || !tokenId) continue;
       // this avoids having redundant instantiations of the same ERC721
       if (!erc721s[address]?.contract) {
-        let contract: ERC721;
-        let isApprovedForAll: boolean;
         // React will bundle up these individual setStates
-        try {
-          contract = getERC721(address, signer);
-          isApprovedForAll = await contract.isApprovedForAll(
+        const contract = getERC721(address, signer);
+        const isApprovedForAll = await contract
+          .isApprovedForAll(
             currentAddress,
             /* eslint-disable-next-line */
             renft.instance!.address
-          );
-        } catch (e) {
-          console.warn("could not get approvedForAll for", address);
-          continue;
-        }
+          )
+          .catch(() => false);
         if (!tokenURI) {
-          try {
-            _tokenURI = await contract.tokenURI(BigNumber.from(tokenId));
-          } catch (e) {
-            // * 1. ENS contract does not have tokenURI for example
-            console.warn("could not fetch tokenURI for", address);
-            continue;
-          }
+          _tokenURI = await contract
+            .tokenURI(BigNumber.from(tokenId))
+            .catch(() => "");
         }
         setErc721s((prev) => ({
           ...prev,
@@ -398,6 +397,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         }));
       }
       if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
+        if (!_tokenURI) continue;
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(_tokenURI, true));
       }
@@ -412,7 +412,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       });
     }
     // this functions updates erc721s, so it cannot have that as a dep
-    /* eslint react-hooks/exhaustive-deps: "off" */
+    /* eslint-disable-next-line */
   }, [currentAddress, renft.instance]);
 
   // queries ALL of the lendings in reNFT
@@ -448,7 +448,10 @@ export const GraphProvider: React.FC = ({ children }) => {
         if (!lendings[nft.nftAddress]?.contract) {
           const contract = getERC721(nft.nftAddress, signer);
           if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
-            const tokenURI = await contract.tokenURI(nft.tokenId);
+            const tokenURI = await contract
+              .tokenURI(nft.tokenId)
+              .catch(() => undefined);
+            if (!tokenURI) continue;
             toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
             toFetchLinks.push(parse(tokenURI, true));
             _nfts.push(nft);
@@ -493,7 +496,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         });
       }
     },
-    [currentAddress, renft.instance, getERC721, fetchNftMeta, signer]
+    [fetchNftMeta, signer, lendings]
   );
 
   const fetchLending = useCallback(async () => {
@@ -501,11 +504,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     await _enrichSetLending(nfts);
   }, [_fetchLending, _enrichSetLending]);
 
-  const fetchAvailableNfts = useCallback(() => {
-    fetchAllERC721();
-    // * if is dev env and hardhat provider
-    if (IS_DEV_ENV && isHardhatNode) fetchNftMetaDev();
-  }, [fetchAllERC721, IS_DEV_ENV, fetchNftMetaDev]);
+  const fetchAvailableNfts = useCallback(async () => {
+    if (IS_DEV_ENV) {
+      fetchNftMetaDev();
+    } else {
+      fetchAllERC721();
+    }
+  }, [fetchAllERC721, fetchNftMetaDev]);
 
   usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
 
@@ -517,15 +522,15 @@ export const GraphProvider: React.FC = ({ children }) => {
     // but if you do so, and this wasn't here, you would
     // get a bunch of gibberish errors that would make zero
     // sense and you would waste half a day debugging
-    // ! keep these lines
-    signer.provider?.getNetwork().then((r) => {
-      if (r.chainId === 31337) {
-        setIsHardhatNode(true);
-      }
-    });
     fetchAvailableNfts();
     fetchLending();
-  }, [currentAddress, renft.instance, signer]);
+  }, [
+    currentAddress,
+    renft.instance,
+    signer,
+    fetchAvailableNfts,
+    fetchLending,
+  ]);
 
   return (
     <GraphContext.Provider
