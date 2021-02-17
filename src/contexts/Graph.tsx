@@ -8,7 +8,7 @@ import React, {
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { ethers } from "ethers";
+import { BytesLike, ethers } from "ethers";
 
 import {
   CurrentAddressContext,
@@ -33,6 +33,7 @@ import {
 } from "../types/graph";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
+import { URI } from "../types";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -277,6 +278,29 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   };
 
+  const parseMeta = (meta: Response[]) => {
+    const parsedMeta: Response[] = JSON.parse(JSON.stringify(meta));
+    for (const m of meta) {
+      let key = "";
+      if ("image" in m) {
+        key = "image";
+      } else if ("image_url" in m) {
+        key = "image_url";
+      }
+      if (key) {
+        //@ts-ignore
+        if (m[key].startsWith("ipfs")) {
+          // try {
+
+          // } catch (e) {
+
+          // }
+          true;
+        }
+      }
+    }
+  };
+
   // all of the user's erc721s
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
@@ -326,6 +350,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
 
     const meta = await fetchNftMeta(toFetchLinks);
+
+    console.log("meta", meta);
+    // one more pass through the meta to see if any of the images are ipfs
 
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
