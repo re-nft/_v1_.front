@@ -34,10 +34,6 @@ const fancyStyle = {
   },
 };
 
-const CssTextField = withStyles(
-  fancyStyle // ! webpack messes around with jss precedence:
-  // ! https://stackoverflow.com/questions/62473898/material-ui-rendering-bugs-in-production-build
-  // ! so prod wouldn't have styles
-)(TextField);
+const CssTextField = withStyles(fancyStyle)(TextField);
 
 export default CssTextField;
