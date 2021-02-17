@@ -12,33 +12,43 @@ import { Lending } from "../types/graph";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    inputs: {
-      display: "flex",
-      flexDirection: "column",
-      padding: "32px",
-      // matches direct div children of inputs
-      "& > div": {
-        marginBottom: "16px",
+const useStyles = makeStyles(
+  () =>
+    createStyles({
+      inputs: {
+        display: "flex",
+        flexDirection: "column",
+        padding: "32px",
+        // matches direct div children of inputs
+        "& > div": {
+          marginBottom: "16px",
+        },
+        margin: "0 auto",
       },
-      margin: "0 auto",
-    },
-    buttons: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-    },
-  })
+      buttons: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+      },
+    }),
+  // ! webpack messes around with jss precedence:
+  // ! https://stackoverflow.com/questions/62473898/material-ui-rendering-bugs-in-production-build
+  // ! so prod wouldn't have styles
+  { index: 1 }
 );
 
-const LegibleTextField = withStyles({
-  root: {
-    "& .MuiFormLabel-root.Mui-disabled": {
-      color: "white",
+const LegibleTextField = withStyles(
+  {
+    root: {
+      "& .MuiFormLabel-root.Mui-disabled": {
+        color: "white",
+      },
     },
-  },
-})(TextField);
+  }, // ! webpack messes around with jss precedence:
+  // ! https://stackoverflow.com/questions/62473898/material-ui-rendering-bugs-in-production-build
+  // ! so prod wouldn't have styles
+  { index: 1 }
+)(TextField);
 
 type RentModalProps = {
   open: boolean;
