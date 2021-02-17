@@ -51,6 +51,9 @@ const ENDPOINT_RENFT_DEV =
 const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 
+const ENS_ADDRESS = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85".toLowerCase();
+const ZORA_ADDRESS = "0xabefbc9fd2f806065b4f3c237d4b59d9a97bcac7";
+
 type queryAllERC721T = {
   tokens: {
     id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
@@ -187,6 +190,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
   const [lendings, setLendings] = useState<AddressToLending>({});
   const [rentings, setRentings] = useState<AddressToRenting>({});
+  const [isHardhatNode, setIsHardhatNode] = useState<boolean>(false);
 
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
@@ -208,7 +212,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // ! only used in dev environment
   const fetchNftMetaDev = useCallback(async () => {
-    if (!myERC721.instance || !renft.instance || !currentAddress) return [];
+    if (!myERC721.instance) return [];
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const contract = myERC721.instance;
@@ -243,7 +247,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         contract: contract,
         isApprovedForAll: await contract.isApprovedForAll(
           currentAddress,
-          renft.instance.address
+          /* eslint-disable-next-line */
+          renft.instance!.address
         ),
         tokenIds: tokenIdsObj,
       },
@@ -256,13 +261,27 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (uris.length < 1) return [];
     for (const uri of uris) {
       if (!uri.href) continue;
+      // additional check here is needed for ZORA links, if it is ZORA URI, then it points to image/media
+      // rather than actual meta of the NFT
       if (uri.href.startsWith("https://ipfs.daonomic.com")) {
         const parts = uri.href.split("/");
         const CID = parts[parts.length - 1];
         const pulled = pull({ cids: [CID] })
           .then((dat) => dat[0])
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           .catch(() => ({})) as Promise<any>;
         toFetch.push(pulled);
+      } else if (uri.href.startsWith("https://ipfs.fleek.co/ipfs")) {
+        // * ZORA will straight up give you the image. No need for ceremonial meta JSON
+        const fetched = fetch(uri.href)
+          .then(async (r) => {
+            const blob = await r.blob();
+            const url = URL.createObjectURL(blob);
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            return { image: url, image_url: url } as any;
+          })
+          .catch(() => ({}));
+        toFetch.push(fetched);
       } else {
         const uriToPull = uri.href.startsWith("https://api.sandbox.game")
           ? `${CORS_PROXY}${uri.href}`
@@ -278,7 +297,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   };
 
-  //todo: super flaky function
+  // some image URIs are pointing to ipfs
+  // therfore after the initial meta fetch, the second
+  // one (this one) is called to retrieve images from IPFS
   const parseMeta = async (meta: Response[]) => {
     const parsedMeta: Response[] = JSON.parse(JSON.stringify(meta));
     const indicesToUpdate: number[] = [];
@@ -308,9 +329,14 @@ export const GraphProvider: React.FC = ({ children }) => {
       cids: imagesToFetch,
       isBytesFetch: true,
     });
-    console.log(fetchedImages);
     for (let i = 0; i < indicesToUpdate.length; i++) {
-      const blob = await fetchedImages[i].blob();
+      let blob: Blob;
+      try {
+        blob = await fetchedImages[i].blob();
+      } catch (e) {
+        console.warn("could not fetch image blob");
+        continue;
+      }
       //@ts-ignore
       parsedMeta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
     }
@@ -320,37 +346,47 @@ export const GraphProvider: React.FC = ({ children }) => {
   // all of the user's erc721s
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
-    if (!currentAddress || !renft.instance || !signer) return [];
     const query = queryAllERC721(currentAddress);
     const response: queryAllERC721T = await request(
       ENDPOINT_EIP721_PROD,
       query
     );
-    if (!response) return [];
-    if (response.tokens.length == 0) return [];
-
-    // todo: 0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85 is ENS, doesn't have tokenURI
-
+    if (!response || response.tokens.length == 0) return [];
+    // todo:  is ENS, doesn't have tokenURI
     const toFetchPaths: Path[] = [];
     const toFetchLinks: parse[] = [];
-
     // O(n)
     for (const token of response.tokens) {
       const { id, tokenURI } = token;
       // * sometimes the subgraph does not return the URI. For example, for ZORA
       let _tokenURI = tokenURI;
       const [address, tokenId] = id.split("_");
+      // if (address.toLowerCase() === ENS_ADDRESS) continue;
       if (!address || !tokenId) continue;
       // this avoids having redundant instantiations of the same ERC721
       if (!erc721s[address]?.contract) {
+        let contract: ERC721;
+        let isApprovedForAll: boolean;
         // React will bundle up these individual setStates
-        const contract = getERC721(address, signer);
-        const isApprovedForAll = await contract.isApprovedForAll(
-          currentAddress,
-          renft.instance.address
-        );
+        try {
+          contract = getERC721(address, signer);
+          isApprovedForAll = await contract.isApprovedForAll(
+            currentAddress,
+            /* eslint-disable-next-line */
+            renft.instance!.address
+          );
+        } catch (e) {
+          console.warn("could not get approvedForAll for", address);
+          continue;
+        }
         if (!tokenURI) {
-          _tokenURI = await contract.tokenURI(BigNumber.from(tokenId));
+          try {
+            _tokenURI = await contract.tokenURI(BigNumber.from(tokenId));
+          } catch (e) {
+            // * 1. ENS contract does not have tokenURI for example
+            console.warn("could not fetch tokenURI for", address);
+            continue;
+          }
         }
         setErc721s((prev) => ({
           ...prev,
@@ -366,11 +402,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         toFetchLinks.push(parse(_tokenURI, true));
       }
     }
-
     const meta = await fetchNftMeta(toFetchLinks);
     // one more pass through the meta to see if any of the images are ipfs
     const parsedMeta = await parseMeta(meta);
-
     for (let i = 0; i < meta.length; i++) {
       setErc721s((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), parsedMeta[i], prev);
@@ -406,10 +440,6 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const _enrichSetLending = useCallback(
     async (nfts: Lending[]): Promise<void> => {
-      if (!currentAddress || !renft.instance || !signer) {
-        console.warn("could not enrich lending, yet.");
-        return;
-      }
       const toFetchPaths: Path[] = [];
       const toFetchLinks: parse[] = [];
       // todo: silly
@@ -473,15 +503,29 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchAvailableNfts = useCallback(() => {
     fetchAllERC721();
-    if (IS_DEV_ENV) fetchNftMetaDev();
+    // * if is dev env and hardhat provider
+    if (IS_DEV_ENV && isHardhatNode) fetchNftMetaDev();
   }, [fetchAllERC721, IS_DEV_ENV, fetchNftMetaDev]);
 
   usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
 
   useEffect(() => {
+    // ! do not remove this line
+    if (!currentAddress || !renft.instance || !signer) return;
+    // to avoid working with hardhat contracts when in dev env
+    // you may switch a network, to test that mainnet works
+    // but if you do so, and this wasn't here, you would
+    // get a bunch of gibberish errors that would make zero
+    // sense and you would waste half a day debugging
+    // ! keep these lines
+    signer.provider?.getNetwork().then((r) => {
+      if (r.chainId === 31337) {
+        setIsHardhatNode(true);
+      }
+    });
     fetchAvailableNfts();
     fetchLending();
-  }, []);
+  }, [currentAddress, renft.instance, signer]);
 
   return (
     <GraphContext.Provider
