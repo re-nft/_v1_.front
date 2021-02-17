@@ -12,17 +12,20 @@ import { GraphProvider } from "./contexts/Graph";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
 
-const theme = createMuiTheme({
-  typography: {
-    fontFamily: [
-      "Righteous",
-      "consolas",
-      "Menlo",
-      "monospace",
-      "sans-serif",
-    ].join(","),
+const theme = createMuiTheme(
+  {
+    typography: {
+      fontFamily: [
+        "Righteous",
+        "consolas",
+        "Menlo",
+        "monospace",
+        "sans-serif",
+      ].join(","),
+    },
   },
-});
+  { index: 1 }
+);
 
 ReactDOM.render(
   <React.StrictMode>

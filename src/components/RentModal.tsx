@@ -44,10 +44,9 @@ const LegibleTextField = withStyles(
         color: "white",
       },
     },
-  }, // ! webpack messes around with jss precedence:
+  } // ! webpack messes around with jss precedence:
   // ! https://stackoverflow.com/questions/62473898/material-ui-rendering-bugs-in-production-build
   // ! so prod wouldn't have styles
-  { index: 1 }
 )(TextField);
 
 type RentModalProps = {
