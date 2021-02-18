@@ -14,7 +14,6 @@ const GATEWAYS = [
   "10.via0.com",
   "jorropo.ovh",
   "gateway.ravenland.org",
-  "dweb.link",
   "ipfs.greyh.at",
   "robotizing.net",
 ];
