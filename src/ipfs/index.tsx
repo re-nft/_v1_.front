@@ -50,7 +50,9 @@ const _pull = async ({
   for (const cid of cids) {
     reqs.push(
       gatewayIndices.map((ix) =>
-        fetch(`https://${GATEWAYS[ix]}/ipfs/${cid}`)
+        fetch(`https://${GATEWAYS[ix]}/ipfs/${cid}`, {
+          headers: [["Content-Type", "text/plain"]],
+        })
           .then(async (dat) => {
             if (!isBytesFetch) {
               return await dat.json();

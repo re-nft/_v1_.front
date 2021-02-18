@@ -303,7 +303,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         : metaURI;
       if (uriToPull)
         toFetch.push(
-          fetch(uriToPull)
+          fetch(uriToPull, {
+            headers: [["Content-Type", "text/plain"]],
+          })
             .then(async (dat) => await dat.json())
             .catch(() => ({}))
         );
@@ -330,9 +332,15 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   }, [currentAddress, myERC721.instance, renft]);
 
+  // given the URIs, will fetch ERC1155s' meta from IPFS
+  // once that is fetched, will fetch images from just
+  // fetched meta
   const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
     const cids: string[] = [];
+    const imageCids: string[] = [];
+
     if (uris.length < 1) return [];
+
     for (const uri of uris) {
       if (!uri.pathname) continue;
       const parts = uri.pathname.split("/");
@@ -340,20 +348,24 @@ export const GraphProvider: React.FC = ({ children }) => {
       cids.push(CID);
     }
     const meta = await pull({ cids });
-    const imageCids: string[] = [];
-    for (const m of meta) {
+
+    const indicesToUpdate: number[] = [];
+    for (let i = 0; i < meta.length; i++) {
+      if (!("image" in meta[i])) continue;
       //@ts-ignore
-      const imageIpfsUri: string = m.image;
-      const cid = imageIpfsUri.slice(12);
+      const imageIpfsUri: string | undefined = meta[i].image;
+      const cid = imageIpfsUri?.slice(12);
+      if (!cid) continue;
+      indicesToUpdate.push(i);
       imageCids.push(cid);
     }
     const images = await pull({ cids: imageCids, isBytesFetch: true });
-    /* eslint-disable-next-line */
-    for (let i = 0; i < images.length; i++) {
+
+    for (let i = 0; i < indicesToUpdate.length; i++) {
       try {
         const blob = await images[i].blob();
         //@ts-ignore
-        meta[i]["image"] = URL.createObjectURL(blob);
+        meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
       } catch (e) {
         console.warn("could not parse image");
         continue;
@@ -380,7 +392,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         toFetch.push(pulled);
       } else if (uri.href.startsWith("https://ipfs.fleek.co/ipfs")) {
         // * ZORA will straight up give you the image. No need for ceremonial meta JSON
-        const fetched = fetch(uri.href)
+        const fetched = fetch(uri.href, {
+          headers: [["Content-Type", "text/plain"]],
+        })
           .then(async (r) => {
             const blob = await r.blob();
             const url = URL.createObjectURL(blob);
@@ -394,7 +408,9 @@ export const GraphProvider: React.FC = ({ children }) => {
           ? `${CORS_PROXY}${uri.href}`
           : uri.href;
         // todo: only fetch if https or http
-        const fetched = fetch(uriToPull)
+        const fetched = fetch(uriToPull, {
+          headers: [["Content-Type", "text/plain"]],
+        })
           .then(async (dat) => await dat.json())
           .catch(() => ({}));
         toFetch.push(fetched);
