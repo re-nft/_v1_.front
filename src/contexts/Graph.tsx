@@ -450,7 +450,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     )
       return [];
     const { balances } = response.account;
-    console.log("response erc1155", response);
     const toFetchPaths: Path[] = [];
     const toFetchLinks: parse[] = [];
     // O(n)

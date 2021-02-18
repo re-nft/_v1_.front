@@ -2,7 +2,7 @@ import { getRandomInt } from "../utils";
 import { backOff } from "exponential-backoff";
 import CID from "cids";
 
-const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
+// const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
 // taken from https://ipfs.github.io/public-gateway-checker/
 const GATEWAYS = [
@@ -12,11 +12,9 @@ const GATEWAYS = [
   "ipfs.sloppyta.co",
   "gateway.pinata.cloud",
   "ninetailed.ninja",
-  "ipfs.best-practice.se",
   "10.via0.com",
   "jorropo.ovh",
   "gateway.ravenland.org",
-  "ipfs.eternum.io",
   "dweb.link",
   "ipfs.greyh.at",
   "robotizing.net",
