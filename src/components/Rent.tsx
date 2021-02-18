@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 
 import ScrollForMore from "./ScrollForMore";
 import Cold from "./Cold";
-import RentCatalogue from "./RentCatalogue";
+import { AvailableToRent } from "./RentCatalogue/";
 import Toggle from "./Toggle";
 
 type RentProps = {
@@ -47,7 +47,7 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             </Box>
           )}
         </Box>
-        <RentCatalogue iBorrow={showIBorrow} setCold={setCold} />
+        <AvailableToRent />
       </Box>
       {cold && <Cold fancyText="One day it will be warm here..." />}
     </Box>

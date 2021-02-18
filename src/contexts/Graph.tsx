@@ -31,6 +31,7 @@ import {
   LendingRaw,
   Lending,
   Renting,
+  RentingRaw,
 } from "../types/graph";
 import { Address, Nft } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
@@ -263,6 +264,16 @@ export const GraphProvider: React.FC = ({ children }) => {
       paymentToken: parsePaymentToken(lending.paymentToken),
       renting: lending.renting ?? undefined,
       collateralClaimed: Boolean(lending.collateralClaimed),
+    };
+  }, []);
+
+  const parseRenting = useCallback((renting: RentingRaw): Renting => {
+    return {
+      id: renting.id,
+      renterAddress: ethers.utils.getAddress(renting.renterAddress),
+      rentDuration: Number(renting.rentDuration),
+      rentedAt: Number(renting.rentedAt),
+      lendingId: renting.lending,
     };
   }, []);
 
@@ -644,6 +655,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           }
         }
       }
+      // todo: this should be nft type agnostic
       const meta = await fetchNftMeta721(toFetchLinks);
       for (let i = 0; i < meta.length; i++) {
         setLendings((prev) => {
@@ -673,6 +685,11 @@ export const GraphProvider: React.FC = ({ children }) => {
     const nfts = await _fetchLending();
     await _enrichSetLending(nfts);
   }, [_fetchLending, _enrichSetLending]);
+
+  // const fetchRenting = useCallback(async () => {
+  //   const nfts = await _fetchRenting();
+  //   console.log("all available for renting");
+  // }, [_fetchRenting]);
 
   const fetchAvailableNfts = useCallback(async () => {
     if (IS_DEV_ENV) {

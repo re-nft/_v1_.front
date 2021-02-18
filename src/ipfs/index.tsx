@@ -8,7 +8,6 @@ import CID from "cids";
 const GATEWAYS = [
   "ipfs.io",
   "gateway.ipfs.io",
-  "ipfs.2read.net",
   "ipfs.sloppyta.co",
   "gateway.pinata.cloud",
   "ninetailed.ninja",

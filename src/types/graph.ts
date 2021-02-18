@@ -41,7 +41,7 @@ export type Renting = {
   renterAddress: Address;
   rentDuration: number;
   rentedAt: number;
-  lending: string;
+  lendingId: string;
 };
 
 export type LendingRentingRaw = {

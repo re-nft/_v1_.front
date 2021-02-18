@@ -1,15 +1,9 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
-import { PaymentToken } from "../types";
-import { Lending } from "../types/graph";
-import RentModal from "./RentModal";
-import { pull } from "../ipfs";
-
-type RentCatalogueProps = {
-  iBorrow: boolean;
-  setCold: (cold: boolean) => void;
-};
+import { PaymentToken } from "../../types";
+import { Lending } from "../../types/graph";
+import { RentModal } from "../RentModal/";
 
 type RentButtonProps = {
   handleRent: (lending: Lending) => void;
@@ -85,39 +79,10 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({
   );
 };
 
-const RentCatalogue: React.FC<RentCatalogueProps> = () => {
+export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [lending, setLending] = useState<Lending>();
   const [myData, setMyData] = useState<Lending[]>([]);
-  // const { rent, erc721 } = useContext(Contracts);
-  // const { lending: allLendings, user } = useContext(GraphContext);
-
-  const _setMyData = useCallback(() => {
-    // if (!wallet || !wallet?.account) return;
-    // let resolvedData: Lending[] = [];
-    // resolvedData = iBorrow
-    //   ? user.renting.map((r) => ({ ...r.lending }))
-    //   : allLendings;
-    // if (resolvedData.length < 1) {
-    //   setCold(true);
-    // } else {
-    //   setCold(false);
-    // }
-    setMyData([]);
-  }, []);
-
-  useEffect(() => {
-    _setMyData();
-  }, [_setMyData]);
-
-  // we filter out the nfts that the user is either lending or renting
-  const usersNfts = useMemo(() => {
-    // const userLending = user.lending.map((l) => l.id);
-    // const userRenting = user.renting.map((r) => r.lending.id);
-
-    // const _usersNfts = userLending.concat(userRenting);
-    return [];
-  }, []);
 
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
@@ -127,51 +92,6 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
     setModalOpen(true);
     setLending(_lending);
   }, []);
-
-  // const handleReturn = useCallback(
-  // async ({
-  //   lending,
-  //   gasSponsor,
-  // }: {
-  //   lending: Lending;
-  //   gasSponsor?: string;
-  // }) => {
-  //   try {
-  //     if (
-  //       // !rent?.returnOne ||
-  //       // !erc721?.isApproved ||
-  //       // !erc721?.approve ||
-  //       !addresses?.rent
-  //     )
-  //       return;
-
-  //     // const isApproved = await erc721.isApproved(
-  //     //   lending.nftAddress,
-  //     //   addresses.rent,
-  //     //   String(lending.tokenId)
-  //     // );
-  //     const isApproved = true;
-
-  //     if (!isApproved) {
-  //       // approving for all the future NFTs coming from the lending.nftAddress
-  //       // await erc721.approve(lending.nftAddress, addresses.rent);
-  //     }
-
-  //     // await rent?.returnOne(
-  //     //   lending.nftAddress,
-  //     //   String(lending.tokenId),
-  //     //   String(lending.id),
-  //     //   gasSponsor
-  //     // );
-  //   } catch (err) {
-  //     console.debug("could not return the NFT");
-  //   }
-  // },
-  // [addresses?.rent]
-  // );
-
-  // const fromWei = (v?: number): string =>
-  //   v && web3 ? web3?.utils.fromWei(String(v), "ether") : "";
 
   return (
     <Box>
@@ -184,26 +104,12 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
       )}
       <Box className="Catalogue">
         {myData.length > 0 &&
-          // wallet?.status === "connected" &&
           myData.map((lending) => {
-            // todo: poor time complexity, turn into sets for O(1) access
-            // this line avoids showing the user currently lent NFT
-            // this code will not show the user's rented NFT, because that gets
-            // taken out of the currently available NFTs
             const id = `${lending.nftAddress}::${lending.tokenId}`;
-
-            // if (!iBorrow) {
-            //   if (usersNfts.includes(lending.id))
-            //     return <React.Fragment key={id}></React.Fragment>;
-            // }
 
             return (
               <div className="Catalogue__item" key={id}>
-                <div
-                  className="Product"
-                  data-item-id={id}
-                  // data-item-image={lending.imageUrl}
-                >
+                <div className="Product" data-item-id={id}>
                   <div className="Nft__image">
                     {/* <a href={lending.imageUrl}>
                       <img alt="nft" src={lending.imageUrl} />
@@ -261,4 +167,4 @@ const RentCatalogue: React.FC<RentCatalogueProps> = () => {
   );
 };
 
-export default RentCatalogue;
+export default AvailableToRent;

@@ -3,12 +3,11 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 import moment from "moment";
 
-// contexts
-import FunnySpinner from "./Spinner";
-import RainbowButton from "./RainbowButton";
-import CssTextField from "./CssTextField";
-import Modal from "./Modal";
-import { Lending } from "../types/graph";
+import FunnySpinner from "../Spinner";
+import RainbowButton from "../RainbowButton";
+import CssTextField from "../CssTextField";
+import Modal from "../Modal";
+import { Lending } from "../../types/graph";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -48,14 +47,12 @@ type RentModalProps = {
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
 
-const RentModal: React.FC<RentModalProps> = ({
+export const RentModal: React.FC<RentModalProps> = ({
   open,
   handleClose,
   lending,
 }) => {
   const classes = useStyles();
-  // const { web3, addresses } = useContext(DappContext);
-  // const { rent, resolver, erc20 } = useContext(ContractsContext);
   const [duration, setDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
@@ -71,7 +68,6 @@ const RentModal: React.FC<RentModalProps> = ({
     setErrorText(DEFAULT_ERROR_TEXT);
   }, []);
 
-  // TODO: ensure that the time is correct for different locales
   const setDate = useCallback((days: string) => {
     const returnOn = moment().add(days, "day");
     setReturnDate(returnOn.format("MMMM Do YYYY, h:mm:ss a"));
@@ -138,68 +134,20 @@ const RentModal: React.FC<RentModalProps> = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
       try {
-        // TODO: to generalise, will need to use tokenAddress here too
-
-        if (
-          // !rent ||
-          // !web3 ||
-          // !addresses ||
-          // !R.hasPath(["dai", "approve"], pmtToken) ||
-          rentIsDisabled
-        ) {
+        if (rentIsDisabled) {
           console.debug("can't rent");
           return;
         }
 
         setIsBusy(true);
-
-        // const pmtTokenAddress = await resolver.getPaymentToken(
-        //   lending.paymentToken
-        // );
-        // const pmtAmount = web3.utils.toBN(
-        //   web3.utils.toWei(
-        //     (lending.dailyRentPrice + lending.nftPrice).toString(),
-        //     "ether"
-        //   )
-        // );
-        // const isApproved = await erc20.isApproved(
-        //   pmtTokenAddress,
-        //   addresses.rent,
-        //   pmtAmount.toString()
-        // );
-        // if (!isApproved) {
-        //   // approves for max
-        //   await erc20.approve(pmtTokenAddress, addresses.rent);
-        // }
-
-        // await rent.rentOne(
-        //   lending.nftAddress,
-        //   String(lending.tokenId),
-        //   String(lending.id),
-        //   duration // todo: add gas sponsor
-        // );
       } catch (err) {
-        console.error(err);
-        console.debug("something went wrong");
-        // TODO: give a notification here as well
+        console.warn(err);
       }
       setIsBusy(false);
       handleClose();
-      // todo: the deps list looks a bit too much
     },
     [rentIsDisabled, handleClose]
   );
-
-  // const handleApprove = useCallback(async () => {
-  //   try {
-  //     setIsBusy(true);
-  //     await pmtToken.dai.approve();
-  //   } catch (err) {
-  //     handleClose();
-  //     console.debug("could not approve");
-  //   }
-  //   setIsBusy(false);
-  // }, [pmtToken, handleClose]);
 
   return (
     <Modal open={open} handleClose={handleClose}>
