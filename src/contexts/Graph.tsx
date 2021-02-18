@@ -89,7 +89,7 @@ type queryAllERC1155T = {
 type Path = string[];
 
 // '0x123...456': { tokenIds: { '1': ..., '2': ... } }
-type AddressToErc721 = {
+export type AddressToErc721 = {
   [key: string]: {
     contract: ERC721;
     isApprovedForAll: boolean;
@@ -101,7 +101,7 @@ type AddressToErc721 = {
   };
 };
 
-type AddressToErc1155 = {
+export type AddressToErc1155 = {
   [key: string]: {
     contract: ERC1155;
     isApprovedForAll: boolean;
@@ -113,7 +113,7 @@ type AddressToErc1155 = {
   };
 };
 
-type AddressToLending = {
+export type AddressToLending = {
   [key: string]: {
     contract: ERC721;
     // * these are all approved, since I am lending them

@@ -1,21 +1,13 @@
-import React, {
-  useContext,
-  useMemo,
-  useCallback,
-  useState,
-  useEffect,
-} from "react";
+import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
-import * as R from "ramda";
 
-import {
-  CurrentAddressContext,
-  RentNftContext,
-} from "../../hardhat/SymfoniContext";
+import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
 import { Nft } from "../../types";
 import { TransactionStateContext } from "../../contexts/TransactionState";
+import { useRenft } from "../../hooks/useRenft";
 
+// todo: this type is also defined in useRenft hook
 type StopLendButtonProps = {
   nft: Nft & { lendingId: string };
 };
@@ -90,47 +82,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
 };
 
 export const AllMyLending: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
-  const { lendings } = useContext(GraphContext);
-
-  const myLendings = useMemo(() => {
-    // fetch all Nfts and see if there is difference, if there is, splice the list
-    const nfts: (Nft & { lendingId: string })[] = [];
-    if (!lendings || !currentAddress) return nfts;
-    for (const address of Object.keys(lendings)) {
-      if (!lendings[address]) continue;
-      if (!R.hasPath([address, "tokenIds"], lendings)) continue;
-      for (const tokenId of Object.keys(lendings[address].tokenIds)) {
-        if (!lendings[address].tokenIds[tokenId]) continue;
-        let image = R.pathOr(
-          "",
-          [address, "tokenIds", tokenId, "image"],
-          lendings
-        );
-        if (image === "") {
-          image = R.pathOr(
-            "",
-            [address, "tokenIds", tokenId, "image_url"],
-            lendings
-          );
-        }
-        if (
-          /* eslint-disable-next-line */
-          lendings[address].tokenIds[tokenId]!.lenderAddress !== currentAddress
-        )
-          continue;
-        nfts.push({
-          contract: lendings[address].contract,
-          tokenId,
-          image,
-          /* eslint-disable-next-line */
-          lendingId: lendings[address].tokenIds[tokenId]!.id,
-        });
-      }
-    }
-    return nfts;
-  }, [lendings, currentAddress]);
-
+  const { myLendings } = useRenft();
   return (
     <Box>
       <Box className="Catalogue">

@@ -1,16 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import ScrollForMore from "./ScrollForMore";
-import Cold from "./Cold";
-import { AvailableToRent } from "./RentCatalogue/";
-import Toggle from "./Toggle";
+import Cold from "../Cold";
+import Toggle from "../Toggle";
+import { AvailableToRent } from "./AvailableToRent";
 
 type RentProps = {
   hidden: boolean;
 };
 
-const Rent: React.FC<RentProps> = ({ hidden }) => {
+export const Rent: React.FC<RentProps> = ({ hidden }) => {
   const [showIBorrow, setShowIborrow] = useState(false);
   const [cold, setCold] = useState(true);
 
@@ -28,7 +27,6 @@ const Rent: React.FC<RentProps> = ({ hidden }) => {
             display: "flex",
           }}
         >
-          {!cold && <ScrollForMore />}
           {!cold && (
             <Box
               style={{

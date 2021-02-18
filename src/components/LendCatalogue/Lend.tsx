@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import { AvailableToLend, AllMyLending } from "./LendCatalogue";
-import Toggle from "./Toggle";
+import Toggle from "../Toggle";
+import { AvailableToLend } from "./AvailableToLend";
+import { AllMyLending } from "./AllMyLending";
 
 type LendProps = {
   hidden: boolean;
@@ -13,9 +14,7 @@ enum LendSpecificity {
   LENDING,
 }
 
-const Lend: React.FC<LendProps> = ({ hidden }) => {
-  // todo: will be coming from the graph
-  // const [myLendingNfts, setMyLendingNfts] = useState<Nft[]>([]);
+export const Lend: React.FC<LendProps> = ({ hidden }) => {
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );

@@ -2,9 +2,9 @@ import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import Layout from "./layouts/index";
-import Rent from "./components/Rent";
-import Lend from "./components/Lend";
-import ButHow from "./components/ButHow";
+import Rent from "./components/RentCatalogue/Rent";
+import Lend from "./components/LendCatalogue/Lend";
+import ButHow from "./components/FAQ";
 import Stats from "./components/Stats";
 import Leaderboard from "./components/Leaderboard";
 import { TransactionNotifier } from "./components/TransactionNotifier";

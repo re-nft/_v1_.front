@@ -10,9 +10,6 @@ const fancyStyle = {
       color: "teal",
       fontWeight: "1000",
     },
-    // "& .MuiInputLabel-outlined.MuiInputLabel-shrink": {
-    //   transform: "translate(14px, -4px) scale(0.55)",
-    // },
     "& label.Mui-focused": {
       color: "white",
     },
