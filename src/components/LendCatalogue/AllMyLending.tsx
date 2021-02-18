@@ -1,4 +1,10 @@
-import React, { useContext, useMemo, useCallback } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
 import { Box } from "@material-ui/core";
 import * as R from "ramda";
 
@@ -18,6 +24,7 @@ type StopLendButtonProps = {
 const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   const { instance: renft } = useContext(RentNftContext);
   const { setHash } = useContext(TransactionStateContext);
+  const { removeLending } = useContext(GraphContext);
 
   const handleStopLend = useCallback(async () => {
     if (!renft || !nft.contract) return;
@@ -26,8 +33,11 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
       [nft.tokenId],
       [nft.lendingId]
     );
-    await setHash(tx.hash);
-  }, [nft, renft, setHash]);
+    const isSuccess = await setHash(tx.hash);
+    if (isSuccess) {
+      removeLending([nft]);
+    }
+  }, [nft, renft, setHash, removeLending]);
 
   return (
     <div className="Nft__card" onClick={handleStopLend}>
@@ -82,14 +92,16 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
 export const AllMyLending: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { lendings } = useContext(GraphContext);
-  // todo: this is not DRY, same code in AvailableToLend
-  const myNfts = useMemo(() => {
+
+  const myLendings = useMemo(() => {
+    // fetch all Nfts and see if there is difference, if there is, splice the list
     const nfts: (Nft & { lendingId: string })[] = [];
     if (!lendings || !currentAddress) return nfts;
     for (const address of Object.keys(lendings)) {
       if (!lendings[address]) continue;
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
       for (const tokenId of Object.keys(lendings[address].tokenIds)) {
+        if (!lendings[address].tokenIds[tokenId]) continue;
         let image = R.pathOr(
           "",
           [address, "tokenIds", tokenId, "image"],
@@ -103,14 +115,16 @@ export const AllMyLending: React.FC = () => {
           );
         }
         if (
-          lendings[address].tokenIds[tokenId].lenderAddress !== currentAddress
+          /* eslint-disable-next-line */
+          lendings[address].tokenIds[tokenId]!.lenderAddress !== currentAddress
         )
           continue;
         nfts.push({
           contract: lendings[address].contract,
           tokenId,
           image,
-          lendingId: lendings[address].tokenIds[tokenId].id,
+          /* eslint-disable-next-line */
+          lendingId: lendings[address].tokenIds[tokenId]!.id,
         });
       }
     }
@@ -120,7 +134,7 @@ export const AllMyLending: React.FC = () => {
   return (
     <Box>
       <Box className="Catalogue">
-        {myNfts.map((nft) => {
+        {myLendings.map((nft) => {
           const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
           return <CatalogueItem key={nftId} nftId={nftId} nft={nft} />;
         })}

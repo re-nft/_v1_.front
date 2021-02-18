@@ -32,7 +32,7 @@ import {
   Lending,
   Renting,
 } from "../types/graph";
-import { Address } from "../types";
+import { Address, Nft } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
 
@@ -117,7 +117,7 @@ type AddressToLending = {
     contract: ERC721;
     // * these are all approved, since I am lending them
     tokenIds: {
-      [key: string]: Omit<Lending, "nftAddress" & "tokenId">;
+      [key: string]: Omit<Lending, "nftAddress" & "tokenId"> | undefined;
     };
   };
 };
@@ -138,6 +138,7 @@ type GraphContextType = {
   lendings: AddressToLending;
   rentings: AddressToRenting;
   fetchAvailableNfts: () => void;
+  removeLending: (nfts: Nft[]) => void;
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -145,6 +146,7 @@ const DefaultGraphContext: GraphContextType = {
   erc1155s: {},
   lendings: {},
   rentings: {},
+  removeLending: THROWS,
   fetchAvailableNfts: THROWS,
 };
 
@@ -591,6 +593,21 @@ export const GraphProvider: React.FC = ({ children }) => {
     return resolvedData;
   }, [parseLending]);
 
+  const removeLending = useCallback((nfts: Nft[]) => {
+    for (const nft of nfts) {
+      if (nft.contract == null) continue;
+      // todo: this won't work during re-lends, need to add lendingId in here as well
+      setLendings((prev) =>
+        ramdaSet(
+          /* eslint-disable-next-line*/
+          lensPath([nft.contract!.address, "tokenIds", nft.tokenId]),
+          undefined,
+          prev
+        )
+      );
+    }
+  }, []);
+
   const _enrichSetLending = useCallback(
     async (nfts: Lending[]): Promise<void> => {
       const toFetchPaths: Path[] = [];
@@ -666,7 +683,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
 
-  usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
+  usePoller(fetchLending, 3 * SECOND_IN_MILLISECONDS);
 
   useEffect(() => {
     // ! do not remove this line
@@ -688,7 +705,14 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   return (
     <GraphContext.Provider
-      value={{ erc721s, erc1155s, fetchAvailableNfts, lendings, rentings }}
+      value={{
+        erc721s,
+        erc1155s,
+        fetchAvailableNfts,
+        removeLending,
+        lendings,
+        rentings,
+      }}
     >
       {children}
     </GraphContext.Provider>

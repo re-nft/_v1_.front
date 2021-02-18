@@ -12,7 +12,7 @@ type TransactionStateType = {
   txnState: TransactionStateEnum;
   hash?: TransactionHash;
   receipt?: TransactionReceipt;
-  setHash: (h: TransactionHash) => Promise<void>;
+  setHash: (h: TransactionHash) => Promise<boolean>;
 };
 
 const TransactionStateDefault: TransactionStateType = {
@@ -96,7 +96,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
 
       setReceipt(receipt);
       // setIsActive(false);
-      await sleep(3 * SECOND_IN_MILLISECONDS);
+      await sleep(1.5 * SECOND_IN_MILLISECONDS);
 
       return isSuccess;
     },
@@ -116,9 +116,10 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         default:
           setTxnState(TransactionStateEnum.FAILED);
       }
-      delayedSetIsActive(5 * SECOND_IN_MILLISECONDS, false);
+      delayedSetIsActive(1.5 * SECOND_IN_MILLISECONDS, false);
+      return isSuccess;
     },
-    [delayedSetIsActive, setHash]
+    [setHash, delayedSetIsActive]
   );
 
   // todo: add a providers listener for a cancelled transaction
