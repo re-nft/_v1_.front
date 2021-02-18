@@ -1,5 +1,6 @@
 import { ethers, BigNumber, BigNumberish } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
+import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { PaymentToken } from "./types";
 
 const PRICE_BITSIZE = 32;
@@ -60,12 +61,12 @@ export const getERC721 = (address: string, signer?: ethers.Signer): ERC721 => {
 export const getERC1155 = (
   address: string,
   signer?: ethers.Signer
-): ethers.Contract => {
+): ERC1155 => {
   const erc1155Contract = new ethers.Contract(
     ethers.utils.getAddress(address),
     erc1155abi,
     signer
-  );
+  ) as ERC1155;
   return erc1155Contract;
 };
 

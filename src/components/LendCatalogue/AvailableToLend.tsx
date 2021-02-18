@@ -5,7 +5,6 @@ import * as R from "ramda";
 import GraphContext from "../../contexts/Graph";
 import { LendModal } from "../LendModal";
 import { Nft } from "../../types";
-import { Lending } from "../../types/graph";
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -94,10 +93,10 @@ export const AvailableToLend: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   // all of the erc721s and erc1155s that I own
-  const { erc721s } = useContext(GraphContext);
+  const { erc721s, erc1155s } = useContext(GraphContext);
   const availableNfts = useMemo(() => {
     const nfts: Nft[] = [];
-    if (!erc721s) return nfts;
+    if (!erc721s || !erc1155s) return nfts;
     for (const address of Object.keys(erc721s)) {
       if (!erc721s[address]) continue;
       if (!R.hasPath([address, "tokenIds"], erc721s)) continue;
@@ -121,8 +120,20 @@ export const AvailableToLend: React.FC = () => {
         });
       }
     }
+    for (const address of Object.keys(erc1155s)) {
+      if (!erc1155s[address]) continue;
+      if (!R.hasPath([address, "tokenIds"], erc1155s)) continue;
+      for (const tokenId of Object.keys(erc1155s[address].tokenIds)) {
+        const image = R.pathOr(
+          "",
+          [address, "tokenIds", tokenId, "image"],
+          erc1155s
+        );
+        nfts.push({ contract: erc1155s[address].contract, tokenId, image });
+      }
+    }
     return nfts;
-  }, [erc721s]);
+  }, [erc721s, erc1155s]);
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {

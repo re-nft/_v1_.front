@@ -1,4 +1,5 @@
 import { ERC721 } from "../hardhat/typechain/ERC721";
+import { ERC1155 } from "../hardhat/typechain/ERC1155";
 
 export type Optional<T> = undefined | T;
 export type Address = string;
@@ -15,7 +16,7 @@ export enum PaymentToken {
 }
 
 export type Nft = {
-  contract?: ERC721;
+  contract?: ERC721 | ERC1155;
   tokenId: TokenId;
   image: URI;
 };

@@ -4,12 +4,11 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useMemo,
 } from "react";
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { BytesLike, ethers, BigNumber } from "ethers";
+import { ethers, BigNumber } from "ethers";
 
 import {
   CurrentAddressContext,
@@ -18,6 +17,7 @@ import {
   SignerContext,
 } from "../hardhat/SymfoniContext";
 import { ERC721 } from "../hardhat/typechain/ERC721";
+import { ERC1155 } from "../hardhat/typechain/ERC1155";
 import {
   getERC1155,
   getERC721,
@@ -32,10 +32,9 @@ import {
   Lending,
   Renting,
 } from "../types/graph";
+import { Address } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
-import { URI } from "../types";
-import { isConstructorDeclaration } from "typescript";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -52,15 +51,38 @@ const ENDPOINT_RENFT_DEV =
 // and of course kudos to the Solidity God: wighawag
 const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
+const ENDPOINT_EIP1155_PROD =
+  "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
 
+// * just use this instead: https://github.com/0xsequence/token-directory
 const ENS_ADDRESS = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85".toLowerCase();
 const ZORA_ADDRESS = "0xabefbc9fd2f806065b4f3c237d4b59d9a97bcac7";
 
+// todo: this should have a tokenURI in the subgraph schemas somewhere most likely
 type queryAllERC721T = {
   tokens: {
     id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
     tokenURI: string; // e.g. "https://nft.service.cometh.io/3000013"
   }[];
+};
+
+type tokenERC1155 = {
+  URI?: string;
+  tokenId: string;
+  registry: {
+    contractAddress: Address;
+  };
+};
+
+type balanceERC1155 = {
+  token: tokenERC1155;
+  amount: number;
+};
+
+type queryAllERC1155T = {
+  account: {
+    balances: balanceERC1155[];
+  };
 };
 
 type Path = string[];
@@ -70,7 +92,18 @@ type AddressToErc721 = {
   [key: string]: {
     contract: ERC721;
     isApprovedForAll: boolean;
-    // tokenId string to response
+    tokenIds: {
+      [key: string]: {
+        meta?: Response;
+      };
+    };
+  };
+};
+
+type AddressToErc1155 = {
+  [key: string]: {
+    contract: ERC1155;
+    isApprovedForAll: boolean;
     tokenIds: {
       [key: string]: {
         meta?: Response;
@@ -101,6 +134,7 @@ type AddressToRenting = {
 
 type GraphContextType = {
   erc721s: AddressToErc721;
+  erc1155s: AddressToErc1155;
   lendings: AddressToLending;
   rentings: AddressToRenting;
   fetchAvailableNfts: () => void;
@@ -108,6 +142,7 @@ type GraphContextType = {
 
 const DefaultGraphContext: GraphContextType = {
   erc721s: {},
+  erc1155s: {},
   lendings: {},
   rentings: {},
   fetchAvailableNfts: THROWS,
@@ -120,6 +155,23 @@ const queryAllERC721 = (user: string): string => {
     tokens(where: {owner: "${user.toLowerCase()}"}) {
       id
 		  tokenURI
+    }
+  }`;
+};
+
+const queryAllERC1155 = (user: string): string => {
+  return `{
+    account(id: "${user.toLowerCase()}") {
+      balances(where: {value_gt: 0}) {
+        token {
+          URI
+          registry {
+            contractAddress: id
+          }
+          tokenId: identifier
+        }
+        value
+      }
     }
   }`;
 };
@@ -190,6 +242,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
   const [erc721s, setErc721s] = useState<AddressToErc721>({});
+  const [erc1155s, setErc1155s] = useState<AddressToErc1155>({});
   const [lendings, setLendings] = useState<AddressToLending>({});
   const [rentings, setRentings] = useState<AddressToRenting>({});
 
@@ -264,7 +317,39 @@ export const GraphProvider: React.FC = ({ children }) => {
     return res;
   }, [currentAddress, myERC721.instance, renft]);
 
-  const fetchNftMeta = useCallback(async (uris: parse[]) => {
+  const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
+    const cids: string[] = [];
+    if (uris.length < 1) return [];
+    for (const uri of uris) {
+      if (!uri.pathname) continue;
+      const parts = uri.pathname.split("/");
+      const CID = parts[parts.length - 1];
+      cids.push(CID);
+    }
+    const meta = await pull({ cids });
+    const imageCids: string[] = [];
+    for (const m of meta) {
+      //@ts-ignore
+      const imageIpfsUri: string = m.image;
+      const cid = imageIpfsUri.slice(12);
+      imageCids.push(cid);
+    }
+    const images = await pull({ cids: imageCids, isBytesFetch: true });
+    /* eslint-disable-next-line */
+    for (let i = 0; i < images.length; i++) {
+      try {
+        const blob = await images[i].blob();
+        //@ts-ignore
+        meta[i]["image"] = URL.createObjectURL(blob);
+      } catch (e) {
+        console.warn("could not parse image");
+        continue;
+      }
+    }
+    return meta;
+  }, []);
+
+  const fetchNftMeta721 = useCallback(async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
     if (uris.length < 1) return [];
     for (const uri of uris) {
@@ -274,6 +359,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (uri.href.startsWith("https://ipfs.daonomic.com")) {
         const parts = uri.href.split("/");
         const CID = parts[parts.length - 1];
+        // todo: super inefficient
         const pulled = pull({ cids: [CID] })
           .then((dat) => dat[0])
           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -351,6 +437,74 @@ export const GraphProvider: React.FC = ({ children }) => {
     return parsedMeta;
   };
 
+  const fetchAllERC1155 = useCallback(async () => {
+    const query = queryAllERC1155(currentAddress);
+    const response: queryAllERC1155T = await request(
+      ENDPOINT_EIP1155_PROD,
+      query
+    );
+    if (
+      !response ||
+      !response.account ||
+      response.account.balances.length === 0
+    )
+      return [];
+    const { balances } = response.account;
+    console.log("response erc1155", response);
+    const toFetchPaths: Path[] = [];
+    const toFetchLinks: parse[] = [];
+    // O(n)
+    for (const tokenBalance of balances) {
+      const { token } = tokenBalance;
+      // * sometimes the subgraph does not return the URI. For example, for ZORA
+      const _tokenURI = token.URI;
+      const address = token.registry.contractAddress;
+      if (!_tokenURI) {
+        console.warn("could not fetch meta for", address);
+        continue;
+      }
+      const { tokenId } = token;
+      if (!address || !tokenId) continue;
+      if (!erc1155s[address]?.contract) {
+        // React will bundle up these individual setStates
+        const contract = getERC1155(address, signer);
+        const isApprovedForAll = await contract
+          .isApprovedForAll(
+            currentAddress,
+            /* eslint-disable-next-line */
+            renft.instance!.address
+          )
+          .catch(() => false);
+        // if (!_tokenURI) {
+        //   _tokenURI = await contract
+        //     .uri(BigNumber.from(tokenId))
+        //     .catch(() => "");
+        // }
+        setErc1155s((prev) => ({
+          ...prev,
+          [address]: {
+            ...prev.address,
+            contract: contract,
+            isApprovedForAll,
+          },
+        }));
+      }
+      if (!hasPath([address, "tokenIds", tokenId])(erc1155s)) {
+        if (!_tokenURI) continue;
+        toFetchPaths.push([address, "tokenIds", tokenId]);
+        toFetchLinks.push(parse(_tokenURI, true));
+      }
+    }
+    const meta = await fetchNftMeta1155(toFetchLinks);
+    for (let i = 0; i < meta.length; i++) {
+      setErc1155s((prev) => {
+        const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+        return setTo;
+      });
+    }
+    /* eslint-disable-next-line */
+  }, [currentAddress, renft.instance, signer, fetchNftMeta721]);
+
   // all of the user's erc721s
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
@@ -402,7 +556,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         toFetchLinks.push(parse(_tokenURI, true));
       }
     }
-    const meta = await fetchNftMeta(toFetchLinks);
+    const meta = await fetchNftMeta721(toFetchLinks);
     // one more pass through the meta to see if any of the images are ipfs
     const parsedMeta = await parseMeta(meta);
     for (let i = 0; i < meta.length; i++) {
@@ -413,7 +567,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
     // this functions updates erc721s, so it cannot have that as a dep
     /* eslint-disable-next-line */
-  }, [currentAddress, renft.instance]);
+  }, [currentAddress, renft.instance, fetchNftMeta721, signer]);
 
   // queries ALL of the lendings in reNFT
   const _fetchLending = useCallback(async () => {
@@ -474,7 +628,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           }
         }
       }
-      const meta = await fetchNftMeta(toFetchLinks);
+      const meta = await fetchNftMeta721(toFetchLinks);
       for (let i = 0; i < meta.length; i++) {
         setLendings((prev) => {
           const setTo = ramdaSet(
@@ -496,7 +650,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         });
       }
     },
-    [fetchNftMeta, signer, lendings]
+    [fetchNftMeta721, signer, lendings]
   );
 
   const fetchLending = useCallback(async () => {
@@ -509,8 +663,9 @@ export const GraphProvider: React.FC = ({ children }) => {
       fetchNftMetaDev();
     } else {
       fetchAllERC721();
+      fetchAllERC1155();
     }
-  }, [fetchAllERC721, fetchNftMetaDev]);
+  }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
 
   usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS);
 
@@ -534,7 +689,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   return (
     <GraphContext.Provider
-      value={{ erc721s, fetchAvailableNfts, lendings, rentings }}
+      value={{ erc721s, erc1155s, fetchAvailableNfts, lendings, rentings }}
     >
       {children}
     </GraphContext.Provider>
