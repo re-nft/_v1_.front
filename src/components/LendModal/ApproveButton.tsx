@@ -56,7 +56,7 @@ export const ApproveButton: React.FC<ApproveButtonProps> = ({
       style={{
         border: "3px solid black",
       }}
-      className="Nft__button"
+      className="Navigation__button"
       onClick={handleApproveAll}
     >
       Approve all

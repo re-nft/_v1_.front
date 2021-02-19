@@ -714,7 +714,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           if (!status) continue;
 
           /* eslint-disable-next-line */
-          const isSuccess = _updateFetchMeta(nft, contract!);
+          const isSuccess = await _updateFetchMeta(nft, contract!);
           if (!isSuccess) continue;
 
           // * this is the first time, so we upate the state
@@ -735,7 +735,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           // * checking if the same contract's new tokenId
           // * requires meta fetching
           const contract = await lendings[nft.nftAddress].contract;
-          const isSuccess = _updateFetchMeta(nft, contract);
+          const isSuccess = await _updateFetchMeta(nft, contract);
           if (!isSuccess) continue;
         }
       }
