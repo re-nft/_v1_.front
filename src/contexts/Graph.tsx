@@ -607,77 +607,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     /* eslint-disable-next-line */
   }, [currentAddress, renft.instance, fetchNftMeta721, signer]);
 
-  // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
-  const _fetchLending = useCallback(async () => {
-    const query = queryLending();
-    const data: {
-      lendingRentings: LendingRentingRaw[];
-    } = await request(
-      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
-      query
-    );
-    if (!data) return [];
-    const { lendingRentings } = data;
-    const resolvedData: Lending[] = [];
-    for (let i = 0; i < lendingRentings.length; i++) {
-      const numTimesLent = lendingRentings[i].lending.length;
-      const numTimesRented = lendingRentings[i].renting?.length ?? 0;
-      const isAvailable = numTimesLent === numTimesRented + 1;
-      if (!isAvailable) continue;
-      const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
-      resolvedData.push(item);
-    }
-    return resolvedData;
-  }, [parseLending]);
-
-  // to avoid complex logic in removing a particular tokenId
-  // let the user invoke this function after successful stop lend
-  // to remove the lending directly (by assigning undefined)
-  // from the state. This saves us from otherwise complex react
-  // state comparison versus the pulled from the graph state
-  const removeLending = useCallback((nfts: Nft[]) => {
-    for (const nft of nfts) {
-      if (nft.contract == null) continue;
-      // todo: this won't work during re-lends, need to add lendingId in here as well
-      setLendings((prev) =>
-        ramdaSet(
-          /* eslint-disable-next-line*/
-          lensPath([nft.contract!.address, "tokenIds", nft.tokenId]),
-          undefined,
-          prev
-        )
-      );
-    }
-  }, []);
-
-  // to ease up the complexity of functions, abstract away instantiating
-  // the contract. Contract may be erc1155 or erc721
-  const getNftContract = (nft: Lending, signer?: ethers.Signer) => {
-    let contract: ERC721 | ERC1155;
-    let isERC721: boolean | undefined;
-
-    // determining if we are dealing with erc721 or erc1155
-    try {
-      contract = getERC721(nft.nftAddress, signer);
-      isERC721 = true;
-    } catch (e) {
-      console.warn(
-        "could not instantiate erc721 with",
-        nft.nftAddress,
-        "must be erc1155"
-      );
-      contract = getERC1155(nft.nftAddress, signer);
-      isERC721 = false;
-    }
-
-    if (isERC721 == null) {
-      console.warn("unknown contract type", nft.nftAddress);
-      return { contract: undefined, isERC721: undefined, status: false };
-    }
-
-    return { contract, isERC721, status: true };
-  };
-
   // incremental diff-like updating of the state
   // to avoid costly refetching of the meta
   const _enrichSetLending = useCallback(
@@ -762,10 +691,76 @@ export const GraphProvider: React.FC = ({ children }) => {
     [fetchNftMeta721, signer, lendings]
   );
 
+  // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const fetchLending = useCallback(async () => {
-    const nfts = await _fetchLending();
-    await _enrichSetLending(nfts);
-  }, [_fetchLending, _enrichSetLending]);
+    const query = queryLending();
+    const data: {
+      lendingRentings: LendingRentingRaw[];
+    } = await request(
+      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
+      query
+    );
+    if (!data) return [];
+    const { lendingRentings } = data;
+    const resolvedData: Lending[] = [];
+    for (let i = 0; i < lendingRentings.length; i++) {
+      const numTimesLent = lendingRentings[i].lending.length;
+      const numTimesRented = lendingRentings[i].renting?.length ?? 0;
+      const isAvailable = numTimesLent === numTimesRented + 1;
+      if (!isAvailable) continue;
+      const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
+      resolvedData.push(item);
+    }
+    _enrichSetLending(resolvedData);
+  }, [parseLending, _enrichSetLending]);
+
+  // to avoid complex logic in removing a particular tokenId
+  // let the user invoke this function after successful stop lend
+  // to remove the lending directly (by assigning undefined)
+  // from the state. This saves us from otherwise complex react
+  // state comparison versus the pulled from the graph state
+  const removeLending = useCallback((nfts: Nft[]) => {
+    for (const nft of nfts) {
+      if (nft.contract == null) continue;
+      // todo: this won't work during re-lends, need to add lendingId in here as well
+      setLendings((prev) =>
+        ramdaSet(
+          /* eslint-disable-next-line*/
+          lensPath([nft.contract!.address, "tokenIds", nft.tokenId]),
+          undefined,
+          prev
+        )
+      );
+    }
+  }, []);
+
+  // to ease up the complexity of functions, abstract away instantiating
+  // the contract. Contract may be erc1155 or erc721
+  const getNftContract = (nft: Lending, signer?: ethers.Signer) => {
+    let contract: ERC721 | ERC1155;
+    let isERC721: boolean | undefined;
+
+    // determining if we are dealing with erc721 or erc1155
+    try {
+      contract = getERC721(nft.nftAddress, signer);
+      isERC721 = true;
+    } catch (e) {
+      console.warn(
+        "could not instantiate erc721 with",
+        nft.nftAddress,
+        "must be erc1155"
+      );
+      contract = getERC1155(nft.nftAddress, signer);
+      isERC721 = false;
+    }
+
+    if (isERC721 == null) {
+      console.warn("unknown contract type", nft.nftAddress);
+      return { contract: undefined, isERC721: undefined, status: false };
+    }
+
+    return { contract, isERC721, status: true };
+  };
 
   // const fetchRenting = useCallback(async () => {
   //   const nfts = await _fetchRenting();
