@@ -26,3 +26,5 @@ export enum TransactionStateEnum {
   SUCCESS,
   PENDING,
 }
+
+export type NftAndLendingId = Nft & { lendingId: string };

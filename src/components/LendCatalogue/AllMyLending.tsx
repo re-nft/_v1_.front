@@ -46,15 +46,15 @@ type CatalogueItemProps = {
 // todo: this is not DRY, same code in AvailableToLend
 const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
   return (
-    <div className="Catalogue__item" key={nftId}>
-      <div className="Product" data-item-id={nftId} data-item-image={nft.image}>
+    <div className="Nft__item" key={nftId}>
+      <div className="Nft" data-item-id={nftId} data-item-image={nft.image}>
         <div className="Nft__image">
           <a href={nft.image} target="_blank" rel="noreferrer">
             <img alt="nft" src={nft.image} />
           </a>
         </div>
         <div className="Nft__card">
-          <p className="Product__text_overflow">
+          <p className="Nft__text_overflow">
             <a
               href={`https://etherscan.io/address/${
                 nft.contract?.address ?? ""
@@ -68,9 +68,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
           </p>
         </div>
         <div className="Nft__card">
-          <p className="Product__text_overflow">
-            <span className="Product__label">Token id</span>
-            <span className="Product__value">{nft.tokenId}</span>
+          <p className="Nft__text_overflow">
+            <span className="Nft__label">Token id</span>
+            <span className="Nft__value">{nft.tokenId}</span>
           </p>
         </div>
         <div className="Nft__card" style={{ marginTop: "8px" }}>

@@ -38,7 +38,7 @@ const Tab: React.FC<TabProps> = ({
 
   return (
     <div role="button" style={{ marginRight: "16px" }} onClick={handleClick}>
-      <span className={isFocused ? "active-tab" : "Product__button"}>
+      <span className={isFocused ? "active-tab" : "Navigation__button"}>
         {buttonName}
       </span>
     </div>

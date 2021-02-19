@@ -115,7 +115,9 @@ export type AddressToErc1155 = {
 
 export type AddressToLending = {
   [key: string]: {
-    contract: ERC721;
+    contract: ERC721 | ERC1155;
+    isERC721: boolean;
+    isERC1155: boolean;
     // * these are all approved, since I am lending them
     tokenIds: {
       [key: string]: Omit<Lending, "nftAddress" & "tokenId"> | undefined;
@@ -123,9 +125,11 @@ export type AddressToLending = {
   };
 };
 
-type AddressToRenting = {
+export type AddressToRenting = {
   [key: string]: {
-    contract: ERC721;
+    contract: ERC721 | ERC1155;
+    isERC721: boolean;
+    isERC1155: boolean;
     isApprovedForAll: boolean;
     tokenIds: {
       [key: string]: Renting;
@@ -277,44 +281,48 @@ export const GraphProvider: React.FC = ({ children }) => {
     };
   }, []);
 
-  // ! only used in dev environment
+  // ! only used in dev environment - so don't worry about this too much
   const fetchNftMetaDev = useCallback(async () => {
     if (!myERC721.instance) return [];
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
+    // * only fetched ERC721s in dev right now
     const contract = myERC721.instance;
+
     // * won't fetch in prod
     // pull all of the tokens of the current address
     const numNfts = await contract
       .balanceOf(currentAddress)
       .catch(() => BigNumber.from("0"));
+    if (numNfts.toNumber() === 0) return [];
+
     for (let i = 0; i < numNfts.toNumber(); i++) {
       // get the tokenId, and then fetch the metadata uri, then push this to toFetch
       const tokenId = await contract
         .tokenOfOwnerByIndex(currentAddress, i)
         .catch(() => -1);
       if (tokenId === -1) continue;
-      tokenIds.push(tokenId.toString());
+
       const metaURI = await contract.tokenURI(tokenId).catch(() => "");
-      // todo: other NFTs might have this CORS issue
-      // todo: load on the proxy server might be too high, that would be a good problem to solve
-      const uriToPull = metaURI.startsWith("https://api.sandbox.game")
-        ? `${CORS_PROXY}${metaURI}`
-        : metaURI;
-      if (uriToPull)
-        toFetch.push(
-          fetch(uriToPull, {
-            headers: [["Content-Type", "text/plain"]],
-          })
-            .then(async (dat) => await dat.json())
-            .catch(() => ({}))
-        );
+      if (!metaURI) continue;
+
+      tokenIds.push(tokenId.toString());
+      toFetch.push(
+        fetch(metaURI, {
+          headers: [["Content-Type", "text/plain"]],
+        })
+          .then(async (dat) => await dat.json())
+          .catch(() => ({}))
+      );
     }
+    if (toFetch.length === 0) return [];
+
     const res = await Promise.all(toFetch);
     const tokenIdsObj = {};
     for (let i = 0; i < res.length; i++) {
       Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
     }
+
     const isApprovedForAll = await contract
       .isApprovedForAll(
         currentAddress,
@@ -466,6 +474,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     return parsedMeta;
   };
 
+  // * uses the eip1155 subgraph to pull all your erc1155 holdings
   const fetchAllERC1155 = useCallback(async () => {
     const query = queryAllERC1155(currentAddress);
     const response: queryAllERC1155T = await request(
@@ -481,7 +490,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const { balances } = response.account;
     const toFetchPaths: Path[] = [];
     const toFetchLinks: parse[] = [];
-    // O(n)
+
     for (const tokenBalance of balances) {
       const { token } = tokenBalance;
       // * sometimes the subgraph does not return the URI. For example, for ZORA
@@ -503,11 +512,6 @@ export const GraphProvider: React.FC = ({ children }) => {
             renft.instance!.address
           )
           .catch(() => false);
-        // if (!_tokenURI) {
-        //   _tokenURI = await contract
-        //     .uri(BigNumber.from(tokenId))
-        //     .catch(() => "");
-        // }
         setErc1155s((prev) => ({
           ...prev,
           [address]: {
@@ -523,6 +527,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         toFetchLinks.push(parse(_tokenURI, true));
       }
     }
+
     const meta = await fetchNftMeta1155(toFetchLinks);
     for (let i = 0; i < meta.length; i++) {
       setErc1155s((prev) => {
@@ -531,9 +536,9 @@ export const GraphProvider: React.FC = ({ children }) => {
       });
     }
     /* eslint-disable-next-line */
-  }, [currentAddress, renft.instance, signer, fetchNftMeta721]);
+  }, [currentAddress, renft.instance, signer, fetchNftMeta1155]);
 
-  // all of the user's erc721s
+  // all of the user's erc721s. Uses Ronan's (wighawag) erc721 subgraph
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
     const query = queryAllERC721(currentAddress);
@@ -541,34 +546,37 @@ export const GraphProvider: React.FC = ({ children }) => {
       ENDPOINT_EIP721_PROD,
       query
     );
-    if (!response || response.tokens.length == 0) return [];
-    // todo:  is ENS, doesn't have tokenURI
+    if (
+      !response ||
+      !("tokens" in response) ||
+      response.tokens.length === 0 ||
+      !renft.instance
+    )
+      return [];
+
     const toFetchPaths: Path[] = [];
     const toFetchLinks: parse[] = [];
-    // O(n)
+
     for (const token of response.tokens) {
       const { id, tokenURI } = token;
+      if (!id) continue;
       // * sometimes the subgraph does not return the URI. For example, for ZORA
       let _tokenURI = tokenURI;
       const [address, tokenId] = id.split("_");
-      // if (address.toLowerCase() === ENS_ADDRESS) continue;
       if (!address || !tokenId) continue;
-      // this avoids having redundant instantiations of the same ERC721
+
       if (!erc721s[address]?.contract) {
-        // React will bundle up these individual setStates
         const contract = getERC721(address, signer);
         const isApprovedForAll = await contract
-          .isApprovedForAll(
-            currentAddress,
-            /* eslint-disable-next-line */
-            renft.instance!.address
-          )
+          .isApprovedForAll(currentAddress, renft.instance?.address)
           .catch(() => false);
+
         if (!tokenURI) {
           _tokenURI = await contract
             .tokenURI(BigNumber.from(tokenId))
             .catch(() => "");
         }
+
         setErc721s((prev) => ({
           ...prev,
           [address]: {
@@ -578,12 +586,14 @@ export const GraphProvider: React.FC = ({ children }) => {
           },
         }));
       }
+
       if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
         if (!_tokenURI) continue;
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(_tokenURI, true));
       }
     }
+
     const meta = await fetchNftMeta721(toFetchLinks);
     // one more pass through the meta to see if any of the images are ipfs
     const parsedMeta = await parseMeta(meta);
@@ -597,7 +607,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     /* eslint-disable-next-line */
   }, [currentAddress, renft.instance, fetchNftMeta721, signer]);
 
-  // queries ALL of the lendings in reNFT
+  // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const _fetchLending = useCallback(async () => {
     const query = queryLending();
     const data: {
@@ -620,6 +630,11 @@ export const GraphProvider: React.FC = ({ children }) => {
     return resolvedData;
   }, [parseLending]);
 
+  // to avoid complex logic in removing a particular tokenId
+  // let the user invoke this function after successful stop lend
+  // to remove the lending directly (by assigning undefined)
+  // from the state. This saves us from otherwise complex react
+  // state comparison versus the pulled from the graph state
   const removeLending = useCallback((nfts: Nft[]) => {
     for (const nft of nfts) {
       if (nft.contract == null) continue;
@@ -635,58 +650,108 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, []);
 
+  // to ease up the complexity of functions, abstract away instantiating
+  // the contract. Contract may be erc1155 or erc721
+  const getNftContract = (nft: Lending, signer?: ethers.Signer) => {
+    let contract: ERC721 | ERC1155;
+    let isERC721: boolean | undefined;
+
+    // determining if we are dealing with erc721 or erc1155
+    try {
+      contract = getERC721(nft.nftAddress, signer);
+      isERC721 = true;
+    } catch (e) {
+      console.warn(
+        "could not instantiate erc721 with",
+        nft.nftAddress,
+        "must be erc1155"
+      );
+      contract = getERC1155(nft.nftAddress, signer);
+      isERC721 = false;
+    }
+
+    if (isERC721 == null) {
+      console.warn("unknown contract type", nft.nftAddress);
+      return { contract: undefined, isERC721: undefined, status: false };
+    }
+
+    return { contract, isERC721, status: true };
+  };
+
+  // incremental diff-like updating of the state
+  // to avoid costly refetching of the meta
   const _enrichSetLending = useCallback(
     async (nfts: Lending[]): Promise<void> => {
       const toFetchPaths: Path[] = [];
       const toFetchLinks: parse[] = [];
-      // todo: silly
+      // contains the list of lendings that we need to fetch this time
       const _nfts: Lending[] = [];
+
+      // closure for incremental fetch of new meta
+      // * checks if the tokenId under consideration requires
+      // * meta fetching
+      const _updateFetchMeta = async (
+        nft: Lending,
+        contract: ERC721 | ERC1155
+      ) => {
+        if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
+          const tokenURI = await contract
+            .tokenURI(nft.tokenId)
+            .catch(() => undefined);
+          if (!tokenURI) return false;
+          toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
+          toFetchLinks.push(parse(tokenURI, true));
+          _nfts.push(nft);
+          return true;
+        }
+      };
+
       for (const nft of nfts) {
+        // * in here if this is the first time we are fetching the metadata
+        // * for this NFT
         if (!lendings[nft.nftAddress]?.contract) {
-          const contract = getERC721(nft.nftAddress, signer);
-          if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
-            const tokenURI = await contract
-              .tokenURI(nft.tokenId)
-              .catch(() => undefined);
-            if (!tokenURI) continue;
-            toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
-            toFetchLinks.push(parse(tokenURI, true));
-            _nfts.push(nft);
-          }
+          const { contract, isERC721, status } = getNftContract(nft, signer);
+          if (!status) continue;
+
+          /* eslint-disable-next-line */
+          const isSuccess = _updateFetchMeta(nft, contract!);
+          if (!isSuccess) continue;
+
+          // * this is the first time, so we upate the state
+          // * with the contract for the NFT under question
           setLendings((prev) => ({
             ...prev,
             [nft.nftAddress]: {
               ...prev[nft.nftAddress],
-              contract: contract,
+              /* eslint-disable-next-line */
+              contract: contract!,
+              /* eslint-disable-next-line */
+              isERC721: isERC721!,
+              isERC1155: !isERC721,
             },
           }));
         } else {
-          if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
-            const tokenURI = await lendings[nft.nftAddress].contract.tokenURI(
-              nft.tokenId
-            );
-            toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
-            toFetchLinks.push(parse(tokenURI, true));
-            _nfts.push(nft);
-          }
+          // * in here if we have fetched meta before
+          // * checking if the same contract's new tokenId
+          // * requires meta fetching
+          const contract = await lendings[nft.nftAddress].contract;
+          const isSuccess = _updateFetchMeta(nft, contract);
+          if (!isSuccess) continue;
         }
       }
+
       // todo: this should be nft type agnostic
       const meta = await fetchNftMeta721(toFetchLinks);
+
+      // now that we have gathered and fetched the incremental meta
+      // we are ready to update the current state
       for (let i = 0; i < meta.length; i++) {
         setLendings((prev) => {
           const setTo = ramdaSet(
             lensPath(toFetchPaths[i]),
             {
               ...meta[i],
-              id: _nfts[i].id,
-              lenderAddress: _nfts[i].lenderAddress,
-              maxRentDuration: _nfts[i].maxRentDuration,
-              dailyRentPrice: _nfts[i].dailyRentPrice,
-              nftPrice: _nfts[i].nftPrice,
-              paymentToken: _nfts[i].paymentToken,
-              renting: _nfts[i].renting,
-              collateralClaimed: _nfts[i].collateralClaimed,
+              ..._nfts[i],
             },
             prev
           );
@@ -716,16 +781,11 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
 
-  usePoller(fetchLending, 3 * SECOND_IN_MILLISECONDS);
+  usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS);
 
   useEffect(() => {
     // ! do not remove this line
     if (!currentAddress || !renft.instance || !signer) return;
-    // to avoid working with hardhat contracts when in dev env
-    // you may switch a network, to test that mainnet works
-    // but if you do so, and this wasn't here, you would
-    // get a bunch of gibberish errors that would make zero
-    // sense and you would waste half a day debugging
     fetchAvailableNfts();
     fetchLending();
   }, [

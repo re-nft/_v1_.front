@@ -1,4 +1,4 @@
-.Product {
+.Nft {
   text-decoration: none;
   color: black;
 }
@@ -18,7 +18,7 @@
   }
 }
 
-.Product:hover .Nft__image {
+.Nft:hover .Nft__image {
   img {
     transform: skew(-5deg, -5deg) rotate(10deg);
   }
@@ -56,19 +56,19 @@
   cursor: default;
 }
 
-.Product__label {
+.Nft__label {
   font-weight: bold;
   padding-right: 20px;
   float: left;
 }
 
-.Product__value {
+.Nft__value {
   font-size: 0.8em;
   font-weight: normal;
   color: #2a2a2a;
 }
 
-.Product__text_overflow {
+.Nft__text_overflow {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -110,7 +110,7 @@
   }
 }
 
-.Product__button {
+.Navigation__button {
   text-align: right;
   text-transform: uppercase;
   background: #663399;

@@ -3,9 +3,9 @@ import * as R from "ramda";
 
 import GraphContext, { AddressToLending } from "../contexts/Graph";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import { Nft, Address } from "../types";
+import { Address, NftAndLendingId } from "../types";
+import { Lending } from "../types/graph";
 
-type NftAndLendingId = Nft & { lendingId: string };
 type useLendingsReturnT = {
   allRentings: NftAndLendingId[];
   myLendings: NftAndLendingId[];

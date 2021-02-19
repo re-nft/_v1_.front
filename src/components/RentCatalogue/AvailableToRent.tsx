@@ -1,25 +1,14 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useContext } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 
 import { Lending } from "../../types/graph";
 import { useRenft } from "../../hooks/useRenft";
-
-type RentButtonProps = {
-  handleRent: (lending: Lending) => void;
-  lending: Lending;
-};
-
-type handleReturnArgs = {
-  lending: Lending;
-  gasSponsor?: string;
-};
-type handleReturnFunc = ({ lending, gasSponsor }: handleReturnArgs) => void;
-
-type ReturnButtonProps = {
-  handleReturn: handleReturnFunc;
-  lending: Lending;
-  gasSponsor?: handleReturnArgs["gasSponsor"];
-};
+import {
+  CurrentAddressContext,
+  RentNftContext,
+} from "../../hardhat/SymfoniContext";
+import { RentButton } from "./RentButton";
+import { NftAndLendingId } from "../../types";
 
 type NumericFieldProps = {
   text: string;
@@ -31,10 +20,10 @@ type NumericFieldProps = {
 // but since it comes out of blockchain, this should always be correct
 const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   <div className="Nft__card">
-    <p className="Product__text_overflow">
-      <span className="Product__label">{text}</span>
+    <p className="Nft__text_overflow">
+      <span className="Nft__label">{text}</span>
       <Tooltip title={value}>
-        <span className="Product__value">{`${unit} ${Number(value).toFixed(
+        <span className="Nft__value">{`${unit} ${Number(value).toFixed(
           2
         )}`}</span>
       </Tooltip>
@@ -42,80 +31,69 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   </div>
 );
 
-const RentButton: React.FC<RentButtonProps> = ({ handleRent, lending }) => {
-  const handleClick = useCallback(() => {
-    handleRent(lending);
-  }, [handleRent, lending]);
-
-  return (
-    <span
-      className="Nft__button"
-      onClick={handleClick}
-      style={{ marginTop: "8px" }}
-    >
-      Rent now
-    </span>
-  );
-};
-
-const ReturnButton: React.FC<ReturnButtonProps> = ({
-  handleReturn,
-  lending,
-  gasSponsor,
-}) => {
-  const handleClick = useCallback(() => {
-    handleReturn({ lending, gasSponsor });
-  }, [lending, gasSponsor, handleReturn]);
-
-  return (
-    <span
-      className="Nft__button"
-      onClick={handleClick}
-      style={{ marginTop: "8px" }}
-    >
-      Return now
-    </span>
-  );
-};
-
 export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { allRentings } = useRenft();
+  const [currentAddress] = useContext(CurrentAddressContext);
+  const { instance: renft } = useContext(RentNftContext);
 
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
   }, []);
 
+  const computeEthAmount = (rentDuration: number, dailyPrice: number) => {
+    return 0;
+  };
+
+  const handleRent = useCallback(
+    async (nft: Lending) => {
+      // need contract instance
+      // for that need renft context from symfoni
+      // and currentAddress from currentaddress context from symfoni
+      // if (!currentAddress || !renft || !nft.contract?.address) return;
+      // // todo: for how long to rent, pull that
+      // // todo: approve the erc20 if not approved
+      // // for eth payments, need to also supply the amount in overrides
+      // await renft.rent(
+      //   [nft.contract?.address],
+      //   [nft.tokenId],
+      //   [nft.lendingId],
+      //   [1]
+      // );
+    },
+    [renft, currentAddress]
+  );
+
   return (
     <Box>
       <Box className="Catalogue">
         {allRentings.map((nft) => {
-          const id = `${nft.contract?.address}::${nft.tokenId}`;
-
+          const id = `${nft.tokenId}`;
+          // const id = `${nft.contract?.address}::${nft.tokenId}`;
           return (
-            <div className="Catalogue__item" key={id}>
-              <div className="Product" data-item-id={id}>
+            <div className="Nft__item" key={id}>
+              <div className="Nft" data-item-id={id}>
                 <div className="Nft__image">
-                  {/* <a href={lending.}>
-                      <img alt="nft" src={lending.imageUrl} />
-                    </a> */}
+                  {/* <a href={nft.image}>
+                    <img alt="nft" src={nft.image} />
+                  </a> */}
                 </div>
                 <div className="Nft__card">
-                  <p className="Product__text_overflow">
-                    <a
+                  <p className="Nft__text_overflow">
+                    {/* <a
                       href={`https://goerli.etherscan.io/address/${nft.contract?.address}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{ textDecoration: "none", color: "black" }}
                     >
                       {nft.contract?.address}
-                    </a>
+                    </a> */}
                   </p>
                 </div>
                 <div className="Nft__card">
-                  <p className="Product__text_overflow">
-                    <span className="Product__label">Token id</span>
-                    <span className="Product__value">{nft.tokenId}</span>
+                  <p className="Nft__text_overflow">
+                    <span className="Nft__label">Token id</span>
+                    <span className="Nft__value">{nft.tokenId}</span>
                   </p>
                 </div>
                 {/* <NumericField
@@ -134,14 +112,7 @@ export const AvailableToRent: React.FC = () => {
                   unit={PaymentToken[lending.paymentToken]}
                 /> */}
                 <div className="Nft__card">
-                  {/* {!iBorrow ? (
-                      <RentButton handleRent={handleRent} lending={lending} />
-                    ) : (
-                      <ReturnButton
-                        // handleReturn={handleReturn}
-                        lending={lending}
-                      />
-                    )} */}
+                  {/* <RentButton handleRent={handleRent} nft={nft} /> */}
                 </div>
               </div>
             </div>
