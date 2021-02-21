@@ -1,12 +1,12 @@
 import Ipfs from "ipfs-core";
 import { useEffect, useState } from "react";
 
-let ipfs: Ipfs.IPFS | null = null;
+// const ipfs: Ipfs.IPFS | null = null;
 
 type useIpfsFactoryReturnT = {
-  ipfs: Ipfs.IPFS | null;
+  ipfs?: Ipfs.IPFS;
   isIpfsReady: boolean;
-  ipfsInitError: string | null;
+  ipfsInitError: string;
 };
 
 /*
@@ -20,8 +20,9 @@ type useIpfsFactoryReturnT = {
  * it to be passed in.
  */
 const useIpfsFactory = (): useIpfsFactoryReturnT => {
-  const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs));
-  const [ipfsInitError, setIpfsInitError] = useState<string | null>(null);
+  const [isIpfsReady, setIpfsReady] = useState(false);
+  const [ipfsInitError, setIpfsInitError] = useState<string>("");
+  const [ipfs, setIpfs] = useState<Ipfs.IPFS>();
 
   useEffect(() => {
     // The fn to useEffect should not return anything other than a cleanup fn,
@@ -35,15 +36,26 @@ const useIpfsFactory = (): useIpfsFactoryReturnT => {
       } else if (window.ipfs?.enable) {
         console.log("Found window.ipfs");
         //@ts-ignore
-        ipfs = await window.ipfs.enable({ commands: ["id"] });
+        const _ipfs = await window.ipfs.enable({ commands: ["id"] });
+        setIpfs(_ipfs);
       } else {
         try {
           console.time("IPFS Started");
-          ipfs = await Ipfs.create();
+          const _ipfs = await Ipfs.create();
+          console.log("_ipfs", _ipfs);
+          setIpfs(_ipfs);
+
+          const lsFiles = _ipfs.files.ls(
+            "/ipfs/QmRBh6trb2nEa9wFfMfYwcKyGyu8jSEtqRgkVH6UY6VnGa"
+          );
+          for (await blob of lsFiles) {
+            console.log(blob);
+          }
+
           console.timeEnd("IPFS Started");
         } catch (error) {
           console.error("IPFS init error:", error);
-          ipfs = null;
+          setIpfs(undefined);
           setIpfsInitError(error);
         }
       }
@@ -56,7 +68,7 @@ const useIpfsFactory = (): useIpfsFactoryReturnT => {
       if (ipfs?.stop) {
         console.log("Stopping IPFS");
         ipfs.stop().catch((err) => console.error(err));
-        ipfs = null;
+        setIpfs(undefined);
         setIpfsReady(false);
       }
     };

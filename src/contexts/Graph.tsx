@@ -36,6 +36,7 @@ import {
 import { Address, Nft } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
+import useIpfsFactory from "../hooks/ipfs/useIpfsFactory";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -256,6 +257,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
 
+  const { ipfs } = useIpfsFactory();
+
   const parseLending = useCallback((lending: LendingRaw): Lending => {
     return {
       id: lending.id,
@@ -343,44 +346,52 @@ export const GraphProvider: React.FC = ({ children }) => {
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
   // fetched meta
-  const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
-    const cids: string[] = [];
-    const imageCids: string[] = [];
+  const fetchNftMeta1155 = useCallback(
+    async (uris: parse[]) => {
+      const cids: string[] = [];
+      const imageCids: string[] = [];
 
-    if (uris.length < 1) return [];
+      // console.log("ipfs", ipfs);
 
-    for (const uri of uris) {
-      if (!uri.pathname) continue;
-      const parts = uri.pathname.split("/");
-      const CID = parts[parts.length - 1];
-      cids.push(CID);
-    }
-    const meta = await pull({ cids });
+      if (uris.length < 1) return [];
 
-    const indicesToUpdate: number[] = [];
-    for (let i = 0; i < meta.length; i++) {
-      if (!("image" in meta[i])) continue;
-      //@ts-ignore
-      const imageIpfsUri: string | undefined = meta[i].image;
-      const cid = imageIpfsUri?.slice(12);
-      if (!cid) continue;
-      indicesToUpdate.push(i);
-      imageCids.push(cid);
-    }
-    const images = await pull({ cids: imageCids, isBytesFetch: true });
+      // console.log("ipfs", ipfs);
 
-    for (let i = 0; i < indicesToUpdate.length; i++) {
-      try {
-        const blob = await images[i].blob();
-        //@ts-ignore
-        meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
-      } catch (e) {
-        console.warn("could not parse image");
-        continue;
+      for (const uri of uris) {
+        console.log(uri.pathname);
+        if (!uri.pathname) continue;
+        const parts = uri.pathname.split("/");
+        const CID = parts[parts.length - 1];
+        cids.push(CID);
       }
-    }
-    return meta;
-  }, []);
+      const meta = await pull({ cids });
+
+      const indicesToUpdate: number[] = [];
+      for (let i = 0; i < meta.length; i++) {
+        if (!("image" in meta[i])) continue;
+        //@ts-ignore
+        const imageIpfsUri: string | undefined = meta[i].image;
+        const cid = imageIpfsUri?.slice(12);
+        if (!cid) continue;
+        indicesToUpdate.push(i);
+        imageCids.push(cid);
+      }
+      const images = await pull({ cids: imageCids, isBytesFetch: true });
+
+      for (let i = 0; i < indicesToUpdate.length; i++) {
+        try {
+          const blob = await images[i].blob();
+          //@ts-ignore
+          meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
+        } catch (e) {
+          console.warn("could not parse image");
+          continue;
+        }
+      }
+      return meta;
+    },
+    [ipfs]
+  );
 
   const fetchNftMeta721 = useCallback(async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
