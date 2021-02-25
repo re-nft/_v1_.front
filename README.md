@@ -72,3 +72,13 @@ Our reNFT app has named accounts, third account is the lender and so will show t
 **6. Start the front**
 - `yarn` to install deps in this repo
 - `yarn dev` to start the dev server
+
+# Contriutions:
+- Integrate Renting
+  1. show all of the rentings (except your lendings) on the platform by default in the rent tab (erc721 and erc1155)
+  2. just like in lending, add the toggle switch. When toggled, will only show the ones you are renting
+  3. when you click rent under the available nft, shows modal. This modal will have inputs as per in the rent call in smart contract: number of days to rent for (cannot exceed maximum number set by lender), approve the nft (if required).
+- Integrate Dashboard
+  1. use the results from the subgraph calls already made to retrieve lendings and rentings for the tabs
+- Leaderboard
+  1. let's remove completely for now
