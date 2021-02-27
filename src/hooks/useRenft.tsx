@@ -40,7 +40,7 @@ export const useRenft = (): useLendingsReturnT => {
       for (const tokenId of Object.keys(lendings[address].tokenIds)) {
         const lending = lendings[address].tokenIds[tokenId] as Lending;
         const iAmLender = lending?.lenderAddress === currentAddress;
-        if (iAmLender) continue;
+        if (iAmLender || !lending) continue;
         const image = pickImage(lendings, address, tokenId);
         const lendingRentInfo: LendingRentInfo = {
           dailyRentPrice: lending.dailyRentPrice,
@@ -69,7 +69,7 @@ export const useRenft = (): useLendingsReturnT => {
         const lending = lendings[address].tokenIds[tokenId] as Lending;
         const iAmNotLender =
           lendings[address].tokenIds[tokenId]?.lenderAddress !== currentAddress;
-        if (iAmNotLender) continue;
+        if (iAmNotLender || !lending) continue;
         const image = pickImage(lendings, address, tokenId);
         const lendingRentInfo: LendingRentInfo = {
           dailyRentPrice: lending.dailyRentPrice,
