@@ -23,6 +23,7 @@ import {
   getERC721,
   THROWS,
   unpackHexPrice,
+  unpackPrice,
   parsePaymentToken,
 } from "../utils";
 import { usePoller } from "../hooks/usePoller";
@@ -32,11 +33,12 @@ import {
   Lending,
   Renting,
   RentingRaw,
+  User,
 } from "../types/graph";
 import { Address, Nft } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
 import { pull } from "../ipfs";
-import useIpfsFactory from "../hooks/ipfs/useIpfsFactory";
+// import useIpfsFactory from "../hooks/ipfs/useIpfsFactory";
 
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 
@@ -138,6 +140,11 @@ export type AddressToRenting = {
   };
 };
 
+export type UserData = {
+  lendings: Lending[];
+  rentings: Renting[];
+};
+
 type GraphContextType = {
   erc721s: AddressToErc721;
   erc1155s: AddressToErc1155;
@@ -145,6 +152,7 @@ type GraphContextType = {
   rentings: AddressToRenting;
   fetchAvailableNfts: () => void;
   removeLending: (nfts: Nft[]) => void;
+  user: UserData;
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -154,6 +162,10 @@ const DefaultGraphContext: GraphContextType = {
   rentings: {},
   removeLending: THROWS,
   fetchAvailableNfts: THROWS,
+  user: {
+    lendings: [],
+    rentings: [],
+  },
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -253,11 +265,13 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [erc1155s, setErc1155s] = useState<AddressToErc1155>({});
   const [lendings, setLendings] = useState<AddressToLending>({});
   const [rentings, setRentings] = useState<AddressToRenting>({});
+  const [userData, setUserData] = useState<UserData>({
+    lendings: [],
+    rentings: [],
+  });
 
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
-
-  const { ipfs } = useIpfsFactory();
 
   const parseLending = useCallback((lending: LendingRaw): Lending => {
     return {
@@ -266,8 +280,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       tokenId: lending.tokenId,
       lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
       maxRentDuration: Number(lending.maxRentDuration),
-      dailyRentPrice: unpackHexPrice(lending.dailyRentPrice, DP18),
-      nftPrice: unpackHexPrice(lending.nftPrice, DP18),
+      dailyRentPrice: unpackPrice(lending.dailyRentPrice, DP18),
+      nftPrice: unpackPrice(lending.nftPrice, DP18),
       paymentToken: parsePaymentToken(lending.paymentToken),
       renting: lending.renting ?? undefined,
       collateralClaimed: Boolean(lending.collateralClaimed),
@@ -346,52 +360,49 @@ export const GraphProvider: React.FC = ({ children }) => {
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
   // fetched meta
-  const fetchNftMeta1155 = useCallback(
-    async (uris: parse[]) => {
-      const cids: string[] = [];
-      const imageCids: string[] = [];
+  const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
+    const cids: string[] = [];
+    const imageCids: string[] = [];
 
-      // console.log("ipfs", ipfs);
+    // console.log("ipfs", ipfs);
 
-      if (uris.length < 1) return [];
+    if (uris.length < 1) return [];
 
-      // console.log("ipfs", ipfs);
+    // console.log("ipfs", ipfs);
 
-      for (const uri of uris) {
-        console.log(uri.pathname);
-        if (!uri.pathname) continue;
-        const parts = uri.pathname.split("/");
-        const CID = parts[parts.length - 1];
-        cids.push(CID);
-      }
-      const meta = await pull({ cids });
+    for (const uri of uris) {
+      console.log(uri.pathname);
+      if (!uri.pathname) continue;
+      const parts = uri.pathname.split("/");
+      const CID = parts[parts.length - 1];
+      cids.push(CID);
+    }
+    const meta = await pull({ cids });
 
-      const indicesToUpdate: number[] = [];
-      for (let i = 0; i < meta.length; i++) {
-        if (!("image" in meta[i])) continue;
+    const indicesToUpdate: number[] = [];
+    for (let i = 0; i < meta.length; i++) {
+      if (!("image" in meta[i])) continue;
+      //@ts-ignore
+      const imageIpfsUri: string | undefined = meta[i].image;
+      const cid = imageIpfsUri?.slice(12);
+      if (!cid) continue;
+      indicesToUpdate.push(i);
+      imageCids.push(cid);
+    }
+    const images = await pull({ cids: imageCids, isBytesFetch: true });
+
+    for (let i = 0; i < indicesToUpdate.length; i++) {
+      try {
+        const blob = await images[i].blob();
         //@ts-ignore
-        const imageIpfsUri: string | undefined = meta[i].image;
-        const cid = imageIpfsUri?.slice(12);
-        if (!cid) continue;
-        indicesToUpdate.push(i);
-        imageCids.push(cid);
+        meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
+      } catch (e) {
+        console.warn("could not parse image");
+        continue;
       }
-      const images = await pull({ cids: imageCids, isBytesFetch: true });
-
-      for (let i = 0; i < indicesToUpdate.length; i++) {
-        try {
-          const blob = await images[i].blob();
-          //@ts-ignore
-          meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
-        } catch (e) {
-          console.warn("could not parse image");
-          continue;
-        }
-      }
-      return meta;
-    },
-    [ipfs]
-  );
+    }
+    return meta;
+  }, []);
 
   const fetchNftMeta721 = useCallback(async (uris: parse[]) => {
     const toFetch: Promise<Response>[] = [];
@@ -702,6 +713,22 @@ export const GraphProvider: React.FC = ({ children }) => {
     [fetchNftMeta721, signer, lendings]
   );
 
+  const fetchUser = useCallback(async () => {
+    const query = queryUser(currentAddress);
+    const data: {
+      user: User;
+    } = await request(
+      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
+      query
+    );
+    if (!data || !data.user) return [];
+    const { lending, renting } = data.user;
+    setUserData({
+      lendings: lending || [],
+      rentings: renting || [],
+    });
+  }, [currentAddress, lendings]);
+
   // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const fetchLending = useCallback(async () => {
     const query = queryLending();
@@ -794,6 +821,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!currentAddress || !renft.instance || !signer) return;
     fetchAvailableNfts();
     fetchLending();
+    fetchUser();
   }, [
     currentAddress,
     renft.instance,
@@ -811,6 +839,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         removeLending,
         lendings,
         rentings,
+        user: userData,
       }}
     >
       {children}

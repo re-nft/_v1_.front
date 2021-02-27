@@ -18,21 +18,26 @@ export const TransactionNotifier: React.FC = () => {
   return (
     <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
       <div
+        className="TransactionNotifier"
         style={{
           position: "fixed",
-          right: "0",
-          top: "0",
-          zIndex: 1000,
-          marginTop: "4em",
-          marginRight: "4em",
+          left: "50%",
+          top: "50%",
+          zIndex: 9999,
+          marginTop: "-110px",
+          marginLeft: "-90px",
+          background: "rgb(85, 0, 153)",
+          border: "3px solid #000",
+          padding: "40px",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div>
           <div
             style={{
-              position: "absolute",
-              left: "0",
+              position: "relative",
+              top: "0",
               color: "teal",
+              paddingBottom: "100px",
             }}
           >
             {txnState === TransactionStateEnum.PENDING && <Spinner />}
@@ -44,11 +49,7 @@ export const TransactionNotifier: React.FC = () => {
             )}
           </div>
           <a
-            style={{
-              color: "teal",
-              fontSize: "24px",
-              marginLeft: "2em",
-            }}
+            style={{ color: "teal", fontSize: "24px" }}
             href={`https://etherscan.io/tx/${hash}`}
             target="_blank"
             rel="noreferrer"

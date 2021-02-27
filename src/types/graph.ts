@@ -21,8 +21,8 @@ export type Lending = {
   tokenId: TokenId;
   lenderAddress: Address;
   maxRentDuration: number;
-  dailyRentPrice: BigNumber;
-  nftPrice: BigNumber;
+  dailyRentPrice: number;
+  nftPrice: number;
   paymentToken: PaymentToken;
   renting?: string;
   collateralClaimed: boolean;

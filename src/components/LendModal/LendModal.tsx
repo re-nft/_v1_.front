@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
+import { BigNumber } from "ethers";
 
+import { decimalToPaddedHexString } from "../../utils";
 import { Nft, PaymentToken } from "../../types";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
@@ -88,41 +90,70 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const handleLend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+
       if (!nft || !renft || isActive || !nft.contract) return;
       // need to approve if it wasn't: nft
-
       const tx = await renft.lend(
         [nft.contract.address],
         [nft.tokenId],
-        ["3"],
-        ["0x00000011"],
-        ["0x00000101"],
-        ["1"]
+        [BigNumber.from(lendOneInputs.maxDuration.value)],
+        [decimalToPaddedHexString(Number(lendOneInputs.borrowPrice.value), 32)], // min 0.0001 max number 9_999.9999
+        [decimalToPaddedHexString(Number(lendOneInputs.nftPrice.value), 32)], // min 0.0001 max number 9_999.9999
+        [pmtToken.toString()]
       );
 
       setHash(tx.hash);
+      setOpen(false);
       fetchAvailableNfts();
     },
-    [nft, renft, setHash, isActive, fetchAvailableNfts]
+    [
+      nft,
+      renft,
+      setHash,
+      setOpen,
+      isActive,
+      fetchAvailableNfts,
+      lendOneInputs,
+      pmtToken,
+    ]
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // ! this wasted an hour of my life: https://duncanleung.com/fixing-react-warning-synthetic-events-in-setstate/
-    e.persist();
-    const target = e.target.name;
-    const val = e.target.value;
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const target = e.target.name;
+      const value = e.target.value;
+      setLendOneInputs({
+        ...lendOneInputs,
+        [target]: {
+          value,
+          valid: true,
+        },
+      });
+    },
+    [lendOneInputs, setLendOneInputs]
+  );
 
-    setLendOneInputs((lendOneInputs) => ({
-      ...lendOneInputs,
-      [target]: {
-        value: val,
-        valid: true,
-      },
-    }));
-  };
+  const onHandleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      const target = e.target.name;
+      const value = e.target.value;
+      setLendOneInputs({
+        ...lendOneInputs,
+        [target]: {
+          value,
+          valid: true,
+        },
+      });
+    },
+    [lendOneInputs, setLendOneInputs]
+  );
 
+  const onSelectPaymentToken = useCallback(
+    (value: number) => setPmtToken(value),
+    []
+  );
   const handleClose = useCallback(() => setOpen(false), [setOpen]);
-
+  // TODO: add tooltip for borrowPrice and nftPrice
   return (
     <Modal open={open} handleClose={handleClose}>
       <form
@@ -146,6 +177,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
               !lendOneInputs.maxDuration.valid ? "Must be a natural number" : ""
             }
             onChange={handleChange}
+            onBlur={onHandleBlur}
             name="maxDuration"
           />
           <CssTextField
@@ -162,6 +194,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
                 : ""
             }
             onChange={handleChange}
+            onBlur={onHandleBlur}
             name="borrowPrice"
           />
           <CssTextField
@@ -178,10 +211,14 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
                 : ""
             }
             onChange={handleChange}
+            onBlur={onHandleBlur}
             name="nftPrice"
           />
           <FormControl variant="outlined">
-            <MinimalSelect />
+            <MinimalSelect
+              onSelect={onSelectPaymentToken}
+              selectedValue={pmtToken}
+            />
           </FormControl>
         </Box>
         <Box className={classes.buttons}>

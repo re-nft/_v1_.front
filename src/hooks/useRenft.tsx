@@ -3,7 +3,7 @@ import * as R from "ramda";
 
 import GraphContext, { AddressToLending } from "../contexts/Graph";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import { Address, NftAndLendingId } from "../types";
+import { Address, NftAndLendingId, LendingRentInfo } from "../types";
 import { Lending } from "../types/graph";
 
 type useLendingsReturnT = {
@@ -14,7 +14,6 @@ type useLendingsReturnT = {
 export const useRenft = (): useLendingsReturnT => {
   const { lendings } = useContext(GraphContext);
   const [currentAddress] = useContext(CurrentAddressContext);
-
   const pickImage = (
     lendings: AddressToLending,
     address: Address,
@@ -39,15 +38,22 @@ export const useRenft = (): useLendingsReturnT => {
     for (const address of Object.keys(lendings)) {
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
       for (const tokenId of Object.keys(lendings[address].tokenIds)) {
-        const iAmLender =
-          lendings[address].tokenIds[tokenId]?.lenderAddress === currentAddress;
+        const lending = lendings[address].tokenIds[tokenId] as Lending;
+        const iAmLender = lending?.lenderAddress === currentAddress;
         if (iAmLender) continue;
         const image = pickImage(lendings, address, tokenId);
+        const lendingRentInfo: LendingRentInfo = {
+          dailyRentPrice: lending.dailyRentPrice,
+          maxRentDuration: lending.maxRentDuration,
+          paymentToken: lending.paymentToken,
+          nftPrice: lending.nftPrice,
+        };
         nfts.push({
           contract: lendings[address].contract,
           tokenId,
           image,
-          lendingId: lendings[address].tokenIds[tokenId]?.id ?? "",
+          lendingId: lending?.id ?? "",
+          lendingRentInfo,
         });
       }
     }
@@ -60,15 +66,24 @@ export const useRenft = (): useLendingsReturnT => {
     for (const address of Object.keys(lendings)) {
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
       for (const tokenId of Object.keys(lendings[address].tokenIds)) {
+        const lending = lendings[address].tokenIds[tokenId] as Lending;
         const iAmNotLender =
           lendings[address].tokenIds[tokenId]?.lenderAddress !== currentAddress;
         if (iAmNotLender) continue;
         const image = pickImage(lendings, address, tokenId);
+        const lendingRentInfo: LendingRentInfo = {
+          dailyRentPrice: lending.dailyRentPrice,
+          maxRentDuration: lending.maxRentDuration,
+          paymentToken: lending.paymentToken,
+          nftPrice: lending.nftPrice,
+        };
+
         nfts.push({
           contract: lendings[address].contract,
           tokenId,
           image,
           lendingId: lendings[address].tokenIds[tokenId]?.id ?? "",
+          lendingRentInfo,
         });
       }
     }

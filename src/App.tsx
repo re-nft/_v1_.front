@@ -6,9 +6,8 @@ import Rent from "./components/RentCatalogue/Rent";
 import Lend from "./components/LendCatalogue/Lend";
 import ButHow from "./components/FAQ";
 import Stats from "./components/Stats";
-import Leaderboard from "./components/Leaderboard";
 import { TransactionNotifier } from "./components/TransactionNotifier";
-import useIpfsFactory from "./hooks/ipfs/useIpfsFactory";
+// import useIpfsFactory from "./hooks/ipfs/useIpfsFactory";
 
 enum Tabs {
   RENT,
@@ -48,7 +47,7 @@ const Tab: React.FC<TabProps> = ({
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
-  useIpfsFactory();
+  //useIpfsFactory();
 
   return (
     <Layout>
@@ -79,12 +78,6 @@ const App: React.FC = () => {
         />
         <Tab
           setTab={setActiveTab}
-          isFocused={activeTab === Tabs.LEADER}
-          thisTab={Tabs.LEADER}
-          buttonName="Leaderboard?"
-        />
-        <Tab
-          setTab={setActiveTab}
           isFocused={activeTab === Tabs.HOW}
           thisTab={Tabs.HOW}
           buttonName="FAQ"
@@ -101,7 +94,6 @@ const App: React.FC = () => {
       >
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
-        <Leaderboard hidden={activeTab !== Tabs.LEADER} />
         <ButHow hidden={activeTab !== Tabs.HOW} />
         <Stats hidden={activeTab !== Tabs.STATS} />
       </Box>

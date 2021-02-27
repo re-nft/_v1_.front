@@ -4,15 +4,23 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { PaymentToken } from "../../types";
 
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540
 
-const MinimalSelect: React.FC = () => {
-  const [val, setVal] = useState(1);
+type MinimalSelectProps = {
+  onSelect(value: number): void;
+  selectedValue: number;
+};
 
+const MinimalSelect: React.FC<MinimalSelectProps> = ({
+  onSelect,
+  selectedValue,
+}) => {
   //@ts-ignore
   const handleChange = (event) => {
-    setVal(event.target.value);
+    const value = event.target.value as PaymentToken;
+    onSelect(value);
   };
 
   const minimalSelectClasses = useMinimalSelectStyles();
@@ -51,29 +59,39 @@ const MinimalSelect: React.FC = () => {
         //@ts-ignore
         MenuProps={menuProps}
         IconComponent={iconComponent}
-        value={val}
+        value={selectedValue}
         onChange={handleChange}
       >
-        <MenuItem value={1} disabled>
-          Payment Token *
-        </MenuItem>
-        <MenuItem value={2} style={{ color: "teal", fontWeight: 1000 }}>
-          USDC
-        </MenuItem>
-        <MenuItem value={3} style={{ color: "teal", fontWeight: 1000 }}>
-          USDT
-        </MenuItem>
-        <MenuItem value={4} style={{ color: "teal", fontWeight: 1000 }}>
+        <MenuItem disabled>Payment Token *</MenuItem>
+        <MenuItem
+          value={PaymentToken.DAI}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
           DAI
         </MenuItem>
-        <MenuItem value={5} style={{ color: "teal", fontWeight: 1000 }}>
+        <MenuItem
+          value={PaymentToken.USDC}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
+          USDC
+        </MenuItem>
+        <MenuItem
+          value={PaymentToken.USDT}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
+          USDT
+        </MenuItem>
+        <MenuItem
+          value={PaymentToken.TUSD}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
+          TUSD
+        </MenuItem>
+        <MenuItem
+          value={PaymentToken.RENT}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
           RENT
-        </MenuItem>
-        <MenuItem value={6} style={{ color: "teal", fontWeight: 1000 }}>
-          ETH
-        </MenuItem>
-        <MenuItem value={7} style={{ color: "teal", fontWeight: 1000 }}>
-          WETH
         </MenuItem>
       </Select>
     </FormControl>

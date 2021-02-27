@@ -1,14 +1,14 @@
 import React, { useCallback, useState, useContext } from "react";
 import { Box, Tooltip } from "@material-ui/core";
-
-import { Lending } from "../../types/graph";
+import { DP18 } from "../../consts";
+import { unpackHexPrice } from "../../utils";
 import { useRenft } from "../../hooks/useRenft";
 import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../hardhat/SymfoniContext";
 import { RentButton } from "./RentButton";
-import { NftAndLendingId } from "../../types";
+import { NftAndLendingId, PaymentToken } from "../../types";
 
 type NumericFieldProps = {
   text: string;
@@ -46,48 +46,49 @@ export const AvailableToRent: React.FC = () => {
   };
 
   const handleRent = useCallback(
-    async (nft: Lending) => {
+    async (nft: NftAndLendingId) => {
       // need contract instance
       // for that need renft context from symfoni
       // and currentAddress from currentaddress context from symfoni
-      // if (!currentAddress || !renft || !nft.contract?.address) return;
+      if (!currentAddress || !renft || !nft.contract?.address) return;
       // // todo: for how long to rent, pull that
       // // todo: approve the erc20 if not approved
       // // for eth payments, need to also supply the amount in overrides
-      // await renft.rent(
-      //   [nft.contract?.address],
-      //   [nft.tokenId],
-      //   [nft.lendingId],
-      //   [1]
-      // );
+      await renft.rent(
+        [nft.contract?.address],
+        [nft.tokenId],
+        [nft.lendingId],
+        [nft.lendingRentInfo.maxRentDuration]
+      );
     },
     [renft, currentAddress]
   );
-
+  console.log(allRentings);
   return (
     <Box>
       <Box className="Catalogue">
-        {allRentings.map((nft) => {
+        {allRentings.map((nft: NftAndLendingId) => {
           const id = `${nft.tokenId}`;
+          const lending = nft.lendingRentInfo;
           // const id = `${nft.contract?.address}::${nft.tokenId}`;
           return (
             <div className="Nft__item" key={id}>
               <div className="Nft" data-item-id={id}>
                 <div className="Nft__image">
-                  {/* <a href={nft.image}>
+                  <a href={nft.image}>
                     <img alt="nft" src={nft.image} />
-                  </a> */}
+                  </a>
                 </div>
                 <div className="Nft__card">
                   <p className="Nft__text_overflow">
-                    {/* <a
+                    <a
                       href={`https://goerli.etherscan.io/address/${nft.contract?.address}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{ textDecoration: "none", color: "black" }}
                     >
                       {nft.contract?.address}
-                    </a> */}
+                    </a>
                   </p>
                 </div>
                 <div className="Nft__card">
@@ -96,7 +97,7 @@ export const AvailableToRent: React.FC = () => {
                     <span className="Nft__value">{nft.tokenId}</span>
                   </p>
                 </div>
-                {/* <NumericField
+                <NumericField
                   text="Daily price"
                   value={String(lending.dailyRentPrice)}
                   unit={PaymentToken[lending.paymentToken]}
@@ -110,9 +111,9 @@ export const AvailableToRent: React.FC = () => {
                   text="Collateral"
                   value={String(lending.nftPrice)}
                   unit={PaymentToken[lending.paymentToken]}
-                /> */}
+                />
                 <div className="Nft__card">
-                  {/* <RentButton handleRent={handleRent} nft={nft} /> */}
+                  <RentButton handleRent={handleRent} nft={nft} />
                 </div>
               </div>
             </div>

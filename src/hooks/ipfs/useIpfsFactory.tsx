@@ -45,12 +45,12 @@ const useIpfsFactory = (): useIpfsFactoryReturnT => {
           console.log("_ipfs", _ipfs);
           setIpfs(_ipfs);
 
-          const lsFiles = _ipfs.files.ls(
-            "/ipfs/QmRBh6trb2nEa9wFfMfYwcKyGyu8jSEtqRgkVH6UY6VnGa"
-          );
-          for (await blob of lsFiles) {
-            console.log(blob);
-          }
+          // const lsFiles = _ipfs.files.ls(
+          //   "/ipfs/QmRBh6trb2nEa9wFfMfYwcKyGyu8jSEtqRgkVH6UY6VnGa"
+          // );
+          // for (await blob of lsFiles) {
+          //   console.log(blob);
+          // }
 
           console.timeEnd("IPFS Started");
         } catch (error) {

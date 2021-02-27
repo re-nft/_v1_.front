@@ -90,37 +90,33 @@ const TableRow: React.FC<TableRowProps> = ({
   );
 };
 
-// const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
-//   // const { rent } = useContext(ContractsContext);
+const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
+  // const { rent } = useContext(ContractsContext);
 
-//   // const handleClaim = useCallback(async () => {
-//   //   // await rent.claimCollateralOne(
-//   //   //   lending.nftAddress,
-//   //   //   String(lending.tokenId),
-//   //   //   String(lending.id)
-//   //   // );
-//   // });
+  // const handleClaim = useCallback(async () => {
+  //   // await rent.claimCollateralOne(
+  //   //   lending.nftAddress,
+  //   //   String(lending.tokenId),
+  //   //   String(lending.id)
+  //   // );
+  // });
 
-//   if (!lending.renting) return <span>❌</span>;
+  // if (!lending.renting) return <span>❌</span>;
 
-//   const _now = moment();
-//   const _returnBy = returnBy(
-//     lending.renting.rentedAt,
-//     lending.renting.rentDuration
-//   );
-//   const _claim = _now.isAfter(_returnBy);
+  // const _now = moment();
+  // const _returnBy = returnBy(
+  //   lending.,
+  //   lending.rentDuration
+  // );
+  // const _claim = _now.isAfter(_returnBy);
 
-//   // return _claim ? <span onClick={handleClaim}>💰</span> : <span>❌</span>;
-// };
+  // return _claim ? <span onClick={() => {}}>💰</span> : <span>❌</span>;
+  return <span>❌</span>;
+};
 
 const Stats: React.FC<StatsProps> = ({ hidden }) => {
-  // todo:
-  // total earned
-  // collateral claimed
-  // # nfts lost
-
-  // const { user } = useContext(GraphContext);
-  // const { lending, renting } = user;
+  const { user } = useContext(GraphContext);
+  const { lendings, rentings } = user;
 
   if (hidden) return <></>;
 
@@ -128,16 +124,13 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
     <Box
       style={{ display: "flex", flexDirection: "column", padding: "1.5rem 0" }}
     >
-      <br />
-      <div>------------------</div>
-      <div>LENDING</div>
-      <div>------------------</div>
       <Box style={{ padding: "1rem" }}>
+        <h2>Lending</h2>
         <Table>
           <TableHead tableType={TableType.LEND} />
           <tbody>
-            {/* {lending.length > 0 &&
-              lending.map((l) => {
+            {lendings.length > 0 &&
+              lendings.map((l) => {
                 return (
                   <TableRow
                     key={`${l.nftAddress}::${l.tokenId}::${l.id}`}
@@ -155,21 +148,17 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
                     greenHighlight={Boolean(l.renting)}
                   />
                 );
-              })} */}
+              })}
           </tbody>
         </Table>
       </Box>
-
-      <br />
-      <div>------------------</div>
-      <div>RENTING</div>
-      <div>------------------</div>
       <Box style={{ padding: "1rem" }}>
+        <h2>Renting</h2>
         <Table>
           <TableHead tableType={TableType.BORROW} />
           <tbody>
-            {/* {renting.length > 0 &&
-              renting.map((r) => (
+            {/*rentings.length > 0 &&
+              rentings.map((r) => (
                 <TableRow
                   key={`${r.lending.nftAddress}::${r.lending.tokenId}::${r.lending.id}`}
                   address={r.lending.nftAddress}
@@ -183,7 +172,7 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
                   )}`}
                   maxDuration={String(returnBy(r.rentedAt, r.rentDuration))}
                 />
-              ))} */}
+                  ))*/}
           </tbody>
         </Table>
       </Box>
