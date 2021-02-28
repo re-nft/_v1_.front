@@ -6,6 +6,7 @@ import GraphContext from "../../contexts/Graph";
 import { Nft } from "../../types";
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import { useRenft } from "../../hooks/useRenft";
+import CatalogueItem from "../CatalogueItem";
 
 // todo: this type is also defined in useRenft hook
 type StopLendButtonProps = {
@@ -46,49 +47,6 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   );
 };
 
-type CatalogueItemProps = {
-  nftId: string;
-  nft: Nft & { lendingId: string };
-};
-
-// todo: this is not DRY, same code in AvailableToLend
-const CatalogueItem: React.FC<CatalogueItemProps> = ({ nftId, nft }) => {
-  return (
-    <div className="Nft__item" key={nftId}>
-      <div className="Nft" data-item-id={nftId} data-item-image={nft.image}>
-        <div className="Nft__image">
-          <a href={nft.image} target="_blank" rel="noreferrer">
-            <img alt="nft" src={nft.image} />
-          </a>
-        </div>
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
-            <a
-              href={`https://etherscan.io/address/${
-                nft.contract?.address ?? ""
-              }`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              {nft.contract?.address ?? ""}
-            </a>
-          </p>
-        </div>
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
-            <span className="Nft__label">Token id</span>
-            <span className="Nft__value">{nft.tokenId}</span>
-          </p>
-        </div>
-        <div className="Nft__card" style={{ marginTop: "8px" }}>
-          <StopLendButton nft={nft} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const AllMyLending: React.FC = () => {
   const { myLendings } = useRenft();
   return (
@@ -96,7 +54,18 @@ export const AllMyLending: React.FC = () => {
       <Box className="Catalogue">
         {myLendings.map((nft) => {
           const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
-          return <CatalogueItem key={nftId} nftId={nftId} nft={nft} />;
+          return (
+            <CatalogueItem
+              key={nftId}
+              tokenId={nft.tokenId}
+              nftAddress={nft.contract?.address ?? ""}
+              image={nft.image}
+            >
+              <div className="Nft__card" style={{ marginTop: "8px" }}>
+                <StopLendButton nft={nft} />
+              </div>
+            </CatalogueItem>
+          );
         })}
       </Box>
     </Box>

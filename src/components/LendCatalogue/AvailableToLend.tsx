@@ -9,6 +9,7 @@ import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../hardhat/SymfoniContext";
+import CatalogueItem from "../CatalogueItem";
 
 type LendButtonProps = {
   handleLend: (nft: Nft) => void;
@@ -33,54 +34,6 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
       <span className="Nft__button" onClick={handleClick}>
         Lend now
       </span>
-    </div>
-  );
-};
-
-type CatalogueItemProps = {
-  nftId: string;
-  nft: Nft;
-  handleStartLend: (nft: Nft) => void;
-};
-
-const CatalogueItem: React.FC<CatalogueItemProps> = ({
-  nftId,
-  nft,
-  handleStartLend,
-}) => {
-  return (
-    <div className="Nft__item" key={nftId}>
-      <div className="Nft" data-item-id={nftId} data-item-image={nft.image}>
-        <div className="Nft__image">
-          <a href={nft.image} target="_blank" rel="noreferrer">
-            <img alt="nft" src={nft.image} />
-          </a>
-        </div>
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
-            <a
-              href={`https://etherscan.io/address/${
-                nft.contract?.address ?? ""
-              }`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              {nft.contract?.address ?? ""}
-            </a>
-          </p>
-        </div>
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
-            <span className="Nft__label">Token id</span>
-            {/* todo: on click here copy into the clipboard the token id */}
-            <span className="Nft__value">{nft.tokenId}</span>
-          </p>
-        </div>
-        <div className="Nft__card" style={{ marginTop: "8px" }}>
-          <LendButton nft={nft} handleLend={handleStartLend} />
-        </div>
-      </div>
     </div>
   );
 };
@@ -157,10 +110,14 @@ export const AvailableToLend: React.FC = () => {
           return (
             <CatalogueItem
               key={nftId}
-              nftId={nftId}
-              nft={nft}
-              handleStartLend={handleStartLend}
-            />
+              tokenId={nft.tokenId}
+              nftAddress={nft.contract?.address ?? ""}
+              image={nft.image}
+            >
+              <div className="Nft__card" style={{ marginTop: "8px" }}>
+                <LendButton nft={nft} handleLend={handleStartLend} />
+              </div>
+            </CatalogueItem>
           );
         })}
       </Box>
