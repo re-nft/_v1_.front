@@ -7,7 +7,6 @@ import FunnySpinner from "../Spinner";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
-import ApproveButton from "./ApproveButton";
 import { NftAndLendingId } from "../../types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
@@ -44,6 +43,7 @@ type RentModalProps = {
   open: boolean;
   handleClose: () => void;
   nft: NftAndLendingId;
+  onSubmit(nft: NftAndLendingId, options: { rentDuration: string }): void;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
@@ -52,6 +52,7 @@ export const RentModal: React.FC<RentModalProps> = ({
   open,
   handleClose,
   nft,
+  onSubmit,
 }) => {
   const classes = useStyles();
   const [duration, setDuration] = useState<string>("");
@@ -140,10 +141,12 @@ export const RentModal: React.FC<RentModalProps> = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
       setIsBusy(false);
+      onSubmit(nft, {
+        rentDuration: duration,
+      });
       handleClose();
-      // TODO: handleRent()
     },
-    [rentIsDisabled, handleClose]
+    [nft, rentIsDisabled, handleClose]
   );
 
   return (
@@ -198,11 +201,10 @@ export const RentModal: React.FC<RentModalProps> = ({
           </Box>
 
           <Box className={classes.buttons}>
-            {!isApproved && <ApproveButton nft={nft} />}
             <RainbowButton
               type="submit"
               text="RENT"
-              disabled={!isApproved || rentIsDisabled}
+              disabled={rentIsDisabled}
             />
           </Box>
         </Box>

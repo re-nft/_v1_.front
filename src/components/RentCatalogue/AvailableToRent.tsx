@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from "react";
-import { Box, Tooltip } from "@material-ui/core";
+import { Box, Tooltip, Checkbox } from "@material-ui/core";
 import { BigNumber } from "ethers";
 
 import { useRenft } from "../../hooks/useRenft";
@@ -12,6 +12,7 @@ import {
   MyERC20Context,
 } from "../../hardhat/SymfoniContext";
 import { RentButton } from "./RentButton";
+import { RentModal } from "../RentModal";
 import { NftAndLendingId, PaymentToken } from "../../types";
 import { getERC20 } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
@@ -39,6 +40,8 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
 
 export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedNft, setSelectedNft] = useState<NftAndLendingId>();
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const { allRentings } = useRenft();
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
@@ -50,8 +53,19 @@ export const AvailableToRent: React.FC = () => {
     setModalOpen(false);
   }, []);
 
+  const handleModalOpen = useCallback(
+    (nft: NftAndLendingId) => {
+      setSelectedNft(nft);
+      setModalOpen(true);
+    },
+    [setSelectedNft, setModalOpen]
+  );
+
   const handleRent = useCallback(
-    async (nft: NftAndLendingId) => {
+    async (
+      nft: NftAndLendingId,
+      { rentDuration }: { rentDuration: string }
+    ) => {
       // todo: myERC20 to be removed in prod
       if (
         !currentAddress ||
@@ -64,15 +78,13 @@ export const AvailableToRent: React.FC = () => {
         return;
 
       // this means user is renting for a day. This is selectable by user
-      // rentDuration must be <= nft.lendingRentInfo.maxRentDuration
-      const rentDuration = 1;
       // fetch payment token from lending
       const pmtToken = PaymentToken.DAI;
       // fetch dailyRentPrice from lending
       const dailyRentPrice = 1_000;
       // fetch collateral from lending
       const collateral = 1_000;
-      const amountPayable = rentDuration * dailyRentPrice + collateral;
+      const amountPayable = Number(rentDuration) * dailyRentPrice + collateral;
       //@ts-ignore
       const isETHPayment = pmtToken === PaymentToken.ETH;
 
@@ -115,8 +127,29 @@ export const AvailableToRent: React.FC = () => {
     [renft, currentAddress, signer, resolver]
   );
 
+  const handleCheckboxChange = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      const target = evt.target.name;
+      const checked = evt.target.checked;
+      setCheckedItems({
+        ...checkedItems,
+        [target]: checked,
+      });
+    },
+    [checkedItems, setCheckedItems]
+  );
+  const countOfCheckedItems = Object.keys(checkedItems).length;
+
   return (
     <Box>
+      {selectedNft && (
+        <RentModal
+          nft={selectedNft}
+          open={modalOpen}
+          onSubmit={handleRent}
+          handleClose={handleModalClose}
+        />
+      )}
       <Box className="Catalogue">
         {allRentings.map((nft: NftAndLendingId) => {
           const id = `${nft.tokenId}`;
@@ -124,6 +157,13 @@ export const AvailableToRent: React.FC = () => {
           // const id = `${nft.contract?.address}::${nft.tokenId}`;
           return (
             <div className="Nft__item" key={id}>
+              <div className="Nft__checkbox">
+                <Checkbox
+                  name={id}
+                  onChange={handleCheckboxChange}
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              </div>
               <div className="Nft" data-item-id={id}>
                 <div className="Nft__image">
                   <a href={nft.image}>
@@ -164,13 +204,16 @@ export const AvailableToRent: React.FC = () => {
                   unit={PaymentToken[lending.paymentToken]}
                 />
                 <div className="Nft__card">
-                  <RentButton handleRent={handleRent} nft={nft} />
+                  <RentButton handleRent={handleModalOpen} nft={nft} />
                 </div>
               </div>
             </div>
           );
         })}
       </Box>
+      {countOfCheckedItems > 1 && (
+        <div className="BatchRent">Batch Rent Now {countOfCheckedItems}</div>
+      )}
     </Box>
   );
 };

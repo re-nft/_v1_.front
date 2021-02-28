@@ -6,7 +6,7 @@ import Table from "./Table";
 import GraphContext from "../contexts/Graph";
 import { short } from "../utils";
 import { PaymentToken } from "../types";
-import { Lending } from "../types/graph";
+import { Lending, RentingAndLending } from "../types/graph";
 
 type StatsProps = {
   hidden: boolean;
@@ -157,8 +157,8 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.BORROW} />
           <tbody>
-            {/*rentings.length > 0 &&
-              rentings.map((r) => (
+            {rentings.length > 0 &&
+              rentings.map((r: RentingAndLending) => (
                 <TableRow
                   key={`${r.lending.nftAddress}::${r.lending.tokenId}::${r.lending.id}`}
                   address={r.lending.nftAddress}
@@ -172,7 +172,7 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
                   )}`}
                   maxDuration={String(returnBy(r.rentedAt, r.rentDuration))}
                 />
-                  ))*/}
+              ))}
           </tbody>
         </Table>
       </Box>

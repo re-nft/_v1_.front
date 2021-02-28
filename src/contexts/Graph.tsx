@@ -33,6 +33,7 @@ import {
   Renting,
   RentingRaw,
   User,
+  RentingAndLending,
 } from "../types/graph";
 import { Address, Nft } from "../types";
 import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
@@ -141,7 +142,7 @@ export type AddressToRenting = {
 
 export type UserData = {
   lendings: Lending[];
-  rentings: Renting[];
+  rentings: RentingAndLending[];
 };
 
 type GraphContextType = {

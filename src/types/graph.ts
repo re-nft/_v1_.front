@@ -62,8 +62,12 @@ export type UserRaw = {
   renting?: RentingRaw[];
 };
 
+export type RentingAndLending = Renting & {
+  lending: Lending;
+};
+
 export type User = {
   id: string;
   lending?: Lending[];
-  renting?: Renting[];
+  renting?: RentingAndLending[];
 };
