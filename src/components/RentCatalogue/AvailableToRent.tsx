@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from "react";
-import { Box, Tooltip } from "@material-ui/core";
+import { Box, Tooltip, Checkbox } from "@material-ui/core";
 import { DP18 } from "../../consts";
 import { useRenft } from "../../hooks/useRenft";
 import {
@@ -33,6 +33,7 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
 
 export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [selectedNft, setSelectedNft] = useState<NftAndLendingId>();
   const { allRentings } = useRenft();
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -67,6 +68,15 @@ export const AvailableToRent: React.FC = () => {
     [renft, currentAddress]
   );
 
+  const handleCheckboxChange = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      const target = evt.target.name;
+      const checked = evt.target.checked;
+      console.log(target, checked);
+    },
+    [checkedItems, setCheckedItems]
+  );
+
   return (
     <Box>
       {selectedNft && (
@@ -83,6 +93,14 @@ export const AvailableToRent: React.FC = () => {
           // const id = `${nft.contract?.address}::${nft.tokenId}`;
           return (
             <div className="Nft__item" key={id}>
+              <div className="Nft__checkbox">
+                <Checkbox
+                  name={id}
+                  checked={checkedItems[id]}
+                  onChange={handleCheckboxChange}
+                  inputProps={{ "aria-label": "primary checkbox" }}
+                />
+              </div>
               <div className="Nft" data-item-id={id}>
                 <div className="Nft__image">
                   <a href={nft.image}>

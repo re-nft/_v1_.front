@@ -198,14 +198,12 @@ export const RentModal: React.FC<RentModalProps> = ({
           </Box>
 
           <Box className={classes.buttons}>
-            <Box>
-              {!isApproved && <ApproveButton nft={nft} />}
-              <RainbowButton
-                type="submit"
-                text="RENT"
-                disabled={!isApproved || rentIsDisabled}
-              />
-            </Box>
+            {!isApproved && <ApproveButton nft={nft} />}
+            <RainbowButton
+              type="submit"
+              text="RENT"
+              disabled={!isApproved || rentIsDisabled}
+            />
           </Box>
         </Box>
       </form>

@@ -269,7 +269,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     lendings: [],
     rentings: [],
   });
-
   const myERC721 = useContext(MyERC721Context);
   const renft = useContext(RentNftContext);
 

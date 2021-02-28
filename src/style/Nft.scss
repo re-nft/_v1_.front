@@ -18,6 +18,17 @@
   }
 }
 
+.Nft__checkbox {
+  position: absolute;
+  right: 0;
+  z-index: 9;
+  background: #fff;
+}
+
+.Nft__item {
+  position: relative;
+}
+
 .Nft:hover .Nft__image {
   img {
     transform: skew(-5deg, -5deg) rotate(10deg);
