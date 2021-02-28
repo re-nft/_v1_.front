@@ -145,6 +145,7 @@ export const RentModal: React.FC<RentModalProps> = ({
         rentDuration: duration,
       });
       handleClose();
+      // TODO: handleRent()
     },
     [nft, rentIsDisabled, handleClose]
   );
@@ -199,7 +200,6 @@ export const RentModal: React.FC<RentModalProps> = ({
               </p>
             </Box>
           </Box>
-
           <Box className={classes.buttons}>
             <RainbowButton
               type="submit"

@@ -29,7 +29,6 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
 export const AllMyRenting: React.FC = () => {
   const { user } = useContext(GraphContext);
   const { rentings } = user;
-  console.log(rentings);
   return (
     <Box>
       <Box className="Catalogue">
