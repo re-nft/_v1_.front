@@ -53,7 +53,7 @@ const DefaultLendOneInputs = {
 export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
   const { instance: renft } = useContext(RentNftContext);
-  const { isActive, setHash, hash } = useContext(TransactionStateContext);
+  const { isActive, setHash } = useContext(TransactionStateContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { fetchAvailableNfts } = useContext(GraphContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
@@ -93,6 +93,10 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
 
       if (!nft || !renft || isActive || !nft.contract) return;
       // need to approve if it wasn't: nft
+      // * mocks only allow two payment tokens right now
+      // ETH and DAI
+      // indices of these, as per contracts repo/src/Resolver.sol are: 1 and 2
+      // only the above will work in the development environment for now
       const tx = await renft.lend(
         [nft.contract.address],
         [nft.tokenId],
@@ -153,7 +157,6 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     []
   );
   const handleClose = useCallback(() => setOpen(false), [setOpen]);
-  // TODO: add tooltip for borrowPrice and nftPrice
   return (
     <Modal open={open} handleClose={handleClose}>
       <form

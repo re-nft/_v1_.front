@@ -10,11 +10,12 @@ export type TokenId = string;
 export type URI = string;
 
 export enum PaymentToken {
-  DAI, // 0
-  USDC, // 1
-  USDT, // 2
-  TUSD, // 3
-  RENT, // 4
+  SENTINEL, // 0
+  ETH, // 1
+  DAI, // 2
+  USDC, // 3
+  USDT, // 4
+  TUSD, // 5
 }
 
 export type Nft = {

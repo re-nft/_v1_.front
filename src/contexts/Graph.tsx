@@ -22,7 +22,6 @@ import {
   getERC1155,
   getERC721,
   THROWS,
-  unpackHexPrice,
   unpackPrice,
   parsePaymentToken,
 } from "../utils";

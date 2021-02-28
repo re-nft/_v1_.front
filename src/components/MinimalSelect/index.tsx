@@ -64,6 +64,12 @@ const MinimalSelect: React.FC<MinimalSelectProps> = ({
       >
         <MenuItem disabled>Payment Token *</MenuItem>
         <MenuItem
+          value={PaymentToken.ETH}
+          style={{ color: "teal", fontWeight: 1000 }}
+        >
+          ETH
+        </MenuItem>
+        <MenuItem
           value={PaymentToken.DAI}
           style={{ color: "teal", fontWeight: 1000 }}
         >
@@ -86,12 +92,6 @@ const MinimalSelect: React.FC<MinimalSelectProps> = ({
           style={{ color: "teal", fontWeight: 1000 }}
         >
           TUSD
-        </MenuItem>
-        <MenuItem
-          value={PaymentToken.RENT}
-          style={{ color: "teal", fontWeight: 1000 }}
-        >
-          RENT
         </MenuItem>
       </Select>
     </FormControl>

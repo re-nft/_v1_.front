@@ -1,6 +1,7 @@
 import { ethers, BigNumber, BigNumberish } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
+import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 
 const PRICE_BITSIZE = 32;
@@ -19,6 +20,17 @@ export const ASYNC_THROWS = async (): Promise<void> => {
 export const getRandomInt = (max: number): number => {
   return Math.floor(Math.random() * Math.floor(max));
 };
+
+const erc20abi = [
+  // Read-Only Functions
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)",
+  "function symbol() view returns (string)",
+  // Authenticated Functions
+  "function transfer(address to, uint amount) returns (boolean)",
+  // Events
+  "event Transfer(address indexed from, address indexed to, uint amount)",
+];
 
 const erc721abi = [
   "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
@@ -48,6 +60,15 @@ const erc1155abi = [
   "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external",
   "function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external",
 ];
+
+export const getERC20 = (address: string, signer?: ethers.Signer): ERC20 => {
+  const erc20Contract = new ethers.Contract(
+    ethers.utils.getAddress(address),
+    erc20abi,
+    signer
+  ) as ERC20;
+  return erc20Contract;
+};
 
 export const getERC721 = (address: string, signer?: ethers.Signer): ERC721 => {
   const erc721Contract = new ethers.Contract(
@@ -120,21 +141,6 @@ export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
   return Number(_price) / 1000000 / 1000000 / 1000000;
 };
 
-export const unpackHexPrice = (price: string, scale: BigNumber): BigNumber => {
-  const resolvedPrice: string = price;
-  if (price.startsWith("0x")) {
-    resolvedPrice.slice(2);
-  }
-  let whole = parseInt(resolvedPrice.slice(0, 4), 16);
-  let decimal = parseInt(resolvedPrice.slice(4), 16);
-  if (whole > 9999) whole = 9999;
-  if (decimal > 9999) decimal = 9999;
-  const w = BigNumber.from(whole).mul(scale);
-  const d = BigNumber.from(decimal).mul(scale.div(10_000));
-  const _price = w.add(d);
-  return _price;
-};
-
 export const packPrice = (price: number): string => {
   if (price > 9999.9999) throw new Error("too high");
   if (price < 0.0001) throw new Error("too low");
@@ -164,16 +170,18 @@ export const packPrice = (price: number): string => {
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
     case "0":
-      return PaymentToken.DAI;
+      return PaymentToken.SENTINEL;
     case "1":
-      return PaymentToken.USDC;
+      return PaymentToken.ETH;
     case "2":
-      return PaymentToken.USDT;
+      return PaymentToken.DAI;
     case "3":
-      return PaymentToken.TUSD;
+      return PaymentToken.USDC;
     case "4":
-      return PaymentToken.RENT;
+      return PaymentToken.USDT;
+    case "5":
+      return PaymentToken.TUSD;
     default:
-      return PaymentToken.RENT;
+      return PaymentToken.DAI;
   }
 };

@@ -1,14 +1,18 @@
 import React, { useCallback, useState, useContext } from "react";
 import { Box, Tooltip } from "@material-ui/core";
-import { DP18 } from "../../consts";
-import { unpackHexPrice } from "../../utils";
+import { BigNumber } from "ethers";
+
 import { useRenft } from "../../hooks/useRenft";
 import {
   CurrentAddressContext,
   RentNftContext,
+  SignerContext,
+  ResolverContext,
 } from "../../hardhat/SymfoniContext";
 import { RentButton } from "./RentButton";
 import { NftAndLendingId, PaymentToken } from "../../types";
+import { getERC20 } from "../../utils";
+import { MAX_UINT256 } from "../../consts";
 
 type NumericFieldProps = {
   text: string;
@@ -36,34 +40,76 @@ export const AvailableToRent: React.FC = () => {
   const { allRentings } = useRenft();
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
+  const [signer] = useContext(SignerContext);
+  const { instance: resolver } = useContext(ResolverContext);
 
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
   }, []);
 
-  const computeEthAmount = (rentDuration: number, dailyPrice: number) => {
-    return 0;
-  };
-
   const handleRent = useCallback(
     async (nft: NftAndLendingId) => {
-      // need contract instance
-      // for that need renft context from symfoni
-      // and currentAddress from currentaddress context from symfoni
-      if (!currentAddress || !renft || !nft.contract?.address) return;
-      // // todo: for how long to rent, pull that
-      // // todo: approve the erc20 if not approved
-      // // for eth payments, need to also supply the amount in overrides
-      await renft.rent(
-        [nft.contract?.address],
-        [nft.tokenId],
-        [nft.lendingId],
-        [nft.lendingRentInfo.maxRentDuration]
-      );
+      if (
+        !currentAddress ||
+        !renft ||
+        !nft.contract?.address ||
+        !signer ||
+        !resolver
+      )
+        return;
+
+      // this means user is renting for a day. This is selectable by user
+      // rentDuration must be <= nft.lendingRentInfo.maxRentDuration
+      const rentDuration = 1;
+      // fetch payment token from lending
+      const pmtToken = PaymentToken.DAI;
+      // fetch dailyRentPrice from lending
+      const dailyRentPrice = 1_000;
+      // fetch collateral from lending
+      const collateral = 1_000;
+      const amountPayable = rentDuration * dailyRentPrice + collateral;
+      //@ts-ignore
+      const isETHPayment = pmtToken === PaymentToken.ETH;
+
+      if (isETHPayment) {
+        // ! will only ever fail if the user does not have enough ETH
+        // ! or the arguments here are incorrect (e.g. rentDuration exceeds maxRentDuration)
+        await renft.rent(
+          [nft.contract?.address],
+          [nft.tokenId],
+          [nft.lendingId],
+          [rentDuration],
+          { value: amountPayable }
+        );
+      } else {
+        const erc20Address = await resolver.getPaymentToken(pmtToken);
+        if (!erc20Address) {
+          console.warn("could not fetch address for payment token");
+          return;
+        }
+        const erc20 = getERC20(erc20Address, signer);
+        if (!erc20) {
+          console.warn("could not fetch erc20 contract");
+          return;
+        }
+        // check if reNFT contract is approved for the required amount to be spent
+        const allowance = await erc20.allowance(currentAddress, renft.address);
+        const notEnough = BigNumber.from(amountPayable).gt(allowance);
+        if (notEnough) {
+          await erc20.approve(renft.address, MAX_UINT256);
+        }
+
+        await renft.rent(
+          [nft.contract?.address],
+          [nft.tokenId],
+          [nft.lendingId],
+          [rentDuration]
+        );
+      }
     },
-    [renft, currentAddress]
+    [renft, currentAddress, signer, resolver]
   );
-  console.log(allRentings);
+
   return (
     <Box>
       <Box className="Catalogue">

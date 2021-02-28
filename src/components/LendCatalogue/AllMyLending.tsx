@@ -20,6 +20,14 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 
   const handleStopLend = useCallback(async () => {
     if (!renft || !nft.contract) return;
+    // todo: will only work if noone else is renting this
+    // todo: need to check if someone else is renting this
+    // todo: also make a green outline or something, to show
+    // that it is being rented by someone
+    // todo: another point: if someone is renting we also need
+    // to show the button: "Claim Collateral" in place of Stop Lending
+    // This button will be active ONLY if the renter exceeded their
+    // rent duration (that they choose in the modal in the Rent tab)
     const tx = await renft.stopLending(
       [nft.contract.address],
       [nft.tokenId],
