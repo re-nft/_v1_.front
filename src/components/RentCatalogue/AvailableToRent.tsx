@@ -1,13 +1,13 @@
 import React, { useCallback, useState, useContext } from "react";
 import { Box, Tooltip } from "@material-ui/core";
 import { DP18 } from "../../consts";
-import { unpackHexPrice } from "../../utils";
 import { useRenft } from "../../hooks/useRenft";
 import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../hardhat/SymfoniContext";
 import { RentButton } from "./RentButton";
+import { RentModal } from "../RentModal";
 import { NftAndLendingId, PaymentToken } from "../../types";
 
 type NumericFieldProps = {
@@ -33,6 +33,7 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
 
 export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedNft, setSelectedNft] = useState<NftAndLendingId>();
   const { allRentings } = useRenft();
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
@@ -50,22 +51,31 @@ export const AvailableToRent: React.FC = () => {
       // need contract instance
       // for that need renft context from symfoni
       // and currentAddress from currentaddress context from symfoni
-      if (!currentAddress || !renft || !nft.contract?.address) return;
+      // if (!currentAddress || !renft || !nft.contract?.address) return;
       // // todo: for how long to rent, pull that
       // // todo: approve the erc20 if not approved
       // // for eth payments, need to also supply the amount in overrides
-      await renft.rent(
-        [nft.contract?.address],
-        [nft.tokenId],
-        [nft.lendingId],
-        [nft.lendingRentInfo.maxRentDuration]
-      );
+      // await renft.rent(
+      //   [nft.contract?.address],
+      //   [nft.tokenId],
+      //   [nft.lendingId],
+      //   [nft.lendingRentInfo.maxRentDuration]
+      // );
+      setSelectedNft(nft);
+      setModalOpen(true);
     },
     [renft, currentAddress]
   );
-  console.log(allRentings);
+
   return (
     <Box>
+      {selectedNft && (
+        <RentModal
+          nft={selectedNft}
+          open={modalOpen}
+          handleClose={handleModalClose}
+        />
+      )}
       <Box className="Catalogue">
         {allRentings.map((nft: NftAndLendingId) => {
           const id = `${nft.tokenId}`;
