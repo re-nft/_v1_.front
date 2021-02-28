@@ -7,7 +7,8 @@ import FunnySpinner from "../Spinner";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
-import { Lending } from "../../types/graph";
+import ApproveButton from "./ApproveButton";
+import { NftAndLendingId } from "../../types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -42,7 +43,7 @@ const LegibleTextField = withStyles({
 type RentModalProps = {
   open: boolean;
   handleClose: () => void;
-  lending: Lending;
+  nft: NftAndLendingId;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
@@ -50,7 +51,7 @@ const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
 export const RentModal: React.FC<RentModalProps> = ({
   open,
   handleClose,
-  lending,
+  nft,
 }) => {
   const classes = useStyles();
   const [duration, setDuration] = useState<string>("");
@@ -59,6 +60,11 @@ export const RentModal: React.FC<RentModalProps> = ({
   const [inputsValid, setInputsValid] = useState(true);
   const [errorText, setErrorText] = useState(DEFAULT_ERROR_TEXT);
   const [returnDate, setReturnDate] = useState("");
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+
+  const _setIsApproved = useCallback(() => {
+    setIsApproved(true);
+  }, []);
 
   const resetState = useCallback(() => {
     setInputsValid(false);
@@ -104,10 +110,10 @@ export const RentModal: React.FC<RentModalProps> = ({
           resetState();
           setDuration(String(SENSIBLE_MAX_DURATION));
           return;
-        } else if (num > lending.maxRentDuration) {
+        } else if (num > nft.lendingRentInfo.maxRentDuration) {
           resetState();
           setErrorText(
-            `You cannot borrow this NFT for longer than ${lending.maxRentDuration} days`
+            `You cannot borrow this NFT for longer than ${nft.lendingRentInfo.maxRentDuration} days`
           );
           return;
         }
@@ -123,7 +129,7 @@ export const RentModal: React.FC<RentModalProps> = ({
       setDuration(resolvedValue);
       setDate(resolvedValue);
     },
-    [lending, resetState, setDate]
+    [nft, resetState, setDate]
   );
 
   const rentIsDisabled = useMemo(() => {
@@ -133,82 +139,76 @@ export const RentModal: React.FC<RentModalProps> = ({
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      try {
-        if (rentIsDisabled) {
-          console.debug("can't rent");
-          return;
-        }
-
-        setIsBusy(true);
-      } catch (err) {
-        console.warn(err);
-      }
       setIsBusy(false);
       handleClose();
+      // TODO: handleRent()
     },
     [rentIsDisabled, handleClose]
   );
 
   return (
     <Modal open={open} handleClose={handleClose}>
-      <Box style={{ padding: "32px" }}>
-        {busy && <FunnySpinner />}
-        <Box className={classes.inputs}>
-          <CssTextField
-            required
-            label="Rent duration"
-            id="duration"
-            variant="outlined"
-            type="number"
-            name="rentDuration"
-            value={duration}
-            error={!inputsValid}
-            helperText={!inputsValid ? errorText : ""}
-            onChange={handleChange}
-          />
-          <LegibleTextField
-            id="standard-basic"
-            label={`Daily rent price: ${lending.dailyRentPrice}`}
-            disabled
-          />
-          <LegibleTextField
-            id="standard-basic"
-            label={`Rent: ${lending.dailyRentPrice} x ${
-              !duration ? "👾" : duration
-            } days = ${
-              totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
-            }`}
-            disabled
-          />
-          <LegibleTextField
-            id="standard-basic"
-            label={`Collateral: ${lending.nftPrice}`}
-            disabled
-          />
-          <Box
-            className={classes.buttons}
-            style={{ paddingBottom: "16px" }}
-          ></Box>
-          <Box>
-            <p>
-              You <span style={{ fontWeight: "bold" }}>must</span> return the
-              NFT by {returnDate}, or you{" "}
-              <span style={{ fontWeight: "bold" }}>will lose</span> the
-              collateral
-            </p>
-          </Box>
-        </Box>
-
-        <Box className={classes.buttons}>
-          <Box onClick={handleSubmit}>
-            <RainbowButton
-              type="submit"
-              text="Rent"
-              disabled={rentIsDisabled}
+      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+        <Box style={{ padding: "32px" }}>
+          {busy && <FunnySpinner />}
+          <Box className={classes.inputs}>
+            <CssTextField
+              required
+              label="Rent duration"
+              id="duration"
+              variant="outlined"
+              type="number"
+              name="rentDuration"
+              value={duration}
+              error={!inputsValid}
+              helperText={!inputsValid ? errorText : ""}
+              onChange={handleChange}
             />
+            <LegibleTextField
+              id="standard-basic"
+              label={`Daily rent price: ${nft.lendingRentInfo.dailyRentPrice}`}
+              disabled
+            />
+            <LegibleTextField
+              id="standard-basic"
+              label={`Rent: ${nft.lendingRentInfo.dailyRentPrice} x ${
+                !duration ? "👾" : duration
+              } days = ${
+                totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
+              }`}
+              disabled
+            />
+            <LegibleTextField
+              id="standard-basic"
+              label={`Collateral: ${nft.lendingRentInfo.nftPrice}`}
+              disabled
+            />
+            <Box
+              className={classes.buttons}
+              style={{ paddingBottom: "16px" }}
+            ></Box>
+            <Box>
+              <p>
+                You <span style={{ fontWeight: "bold" }}>must</span> return the
+                NFT by {returnDate}, or you{" "}
+                <span style={{ fontWeight: "bold" }}>will lose</span> the
+                collateral
+              </p>
+            </Box>
+          </Box>
+
+          <Box className={classes.buttons}>
+            <Box>
+              {!isApproved && <ApproveButton nft={nft} />}
+              <RainbowButton
+                type="submit"
+                text="RENT"
+                disabled={!isApproved || rentIsDisabled}
+              />
+            </Box>
           </Box>
         </Box>
-      </Box>
+      </form>
     </Modal>
   );
 };
