@@ -8,6 +8,8 @@ import {
   RentNftContext,
   SignerContext,
   ResolverContext,
+  // todo: remove for prod
+  MyERC20Context,
 } from "../../hardhat/SymfoniContext";
 import { RentButton } from "./RentButton";
 import { NftAndLendingId, PaymentToken } from "../../types";
@@ -42,6 +44,7 @@ export const AvailableToRent: React.FC = () => {
   const { instance: renft } = useContext(RentNftContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
+  const { instance: myERC20 } = useContext(MyERC20Context);
 
   const handleModalClose = useCallback(() => {
     setModalOpen(false);
@@ -49,12 +52,14 @@ export const AvailableToRent: React.FC = () => {
 
   const handleRent = useCallback(
     async (nft: NftAndLendingId) => {
+      // todo: myERC20 to be removed in prod
       if (
         !currentAddress ||
         !renft ||
         !nft.contract?.address ||
         !signer ||
-        !resolver
+        !resolver ||
+        !myERC20
       )
         return;
 
