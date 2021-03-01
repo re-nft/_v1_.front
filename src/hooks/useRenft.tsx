@@ -1,17 +1,22 @@
 import { useContext, useMemo } from "react";
 import * as R from "ramda";
 
-import GraphContext, { AddressToLending } from "../contexts/Graph";
+import GraphContext from "../contexts/Graph";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import { Address, NftAndLendingId, LendingRentInfo } from "../types";
-import { Lending } from "../types/graph";
+import { Address } from "../types";
+import {
+  NftAndLendingId,
+  LendingRentInfo,
+  AddressToLending,
+  Lending,
+} from "../contexts/Graph/types";
 
-type useLendingsReturnT = {
+type UseLendingsReturnT = {
   allRentings: NftAndLendingId[];
   myLendings: NftAndLendingId[];
 };
 
-export const useRenft = (): useLendingsReturnT => {
+export const useRenft = (): UseLendingsReturnT => {
   const { lendings } = useContext(GraphContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const pickImage = (

@@ -7,7 +7,7 @@ import FunnySpinner from "../Spinner";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
-import { NftAndLendingId } from "../../types";
+import { NftAndLendingId } from "../../contexts/Graph/types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 

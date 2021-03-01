@@ -6,7 +6,7 @@ import Table from "./Table";
 import GraphContext from "../contexts/Graph";
 import { short } from "../utils";
 import { PaymentToken } from "../types";
-import { Lending, RentingAndLending } from "../types/graph";
+import { Lending, RentingAndLending } from "../contexts/Graph/types";
 
 type StatsProps = {
   hidden: boolean;

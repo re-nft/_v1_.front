@@ -15,135 +15,60 @@ import {
   MyERC721Context,
   RentNftContext,
   SignerContext,
-} from "../hardhat/SymfoniContext";
-import { ERC721 } from "../hardhat/typechain/ERC721";
-import { ERC1155 } from "../hardhat/typechain/ERC1155";
+} from "../../hardhat/SymfoniContext";
+import { ERC721 } from "../../hardhat/typechain/ERC721";
+import { ERC1155 } from "../../hardhat/typechain/ERC1155";
+import { getERC1155, getERC721, THROWS } from "../../utils";
+import { usePoller } from "../../hooks/usePoller";
+import { Nft, Path } from "../../types";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+
 import {
-  getERC1155,
-  getERC721,
-  THROWS,
-  unpackPrice,
-  parsePaymentToken,
-} from "../utils";
-import { usePoller } from "../hooks/usePoller";
-import {
+  AddressToErc721,
+  AddressToErc1155,
+  AddressToLending,
+  AddressToRenting,
+  UserData,
   LendingRentingRaw,
-  LendingRaw,
   Lending,
-  Renting,
-  RentingRaw,
   User,
-  RentingAndLending,
-} from "../types/graph";
-import { Address, Nft } from "../types";
-import { SECOND_IN_MILLISECONDS, DP18 } from "../consts";
-import { pull } from "../ipfs";
+  MyERC1155s,
+  MyERC721s,
+} from "./types";
+import {
+  queryRenftUser,
+  queryRenftLendingRentings,
+  queryMyERC721s,
+  queryMyERC1155s,
+} from "./queries";
+import { parseLending, parseRenting } from "./utils";
+
 // import useIpfsFactory from "../hooks/ipfs/useIpfsFactory";
 
-const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
+/**
+ * Useful links
+ * https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph
+ * https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph
+ * https://github.com/0xsequence/token-directory
+ *
+ * Kudos to
+ * Luis: https://github.com/microchipgnu
+ * Solidity God: wighawag
+ */
 
-const IS_DEV_ENV =
-  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "development";
+const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
+const IS_PROD =
+  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
 const ENDPOINT_RENFT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 const ENDPOINT_RENFT_DEV =
   "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
 
-// kudos to Luis: https://github.com/microchipgnu
-// check out his latest on: https://twitter.com/microchipgnu
-// and of course kudos to the Solidity God: wighawag
 const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
-
-// * just use this instead: https://github.com/0xsequence/token-directory
-const ENS_ADDRESS = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85".toLowerCase();
-const ZORA_ADDRESS = "0xabefbc9fd2f806065b4f3c237d4b59d9a97bcac7";
-
-// todo: this should have a tokenURI in the subgraph schemas somewhere most likely
-type queryAllERC721T = {
-  tokens: {
-    id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
-    tokenURI: string; // e.g. "https://nft.service.cometh.io/3000013"
-  }[];
-};
-
-type tokenERC1155 = {
-  URI?: string;
-  tokenId: string;
-  registry: {
-    contractAddress: Address;
-  };
-};
-
-type balanceERC1155 = {
-  token: tokenERC1155;
-  amount: number;
-};
-
-type queryAllERC1155T = {
-  account: {
-    balances: balanceERC1155[];
-  };
-};
-
-type Path = string[];
-
-// '0x123...456': { tokenIds: { '1': ..., '2': ... } }
-export type AddressToErc721 = {
-  [key: string]: {
-    contract: ERC721;
-    isApprovedForAll: boolean;
-    tokenIds: {
-      [key: string]: {
-        meta?: Response;
-      };
-    };
-  };
-};
-
-export type AddressToErc1155 = {
-  [key: string]: {
-    contract: ERC1155;
-    isApprovedForAll: boolean;
-    tokenIds: {
-      [key: string]: {
-        meta?: Response;
-      };
-    };
-  };
-};
-
-export type AddressToLending = {
-  [key: string]: {
-    contract: ERC721 | ERC1155;
-    isERC721: boolean;
-    isERC1155: boolean;
-    // * these are all approved, since I am lending them
-    tokenIds: {
-      [key: string]: Omit<Lending, "nftAddress" & "tokenId"> | undefined;
-    };
-  };
-};
-
-export type AddressToRenting = {
-  [key: string]: {
-    contract: ERC721 | ERC1155;
-    isERC721: boolean;
-    isERC1155: boolean;
-    isApprovedForAll: boolean;
-    tokenIds: {
-      [key: string]: Renting;
-    };
-  };
-};
-
-export type UserData = {
-  lendings: Lending[];
-  rentings: RentingAndLending[];
-};
 
 type GraphContextType = {
   erc721s: AddressToErc721;
@@ -170,93 +95,6 @@ const DefaultGraphContext: GraphContextType = {
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
-const queryAllERC721 = (user: string): string => {
-  return `{
-    tokens(where: {owner: "${user.toLowerCase()}"}) {
-      id
-		  tokenURI
-    }
-  }`;
-};
-
-const queryAllERC1155 = (user: string): string => {
-  return `{
-    account(id: "${user.toLowerCase()}") {
-      balances(where: {value_gt: 0}) {
-        token {
-          URI
-          registry {
-            contractAddress: id
-          }
-          tokenId: identifier
-        }
-        value
-      }
-    }
-  }`;
-};
-
-const queryLending = (): string => {
-  return `{
-    lendingRentings {
-      lending {
-        id
-        nftAddress
-        tokenId
-        lenderAddress
-        maxRentDuration
-        dailyRentPrice
-        nftPrice
-        paymentToken
-        collateralClaimed
-      }
-      renting {
-        id
-      }
-    }
-  }`;
-};
-
-const queryUser = (user: string): string => {
-  return `{
-    user(id: "${user.toLowerCase()}") {
-      id
-      lending {
-        id
-        nftAddress
-        tokenId
-        lenderAddress
-        maxRentDuration
-        dailyRentPrice
-        nftPrice
-        paymentToken
-        renting {
-          id
-          renterAddress
-          rentDuration
-          rentedAt
-        }
-      }
-      renting {
-        id
-        rentDuration
-        rentedAt
-        lending {
-          id
-          nftAddress
-          tokenId
-          lenderAddress
-          maxRentDuration
-          dailyRentPrice
-          nftPrice
-          paymentToken
-          collateralClaimed
-        }
-      }
-    }
-  }`;
-};
-
 export const GraphProvider: React.FC = ({ children }) => {
   // ! currentAddress can be ""
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -269,34 +107,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     lendings: [],
     rentings: [],
   });
-  const myERC721 = useContext(MyERC721Context);
+
   const renft = useContext(RentNftContext);
 
-  const parseLending = useCallback((lending: LendingRaw): Lending => {
-    return {
-      id: lending.id,
-      nftAddress: ethers.utils.getAddress(lending.nftAddress),
-      tokenId: lending.tokenId,
-      lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
-      maxRentDuration: Number(lending.maxRentDuration),
-      dailyRentPrice: unpackPrice(lending.dailyRentPrice, DP18),
-      nftPrice: unpackPrice(lending.nftPrice, DP18),
-      paymentToken: parsePaymentToken(lending.paymentToken),
-      renting: lending.renting ?? undefined,
-      collateralClaimed: Boolean(lending.collateralClaimed),
-    };
-  }, []);
-
-  const parseRenting = useCallback((renting: RentingRaw): Renting => {
-    return {
-      id: renting.id,
-      renterAddress: ethers.utils.getAddress(renting.renterAddress),
-      rentDuration: Number(renting.rentDuration),
-      rentedAt: Number(renting.rentedAt),
-      lendingId: renting.lending,
-    };
-  }, []);
-
+  // would be good to get rid of the dev related stuff under here into a
+  // separate component, that would only get rendered if we are in dev env
+  // because the below logic is not related to prod functioning
+  // * only in dev. this is a context for mock ERC721 contract
+  const myERC721 = useContext(MyERC721Context);
   // ! only used in dev environment - so don't worry about this too much
   const fetchNftMetaDev = useCallback(async () => {
     if (!myERC721.instance) return [];
@@ -354,7 +172,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       },
     });
     return res;
-  }, [currentAddress, myERC721.instance, renft]);
+  }, [renft.instance, currentAddress, myERC721.instance]);
 
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
@@ -363,11 +181,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const cids: string[] = [];
     const imageCids: string[] = [];
 
-    // console.log("ipfs", ipfs);
-
     if (uris.length < 1) return [];
-
-    // console.log("ipfs", ipfs);
 
     for (const uri of uris) {
       console.log(uri.pathname);
@@ -376,7 +190,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       const CID = parts[parts.length - 1];
       cids.push(CID);
     }
-    const meta = await pull({ cids });
+    // const meta = await pull({ cids });
+    const meta: any = [];
 
     const indicesToUpdate: number[] = [];
     for (let i = 0; i < meta.length; i++) {
@@ -388,7 +203,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       indicesToUpdate.push(i);
       imageCids.push(cid);
     }
-    const images = await pull({ cids: imageCids, isBytesFetch: true });
+    const images: any = [];
+    // const images = await pull({ cids: imageCids, isBytesFetch: true });
 
     for (let i = 0; i < indicesToUpdate.length; i++) {
       try {
@@ -414,10 +230,11 @@ export const GraphProvider: React.FC = ({ children }) => {
         const parts = uri.href.split("/");
         const CID = parts[parts.length - 1];
         // todo: super inefficient
-        const pulled = pull({ cids: [CID] })
-          .then((dat) => dat[0])
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-          .catch(() => ({})) as Promise<any>;
+        const pulled: any = [];
+        // const pulled = pull({ cids: [CID] })
+        //   .then((dat) => dat[0])
+        //   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        //   .catch(() => ({})) as Promise<any>;
         toFetch.push(pulled);
       } else if (uri.href.startsWith("https://ipfs.fleek.co/ipfs")) {
         // * ZORA will straight up give you the image. No need for ceremonial meta JSON
@@ -477,10 +294,11 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
       ix++;
     }
-    const fetchedImages = await pull({
-      cids: imagesToFetch,
-      isBytesFetch: true,
-    });
+    const fetchedImages: any = [];
+    // const fetchedImages = await pull({
+    //   cids: imagesToFetch,
+    //   isBytesFetch: true,
+    // });
     for (let i = 0; i < indicesToUpdate.length; i++) {
       let blob: Blob;
       try {
@@ -497,11 +315,8 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
   const fetchAllERC1155 = useCallback(async () => {
-    const query = queryAllERC1155(currentAddress);
-    const response: queryAllERC1155T = await request(
-      ENDPOINT_EIP1155_PROD,
-      query
-    );
+    const query = queryMyERC1155s(currentAddress);
+    const response: MyERC1155s = await request(ENDPOINT_EIP1155_PROD, query);
     if (
       !response ||
       !response.account ||
@@ -562,11 +377,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   // all of the user's erc721s. Uses Ronan's (wighawag) erc721 subgraph
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
-    const query = queryAllERC721(currentAddress);
-    const response: queryAllERC721T = await request(
-      ENDPOINT_EIP721_PROD,
-      query
-    );
+    const query = queryMyERC721s(currentAddress);
+    const response: MyERC721s = await request(ENDPOINT_EIP721_PROD, query);
     if (
       !response ||
       !("tokens" in response) ||
@@ -713,11 +525,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   );
 
   const fetchUser = useCallback(async () => {
-    const query = queryUser(currentAddress);
+    const query = queryRenftUser(currentAddress);
     const data: {
       user: User;
     } = await request(
-      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
+      IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
     if (!data || !data.user) return [];
@@ -726,15 +538,15 @@ export const GraphProvider: React.FC = ({ children }) => {
       lendings: lending || [],
       rentings: renting || [],
     });
-  }, [currentAddress, lendings]);
+  }, [currentAddress]);
 
   // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const fetchLending = useCallback(async () => {
-    const query = queryLending();
+    const query = queryRenftLendingRentings();
     const data: {
       lendingRentings: LendingRentingRaw[];
     } = await request(
-      IS_DEV_ENV ? ENDPOINT_RENFT_DEV : ENDPOINT_RENFT_PROD,
+      IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
     if (!data) return [];
@@ -749,7 +561,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       resolvedData.push(item);
     }
     _enrichSetLending(resolvedData);
-  }, [parseLending, _enrichSetLending]);
+  }, [_enrichSetLending]);
 
   // to avoid complex logic in removing a particular tokenId
   // let the user invoke this function after successful stop lend
@@ -805,13 +617,13 @@ export const GraphProvider: React.FC = ({ children }) => {
   // }, [_fetchRenting]);
 
   const fetchAvailableNfts = useCallback(async () => {
-    if (IS_DEV_ENV) {
+    if (!IS_PROD) {
       fetchNftMetaDev();
     } else {
       fetchAllERC721();
       fetchAllERC1155();
     }
-  }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
+  }, [fetchAllERC721, fetchAllERC1155]);
 
   usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS);
 
@@ -827,6 +639,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     signer,
     fetchAvailableNfts,
     fetchLending,
+    fetchUser,
   ]);
 
   return (

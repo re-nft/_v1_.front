@@ -1,8 +1,6 @@
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
 
-import { Lending } from "./graph";
-
 export type Optional<T> = undefined | T;
 export type Address = string;
 export type TransactionHash = string;
@@ -31,12 +29,4 @@ export enum TransactionStateEnum {
   PENDING,
 }
 
-export type LendingRentInfo = Pick<
-  Lending,
-  "dailyRentPrice" | "maxRentDuration" | "paymentToken" | "nftPrice"
->;
-
-export type NftAndLendingId = Nft & {
-  lendingId: string;
-  lendingRentInfo: LendingRentInfo;
-};
+export type Path = string[];

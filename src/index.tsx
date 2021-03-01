@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import App from "./App";
-import { GraphProvider } from "./contexts/Graph";
+import { GraphProvider } from "./contexts/Graph/index";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
 

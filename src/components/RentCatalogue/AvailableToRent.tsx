@@ -14,7 +14,8 @@ import {
 import { RentButton } from "./RentButton";
 import NumericField from "../NumericField";
 import { RentModal } from "../RentModal";
-import { NftAndLendingId, PaymentToken } from "../../types";
+import { PaymentToken } from "../../types";
+import { NftAndLendingId } from "../../contexts/Graph/types";
 import { getERC20 } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
 import CatalogueItem from "../CatalogueItem";

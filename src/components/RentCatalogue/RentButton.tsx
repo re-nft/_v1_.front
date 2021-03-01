@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { NftAndLendingId } from "../../types/index";
+import { NftAndLendingId } from "../../contexts/Graph/types";
 
 type RentButtonProps = {
   handleRent: (lending: NftAndLendingId) => void;
