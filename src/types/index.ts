@@ -9,6 +9,7 @@ export type TransactionHash = string;
 export type TokenId = string;
 export type URI = string;
 
+// ! this must be the same as in packages/contracts/Resolver.sol
 export enum PaymentToken {
   SENTINEL, // 0
   ETH, // 1

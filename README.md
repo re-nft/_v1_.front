@@ -4,10 +4,12 @@ Welcome to ReNFT's humble abode, where magix happens!
 
 ![renft](https://user-images.githubusercontent.com/13678461/109494135-634a8800-7a85-11eb-9dd5-d07ca2865df1.png)
 
-# Map
+## Map
+
 - [Go to develop section](#develop)
 
-# Contributions
+## Contributions
+
 - Integrate Renting
   1. show all of the rentings (except your lendings) on the platform by default in the rent tab (erc721 and erc1155)
   2. just like in lending, add the toggle switch. When toggled, will only show the ones you are renting

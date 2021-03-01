@@ -22,15 +22,12 @@ export const getRandomInt = (max: number): number => {
 };
 
 const erc20abi = [
-  // Read-Only Functions
   "function balanceOf(address owner) view returns (uint256)",
   "function decimals() view returns (uint8)",
   "function symbol() view returns (string)",
   "function allowance(address owner, address spender) view returns (uint256)",
-  // Authenticated Functions
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  // Events
   "event Transfer(address indexed from, address indexed to, uint amount)",
 ];
 
@@ -140,6 +137,7 @@ export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
   const w = BigNumber.from(whole).mul(scale);
   const d = BigNumber.from(decimal).mul(scale.div(10_000));
   const _price = w.add(d);
+  // * think of a neat way to divide by 1e18
   return Number(_price) / 1000000 / 1000000 / 1000000;
 };
 
@@ -169,6 +167,7 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
+// ! must be the same as in packages/contracts/src/Resolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
     case "0":
