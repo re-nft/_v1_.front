@@ -56,6 +56,15 @@ import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
  * Solidity God: wighawag
  */
 
+// ! WHAT IS REQUIRED TO SIMPLIFY META FETCHING
+// 1. UNIFIED OUTPUT TYPE.
+// address, tokenId, tokenURI (optional)
+// 2. If tokenURI is not returned from query, try calling contract directly ERC721(address).tokenURI(tokenId) or ERC1155(address).baseURI() + "/" + tokenId
+// 3. Update tokenURI if found, set to null if not found
+// 4. Determine if the tokenURI link is ipfs or not.
+// 5. Pull the meta selectively initially. Pulling everything will be costly, with just need image meta for now
+// 6. the above pulling is done on a unified output type as per (1). Which means erc721 and erc1155 graph output needs to be commonised
+
 const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
