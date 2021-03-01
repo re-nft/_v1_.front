@@ -41,9 +41,9 @@ import {
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import { parseLending, parseRenting } from "./utils";
+import { parseLending } from "./utils";
 
-// import useIpfsFactory from "../hooks/ipfs/useIpfsFactory";
+import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
 /**
  * Useful links
@@ -107,8 +107,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     lendings: [],
     rentings: [],
   });
-
   const renft = useContext(RentNftContext);
+  const { ipfs } = useIpfsFactory();
 
   // would be good to get rid of the dev related stuff under here into a
   // separate component, that would only get rendered if we are in dev env
@@ -316,7 +316,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
   const fetchAllERC1155 = useCallback(async () => {
     const query = queryMyERC1155s(currentAddress);
+    console.time("pulled my erc1155s");
     const response: MyERC1155s = await request(ENDPOINT_EIP1155_PROD, query);
+    console.timeEnd("pulled my erc1155s");
+    console.log(response);
     if (
       !response ||
       !response.account ||
@@ -378,7 +381,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
     const query = queryMyERC721s(currentAddress);
+    console.time("pulled my ERC721s");
     const response: MyERC721s = await request(ENDPOINT_EIP721_PROD, query);
+    console.timeEnd("pulled my ERC721s");
+    console.log(response);
+
     if (
       !response ||
       !("tokens" in response) ||
@@ -617,13 +624,13 @@ export const GraphProvider: React.FC = ({ children }) => {
   // }, [_fetchRenting]);
 
   const fetchAvailableNfts = useCallback(async () => {
-    if (!IS_PROD) {
-      fetchNftMetaDev();
-    } else {
+    if (IS_PROD) {
       fetchAllERC721();
       fetchAllERC1155();
+    } else {
+      fetchNftMetaDev();
     }
-  }, [fetchAllERC721, fetchAllERC1155]);
+  }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
 
   usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS);
 

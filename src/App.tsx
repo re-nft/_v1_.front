@@ -7,7 +7,6 @@ import Lend from "./components/LendCatalogue/Lend";
 import ButHow from "./components/FAQ";
 import Stats from "./components/Stats";
 import { TransactionNotifier } from "./components/TransactionNotifier";
-// import useIpfsFactory from "./hooks/ipfs/useIpfsFactory";
 
 enum Tabs {
   RENT,
@@ -47,7 +46,6 @@ const Tab: React.FC<TabProps> = ({
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
-  //useIpfsFactory();
 
   return (
     <Layout>
