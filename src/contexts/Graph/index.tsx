@@ -101,6 +101,11 @@ const DefaultGraphContext: GraphContextType = {
   fetchAvailableNfts: THROWS,
 };
 
+enum FetchType {
+  ERC721,
+  ERC1155,
+}
+
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 export const GraphProvider: React.FC = ({ children }) => {
@@ -119,206 +124,235 @@ export const GraphProvider: React.FC = ({ children }) => {
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
   // fetched meta
-  const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
-    const cids: string[] = [];
-    const imageCids: string[] = [];
+  // const fetchNftMeta1155 = useCallback(async (uris: parse[]) => {
+  //   const cids: string[] = [];
+  //   const imageCids: string[] = [];
 
-    if (uris.length < 1) return [];
+  //   if (uris.length < 1) return [];
 
-    for (const uri of uris) {
-      console.log(uri.pathname);
-      if (!uri.pathname) continue;
-      const parts = uri.pathname.split("/");
-      const CID = parts[parts.length - 1];
-      cids.push(CID);
-    }
-    // const meta = await pull({ cids });
-    const meta: any = [];
+  //   for (const uri of uris) {
+  //     console.log(uri.pathname);
+  //     if (!uri.pathname) continue;
+  //     const parts = uri.pathname.split("/");
+  //     const CID = parts[parts.length - 1];
+  //     cids.push(CID);
+  //   }
+  //   // const meta = await pull({ cids });
+  //   const meta: any = [];
 
-    const indicesToUpdate: number[] = [];
-    for (let i = 0; i < meta.length; i++) {
-      if (!("image" in meta[i])) continue;
-      //@ts-ignore
-      const imageIpfsUri: string | undefined = meta[i].image;
-      const cid = imageIpfsUri?.slice(12);
-      if (!cid) continue;
-      indicesToUpdate.push(i);
-      imageCids.push(cid);
-    }
-    const images: any = [];
-    // const images = await pull({ cids: imageCids, isBytesFetch: true });
+  //   const indicesToUpdate: number[] = [];
+  //   for (let i = 0; i < meta.length; i++) {
+  //     if (!("image" in meta[i])) continue;
+  //     //@ts-ignore
+  //     const imageIpfsUri: string | undefined = meta[i].image;
+  //     const cid = imageIpfsUri?.slice(12);
+  //     if (!cid) continue;
+  //     indicesToUpdate.push(i);
+  //     imageCids.push(cid);
+  //   }
+  //   const images: any = [];
+  //   // const images = await pull({ cids: imageCids, isBytesFetch: true });
 
-    for (let i = 0; i < indicesToUpdate.length; i++) {
-      try {
-        const blob = await images[i].blob();
-        //@ts-ignore
-        meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
-      } catch (e) {
-        console.warn("could not parse image");
-        continue;
-      }
-    }
-    return meta;
-  }, []);
+  //   for (let i = 0; i < indicesToUpdate.length; i++) {
+  //     try {
+  //       const blob = await images[i].blob();
+  //       //@ts-ignore
+  //       meta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
+  //     } catch (e) {
+  //       console.warn("could not parse image");
+  //       continue;
+  //     }
+  //   }
+  //   return meta;
+  // }, []);
 
-  const fetchNftMeta721 = useCallback(async (uris: parse[]) => {
-    const toFetch: Promise<Response>[] = [];
-    if (uris.length < 1) return [];
-    for (const uri of uris) {
-      if (!uri.href) continue;
-      // additional check here is needed for ZORA links, if it is ZORA URI, then it points to image/media
-      // rather than actual meta of the NFT
-      if (uri.href.startsWith("https://ipfs.daonomic.com")) {
-        const parts = uri.href.split("/");
-        const CID = parts[parts.length - 1];
-        // todo: super inefficient
-        const pulled: any = [];
-        // const pulled = pull({ cids: [CID] })
-        //   .then((dat) => dat[0])
-        //   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        //   .catch(() => ({})) as Promise<any>;
-        toFetch.push(pulled);
-      } else if (uri.href.startsWith("https://ipfs.fleek.co/ipfs")) {
-        // * ZORA will straight up give you the image. No need for ceremonial meta JSON
-        const fetched = fetch(uri.href, {
-          headers: [["Content-Type", "text/plain"]],
-        })
-          .then(async (r) => {
-            const blob = await r.blob();
-            const url = URL.createObjectURL(blob);
-            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-            return { image: url, image_url: url } as any;
-          })
-          .catch(() => ({}));
-        toFetch.push(fetched);
-      } else {
-        const uriToPull = uri.href.startsWith("https://api.sandbox.game")
-          ? `${CORS_PROXY}${uri.href}`
-          : uri.href;
-        // todo: only fetch if https or http
-        const fetched = fetch(uriToPull, {
-          headers: [["Content-Type", "text/plain"]],
-        })
-          .then(async (dat) => await dat.json())
-          .catch(() => ({}));
-        toFetch.push(fetched);
-      }
-    }
-    const res = await Promise.all(toFetch);
-    return res;
-  }, []);
+  // const fetchNftMeta721 = useCallback(async (uris: parse[]) => {
+  //   const toFetch: Promise<Response>[] = [];
+  //   if (uris.length < 1) return [];
+  //   for (const uri of uris) {
+  //     if (!uri.href) continue;
+  //     // additional check here is needed for ZORA links, if it is ZORA URI, then it points to image/media
+  //     // rather than actual meta of the NFT
+  //     if (uri.href.startsWith("https://ipfs.daonomic.com")) {
+  //       const parts = uri.href.split("/");
+  //       const CID = parts[parts.length - 1];
+  //       // todo: super inefficient
+  //       const pulled: any = [];
+  //       // const pulled = pull({ cids: [CID] })
+  //       //   .then((dat) => dat[0])
+  //       //   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  //       //   .catch(() => ({})) as Promise<any>;
+  //       toFetch.push(pulled);
+  //     } else if (uri.href.startsWith("https://ipfs.fleek.co/ipfs")) {
+  //       // * ZORA will straight up give you the image. No need for ceremonial meta JSON
+  //       const fetched = fetch(uri.href, {
+  //         headers: [["Content-Type", "text/plain"]],
+  //       })
+  //         .then(async (r) => {
+  //           const blob = await r.blob();
+  //           const url = URL.createObjectURL(blob);
+  //           /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  //           return { image: url, image_url: url } as any;
+  //         })
+  //         .catch(() => ({}));
+  //       toFetch.push(fetched);
+  //     } else {
+  //       const uriToPull = uri.href.startsWith("https://api.sandbox.game")
+  //         ? `${CORS_PROXY}${uri.href}`
+  //         : uri.href;
+  //       // todo: only fetch if https or http
+  //       const fetched = fetch(uriToPull, {
+  //         headers: [["Content-Type", "text/plain"]],
+  //       })
+  //         .then(async (dat) => await dat.json())
+  //         .catch(() => ({}));
+  //       toFetch.push(fetched);
+  //     }
+  //   }
+  //   const res = await Promise.all(toFetch);
+  //   return res;
+  // }, []);
 
   // some image URIs are pointing to ipfs
   // therfore after the initial meta fetch, the second
   // one (this one) is called to retrieve images from IPFS
-  const parseMeta = async (meta: Response[]) => {
-    const parsedMeta: Response[] = JSON.parse(JSON.stringify(meta));
-    const indicesToUpdate: number[] = [];
-    const imagesToFetch: string[] = [];
-    let ix = 0;
-    for (const m of meta) {
-      let key = "";
-      if ("image" in m) {
-        key = "image";
-      } else if ("image_url" in m) {
-        key = "image_url";
-      }
-      if (key) {
-        //@ts-ignore
-        if (m[key].startsWith("ipfs")) {
-          indicesToUpdate.push(ix);
-          //@ts-ignore
-          const parts = m[key].split("/");
-          const cid = parts[parts.length - 1];
-          //@ts-ignore
-          imagesToFetch.push(cid);
-        }
-      }
-      ix++;
-    }
-    const fetchedImages: any = [];
-    // const fetchedImages = await pull({
-    //   cids: imagesToFetch,
-    //   isBytesFetch: true,
-    // });
-    for (let i = 0; i < indicesToUpdate.length; i++) {
-      let blob: Blob;
-      try {
-        blob = await fetchedImages[i].blob();
-      } catch (e) {
-        console.warn("could not fetch image blob");
-        continue;
-      }
-      //@ts-ignore
-      parsedMeta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
-    }
-    return parsedMeta;
-  };
+  // const parseMeta = async (meta: Response[]) => {
+  //   const parsedMeta: Response[] = JSON.parse(JSON.stringify(meta));
+  //   const indicesToUpdate: number[] = [];
+  //   const imagesToFetch: string[] = [];
+  //   let ix = 0;
+  //   for (const m of meta) {
+  //     let key = "";
+  //     if ("image" in m) {
+  //       key = "image";
+  //     } else if ("image_url" in m) {
+  //       key = "image_url";
+  //     }
+  //     if (key) {
+  //       //@ts-ignore
+  //       if (m[key].startsWith("ipfs")) {
+  //         indicesToUpdate.push(ix);
+  //         //@ts-ignore
+  //         const parts = m[key].split("/");
+  //         const cid = parts[parts.length - 1];
+  //         //@ts-ignore
+  //         imagesToFetch.push(cid);
+  //       }
+  //     }
+  //     ix++;
+  //   }
+  //   const fetchedImages: any = [];
+  //   // const fetchedImages = await pull({
+  //   //   cids: imagesToFetch,
+  //   //   isBytesFetch: true,
+  //   // });
+  //   for (let i = 0; i < indicesToUpdate.length; i++) {
+  //     let blob: Blob;
+  //     try {
+  //       blob = await fetchedImages[i].blob();
+  //     } catch (e) {
+  //       console.warn("could not fetch image blob");
+  //       continue;
+  //     }
+  //     //@ts-ignore
+  //     parsedMeta[indicesToUpdate[i]]["image"] = URL.createObjectURL(blob);
+  //   }
+  //   return parsedMeta;
+  // };
 
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
-  const fetchAllERC1155 = useCallback(async () => {
-    const query = queryMyERC1155s(currentAddress);
-    const response: MyERC1155s = await timeItAsync(
-      request("Pulled My ERC1155s", ENDPOINT_EIP1155_PROD, query)
-    );
-    console.log(response);
+  // * uses the eip721  subgraph to pull all your erc721  holdings
+  const fetchAllERCs = useCallback(
+    async (fetchType: FetchType) => {
+      let query = "";
+      let subgraphURI = "";
 
-    if (
-      !response ||
-      !response.account ||
-      response.account.balances.length === 0
-    )
-      return [];
-    const { balances } = response.account;
-    const toFetchPaths: Path[] = [];
-    const toFetchLinks: parse[] = [];
+      switch (fetchType) {
+        case FetchType.ERC721:
+          query = queryMyERC721s(currentAddress);
+          subgraphURI = ENDPOINT_EIP721_PROD;
+          break;
+        case FetchType.ERC1155:
+          query = queryMyERC1155s(currentAddress);
+          subgraphURI = ENDPOINT_EIP1155_PROD;
+          break;
+      }
 
-    for (const tokenBalance of balances) {
-      const { token } = tokenBalance;
-      // * sometimes the subgraph does not return the URI. For example, for ZORA
-      const _tokenURI = token.tokenURI;
-      const address = token.registry.contractAddress;
-      if (!_tokenURI) {
-        console.warn("could not fetch meta for", address);
-        continue;
-      }
-      const { tokenId } = token;
-      if (!address || !tokenId) continue;
-      if (!myNfts[address]?.contract) {
-        // React will bundle up these individual setStates
-        const contract = getERC1155(address, signer);
-        const isApprovedForAll = await contract
-          .isApprovedForAll(
-            currentAddress,
-            /* eslint-disable-next-line */
-            renft.instance!.address
-          )
-          .catch(() => false);
-        setMyNfts((prev) => ({
-          ...prev,
-          [address]: {
-            ...prev.address,
-            contract: contract,
-            isApprovedForAll,
-          },
-        }));
-      }
-      if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
-        if (!_tokenURI) continue;
-        toFetchPaths.push([address, "tokenIds", tokenId]);
-        toFetchLinks.push(parse(_tokenURI, true));
-      }
-    }
+      const response: MyERC1155s | MyERC721s = await timeItAsync(
+        `Pulled My ${FetchType[fetchType]} NFTs`,
+        request(query, subgraphURI)
+      );
+      console.log(response);
 
-    const meta = await fetchNftMeta1155(toFetchLinks);
-    for (let i = 0; i < meta.length; i++) {
-      setMyNfts((prev) => {
-        const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
-        return setTo;
-      });
-    }
-    /* eslint-disable-next-line */
-  }, [currentAddress, renft.instance, signer, fetchNftMeta1155]);
+      if (!response.account || response.account.balances.length === 0)
+        return [];
+
+      const { balances } = response.account;
+      const toFetch: {
+        stateUpdatePath: Path;
+        metaLinkToFetch: parse;
+      }[] = [];
+
+      for (const _token of balances) {
+        const { token } = _token;
+        // * sometimes the subgraph does not return the URI. For example, for ZORA
+        const _tokenURI = token.tokenURI;
+        let tokenURI = "";
+        const address = token.registry.contractAddress;
+        const { tokenId } = token;
+
+        // ! dependency on current state
+        // ! without having it as dependency in useCallback which would trigger infinite loop
+        if (!myNfts[address].contract) {
+          const contract = getERC1155(address, signer);
+          const isApprovedForAll = await contract
+            .isApprovedForAll(currentAddress, renft.instance?.address ?? "")
+            .catch(() => false);
+
+          setMyNfts((prev) => ({
+            ...prev,
+            [address]: {
+              ...prev.address,
+              contract,
+              isApprovedForAll,
+            },
+          }));
+        }
+
+        // if there isn't token with the tokenId in the state, first fetch
+        // its meta, and then update the state
+        if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
+          if (!_tokenURI) {
+            console.warn(
+              "no tokenURI from subgraph for, address:",
+              address,
+              "tokenId:",
+              tokenId
+            );
+            console.warn("attempting to fetch from the contract...");
+            // todo: implement
+            tokenURI = "";
+            continue;
+          }
+
+          toFetch.push({
+            stateUpdatePath: [address, "tokenIds", tokenId],
+            metaLinkToFetch: parse(tokenURI, true),
+          });
+        }
+      }
+
+      // const meta = await fetchNftMeta(toFetch);
+
+      // for (let i = 0; i < meta.length; i++) {
+      //   setMyNfts((prev) => {
+      //     const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
+      //     return setTo;
+      //   });
+      // }
+    },
+    [currentAddress, renft.instance, signer]
+  );
 
   const fetchAllERC721 = useCallback(async () => {
     const query = queryMyERC721s(currentAddress);
