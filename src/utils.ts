@@ -186,3 +186,18 @@ export const parsePaymentToken = (tkn: string): PaymentToken => {
       return PaymentToken.DAI;
   }
 };
+
+export const timeIt = (msg: string, callable: CallableFunction): void => {
+  console.time(msg);
+  callable();
+  console.timeEnd(msg);
+};
+
+export const timeItAsync = async (
+  msg: string,
+  callable: CallableFunction
+): Promise<void> => {
+  console.time(msg);
+  await callable();
+  console.timeEnd(msg);
+};

@@ -28,7 +28,7 @@ import {
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import { parseLending } from "./utils";
+import { parseLending, timeItAsync } from "./utils";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
 /**
@@ -258,10 +258,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
   const fetchAllERC1155 = useCallback(async () => {
     const query = queryMyERC1155s(currentAddress);
-    console.time("pulled my erc1155s");
-    const response: MyERC1155s = await request(ENDPOINT_EIP1155_PROD, query);
-    console.timeEnd("pulled my erc1155s");
+    const response: MyERC1155s = await timeItAsync(
+      request("Pulled My ERC1155s", ENDPOINT_EIP1155_PROD, query)
+    );
     console.log(response);
+
     if (
       !response ||
       !response.account ||
@@ -319,13 +320,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     /* eslint-disable-next-line */
   }, [currentAddress, renft.instance, signer, fetchNftMeta1155]);
 
-  // all of the user's erc721s. Uses Ronan's (wighawag) erc721 subgraph
-  // todo: potentially save into cache for future sessions
   const fetchAllERC721 = useCallback(async () => {
     const query = queryMyERC721s(currentAddress);
-    console.time("pulled my ERC721s");
-    const response: MyERC721s = await request(ENDPOINT_EIP721_PROD, query);
-    console.timeEnd("pulled my ERC721s");
+    const response: MyERC721s = await timeItAsync(
+      "Pulled My ERC721s",
+      request(ENDPOINT_EIP721_PROD, query)
+    );
     console.log(response);
 
     if (
