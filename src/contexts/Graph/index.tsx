@@ -8,39 +8,28 @@ import React, {
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 
 import {
   CurrentAddressContext,
-  MyERC721Context,
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-import { ERC721 } from "../../hardhat/typechain/ERC721";
-import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { getERC1155, getERC721, THROWS } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
-import { Nft, Path } from "../../types";
+import { Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
+import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
-import {
-  AddressToNft,
-  UserData,
-  LendingRentingRaw,
-  Lending,
-  User,
-  MyERC1155s,
-  MyERC721s,
-} from "./types";
+import { Lending, User, MyERC1155s, MyERC721s, Nft } from "./types";
 import {
   queryRenftUser,
-  queryRenftLendingRentings,
+  queryRenftAll,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
 import { parseLending } from "./utils";
-
-import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
+import useFetchNftDev from "./hooks/useFetchNftDev";
 
 /**
  * Useful links
@@ -78,16 +67,35 @@ const ENDPOINT_EIP1155_PROD =
 
 type GraphContextType = {
   myNfts: AddressToNft;
-  user: UserData;
+  user: User;
   fetchAvailableNfts: () => void;
   removeLending: (nfts: Nft[]) => void;
+};
+
+// differently arranged (for efficiency) Nft
+// '0x123...456': { tokens: { '1': ..., '2': ... } }
+type AddressToNft = {
+  [key: string]: {
+    contract: Nft["contract"];
+    isERC721: Nft["isERC721"];
+    tokens: {
+      // tokenId
+      [key: string]: {
+        lending?: Nft["lending"];
+        renting?: Nft["renting"];
+        tokenURI?: Nft["tokenURI"];
+        meta?: Nft["meta"];
+      };
+    };
+  };
 };
 
 const DefaultGraphContext: GraphContextType = {
   myNfts: {},
   user: {
-    lendings: [],
-    rentings: [],
+    address: "",
+    lending: [],
+    renting: [],
   },
   removeLending: THROWS,
   fetchAvailableNfts: THROWS,
@@ -99,78 +107,14 @@ export const GraphProvider: React.FC = ({ children }) => {
   // ! currentAddress can be ""
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
-  const [myNfts, setMyNfts] = useState<AddressToNft>({});
-  const [userData, setUserData] = useState<UserData>({
-    lendings: [],
-    rentings: [],
-  });
+  const [myNfts, setMyNfts] = useState<AddressToNft>(
+    DefaultGraphContext["myNfts"]
+  );
+  const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
   const renft = useContext(RentNftContext);
+
+  const fetchNftDev = useFetchNftDev();
   const { ipfs } = useIpfsFactory();
-
-  // would be good to get rid of the dev related stuff under here into a
-  // separate component, that would only get rendered if we are in dev env
-  // because the below logic is not related to prod functioning
-  // * only in dev. this is a context for mock ERC721 contract
-  const myERC721 = useContext(MyERC721Context);
-  // ! only used in dev environment - so don't worry about this too much
-  const fetchNftMetaDev = useCallback(async () => {
-    if (!myERC721.instance) return [];
-    const toFetch: Promise<Response>[] = [];
-    const tokenIds: string[] = [];
-    // * only fetched ERC721s in dev right now
-    const contract = myERC721.instance;
-
-    // * won't fetch in prod
-    // pull all of the tokens of the current address
-    const numNfts = await contract
-      .balanceOf(currentAddress)
-      .catch(() => BigNumber.from("0"));
-    if (numNfts.toNumber() === 0) return [];
-
-    for (let i = 0; i < numNfts.toNumber(); i++) {
-      // get the tokenId, and then fetch the metadata uri, then push this to toFetch
-      const tokenId = await contract
-        .tokenOfOwnerByIndex(currentAddress, i)
-        .catch(() => -1);
-      if (tokenId === -1) continue;
-
-      const metaURI = await contract.tokenURI(tokenId).catch(() => "");
-      if (!metaURI) continue;
-
-      tokenIds.push(tokenId.toString());
-      toFetch.push(
-        fetch(metaURI, {
-          headers: [["Content-Type", "text/plain"]],
-        })
-          .then(async (dat) => await dat.json())
-          .catch(() => ({}))
-      );
-    }
-    if (toFetch.length === 0) return [];
-
-    const res = await Promise.all(toFetch);
-    const tokenIdsObj = {};
-    for (let i = 0; i < res.length; i++) {
-      Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
-    }
-
-    const isApprovedForAll = await contract
-      .isApprovedForAll(
-        currentAddress,
-        /* eslint-disable-next-line */
-        renft.instance!.address
-      )
-      .catch(() => false);
-    setMyNfts({
-      [contract.address]: {
-        contract: contract,
-        isApprovedForAll,
-        isERC721: true,
-        tokenIds: tokenIdsObj,
-      },
-    });
-    return res;
-  }, [renft.instance, currentAddress, myERC721.instance]);
 
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
@@ -396,11 +340,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     const toFetchLinks: parse[] = [];
 
     for (const token of response.tokens) {
-      const { id, tokenURI } = token;
-      if (!id) continue;
+      const { tokenId, tokenURI } = token;
+      if (!tokenId) continue;
       // * sometimes the subgraph does not return the URI. For example, for ZORA
       let _tokenURI = tokenURI;
-      const [address, tokenId] = id.split("_");
+      // todo: invalid tokenId
+      const [address] = tokenId.split("_");
       if (!address || !tokenId) continue;
 
       if (!myNfts[address]?.contract) {
@@ -447,87 +392,87 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // incremental diff-like updating of the state
   // to avoid costly refetching of the meta
-  const _enrichSetLending = useCallback(
-    async (nfts: Lending[]): Promise<void> => {
-      const toFetchPaths: Path[] = [];
-      const toFetchLinks: parse[] = [];
-      // contains the list of lendings that we need to fetch this time
-      const _nfts: Lending[] = [];
+  // const _enrichSetLending = useCallback(
+  //   async (nfts: Lending[]): Promise<void> => {
+  //     const toFetchPaths: Path[] = [];
+  //     const toFetchLinks: parse[] = [];
+  //     // contains the list of lendings that we need to fetch this time
+  //     const _nfts: Lending[] = [];
 
-      // closure for incremental fetch of new meta
-      // * checks if the tokenId under consideration requires
-      // * meta fetching
-      const _updateFetchMeta = async (
-        nft: Lending,
-        contract: ERC721 | ERC1155
-      ) => {
-        if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
-          const tokenURI = await contract
-            .tokenURI(nft.tokenId)
-            .catch(() => undefined);
-          if (!tokenURI) return false;
-          toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
-          toFetchLinks.push(parse(tokenURI, true));
-          _nfts.push(nft);
-          return true;
-        }
-      };
+  //     // closure for incremental fetch of new meta
+  //     // * checks if the tokenId under consideration requires
+  //     // * meta fetching
+  //     const _updateFetchMeta = async (
+  //       nft: Lending,
+  //       contract: ERC721 | ERC1155
+  //     ) => {
+  //       if (!hasPath([nft.nftAddress, "tokenIds", nft.tokenId])(lendings)) {
+  //         const tokenURI = await contract
+  //           .tokenURI(nft.tokenId)
+  //           .catch(() => undefined);
+  //         if (!tokenURI) return false;
+  //         toFetchPaths.push([nft.nftAddress, "tokenIds", nft.tokenId]);
+  //         toFetchLinks.push(parse(tokenURI, true));
+  //         _nfts.push(nft);
+  //         return true;
+  //       }
+  //     };
 
-      for (const nft of nfts) {
-        // * in here if this is the first time we are fetching the metadata
-        // * for this NFT
-        if (!lendings[nft.nftAddress]?.contract) {
-          const { contract, isERC721, status } = getNftContract(nft, signer);
-          if (!status) continue;
+  //     for (const nft of nfts) {
+  //       // * in here if this is the first time we are fetching the metadata
+  //       // * for this NFT
+  //       if (!lendings[nft.nftAddress]?.contract) {
+  //         const { contract, isERC721, status } = getNftContract(nft, signer);
+  //         if (!status) continue;
 
-          /* eslint-disable-next-line */
-          const isSuccess = await _updateFetchMeta(nft, contract!);
-          if (!isSuccess) continue;
+  //         /* eslint-disable-next-line */
+  //         const isSuccess = await _updateFetchMeta(nft, contract!);
+  //         if (!isSuccess) continue;
 
-          // * this is the first time, so we upate the state
-          // * with the contract for the NFT under question
-          setLendings((prev) => ({
-            ...prev,
-            [nft.nftAddress]: {
-              ...prev[nft.nftAddress],
-              /* eslint-disable-next-line */
-              contract: contract!,
-              /* eslint-disable-next-line */
-              isERC721: isERC721!,
-              isERC1155: !isERC721,
-            },
-          }));
-        } else {
-          // * in here if we have fetched meta before
-          // * checking if the same contract's new tokenId
-          // * requires meta fetching
-          const contract = await lendings[nft.nftAddress].contract;
-          const isSuccess = await _updateFetchMeta(nft, contract);
-          if (!isSuccess) continue;
-        }
-      }
+  //         // * this is the first time, so we upate the state
+  //         // * with the contract for the NFT under question
+  //         setLendings((prev) => ({
+  //           ...prev,
+  //           [nft.nftAddress]: {
+  //             ...prev[nft.nftAddress],
+  //             /* eslint-disable-next-line */
+  //             contract: contract!,
+  //             /* eslint-disable-next-line */
+  //             isERC721: isERC721!,
+  //             isERC1155: !isERC721,
+  //           },
+  //         }));
+  //       } else {
+  //         // * in here if we have fetched meta before
+  //         // * checking if the same contract's new tokenId
+  //         // * requires meta fetching
+  //         const contract = await lendings[nft.nftAddress].contract;
+  //         const isSuccess = await _updateFetchMeta(nft, contract);
+  //         if (!isSuccess) continue;
+  //       }
+  //     }
 
-      // todo: this should be nft type agnostic
-      const meta = await fetchNftMeta721(toFetchLinks);
+  //     // todo: this should be nft type agnostic
+  //     const meta = await fetchNftMeta721(toFetchLinks);
 
-      // now that we have gathered and fetched the incremental meta
-      // we are ready to update the current state
-      for (let i = 0; i < meta.length; i++) {
-        setLendings((prev) => {
-          const setTo = ramdaSet(
-            lensPath(toFetchPaths[i]),
-            {
-              ...meta[i],
-              ..._nfts[i],
-            },
-            prev
-          );
-          return setTo;
-        });
-      }
-    },
-    [fetchNftMeta721, signer, lendings]
-  );
+  //     // now that we have gathered and fetched the incremental meta
+  //     // we are ready to update the current state
+  //     for (let i = 0; i < meta.length; i++) {
+  //       setLendings((prev) => {
+  //         const setTo = ramdaSet(
+  //           lensPath(toFetchPaths[i]),
+  //           {
+  //             ...meta[i],
+  //             ..._nfts[i],
+  //           },
+  //           prev
+  //         );
+  //         return setTo;
+  //       });
+  //     }
+  //   },
+  //   [fetchNftMeta721, signer, lendings]
+  // );
 
   const fetchUser = useCallback(async () => {
     const query = queryRenftUser(currentAddress);
@@ -539,23 +484,21 @@ export const GraphProvider: React.FC = ({ children }) => {
     );
     if (!data || !data.user) return [];
     const { lending, renting } = data.user;
-    setUserData({
-      lendings: lending || [],
-      rentings: renting || [],
+    setUser({
+      address: currentAddress,
+      lending: lending || [],
+      renting: renting || [],
     });
   }, [currentAddress]);
 
   // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const fetchLending = useCallback(async () => {
-    const query = queryRenftLendingRentings();
-    const data: {
-      lendingRentings: LendingRentingRaw[];
-    } = await request(
+    const query = queryRenftAll();
+    const { lendingRentings } = await request(
       IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    if (!data) return [];
-    const { lendingRentings } = data;
+    if (!lendingRentings) return [];
     const resolvedData: Lending[] = [];
     for (let i = 0; i < lendingRentings.length; i++) {
       const numTimesLent = lendingRentings[i].lending.length;
@@ -565,70 +508,65 @@ export const GraphProvider: React.FC = ({ children }) => {
       const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
       resolvedData.push(item);
     }
-    _enrichSetLending(resolvedData);
-  }, [_enrichSetLending]);
+    // _enrichSetLending(resolvedData);
+  }, []);
 
   // to avoid complex logic in removing a particular tokenId
   // let the user invoke this function after successful stop lend
   // to remove the lending directly (by assigning undefined)
   // from the state. This saves us from otherwise complex react
   // state comparison versus the pulled from the graph state
-  const removeLending = useCallback((nfts: Nft[]) => {
-    for (const nft of nfts) {
-      if (nft.contract == null) continue;
-      // todo: this won't work during re-lends, need to add lendingId in here as well
-      setLendings((prev) =>
-        ramdaSet(
-          /* eslint-disable-next-line*/
-          lensPath([nft.contract!.address, "tokenIds", nft.tokenId]),
-          undefined,
-          prev
-        )
-      );
-    }
-  }, []);
+  // const removeLending = useCallback((nfts: Nft[]) => {
+  //   for (const nft of nfts) {
+  //     if (nft.contract == null) continue;
+  //     // todo: this won't work during re-lends, need to add lendingId in here as well
+  //     setLendings((prev) =>
+  //       ramdaSet(
+  //         /* eslint-disable-next-line*/
+  //         lensPath([nft.contract!.address, "tokenIds", nft.tokenId]),
+  //         undefined,
+  //         prev
+  //       )
+  //     );
+  //   }
+  // }, []);
 
   // to ease up the complexity of functions, abstract away instantiating
   // the contract. Contract may be erc1155 or erc721
-  const getNftContract = (nft: Lending, signer?: ethers.Signer) => {
-    let contract: ERC721 | ERC1155;
-    let isERC721: boolean | undefined;
+  // const getNftContract = (nft: Lending, signer?: ethers.Signer) => {
+  //   let contract: ERC721 | ERC1155;
+  //   let isERC721: boolean | undefined;
 
-    // determining if we are dealing with erc721 or erc1155
-    try {
-      contract = getERC721(nft.nftAddress, signer);
-      isERC721 = true;
-    } catch (e) {
-      console.warn(
-        "could not instantiate erc721 with",
-        nft.nftAddress,
-        "must be erc1155"
-      );
-      contract = getERC1155(nft.nftAddress, signer);
-      isERC721 = false;
-    }
+  //   // determining if we are dealing with erc721 or erc1155
+  //   try {
+  //     contract = getERC721(nft.nftAddress, signer);
+  //     isERC721 = true;
+  //   } catch (e) {
+  //     console.warn(
+  //       "could not instantiate erc721 with",
+  //       nft.nftAddress,
+  //       "must be erc1155"
+  //     );
+  //     contract = getERC1155(nft.nftAddress, signer);
+  //     isERC721 = false;
+  //   }
 
-    if (isERC721 == null) {
-      console.warn("unknown contract type", nft.nftAddress);
-      return { contract: undefined, isERC721: undefined, status: false };
-    }
+  //   if (isERC721 == null) {
+  //     console.warn("unknown contract type", nft.nftAddress);
+  //     return { contract: undefined, isERC721: undefined, status: false };
+  //   }
 
-    return { contract, isERC721, status: true };
-  };
-
-  // const fetchRenting = useCallback(async () => {
-  //   const nfts = await _fetchRenting();
-  //   console.log("all available for renting");
-  // }, [_fetchRenting]);
+  //   return { contract, isERC721, status: true };
+  // };
 
   const fetchAvailableNfts = useCallback(async () => {
     if (IS_PROD) {
       fetchAllERC721();
       fetchAllERC1155();
     } else {
-      fetchNftMetaDev();
+      fetchNftDev();
     }
-  }, [fetchAllERC721, fetchAllERC1155, fetchNftMetaDev]);
+  }, [fetchAllERC721, fetchAllERC1155, fetchNftDev]);
 
   usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS);
 
@@ -650,13 +588,12 @@ export const GraphProvider: React.FC = ({ children }) => {
   return (
     <GraphContext.Provider
       value={{
-        erc721s,
-        erc1155s,
+        myNfts,
         fetchAvailableNfts,
-        removeLending,
-        lendings,
-        rentings,
-        user: userData,
+        removeLending: () => {
+          true;
+        },
+        user,
       }}
     >
       {children}

@@ -38,7 +38,7 @@ export const queryMyERC1155s = (user: string): string => {
 // to return by the renter, or to be claimed collateral
 // on by the lender
 // if renter did not return before rentedAt + rentDays
-export const queryRenftLendingRentings = (): string => {
+export const queryRenftAll = (): string => {
   return `{
     lendingRentings {
       lending {
@@ -54,6 +54,9 @@ export const queryRenftLendingRentings = (): string => {
       }
       renting {
         id
+        renterAddress
+        rentDuration
+        rentedAt
       }
     }
   }`;

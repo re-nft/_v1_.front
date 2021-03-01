@@ -2,8 +2,6 @@ import { ERC721 } from "../../hardhat/typechain/ERC721";
 import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { Address, PaymentToken, TokenId } from "../../types";
 
-// todo: a lot of redundancy
-
 export type Nft = {
   contract?: ERC721 | ERC1155;
   isERC721: boolean;
@@ -39,24 +37,6 @@ export type MyERC1155s = {
         };
       };
     }[];
-  };
-};
-
-// differently arranged (for efficiency) MyNft
-// '0x123...456': { tokens: { '1': ..., '2': ... } }
-export type AddressToNft = {
-  [key: string]: {
-    contract: Nft["contract"];
-    isERC721: Nft["isERC721"];
-    tokens: {
-      // tokenId
-      [key: string]: {
-        lending?: Nft["lending"];
-        renting?: Nft["renting"];
-        tokenURI?: Nft["tokenURI"];
-        meta?: Nft["meta"];
-      };
-    };
   };
 };
 
