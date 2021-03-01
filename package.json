@@ -1,5 +1,5 @@
 {
-  "name": "rentnft_front",
+  "name": "@renft/front",
   "version": "1.0.0",
   "author": "Nazariy Vavryk <nazariy@inbox.ru>",
   "dependencies": {
