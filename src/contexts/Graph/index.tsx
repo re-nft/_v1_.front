@@ -24,10 +24,7 @@ import { Nft, Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 
 import {
-  AddressToErc721,
-  AddressToErc1155,
-  AddressToLending,
-  AddressToRenting,
+  AddressToNft,
   UserData,
   LendingRentingRaw,
   Lending,
@@ -80,26 +77,20 @@ const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
 
 type GraphContextType = {
-  erc721s: AddressToErc721;
-  erc1155s: AddressToErc1155;
-  lendings: AddressToLending;
-  rentings: AddressToRenting;
+  myNfts: AddressToNft;
+  user: UserData;
   fetchAvailableNfts: () => void;
   removeLending: (nfts: Nft[]) => void;
-  user: UserData;
 };
 
 const DefaultGraphContext: GraphContextType = {
-  erc721s: {},
-  erc1155s: {},
-  lendings: {},
-  rentings: {},
-  removeLending: THROWS,
-  fetchAvailableNfts: THROWS,
+  myNfts: {},
   user: {
     lendings: [],
     rentings: [],
   },
+  removeLending: THROWS,
+  fetchAvailableNfts: THROWS,
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -108,10 +99,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   // ! currentAddress can be ""
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
-  const [erc721s, setErc721s] = useState<AddressToErc721>({});
-  const [erc1155s, setErc1155s] = useState<AddressToErc1155>({});
-  const [lendings, setLendings] = useState<AddressToLending>({});
-  const [rentings, setRentings] = useState<AddressToRenting>({});
+  const [myNfts, setMyNfts] = useState<AddressToNft>({});
   const [userData, setUserData] = useState<UserData>({
     lendings: [],
     rentings: [],
@@ -173,10 +161,11 @@ export const GraphProvider: React.FC = ({ children }) => {
         renft.instance!.address
       )
       .catch(() => false);
-    setErc721s({
+    setMyNfts({
       [contract.address]: {
         contract: contract,
         isApprovedForAll,
+        isERC721: true,
         tokenIds: tokenIdsObj,
       },
     });
@@ -342,7 +331,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (const tokenBalance of balances) {
       const { token } = tokenBalance;
       // * sometimes the subgraph does not return the URI. For example, for ZORA
-      const _tokenURI = token.URI;
+      const _tokenURI = token.tokenURI;
       const address = token.registry.contractAddress;
       if (!_tokenURI) {
         console.warn("could not fetch meta for", address);
@@ -350,7 +339,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
       const { tokenId } = token;
       if (!address || !tokenId) continue;
-      if (!erc1155s[address]?.contract) {
+      if (!myNfts[address]?.contract) {
         // React will bundle up these individual setStates
         const contract = getERC1155(address, signer);
         const isApprovedForAll = await contract
@@ -360,7 +349,7 @@ export const GraphProvider: React.FC = ({ children }) => {
             renft.instance!.address
           )
           .catch(() => false);
-        setErc1155s((prev) => ({
+        setMyNfts((prev) => ({
           ...prev,
           [address]: {
             ...prev.address,
@@ -369,7 +358,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           },
         }));
       }
-      if (!hasPath([address, "tokenIds", tokenId])(erc1155s)) {
+      if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
         if (!_tokenURI) continue;
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(_tokenURI, true));
@@ -378,7 +367,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     const meta = await fetchNftMeta1155(toFetchLinks);
     for (let i = 0; i < meta.length; i++) {
-      setErc1155s((prev) => {
+      setMyNfts((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), meta[i], prev);
         return setTo;
       });
@@ -414,7 +403,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const [address, tokenId] = id.split("_");
       if (!address || !tokenId) continue;
 
-      if (!erc721s[address]?.contract) {
+      if (!myNfts[address]?.contract) {
         const contract = getERC721(address, signer);
         const isApprovedForAll = await contract
           .isApprovedForAll(currentAddress, renft.instance?.address)
@@ -426,7 +415,7 @@ export const GraphProvider: React.FC = ({ children }) => {
             .catch(() => "");
         }
 
-        setErc721s((prev) => ({
+        setMyNfts((prev) => ({
           ...prev,
           [address]: {
             ...prev.address,
@@ -436,7 +425,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         }));
       }
 
-      if (!hasPath([address, "tokenIds", tokenId])(erc721s)) {
+      if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
         if (!_tokenURI) continue;
         toFetchPaths.push([address, "tokenIds", tokenId]);
         toFetchLinks.push(parse(_tokenURI, true));
@@ -447,7 +436,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     // one more pass through the meta to see if any of the images are ipfs
     const parsedMeta = await parseMeta(meta);
     for (let i = 0; i < meta.length; i++) {
-      setErc721s((prev) => {
+      setMyNfts((prev) => {
         const setTo = ramdaSet(lensPath(toFetchPaths[i]), parsedMeta[i], prev);
         return setTo;
       });

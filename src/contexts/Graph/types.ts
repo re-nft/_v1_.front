@@ -4,77 +4,48 @@ import { Address, Nft, PaymentToken, TokenId } from "../../types";
 
 // todo: a lot of redundancy
 
+export type MyNft = {
+  address: Address;
+  tokenId: string;
+  tokenURI?: string;
+};
+
+// raw data that comes from the eip721 subgraph
 export type MyERC721s = {
   tokens: {
     id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
-    tokenURI: string; // e.g. "https://nft.service.cometh.io/3000013"
+    tokenURI?: string; // e.g. "https://nft.service.cometh.io/3000013"
   }[];
 };
 
-export type TokenERC1155 = {
-  URI?: string;
-  tokenId: string;
-  registry: {
-    contractAddress: Address;
-  };
-};
-
-export type BalanceERC1155 = {
-  token: TokenERC1155;
-  amount: number;
-};
-
+// raw data that comes from the eip1155 subgraph
 export type MyERC1155s = {
   account: {
-    balances: BalanceERC1155[];
+    balances: {
+      amount: number;
+      token: {
+        tokenId: string;
+        tokenURI?: string;
+        registry: {
+          contractAddress: Address;
+        };
+      };
+    }[];
   };
 };
 
 // '0x123...456': { tokenIds: { '1': ..., '2': ... } }
-export type AddressToErc721 = {
-  [key: string]: {
-    contract: ERC721;
-    isApprovedForAll: boolean;
-    tokenIds: {
-      [key: string]: {
-        meta?: Response;
-      };
-    };
-  };
-};
-
-export type AddressToErc1155 = {
-  [key: string]: {
-    contract: ERC1155;
-    isApprovedForAll: boolean;
-    tokenIds: {
-      [key: string]: {
-        meta?: Response;
-      };
-    };
-  };
-};
-
-export type AddressToLending = {
+export type AddressToNft = {
   [key: string]: {
     contract: ERC721 | ERC1155;
     isERC721: boolean;
-    isERC1155: boolean;
-    // * these are all approved, since I am lending them
-    tokenIds: {
-      [key: string]: Omit<Lending, "nftAddress" & "tokenId"> | undefined;
-    };
-  };
-};
-
-export type AddressToRenting = {
-  [key: string]: {
-    contract: ERC721 | ERC1155;
-    isERC721: boolean;
-    isERC1155: boolean;
     isApprovedForAll: boolean;
     tokenIds: {
-      [key: string]: Renting;
+      [key: string]: {
+        lending: Lending;
+        renting: Renting;
+        meta?: Response;
+      };
     };
   };
 };
