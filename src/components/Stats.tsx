@@ -98,6 +98,7 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
       .claimCollateral(
         [lending.address],
         [lending.tokenId],
+        // @ts-ignore
         [lending.lending?.[-1]]
       )
       .catch(() => false);
@@ -109,6 +110,7 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
     await renft.stopLending(
       [lending.address],
       [lending.tokenId],
+      // @ts-ignore
       [lending.lending?.[-1]]
     );
   }, [renft, lending]);

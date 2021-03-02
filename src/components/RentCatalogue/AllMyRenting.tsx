@@ -5,7 +5,6 @@ import { ERCNft } from "../../contexts/Graph/types";
 import { PaymentToken } from "../../types";
 import NumericField from "../NumericField";
 import CatalogueItem from "../CatalogueItem";
-import { useRenft } from "../../hooks/useRenft";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
@@ -33,7 +32,7 @@ const ReturnItButton: React.FC<ReturnItButtonProps> = ({ nft, onClick }) => {
 };
 
 export const AllMyRenting: React.FC = () => {
-  const { allMyRenting } = useRenft();
+  const allMyRentings: ERCNft[] = [];
   const [modalOpen, setModalOpen] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -49,6 +48,7 @@ export const AllMyRenting: React.FC = () => {
         [nft.contract.address],
         [nft.tokenId],
         // TODO
+        //@ts-ignore
         [nft.lending?.[0]]
       );
       const isSuccess = await setHash(tx.hash);
@@ -102,7 +102,7 @@ export const AllMyRenting: React.FC = () => {
         />
       )}
       <Box className="Catalogue">
-        {allMyRenting.map((nft: ERCNft) => {
+        {allMyRentings.map((nft: ERCNft) => {
           const id = `${nft.address}::${nft.tokenId}`;
           return (
             <CatalogueItem

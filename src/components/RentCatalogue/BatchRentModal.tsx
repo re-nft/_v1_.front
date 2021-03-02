@@ -1,15 +1,13 @@
-import React, { useCallback, useState, useContext, useMemo } from "react";
+import React, { useCallback, useState } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
-import moment from "moment";
 
-import FunnySpinner from "../Spinner";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
-import { NftAndLendRentInfo } from "../../types";
+import { ERCNft } from "../../contexts/Graph/types";
 
-const SENSIBLE_MAX_DURATION = 10 * 365;
+// const SENSIBLE_MAX_DURATION = 10 * 365;
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -41,8 +39,8 @@ const LegibleTextField = withStyles({
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
-  nft: NftAndLendRentInfo[];
-  onSubmit(nft: NftAndLendRentInfo[], options: { rentDuration: string[] }): void;
+  nft: ERCNft[];
+  onSubmit(nft: ERCNft[], options: { rentDuration: string[] }): void;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
@@ -59,22 +57,26 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   const [inputsValid, setInputsValid] = useState<Record<string, boolean>>({});
   const [errorText, setErrorText] = useState<Record<string, string>>({});
   const [returnDate, setReturnDate] = useState<Record<string, string>>({});
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setDuration({
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const name = e.target.name;
+      const value = e.target.value;
+      setDuration({
         ...duration,
-        [name]: value
-    })
-  }, [duration, setDuration]);
+        [name]: value,
+      });
+    },
+    [duration, setDuration]
+  );
 
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
       e.preventDefault();
-      const rentDuration = Object.values(duration);  
-      onSubmit(nft, {rentDuration});
+      const rentDuration = Object.values(duration);
+      onSubmit(nft, { rentDuration });
       handleClose();
     },
-    [nft, duration, handleClose]
+    [nft, duration, handleClose, onSubmit]
   );
 
   return (
@@ -82,66 +84,66 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <Box style={{ padding: "32px" }}>
           <Box className={classes.inputs}>
-            {nft.map((item: NftAndLendRentInfo) => {
-                return (
-                    <Box key={item.tokenId} className={classes.inputs}>
-                        <LegibleTextField
-                            id="standard-basic"
-                            label={`TokenId: ${item.tokenId}`}
-                            disabled
-                        />
-                        <CssTextField
-                            required
-                            label="Rent duration"
-                            id="duration"
-                            variant="outlined"
-                            type="number"
-                            name={item.tokenId}
-                            value={duration[item.tokenId]}
-                            error={!inputsValid[item.tokenId]}
-                            onChange={handleChange}
-                        />
-                        <LegibleTextField
-                            id="standard-basic"
-                            label={`Daily rent price: ${item.lendingRentInfo.dailyRentPrice}`}
-                            disabled
-                        />
-                        {<LegibleTextField
-                            id="standard-basic"
-                            label={`Rent: ${item.lendingRentInfo.dailyRentPrice} x ${
-                                !duration[item.tokenId] ? "👾" : duration[item.tokenId]
-                            } days = ${
-                                totalRent[item.tokenId] ? totalRent[item.tokenId].toFixed(2) : "e ^ (i * π) + 1"
-                            }`}
-                            disabled
-                        />}
-                        <LegibleTextField
-                            id="standard-basic"
-                            label={`Collateral: ${item.lendingRentInfo.nftPrice}`}
-                            disabled
-                        />
-                        <Box
-                            className={classes.buttons}
-                            style={{ paddingBottom: "16px" }}
-                        ></Box>
-                        <Box>
-                            <p>
-                                You <span style={{ fontWeight: "bold" }}>must</span> return the
-                                NFT {item.tokenId} by , or you{" "}
-                                <span style={{ fontWeight: "bold" }}>will lose</span> the
-                                collateral
-                            </p>
-                        </Box>
-                    </Box>
-                );
+            {nft.map((item: ERCNft) => {
+              return (
+                <Box key={item.tokenId} className={classes.inputs}>
+                  <LegibleTextField
+                    id="standard-basic"
+                    label={`TokenId: ${item.tokenId}`}
+                    disabled
+                  />
+                  <CssTextField
+                    required
+                    label="Rent duration"
+                    id="duration"
+                    variant="outlined"
+                    type="number"
+                    name={item.tokenId}
+                    value={duration[item.tokenId]}
+                    error={!inputsValid[item.tokenId]}
+                    onChange={handleChange}
+                  />
+                  <LegibleTextField
+                    id="standard-basic"
+                    label={`Daily rent price: ${0}`}
+                    disabled
+                  />
+                  {
+                    <LegibleTextField
+                      id="standard-basic"
+                      label={`Rent: ${0} x ${
+                        !duration[item.tokenId] ? "👾" : duration[item.tokenId]
+                      } days = ${
+                        totalRent[item.tokenId]
+                          ? totalRent[item.tokenId].toFixed(2)
+                          : "e ^ (i * π) + 1"
+                      }`}
+                      disabled
+                    />
+                  }
+                  <LegibleTextField
+                    id="standard-basic"
+                    label={`Collateral: ${0}`}
+                    disabled
+                  />
+                  <Box
+                    className={classes.buttons}
+                    style={{ paddingBottom: "16px" }}
+                  ></Box>
+                  <Box>
+                    <p>
+                      You <span style={{ fontWeight: "bold" }}>must</span>{" "}
+                      return the NFT {item.tokenId} by , or you{" "}
+                      <span style={{ fontWeight: "bold" }}>will lose</span> the
+                      collateral
+                    </p>
+                  </Box>
+                </Box>
+              );
             })}
           </Box>
           <Box className={classes.buttons}>
-            <RainbowButton
-              type="submit"
-              text="RENT ALL"
-              disabled={false}
-            />
+            <RainbowButton type="submit" text="RENT ALL" disabled={false} />
           </Box>
         </Box>
       </form>
