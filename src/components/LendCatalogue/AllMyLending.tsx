@@ -3,14 +3,13 @@ import { Box } from "@material-ui/core";
 
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
-import { Nft } from "../../contexts/Graph/types";
+import { ERCNft } from "../../contexts/Graph/types";
 import { TransactionStateContext } from "../../contexts/TransactionState";
-import { useRenft } from "../../hooks/useRenft";
 import CatalogueItem from "../CatalogueItem";
 
 // todo: this type is also defined in useRenft hook
 type StopLendButtonProps = {
-  nft: Nft & { lendingId: string };
+  nft: ERCNft & { lendingId: string };
 };
 
 // todo: handleStopLend multiple as well
@@ -48,17 +47,18 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 };
 
 export const AllMyLending: React.FC = () => {
-  const { myLendings } = useRenft();
+  const myLendings = [];
   return (
     <Box>
       <Box className="Catalogue">
         {myLendings.map((nft) => {
-          const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
+          const nftAddress = `${nft.contract?.address ?? ""}`;
+          const nftId = `${nftAddress}::${nft.tokenId}`;
           return (
             <CatalogueItem
               key={nftId}
               tokenId={nft.tokenId}
-              nftAddress={nft.contract?.address ?? ""}
+              nftAddress={nftAddress}
               image={nft.image}
             >
               <div className="Nft__card" style={{ marginTop: "8px" }}>

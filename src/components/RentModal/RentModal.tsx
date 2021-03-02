@@ -7,7 +7,7 @@ import FunnySpinner from "../Spinner";
 import RainbowButton from "../RainbowButton";
 import CssTextField from "../CssTextField";
 import Modal from "../Modal";
-import { NftAndLendingId } from "../../contexts/Graph/types";
+import { ERCNft } from "../../contexts/Graph/types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -42,8 +42,8 @@ const LegibleTextField = withStyles({
 type RentModalProps = {
   open: boolean;
   handleClose: () => void;
-  nft: NftAndLendingId;
-  onSubmit(nft: NftAndLendingId, options: { rentDuration: string }): void;
+  nft: ERCNft;
+  onSubmit(nft: ERCNft, rentDuration: string): void;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
@@ -111,7 +111,7 @@ export const RentModal: React.FC<RentModalProps> = ({
           resetState();
           setDuration(String(SENSIBLE_MAX_DURATION));
           return;
-        } else if (num > nft.lendingRentInfo.maxRentDuration) {
+        } else if (num > nft.maxRentDuration) {
           resetState();
           setErrorText(
             `You cannot borrow this NFT for longer than ${nft.lendingRentInfo.maxRentDuration} days`

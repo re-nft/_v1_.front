@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from "react";
 import { Box } from "@material-ui/core";
 
 import GraphContext from "../../contexts/Graph";
-import { Nft } from "../../contexts/Graph/types";
+import { ERCNft } from "../../contexts/Graph/types";
 import { LendModal } from "../LendModal";
 import {
   CurrentAddressContext,
@@ -11,8 +11,8 @@ import {
 import CatalogueItem from "../CatalogueItem";
 
 type MinimalNft = {
-  contract?: Nft["contract"];
-  tokenId?: Nft["tokenId"];
+  contract?: ERCNft["contract"];
+  tokenId?: ERCNft["tokenId"];
 };
 
 type LendButtonProps = {

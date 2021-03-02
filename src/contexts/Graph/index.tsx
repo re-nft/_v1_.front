@@ -21,7 +21,7 @@ import { Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
-import { Lending, User, ERC1155s, ERC721s, Nft } from "./types";
+import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
 import {
   queryRenftUser,
   queryRenftAll,
@@ -69,22 +69,22 @@ type GraphContextType = {
   myNfts: AddressToNft;
   user: User;
   fetchAvailableNfts: () => void;
-  removeLending: (nfts: Nft[]) => void;
+  removeLending: (nfts: ERCNft[]) => void;
 };
 
 // differently arranged (for efficiency) Nft
 // '0x123...456': { tokens: { '1': ..., '2': ... } }
 type AddressToNft = {
   [key: string]: {
-    contract: Nft["contract"];
-    isERC721: Nft["isERC721"];
+    contract: ERCNft["contract"];
+    isERC721: ERCNft["isERC721"];
     tokens: {
       // tokenId
       [key: string]: {
-        lending?: Nft["lending"];
-        renting?: Nft["renting"];
-        tokenURI?: Nft["tokenURI"];
-        meta?: Nft["meta"];
+        lending?: ERCNft["lending"];
+        renting?: ERCNft["renting"];
+        tokenURI?: ERCNft["tokenURI"];
+        meta?: ERCNft["meta"];
       };
     };
   };
@@ -291,8 +291,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       console.log(response);
 
       let tokens: {
-        tokenId: Nft["tokenId"];
-        tokenURI?: Nft["tokenURI"];
+        tokenId: ERCNft["tokenId"];
+        tokenURI?: ERCNft["tokenURI"];
       }[] = [];
       switch (fetchType) {
         case FetchType.ERC721:

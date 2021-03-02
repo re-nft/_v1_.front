@@ -15,7 +15,7 @@ import {
 } from "../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import GraphContext from "../../contexts/Graph";
-import { Nft } from "../../contexts/Graph/types";
+import { ERCNft } from "../../contexts/Graph/types";
 import ApproveButton from "./ApproveButton";
 import { useStyles } from "./styles";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
@@ -34,8 +34,8 @@ type LendOneInputs = {
 
 type LendModalProps = {
   nft: {
-    contract?: Nft["contract"];
-    tokenId?: Nft["tokenId"];
+    contract?: ERCNft["contract"];
+    tokenId?: ERCNft["tokenId"];
   };
   open: boolean;
   setOpen: (open: boolean) => void;

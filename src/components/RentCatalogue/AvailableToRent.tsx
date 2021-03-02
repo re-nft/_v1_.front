@@ -2,7 +2,6 @@ import React, { useCallback, useState, useContext } from "react";
 import { Box } from "@material-ui/core";
 import { BigNumber } from "ethers";
 
-import { useRenft } from "../../hooks/useRenft";
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -15,7 +14,6 @@ import { RentButton } from "./RentButton";
 import NumericField from "../NumericField";
 import { RentModal } from "../RentModal";
 import { PaymentToken } from "../../types";
-import { NftAndLendingId } from "../../contexts/Graph/types";
 import { getERC20 } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
 import CatalogueItem from "../CatalogueItem";
@@ -24,7 +22,7 @@ export const AvailableToRent: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedNft, setSelectedNft] = useState<NftAndLendingId>();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const { allRentings } = useRenft();
+  const allRentings = [];
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const [signer] = useContext(SignerContext);
@@ -44,10 +42,7 @@ export const AvailableToRent: React.FC = () => {
   );
 
   const handleRent = useCallback(
-    async (
-      nft: NftAndLendingId,
-      { rentDuration }: { rentDuration: string }
-    ) => {
+    async (nft: NftAndLendingId, rentDuration: string) => {
       // todo: myERC20 to be removed in prod
       if (
         !currentAddress ||
@@ -59,7 +54,6 @@ export const AvailableToRent: React.FC = () => {
       )
         return;
 
-      // this means user is renting for a day. This is selectable by user
       // fetch payment token from lending
       const pmtToken = PaymentToken.DAI;
       // fetch dailyRentPrice from lending
@@ -106,7 +100,7 @@ export const AvailableToRent: React.FC = () => {
         );
       }
     },
-    [renft, currentAddress, signer, resolver]
+    [renft, currentAddress, signer, resolver, myERC20]
   );
 
   const handleCheckboxChange = useCallback(

@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
 import GraphContext from "../../contexts/Graph";
-import { RentingAndLending } from "../../contexts/Graph/types";
+import { User } from "../../contexts/Graph/types";
 import { PaymentToken } from "../../types";
 import NumericField from "../NumericField";
 import CatalogueItem from "../CatalogueItem";
