@@ -19,7 +19,8 @@ const ipfs = ipfsAPI({
 });
 // import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
-import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
+import { Lending, Renting, User, ERC1155s, ERC721s, ERCNft } from "./types";
+import { Address } from "../../types";
 import {
   queryUserRenft,
   queryAllRenft,
@@ -70,6 +71,9 @@ type GraphContextType = {
   removeLending: (nfts: ERCNft[]) => void;
 };
 
+type LendingId = string;
+type RentingId = LendingId;
+
 // differently arranged (for efficiency) Nft
 // '0x123...456': { tokens: { '1': ..., '2': ... } }
 type AddressToNft = {
@@ -79,14 +83,27 @@ type AddressToNft = {
     tokens: {
       // tokenId
       [key: string]: {
-        lending?: ERCNft["lending"];
-        renting?: ERCNft["renting"];
+        // multiple lending and renting ids, because the same
+        // nft can be re-lent / re-rented multiple times
+        lending?: LendingId[];
+        renting?: RentingId[];
         tokenURI?: ERCNft["tokenURI"];
         meta?: ERCNft["meta"];
       };
     };
   };
 };
+
+// AddressToNft's LendingId is the key of this type
+type LendingById = {
+  [key: string]: {
+    address: Address;
+    tokenId: string;
+  };
+};
+
+// AddressToNft's RentingId is the key of this type
+type RentingById = LendingById;
 
 const DefaultGraphContext: GraphContextType = {
   myNfts: {},
