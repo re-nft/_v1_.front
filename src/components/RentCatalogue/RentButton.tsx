@@ -12,13 +12,15 @@ export const RentButton: React.FC<RentButtonProps> = ({ handleRent, nft }) => {
   }, [handleRent, nft]);
 
   return (
-    <span
-      className="Nft__button"
-      onClick={_handleRent}
-      style={{ marginTop: "8px" }}
-    >
-      Rent now
-    </span>
+    <div className="Nft__card">
+      <span
+        className="Nft__button"
+        onClick={_handleRent}
+        style={{ marginTop: "8px" }}
+      >
+        Rent now
+      </span>
+    </div>
   );
 };
 

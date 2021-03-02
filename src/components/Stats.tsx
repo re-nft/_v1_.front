@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import moment from "moment";
 
@@ -6,6 +6,7 @@ import Table from "./Table";
 import { ERCNft } from "../contexts/Graph/types";
 import { short } from "../utils";
 import { PaymentToken } from "../types";
+import { RentNftContext } from "../hardhat/SymfoniContext";
 
 type StatsProps = {
   hidden: boolean;
@@ -88,31 +89,51 @@ const TableRow: React.FC<TableRowProps> = ({
 };
 
 const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
-  // const { rent } = useContext(ContractsContext);
+  const { instance: renft } = useContext(RentNftContext);
 
-  // const handleClaim = useCallback(async () => {
-  //   // await rent.claimCollateralOne(
-  //   //   lending.nftAddress,
-  //   //   String(lending.tokenId),
-  //   //   String(lending.id)
-  //   // );
-  // });
+  const handleClaim = useCallback(async () => {
+    if (!renft) return;
 
-  // if (!lending.renting) return <span>❌</span>;
+    await renft
+      .claimCollateral(
+        [lending.address],
+        [lending.tokenId],
+        [lending.lending?.[-1]]
+      )
+      .catch(() => false);
+  }, [renft, lending]);
 
-  // const _now = moment();
-  // const _returnBy = returnBy(
-  //   lending.,
-  //   lending.rentDuration
-  // );
-  // const _claim = _now.isAfter(_returnBy);
+  const handleStopLend = useCallback(async () => {
+    if (!renft) return;
 
-  // return _claim ? <span onClick={() => {}}>💰</span> : <span>❌</span>;
-  return <span>❌</span>;
+    await renft.stopLending(
+      [lending.address],
+      [lending.tokenId],
+      [lending.lending?.[-1]]
+    );
+  }, [renft, lending]);
+
+  if (!lending.renting) {
+    return <span onClick={handleStopLend}>❌</span>;
+  }
+
+  const _now = moment();
+  const _returnBy = returnBy(
+    // @ts-ignore
+    lending.renting?.rentedAt,
+    // @ts-ignore
+    lending.renting?.rentDuration
+  );
+  const _claim = _now.isAfter(_returnBy);
+
+  return _claim ? (
+    <span onClick={handleClaim}>💰</span>
+  ) : (
+    <span onClick={handleStopLend}>❌</span>
+  );
 };
 
 const Stats: React.FC<StatsProps> = ({ hidden }) => {
-  // const { user } = useContext(GraphContext);
   // TODO
   const lending: ERCNft[] = [];
   const renting: ERCNft[] = [];

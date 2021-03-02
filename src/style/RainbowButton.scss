@@ -1,5 +1,5 @@
 .rainbow-button {
-  width: 86px;
+  width: 120px;
   height: 46px !important;
   padding: 2px;
   background-image: linear-gradient(
@@ -34,7 +34,7 @@
 
   &:after {
     content: attr(data-text);
-    width: 76px;
+    width: 120px;
     height: 38px;
     background-color: #191919;
     display: flex;
