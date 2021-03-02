@@ -8,6 +8,15 @@ import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
 import { Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
+import BufferList from "bl";
+//@ts-ignore
+import ipfsAPI from "ipfs-http-client";
+
+const ipfs = ipfsAPI({
+  host: "ipfs.infura.io",
+  port: "5001",
+  protocol: "https",
+});
 // import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
 import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
@@ -92,6 +101,17 @@ enum FetchType {
   ERC721,
   ERC1155,
 }
+
+const getFromIPFS = async (hashToGet: string) => {
+  for await (const file of ipfs.get(hashToGet)) {
+    if (!file.content) continue;
+    const content = new BufferList();
+    for await (const chunk of file.content) {
+      content.append(chunk);
+    }
+    return content;
+  }
+};
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
