@@ -55,22 +55,17 @@ export const RentModal: React.FC<RentModalProps> = ({
   onSubmit,
 }) => {
   const classes = useStyles();
-  const [duration, setDuration] = useState<string>("");
+  const [rentDuration, setRentDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);
   const [inputsValid, setInputsValid] = useState(true);
   const [errorText, setErrorText] = useState(DEFAULT_ERROR_TEXT);
   const [returnDate, setReturnDate] = useState("");
-  const [isApproved, setIsApproved] = useState<boolean>(false);
-
-  const _setIsApproved = useCallback(() => {
-    setIsApproved(true);
-  }, []);
 
   const resetState = useCallback(() => {
     setInputsValid(false);
     setTotalRent(0);
-    setDuration("");
+    setRentDuration("");
     setReturnDate("👾");
     setErrorText(DEFAULT_ERROR_TEXT);
   }, []);
@@ -109,12 +104,12 @@ export const RentModal: React.FC<RentModalProps> = ({
           return;
         } else if (num >= SENSIBLE_MAX_DURATION) {
           resetState();
-          setDuration(String(SENSIBLE_MAX_DURATION));
+          setRentDuration(String(SENSIBLE_MAX_DURATION));
           return;
-        } else if (num > nft.maxRentDuration) {
+        } else if (num > (nft.lending?.[0].maxRentDuration ?? num + 1)) {
           resetState();
           setErrorText(
-            `You cannot borrow this NFT for longer than ${nft.lendingRentInfo.maxRentDuration} days`
+            `You cannot borrow this NFT for longer than ${nft.lending?.[0].maxRentDuration} days`
           );
           return;
         }
@@ -127,27 +122,25 @@ export const RentModal: React.FC<RentModalProps> = ({
         resetState();
       }
 
-      setDuration(resolvedValue);
+      setRentDuration(resolvedValue);
       setDate(resolvedValue);
     },
     [nft, resetState, setDate]
   );
 
   const rentIsDisabled = useMemo(() => {
-    return !inputsValid || !duration || busy;
-  }, [inputsValid, duration, busy]);
+    return !inputsValid || !rentDuration || busy;
+  }, [inputsValid, rentDuration, busy]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setIsBusy(false);
-      onSubmit(nft, {
-        rentDuration: duration,
-      });
+      onSubmit(nft, rentDuration);
       handleClose();
       // TODO: handleRent()
     },
-    [nft, rentIsDisabled, handleClose]
+    [nft, handleClose, rentDuration, onSubmit]
   );
 
   return (
@@ -163,20 +156,20 @@ export const RentModal: React.FC<RentModalProps> = ({
               variant="outlined"
               type="number"
               name="rentDuration"
-              value={duration}
+              value={rentDuration}
               error={!inputsValid}
               helperText={!inputsValid ? errorText : ""}
               onChange={handleChange}
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Daily rent price: ${nft.lendingRentInfo.dailyRentPrice}`}
+              label={`Daily rent price: ${nft.lending?.[0].dailyRentPrice}`}
               disabled
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Rent: ${nft.lendingRentInfo.dailyRentPrice} x ${
-                !duration ? "👾" : duration
+              label={`Rent: ${nft.lending?.[0].dailyRentPrice} x ${
+                !rentDuration ? "👾" : rentDuration
               } days = ${
                 totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
               }`}
@@ -184,7 +177,7 @@ export const RentModal: React.FC<RentModalProps> = ({
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Collateral: ${nft.lendingRentInfo.nftPrice}`}
+              label={`Collateral: ${nft.lending?.[0].nftPrice}`}
               disabled
             />
             <Box

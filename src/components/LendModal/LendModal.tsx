@@ -16,7 +16,7 @@ import {
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import GraphContext from "../../contexts/Graph";
 import { ERCNft } from "../../contexts/Graph/types";
-import ApproveButton from "./ApproveButton";
+import ApproveButton from "../ApproveButton";
 import { useStyles } from "./styles";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import usePoller from "../../hooks/usePoller";

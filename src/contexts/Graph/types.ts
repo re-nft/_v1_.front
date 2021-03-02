@@ -100,6 +100,6 @@ export type Nft = {
 // same nftAddress and tokenId combo. Same reasoning applies to renting.
 export type User = {
   address: Address;
-  lending: Lending[];
-  renting: Renting[];
+  lending?: ERCNft[];
+  renting?: ERCNft[];
 };

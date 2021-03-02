@@ -1,5 +1,6 @@
 import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
+import { BigNumber } from "ethers";
 
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
@@ -7,23 +8,28 @@ import { ERCNft } from "../../contexts/Graph/types";
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import CatalogueItem from "../CatalogueItem";
 
-// todo: this type is also defined in useRenft hook
 type StopLendButtonProps = {
-  nft: ERCNft & { lendingId: string };
+  nft: ERCNft;
 };
 
-// todo: handleStopLend multiple as well
+// todo: handleStopLend batch as well
 const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   const { instance: renft } = useContext(RentNftContext);
   const { setHash } = useContext(TransactionStateContext);
   const { removeLending } = useContext(GraphContext);
 
   const handleStopLend = useCallback(async () => {
-    if (!renft || !nft.contract) return;
-    // todo: will only work if noone else is renting this
-    // todo: need to check if someone else is renting this
-    // todo: also make a green outline or something, to show
-    // that it is being rented by someone
+    const lending = nft.lending?.[nft.lending?.length - 1];
+
+    if (!renft || !nft.contract || !lending) return;
+    if (nft.lending?.length === nft.renting?.length) {
+      // ! we should forbid this from happening, by some sort of visual cue
+      // ! for example, a green outline around your lendings means they are
+      // ! being currently rented by someone
+      console.warn("can't stop lend. it is being rented by someone");
+      return;
+    }
+
     // todo: another point: if someone is renting we also need
     // to show the button: "Claim Collateral" in place of Stop Lending
     // This button will be active ONLY if the renter exceeded their
@@ -31,8 +37,9 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
     const tx = await renft.stopLending(
       [nft.contract.address],
       [nft.tokenId],
-      [nft.lendingId]
+      [BigNumber.from(lending.id)]
     );
+
     const isSuccess = await setHash(tx.hash);
     if (isSuccess) {
       removeLending([nft]);
@@ -47,7 +54,8 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 };
 
 export const AllMyLending: React.FC = () => {
-  const myLendings = [];
+  // todo
+  const myLendings: ERCNft[] = [];
   return (
     <Box>
       <Box className="Catalogue">
@@ -59,7 +67,7 @@ export const AllMyLending: React.FC = () => {
               key={nftId}
               tokenId={nft.tokenId}
               nftAddress={nftAddress}
-              image={nft.image}
+              image={nft.meta?.mediaURI}
             >
               <div className="Nft__card" style={{ marginTop: "8px" }}>
                 <StopLendButton nft={nft} />

@@ -1,25 +1,14 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { request } from "graphql-request";
 import parse from "url-parse";
 import { set as ramdaSet, lensPath, hasPath } from "ramda";
-import { BigNumber } from "ethers";
 
-import {
-  CurrentAddressContext,
-  RentNftContext,
-  SignerContext,
-} from "../../hardhat/SymfoniContext";
+import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
 import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
 import { Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
-import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
+// import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
 import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
 import {
@@ -51,7 +40,7 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
 // 5. Pull the meta selectively initially. Pulling everything will be costly, with just need image meta for now
 // 6. the above pulling is done on a unified output type as per (1). Which means erc721 and erc1155 graph output needs to be commonised
 
-const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
+// const CORS_PROXY = process.env["REACT_APP_CORS_PROXY"];
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
@@ -94,8 +83,6 @@ const DefaultGraphContext: GraphContextType = {
   myNfts: {},
   user: {
     address: "",
-    lending: [],
-    renting: [],
   },
   removeLending: THROWS,
   fetchAvailableNfts: THROWS,
@@ -470,6 +457,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       lending: lending || [],
       renting: renting || [],
     });
+    // todo: make User -> ERCNft
   }, [currentAddress]);
 
   // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
