@@ -187,17 +187,19 @@ export const parsePaymentToken = (tkn: string): PaymentToken => {
   }
 };
 
-export const timeIt = (msg: string, callable: CallableFunction): void => {
+export const timeIt = <T>(msg: string, callable: CallableFunction): T => {
   console.time(msg);
-  callable();
+  const res: T = callable();
   console.timeEnd(msg);
+  return res;
 };
 
-export const timeItAsync = async (
+export const timeItAsync = async <T>(
   msg: string,
   callable: CallableFunction
-): Promise<void> => {
+): Promise<T> => {
   console.time(msg);
-  await callable();
+  const res: T = await callable();
   console.timeEnd(msg);
+  return res;
 };

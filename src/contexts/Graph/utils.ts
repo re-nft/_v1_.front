@@ -4,7 +4,7 @@ import { Lending, Renting } from "./types";
 import { DP18 } from "../../consts";
 import { unpackPrice, parsePaymentToken } from "../../utils";
 
-export const parseLending = (lending: Lending): Lending => {
+export const parseLending = (lending: any): Lending => {
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
@@ -19,7 +19,7 @@ export const parseLending = (lending: Lending): Lending => {
   };
 };
 
-export const parseRenting = (renting: Renting): Renting => {
+export const parseRenting = (renting: any): Renting => {
   return {
     id: renting.id,
     renterAddress: ethers.utils.getAddress(renting.renterAddress),

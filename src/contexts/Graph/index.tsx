@@ -15,20 +15,20 @@ import {
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-import { getERC1155, getERC721, THROWS } from "../../utils";
+import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
 import { Path } from "../../types";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
 
-import { Lending, User, MyERC1155s, MyERC721s, Nft } from "./types";
+import { Lending, User, ERC1155s, ERC721s, Nft } from "./types";
 import {
   queryRenftUser,
   queryRenftAll,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import { parseLending, timeItAsync } from "./utils";
+import { parseLending } from "./utils";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
 /**
@@ -111,15 +111,15 @@ const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 export const GraphProvider: React.FC = ({ children }) => {
   // ! currentAddress can be ""
   const [currentAddress] = useContext(CurrentAddressContext);
-  const [signer] = useContext(SignerContext);
+  // const [signer] = useContext(SignerContext);
   const [myNfts, setMyNfts] = useState<AddressToNft>(
     DefaultGraphContext["myNfts"]
   );
   const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
-  const renft = useContext(RentNftContext);
+  // const renft = useContext(RentNftContext);
 
   const fetchNftDev = useFetchNftDev();
-  const { ipfs } = useIpfsFactory();
+  // const { ipfs } = useIpfsFactory();
 
   // given the URIs, will fetch ERC1155s' meta from IPFS
   // once that is fetched, will fetch images from just
@@ -266,6 +266,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     async (fetchType: FetchType) => {
       let query = "";
       let subgraphURI = "";
+      const toFetch: {
+        stateUpdatePath: Path;
+        metaLinkToFetch: parse;
+      }[] = [];
 
       switch (fetchType) {
         case FetchType.ERC721:
@@ -278,68 +282,81 @@ export const GraphProvider: React.FC = ({ children }) => {
           break;
       }
 
-      const response: MyERC1155s | MyERC721s = await timeItAsync(
+      const response:
+        | ERC721s
+        | ERC1155s = await timeItAsync(
         `Pulled My ${FetchType[fetchType]} NFTs`,
-        request(query, subgraphURI)
+        () => request(query, subgraphURI)
       );
       console.log(response);
 
-      if (!response.account || response.account.balances.length === 0)
-        return [];
-
-      const { balances } = response.account;
-      const toFetch: {
-        stateUpdatePath: Path;
-        metaLinkToFetch: parse;
+      let tokens: {
+        tokenId: Nft["tokenId"];
+        tokenURI?: Nft["tokenURI"];
       }[] = [];
-
-      for (const _token of balances) {
-        const { token } = _token;
-        // * sometimes the subgraph does not return the URI. For example, for ZORA
-        const _tokenURI = token.tokenURI;
-        let tokenURI = "";
-        const address = token.registry.contractAddress;
-        const { tokenId } = token;
-
-        // ! dependency on current state
-        // ! without having it as dependency in useCallback which would trigger infinite loop
-        if (!myNfts[address].contract) {
-          const contract = getERC1155(address, signer);
-          const isApprovedForAll = await contract
-            .isApprovedForAll(currentAddress, renft.instance?.address ?? "")
-            .catch(() => false);
-
-          setMyNfts((prev) => ({
-            ...prev,
-            [address]: {
-              ...prev.address,
-              contract,
-              isApprovedForAll,
-            },
+      switch (fetchType) {
+        case FetchType.ERC721:
+          tokens = (response as ERC721s).tokens;
+          break;
+        case FetchType.ERC1155:
+          tokens = (response as ERC1155s).account.balances.map((b) => ({
+            tokenId: b.token.tokenId,
+            tokenURI: b.token.tokenURI,
           }));
-        }
+          break;
+      }
+
+      for (const token of tokens) {
+        const { tokenId, tokenURI } = token;
+
+        console.log(tokenId);
+        console.log(tokenURI);
+
+        // * sometimes the subgraph does not return the URI. For example, for ZORA
+        // const _tokenURI = token.tokenURI;
+        // let tokenURI = "";
+        // const address = token.registry.contractAddress;
+        // const { tokenId } = token;
+
+        // // ! dependency on current state
+        // // ! without having it as dependency in useCallback which would trigger infinite loop
+        // if (!myNfts[address].contract) {
+        //   const contract = getERC1155(address, signer);
+        //   const isApprovedForAll = await contract
+        //     .isApprovedForAll(currentAddress, renft.instance?.address ?? "")
+        //     .catch(() => false);
+
+        //   setMyNfts((prev) => ({
+        //     ...prev,
+        //     [address]: {
+        //       ...prev.address,
+        //       contract,
+        //       isApprovedForAll,
+        //     },
+        //   }));
+        // }
 
         // if there isn't token with the tokenId in the state, first fetch
         // its meta, and then update the state
-        if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
-          if (!_tokenURI) {
-            console.warn(
-              "no tokenURI from subgraph for, address:",
-              address,
-              "tokenId:",
-              tokenId
-            );
-            console.warn("attempting to fetch from the contract...");
-            // todo: implement
-            tokenURI = "";
-            continue;
-          }
+        // if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
+        //   if (!_tokenURI) {
+        //     console.warn(
+        //       "no tokenURI from subgraph for, address:",
+        //       address,
+        //       "tokenId:",
+        //       tokenId
+        //     );
+        //     console.warn("attempting to fetch from the contract...");
+        //     // todo: implement
+        //     tokenURI = "";
+        //     continue;
+        //   }
 
-          toFetch.push({
-            stateUpdatePath: [address, "tokenIds", tokenId],
-            metaLinkToFetch: parse(tokenURI, true),
-          });
-        }
+        //   toFetch.push({
+        //     stateUpdatePath: [address, "tokenIds", tokenId],
+        //     metaLinkToFetch: parse(tokenURI, true),
+        //   });
+        // }
       }
 
       // const meta = await fetchNftMeta(toFetch);
@@ -351,78 +368,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       //   });
       // }
     },
-    [currentAddress, renft.instance, signer]
+    [currentAddress]
   );
-
-  const fetchAllERC721 = useCallback(async () => {
-    const query = queryMyERC721s(currentAddress);
-    const response: MyERC721s = await timeItAsync(
-      "Pulled My ERC721s",
-      request(ENDPOINT_EIP721_PROD, query)
-    );
-    console.log(response);
-
-    if (
-      !response ||
-      !("tokens" in response) ||
-      response.tokens.length === 0 ||
-      !renft.instance
-    )
-      return [];
-
-    const toFetchPaths: Path[] = [];
-    const toFetchLinks: parse[] = [];
-
-    for (const token of response.tokens) {
-      const { tokenId, tokenURI } = token;
-      if (!tokenId) continue;
-      // * sometimes the subgraph does not return the URI. For example, for ZORA
-      let _tokenURI = tokenURI;
-      // todo: invalid tokenId
-      const [address] = tokenId.split("_");
-      if (!address || !tokenId) continue;
-
-      if (!myNfts[address]?.contract) {
-        const contract = getERC721(address, signer);
-        const isApprovedForAll = await contract
-          .isApprovedForAll(currentAddress, renft.instance?.address)
-          .catch(() => false);
-
-        if (!tokenURI) {
-          _tokenURI = await contract
-            .tokenURI(BigNumber.from(tokenId))
-            .catch(() => "");
-        }
-
-        setMyNfts((prev) => ({
-          ...prev,
-          [address]: {
-            ...prev.address,
-            contract: contract,
-            isApprovedForAll,
-          },
-        }));
-      }
-
-      if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
-        if (!_tokenURI) continue;
-        toFetchPaths.push([address, "tokenIds", tokenId]);
-        toFetchLinks.push(parse(_tokenURI, true));
-      }
-    }
-
-    const meta = await fetchNftMeta721(toFetchLinks);
-    // one more pass through the meta to see if any of the images are ipfs
-    const parsedMeta = await parseMeta(meta);
-    for (let i = 0; i < meta.length; i++) {
-      setMyNfts((prev) => {
-        const setTo = ramdaSet(lensPath(toFetchPaths[i]), parsedMeta[i], prev);
-        return setTo;
-      });
-    }
-    // this functions updates erc721s, so it cannot have that as a dep
-    /* eslint-disable-next-line */
-  }, [currentAddress, renft.instance, fetchNftMeta721, signer]);
 
   // incremental diff-like updating of the state
   // to avoid costly refetching of the meta
@@ -593,37 +540,24 @@ export const GraphProvider: React.FC = ({ children }) => {
   //   return { contract, isERC721, status: true };
   // };
 
-  const fetchAvailableNfts = useCallback(async () => {
+  const fetchMyNfts = useCallback(async () => {
     if (IS_PROD) {
-      fetchAllERC721();
-      fetchAllERC1155();
+      fetchAllERCs(FetchType.ERC721);
+      fetchAllERCs(FetchType.ERC1155);
     } else {
       fetchNftDev();
     }
-  }, [fetchAllERC721, fetchAllERC1155, fetchNftDev]);
+  }, [fetchAllERCs, fetchNftDev]);
 
-  usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS);
-
-  useEffect(() => {
-    // ! do not remove this line
-    if (!currentAddress || !renft.instance || !signer) return;
-    fetchAvailableNfts();
-    fetchLending();
-    fetchUser();
-  }, [
-    currentAddress,
-    renft.instance,
-    signer,
-    fetchAvailableNfts,
-    fetchLending,
-    fetchUser,
-  ]);
+  usePoller(fetchLending, 5 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
+  usePoller(fetchMyNfts, 5 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
+  usePoller(fetchUser, 5 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
   return (
     <GraphContext.Provider
       value={{
         myNfts,
-        fetchAvailableNfts,
+        fetchAvailableNfts: fetchMyNfts,
         removeLending: () => {
           true;
         },

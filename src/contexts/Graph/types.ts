@@ -17,7 +17,7 @@ export type Nft = {
 };
 
 // raw data that comes from the eip721 subgraph
-export type MyERC721s = {
+export type ERC721s = {
   tokens: {
     tokenId: Nft["tokenId"]; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
     tokenURI?: Nft["tokenURI"]; // e.g. "https://nft.service.cometh.io/3000013"
@@ -25,7 +25,7 @@ export type MyERC721s = {
 };
 
 // raw data that comes from the eip1155 subgraph
-export type MyERC1155s = {
+export type ERC1155s = {
   account: {
     balances: {
       amount: number;

@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/Graph";
-import { Nft } from "../../types";
+import { Nft } from "../../contexts/Graph/types";
 import { TransactionStateContext } from "../../contexts/TransactionState";
 import { useRenft } from "../../hooks/useRenft";
 import CatalogueItem from "../CatalogueItem";

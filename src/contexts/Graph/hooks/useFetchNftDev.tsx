@@ -7,10 +7,19 @@ import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
+import { ERC1155 } from "../../../hardhat/typechain/ERC1155";
+import { ERC721 } from "../../../hardhat/typechain/ERC721";
 
 const BigNumZero = BigNumber.from("0");
 
-export const useFetchNftDev = () => {
+export const useFetchNftDev = (): (() => Promise<{
+  [x: string]: {
+    contract: ERC721 | ERC1155;
+    isApprovedForAll: boolean;
+    isERC721: boolean;
+    tokenIds: any;
+  };
+}>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(RentNftContext);
 
