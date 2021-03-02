@@ -12,8 +12,8 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 
 import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
 import {
-  queryRenftUser,
-  queryRenftAll,
+  queryUserRenft,
+  queryAllRenft,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
@@ -443,7 +443,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   // );
 
   const fetchUser = useCallback(async () => {
-    const query = queryRenftUser(currentAddress);
+    const query = queryUserRenft(currentAddress);
     const data: {
       user: User;
     } = await request(
@@ -462,19 +462,19 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // queries ALL of the lendings in reNFT. Uses reNFT's subgraph
   const fetchLending = useCallback(async () => {
-    const query = queryRenftAll();
-    const { lendingRentings } = await request(
+    const query = queryAllRenft();
+    const { allRenft } = await request(
       IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    if (!lendingRentings) return [];
+    if (!allRenft) return [];
     const resolvedData: Lending[] = [];
-    for (let i = 0; i < lendingRentings.length; i++) {
-      const numTimesLent = lendingRentings[i].lending.length;
-      const numTimesRented = lendingRentings[i].renting?.length ?? 0;
+    for (let i = 0; i < allRenft.length; i++) {
+      const numTimesLent = allRenft[i].lending.length;
+      const numTimesRented = allRenft[i].renting?.length ?? 0;
       const isAvailable = numTimesLent === numTimesRented + 1;
       if (!isAvailable) continue;
-      const item = parseLending(lendingRentings[i].lending[numTimesLent - 1]);
+      const item = parseLending(allRenft[i].lending[numTimesLent - 1]);
       resolvedData.push(item);
     }
     // _enrichSetLending(resolvedData);

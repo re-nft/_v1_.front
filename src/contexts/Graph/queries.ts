@@ -30,17 +30,9 @@ export const queryMyERC1155s = (user: string): string => {
   }`;
 };
 
-// reNFT's query to pull an array of nft-id unique
-// items named lendingRentings
-// if lendingRentings.lending.length ===
-// lendingRentings.renting.length + 1, then the item
-// has been rented by someone. It will be available
-// to return by the renter, or to be claimed collateral
-// on by the lender
-// if renter did not return before rentedAt + rentDays
-export const queryRenftAll = (): string => {
+export const queryAllRenft = (): string => {
   return `{
-    lendingRentings {
+    nfts {
       lending {
         id
         nftAddress
@@ -63,7 +55,7 @@ export const queryRenftAll = (): string => {
 };
 
 // reNFT's query to pull all lendings and rentings per user
-export const queryRenftUser = (user: string): string => {
+export const queryUserRenft = (user: string): string => {
   return `{
     user(id: "${user.toLowerCase()}") {
       id
