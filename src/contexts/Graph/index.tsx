@@ -204,7 +204,10 @@ export const GraphProvider: React.FC = ({ children }) => {
         // ? dependency on current state
         // ? without having it as dependency in useCallback which would trigger infinite loop
         if (!myNfts[token.address].contract) {
-          const contract = getERC1155(token.address, signer);
+          const isERC721 = fetchType === FetchType.ERC721;
+          const contract = isERC721
+            ? getERC721(token.address, signer)
+            : getERC1155(token.address, signer);
           const isApprovedForAll = await contract
             .isApprovedForAll(currentAddress, renft?.address ?? "")
             .catch(() => false);
@@ -215,7 +218,7 @@ export const GraphProvider: React.FC = ({ children }) => {
               ...prev[token.address],
               contract,
               isApprovedForAll,
-              isERC721: fetchType === FetchType.ERC721,
+              isERC721,
               tokens: {
                 ...prev[token.address].tokens,
                 [token.tokenId]: {
