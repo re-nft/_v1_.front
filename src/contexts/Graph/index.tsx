@@ -14,7 +14,7 @@ import ipfsAPI from "ipfs-http-client";
 
 const ipfs = ipfsAPI({
   host: "ipfs.infura.io",
-  port: "5001",
+  port: 5001,
   protocol: "https",
 });
 // import useIpfsFactory from "../../hooks/ipfs/useIpfsFactory";
@@ -289,11 +289,9 @@ export const GraphProvider: React.FC = ({ children }) => {
           break;
       }
 
-      const response:
-        | ERC721s
-        | ERC1155s = await timeItAsync(
+      const response: ERC721s | ERC1155s = await timeItAsync(
         `Pulled My ${FetchType[fetchType]} NFTs`,
-        () => request(query, subgraphURI)
+        async () => await request(subgraphURI, query)
       );
       console.log(response);
 
@@ -484,7 +482,9 @@ export const GraphProvider: React.FC = ({ children }) => {
   const fetchLending = useCallback(async () => {
     const query = queryAllRenft();
     const { allRenft } = await request(
-      IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
+      ENDPOINT_RENFT_DEV,
+      // todo
+      // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
     if (!allRenft) return [];

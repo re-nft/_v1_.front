@@ -29,7 +29,7 @@
     "husky": "4",
     "identicon.js": "^2.3.3",
     "ipfs-core": "^0.5.2",
-    "ipfs-http-client": "^49.0.2",
+    "ipfs-http-client": "45",
     "moment": "^2.29.1",
     "postcss": "^8.2.6",
     "ramda": "^0.27.1",
