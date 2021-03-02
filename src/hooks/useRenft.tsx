@@ -1,18 +1,19 @@
 import { useContext, useMemo } from "react";
 import * as R from "ramda";
 
-import GraphContext, { AddressToLending } from "../contexts/Graph";
+import GraphContext, { AddressToErc721, AddressToLending } from "../contexts/Graph";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import { Address, NftAndLendingId, LendingRentInfo } from "../types";
+import { Address, NftAndLendRentInfo, LendingRentInfo } from "../types";
 import { Lending } from "../types/graph";
 
 type useLendingsReturnT = {
-  allRentings: NftAndLendingId[];
-  myLendings: NftAndLendingId[];
+  allRentings: NftAndLendRentInfo[];
+  myLendings: NftAndLendRentInfo[];
+  allMyRenting: NftAndLendRentInfo[];
 };
 
 export const useRenft = (): useLendingsReturnT => {
-  const { lendings } = useContext(GraphContext);
+  const { lendings, erc1155s, erc721s, user } = useContext(GraphContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const pickImage = (
     lendings: AddressToLending,
@@ -32,8 +33,39 @@ export const useRenft = (): useLendingsReturnT => {
     return image ?? imageUrl;
   };
 
+  const allMyRenting = useMemo(() => {
+    const nfts: NftAndLendRentInfo[] = [];
+    if (!user.rentings || !currentAddress) return nfts;
+    for (const rentItem of user.rentings) {
+        for (const address of Object.keys(erc721s)) {
+          if (!R.hasPath([address, "tokenIds"], erc721s)) continue;
+          for (const tokenId of Object.keys(erc721s[address].tokenIds)) {
+              if (rentItem.lending.tokenId !== tokenId) continue;
+              const item = erc721s[address].tokenIds[tokenId] as AddressToErc721;
+              const image = item.image as any as string;
+              const lendingRentInfo = {
+                dailyRentPrice: rentItem.lending.dailyRentPrice,
+                maxRentDuration: rentItem.lending.maxRentDuration,
+                paymentToken: rentItem.lending.paymentToken,
+                nftPrice: rentItem.lending.nftPrice,
+              };
+              nfts.push({
+                contract: erc721s[address].contract,
+                tokenId,
+                image,
+                lendingId: rentItem.lending?.id ?? "",
+                lendingRentInfo,
+                rentingInfo: rentItem,
+              });
+
+          }
+        }
+    }
+    return nfts;
+  }, [user, erc721s, erc1155s]);
+
   const allRentings = useMemo(() => {
-    const nfts: NftAndLendingId[] = [];
+    const nfts: NftAndLendRentInfo[] = [];
     if (!lendings || !currentAddress) return nfts;
     for (const address of Object.keys(lendings)) {
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
@@ -61,7 +93,7 @@ export const useRenft = (): useLendingsReturnT => {
   }, [lendings, currentAddress]);
 
   const myLendings = useMemo(() => {
-    const nfts: NftAndLendingId[] = [];
+    const nfts: NftAndLendRentInfo[] = [];
     if (!lendings || !currentAddress) return nfts;
     for (const address of Object.keys(lendings)) {
       if (!R.hasPath([address, "tokenIds"], lendings)) continue;
@@ -90,7 +122,7 @@ export const useRenft = (): useLendingsReturnT => {
     return nfts;
   }, [lendings, currentAddress]);
 
-  return { allRentings, myLendings };
+  return { allRentings, myLendings, allMyRenting };
 };
 
 export default useRenft;

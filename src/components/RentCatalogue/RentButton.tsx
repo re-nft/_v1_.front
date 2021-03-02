@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from "react";
-import { NftAndLendingId } from "../../types/index";
+import { NftAndLendRentInfo } from "../../types/index";
 
 type RentButtonProps = {
-  handleRent: (lending: NftAndLendingId) => void;
-  nft: NftAndLendingId;
+  handleRent: (lending: NftAndLendRentInfo) => void;
+  nft: NftAndLendRentInfo;
 };
 
 export const RentButton: React.FC<RentButtonProps> = ({ handleRent, nft }) => {
@@ -12,13 +12,15 @@ export const RentButton: React.FC<RentButtonProps> = ({ handleRent, nft }) => {
   }, [handleRent, nft]);
 
   return (
-    <span
-      className="Nft__button"
-      onClick={_handleRent}
-      style={{ marginTop: "8px" }}
-    >
-      Rent now
-    </span>
+    <div className="Nft__card">
+      <span
+        className="Nft__button"
+        onClick={_handleRent}
+        style={{ marginTop: "8px" }}
+      >
+        Rent now
+      </span>
+    </div>
   );
 };
 

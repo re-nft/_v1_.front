@@ -1,7 +1,7 @@
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
 
-import { Lending } from "./graph";
+import { Lending, Renting } from "./graph";
 
 export type Optional<T> = undefined | T;
 export type Address = string;
@@ -35,7 +35,8 @@ export type LendingRentInfo = Pick<
   "dailyRentPrice" | "maxRentDuration" | "paymentToken" | "nftPrice"
 >;
 
-export type NftAndLendingId = Nft & {
+export type NftAndLendRentInfo = Nft & {
   lendingId: string;
   lendingRentInfo: LendingRentInfo;
+  rentingInfo?: Renting;
 };

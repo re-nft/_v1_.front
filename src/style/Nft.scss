@@ -6,6 +6,19 @@
   border: 3px solid black;
   width: 1000px;
   margin-left: -450px;
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  z-index: 9;
+}
+
+.BatchRentImages {
+  flex-grow: 1;
+}
+
+.BatchRentImages img {
+  height: 80px;
+  margin-right: 8px;
 }
 
 .Nft {
