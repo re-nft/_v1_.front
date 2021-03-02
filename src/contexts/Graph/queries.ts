@@ -18,7 +18,7 @@ export const queryMyERC1155s = (user: string): string => {
     account(id: "0x465dca9995d6c2a81a9be80fbced5a770dee3dae") {
       balances(where: {value_gt: 0}) {
         token {
-          uri: URI
+          tokenURI: URI
           registry {
             contractAddress: id
           }

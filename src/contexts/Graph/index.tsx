@@ -312,10 +312,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
 
       for (const token of tokens) {
-        const { tokenId, tokenURI } = token;
-
-        console.log(tokenId);
-        console.log(tokenURI);
+        console.log(token);
 
         // * sometimes the subgraph does not return the URI. For example, for ZORA
         // const _tokenURI = token.tokenURI;

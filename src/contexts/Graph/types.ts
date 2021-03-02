@@ -8,6 +8,8 @@ export type ERCNft = {
   address: Address;
   tokenId: string;
   tokenURI?: string;
+  // ERC1155 can be semi-fungible
+  amount?: number;
   meta?: {
     // * if we can only get a blob from ipfs, then we createObjectURI
     mediaURI?: string;
