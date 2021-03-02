@@ -296,30 +296,36 @@ export const GraphProvider: React.FC = ({ children }) => {
       console.log(response);
 
       let tokens: {
+        address: ERCNft["address"];
         tokenId: ERCNft["tokenId"];
         tokenURI?: ERCNft["tokenURI"];
       }[] = [];
       switch (fetchType) {
         case FetchType.ERC721:
-          tokens = (response as ERC721s).tokens;
+          tokens = (response as ERC721s).tokens.map((t) => {
+            // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
+            const [address, tokenId] = t.id.split("_");
+            return { address, tokenId, tokenURI: t.tokenURI };
+          });
           break;
         case FetchType.ERC1155:
           tokens = (response as ERC1155s).account.balances.map((b) => ({
+            address: b.token.registry.contractAddress,
             tokenId: b.token.tokenId,
             tokenURI: b.token.tokenURI,
           }));
           break;
       }
 
-      for (const token of tokens) {
-        console.log(token);
+      console.log(tokens);
 
+      for (const token of tokens) {
+        // console.log(token);
         // * sometimes the subgraph does not return the URI. For example, for ZORA
         // const _tokenURI = token.tokenURI;
         // let tokenURI = "";
         // const address = token.registry.contractAddress;
         // const { tokenId } = token;
-
         // // ! dependency on current state
         // // ! without having it as dependency in useCallback which would trigger infinite loop
         // if (!myNfts[address].contract) {
@@ -327,7 +333,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         //   const isApprovedForAll = await contract
         //     .isApprovedForAll(currentAddress, renft.instance?.address ?? "")
         //     .catch(() => false);
-
         //   setMyNfts((prev) => ({
         //     ...prev,
         //     [address]: {
@@ -337,7 +342,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         //     },
         //   }));
         // }
-
         // if there isn't token with the tokenId in the state, first fetch
         // its meta, and then update the state
         // if (!hasPath([address, "tokenIds", tokenId])(myNfts)) {
@@ -353,7 +357,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         //     tokenURI = "";
         //     continue;
         //   }
-
         //   toFetch.push({
         //     stateUpdatePath: [address, "tokenIds", tokenId],
         //     metaLinkToFetch: parse(tokenURI, true),

@@ -23,7 +23,7 @@ export type ERCNft = {
 // raw data that comes from the eip721 subgraph
 export type ERC721s = {
   tokens: {
-    tokenId: ERCNft["tokenId"]; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
+    id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
     tokenURI?: ERCNft["tokenURI"]; // e.g. "https://nft.service.cometh.io/3000013"
   }[];
 };
