@@ -1,16 +1,16 @@
 import React, { useCallback, useContext, useState } from "react";
 
-import { ProviderContext } from "../../hardhat/SymfoniContext";
-import { TransactionStateContext } from "../../contexts/TransactionState";
-import { Nft } from "../../types";
+import { ProviderContext } from "../hardhat/SymfoniContext";
+import { TransactionStateContext } from "../contexts/TransactionState";
+import { ERCNft } from "../contexts/Graph/types";
 
 import {
   RentNftContext,
   CurrentAddressContext,
-} from "../../hardhat/SymfoniContext";
+} from "../hardhat/SymfoniContext";
 
 type ApproveButtonProps = {
-  nft: Nft;
+  nft: { contract?: ERCNft["contract"] };
   callback?: () => void;
 };
 

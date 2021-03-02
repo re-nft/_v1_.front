@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import moment from "moment";
 
 import Table from "./Table";
-import GraphContext from "../contexts/Graph";
+import { ERCNft } from "../contexts/Graph/types";
 import { short } from "../utils";
 import { PaymentToken } from "../types";
-import { Lending, RentingAndLending } from "../types/graph";
+import { RentNftContext } from "../hardhat/SymfoniContext";
 
 type StatsProps = {
   hidden: boolean;
@@ -29,14 +29,12 @@ const TableHead: React.FC<TableHeadProps> = ({ tableType }) => {
   return (
     <thead>
       <tr>
-        {/* <th>Preview</th> */}
         <th>NFT Addr</th>
         <th>Token</th>
         <th>ID</th>
         <th>Rate</th>
         <th>Collateral</th>
         {tableType === TableType.LEND && <th>Max Duration</th>}
-        {/* <th>{tableType === TableType.BORROW ? "Paid" : "Earned"}</th> */}
         {tableType === TableType.BORROW && <th>Return by</th>}
         {tableType === TableType.LEND && <th>Claim</th>}
       </tr>
@@ -56,7 +54,7 @@ type TableRowProps = {
 };
 
 type ClaimButtonProps = {
-  lending: Lending;
+  lending: ERCNft;
 };
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -91,32 +89,56 @@ const TableRow: React.FC<TableRowProps> = ({
 };
 
 const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
-  // const { rent } = useContext(ContractsContext);
+  const { instance: renft } = useContext(RentNftContext);
 
-  // const handleClaim = useCallback(async () => {
-  //   // await rent.claimCollateralOne(
-  //   //   lending.nftAddress,
-  //   //   String(lending.tokenId),
-  //   //   String(lending.id)
-  //   // );
-  // });
+  const handleClaim = useCallback(async () => {
+    if (!renft) return;
 
-  // if (!lending.renting) return <span>❌</span>;
+    await renft
+      .claimCollateral(
+        [lending.address],
+        [lending.tokenId],
+        // @ts-ignore
+        [lending.lending?.[-1]]
+      )
+      .catch(() => false);
+  }, [renft, lending]);
 
-  // const _now = moment();
-  // const _returnBy = returnBy(
-  //   lending.,
-  //   lending.rentDuration
-  // );
-  // const _claim = _now.isAfter(_returnBy);
+  const handleStopLend = useCallback(async () => {
+    if (!renft) return;
 
-  // return _claim ? <span onClick={() => {}}>💰</span> : <span>❌</span>;
-  return <span>❌</span>;
+    await renft.stopLending(
+      [lending.address],
+      [lending.tokenId],
+      // @ts-ignore
+      [lending.lending?.[-1]]
+    );
+  }, [renft, lending]);
+
+  if (!lending.renting) {
+    return <span onClick={handleStopLend}>❌</span>;
+  }
+
+  const _now = moment();
+  const _returnBy = returnBy(
+    // @ts-ignore
+    lending.renting?.rentedAt,
+    // @ts-ignore
+    lending.renting?.rentDuration
+  );
+  const _claim = _now.isAfter(_returnBy);
+
+  return _claim ? (
+    <span onClick={handleClaim}>💰</span>
+  ) : (
+    <span onClick={handleStopLend}>❌</span>
+  );
 };
 
 const Stats: React.FC<StatsProps> = ({ hidden }) => {
-  const { user } = useContext(GraphContext);
-  const { lendings, rentings } = user;
+  // TODO
+  const lending: ERCNft[] = [];
+  const renting: ERCNft[] = [];
 
   if (hidden) return <></>;
 
@@ -129,21 +151,21 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.LEND} />
           <tbody>
-            {lendings.length > 0 &&
-              lendings.map((l) => {
+            {lending.length > 0 &&
+              lending.map((l) => {
                 return (
                   <TableRow
-                    key={`${l.nftAddress}::${l.tokenId}::${l.id}`}
-                    address={l.nftAddress}
+                    key={`${l.address}::${l.tokenId}::${l.lending?.[0].id}`}
+                    address={l.address}
                     tokenId={String(l.tokenId)}
-                    id={String(l.id)}
-                    dailyPrice={`${PaymentToken[l.paymentToken]} ${String(
-                      l.dailyRentPrice
-                    )}`}
-                    collateral={`${PaymentToken[l.paymentToken]} ${String(
-                      l.nftPrice
-                    )}`}
-                    maxDuration={String(l.maxRentDuration)}
+                    id={String(l.lending?.[0].id)}
+                    dailyPrice={`${
+                      PaymentToken[l.lending?.[0].paymentToken ?? 0]
+                    } ${String(l.lending?.[0].dailyRentPrice)}`}
+                    collateral={`${
+                      PaymentToken[l.lending?.[0].paymentToken ?? 0]
+                    } ${String(l.lending?.[0].nftPrice)}`}
+                    maxDuration={String(l.lending?.[0].maxRentDuration)}
                     claim={<ClaimButton lending={l} />}
                     greenHighlight={Boolean(l.renting)}
                   />
@@ -157,20 +179,25 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.BORROW} />
           <tbody>
-            {rentings.length > 0 &&
-              rentings.map((r: RentingAndLending) => (
+            {renting.length > 0 &&
+              renting.map((r) => (
                 <TableRow
-                  key={`${r.lending.nftAddress}::${r.lending.tokenId}::${r.lending.id}`}
-                  address={r.lending.nftAddress}
-                  tokenId={String(r.lending.tokenId)}
-                  id={String(r.lending.id)}
-                  dailyPrice={`${PaymentToken[r.lending.paymentToken]} ${String(
-                    r.lending.dailyRentPrice
-                  )}`}
-                  collateral={`${PaymentToken[r.lending.paymentToken]} ${String(
-                    r.lending.nftPrice
-                  )}`}
-                  maxDuration={String(returnBy(r.rentedAt, r.rentDuration))}
+                  key={`${r.address}::${r.tokenId}::${r.renting?.[0].id}`}
+                  address={r.address}
+                  tokenId={String(r.tokenId)}
+                  id={String(r.renting?.[0].id)}
+                  dailyPrice={`${
+                    PaymentToken[r.lending?.[0].paymentToken ?? 0]
+                  } ${String(r.lending?.[0].dailyRentPrice)}`}
+                  collateral={`${
+                    PaymentToken[r.lending?.[0].paymentToken ?? 0]
+                  } ${String(r.lending?.[0].nftPrice)}`}
+                  maxDuration={String(
+                    returnBy(
+                      r.renting?.[0].rentedAt ?? 0,
+                      r.renting?.[0].rentDuration ?? 0
+                    )
+                  )}
                 />
               ))}
           </tbody>

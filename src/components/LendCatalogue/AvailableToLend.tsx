@@ -1,24 +1,23 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { Box } from "@material-ui/core";
-import * as R from "ramda";
 
 import GraphContext from "../../contexts/Graph";
+import { ERCNft } from "../../contexts/Graph/types";
 import { LendModal } from "../LendModal";
-import { Nft } from "../../types";
 import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../hardhat/SymfoniContext";
 import CatalogueItem from "../CatalogueItem";
 
-type LendButtonProps = {
-  handleLend: (nft: Nft) => void;
-  nft: Nft;
+type MinimalNft = {
+  contract?: ERCNft["contract"];
+  tokenId?: ERCNft["tokenId"];
 };
 
-const DEFAULT_NFT: Nft = {
-  tokenId: "",
-  image: "",
+type LendButtonProps = {
+  handleLend: (nft: MinimalNft) => void;
+  nft: MinimalNft;
 };
 
 // todo: add a calculator on how much it will cost our users to lend / rent
@@ -39,63 +38,19 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
 };
 
 export const AvailableToLend: React.FC = () => {
-  const [selectedNft, setSelectedNft] = useState<Nft & { isApproved: boolean }>(
-    { ...DEFAULT_NFT, isApproved: true }
-  );
+  const [selectedNft, setSelectedNft] = useState<MinimalNft>();
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  // all of the erc721s and erc1155s that I own
-  const { erc721s, erc1155s } = useContext(GraphContext);
-  const availableNfts = useMemo(() => {
-    const nfts: Nft[] = [];
-    if (!erc721s || !erc1155s) return nfts;
-    for (const address of Object.keys(erc721s)) {
-      if (!erc721s[address]) continue;
-      if (!R.hasPath([address, "tokenIds"], erc721s)) continue;
-      for (const tokenId of Object.keys(erc721s[address].tokenIds)) {
-        let image = R.pathOr(
-          "",
-          [address, "tokenIds", tokenId, "image"],
-          erc721s
-        );
-        if (image === "") {
-          image = R.pathOr(
-            "",
-            [address, "tokenIds", tokenId, "image_url"],
-            erc721s
-          );
-        }
-        nfts.push({
-          contract: erc721s[address].contract,
-          tokenId,
-          image,
-        });
-      }
-    }
-    for (const address of Object.keys(erc1155s)) {
-      if (!erc1155s[address]) continue;
-      if (!R.hasPath([address, "tokenIds"], erc1155s)) continue;
-      for (const tokenId of Object.keys(erc1155s[address].tokenIds)) {
-        const image = R.pathOr(
-          "",
-          [address, "tokenIds", tokenId, "image"],
-          erc1155s
-        );
-        nfts.push({ contract: erc1155s[address].contract, tokenId, image });
-      }
-    }
-    return nfts;
-  }, [erc721s, erc1155s]);
+  const { myNfts } = useContext(GraphContext);
 
   const handleStartLend = useCallback(
-    async (nft: Nft) => {
+    async (nft) => {
       if (!nft.contract || !renft || !currentAddress) return;
-      const isApproved = await nft.contract.isApprovedForAll(
-        currentAddress,
-        renft.address
-      );
-      setSelectedNft({ ...nft, isApproved });
+      const isApproved = await nft.contract
+        .isApprovedForAll(currentAddress, renft.address)
+        .catch(() => false);
+      setSelectedNft(nft);
       setModalOpen(true);
     },
     [renft, currentAddress]
@@ -103,22 +58,34 @@ export const AvailableToLend: React.FC = () => {
 
   return (
     <Box>
-      <LendModal nft={selectedNft} open={modalOpen} setOpen={setModalOpen} />
+      <LendModal
+        nft={{ contract: selectedNft?.contract, tokenId: selectedNft?.tokenId }}
+        open={modalOpen}
+        setOpen={setModalOpen}
+      />
       <Box className="Catalogue">
-        {availableNfts.map((nft) => {
-          const nftId = `${nft.contract?.address ?? ""}::${nft.tokenId}`;
-          return (
-            <CatalogueItem
-              key={nftId}
-              tokenId={nft.tokenId}
-              nftAddress={nft.contract?.address ?? ""}
-              image={nft.image}
-            >
-              <div className="Nft__card" style={{ marginTop: "8px" }}>
-                <LendButton nft={nft} handleLend={handleStartLend} />
-              </div>
-            </CatalogueItem>
-          );
+        {Object.keys(myNfts).map((nftAddress) => {
+          Object.keys(myNfts[nftAddress]).map((tokenId) => {
+            const nftId = `${nftAddress}::${tokenId}`;
+            return (
+              <CatalogueItem
+                key={nftId}
+                tokenId={tokenId}
+                nftAddress={nftAddress}
+                image={myNfts[nftAddress].tokens[tokenId].meta?.mediaURI}
+              >
+                <div className="Nft__card" style={{ marginTop: "8px" }}>
+                  <LendButton
+                    nft={{
+                      contract: myNfts[nftAddress].contract,
+                      tokenId,
+                    }}
+                    handleLend={handleStartLend}
+                  />
+                </div>
+              </CatalogueItem>
+            );
+          });
         })}
       </Box>
     </Box>
