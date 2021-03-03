@@ -305,16 +305,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, []);
 
-  const fetchRenting = useCallback(async () => {
-    true;
-  }, []);
-
   const fetchMyNfts = useCallback(async () => {
     if (IS_PROD) {
       fetchAllERCs(FetchType.ERC721);
       fetchAllERCs(FetchType.ERC1155);
     } else {
-      fetchNftDev();
+      const _nfts = await fetchNftDev();
+      console.log("fetched my dev nfts", _nfts);
+      setNfts(_nfts);
     }
   }, [fetchAllERCs, fetchNftDev]);
 
