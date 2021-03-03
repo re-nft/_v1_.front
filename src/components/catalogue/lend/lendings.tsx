@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import GraphContext from "../../../contexts/Graph";
 import { ERCNft } from "../../../contexts/Graph/types";
 import { LendModal } from "../modals/lend";
@@ -7,7 +7,7 @@ import {
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
 import CatalogueItem from "../../catalogue/catalogue-item";
-import ActionButton from '../../action-button';
+import ActionButton from "../../action-button";
 
 type MinimalNft = {
   contract?: ERCNft["contract"];
@@ -20,6 +20,7 @@ const Lendings: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const { getUsersNfts } = useContext(GraphContext);
+  const [usersNfts, setUsersNfts] = useState<ERCNft[]>([]);
   const handleStartLend = useCallback(
     async (nft) => {
       if (!nft.contract || !renft || !currentAddress) return;
@@ -28,7 +29,14 @@ const Lendings: React.FC = () => {
     },
     [renft, currentAddress]
   );
-  const nfts = getUsersNfts();
+
+  useEffect(() => {
+    getUsersNfts()
+      .then((data) => {
+        setUsersNfts(data);
+      })
+      .catch(() => []);
+  }, [getUsersNfts]);
 
   return (
     <>
@@ -37,7 +45,7 @@ const Lendings: React.FC = () => {
         open={modalOpen}
         setOpen={setModalOpen}
       />
-      {nfts.map((nft) => (
+      {usersNfts.map((nft) => (
         <CatalogueItem
           key={`${nft.address}::${nft.tokenId}`}
           tokenId={nft.tokenId}

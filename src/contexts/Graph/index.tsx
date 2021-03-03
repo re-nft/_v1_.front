@@ -207,7 +207,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   const _parseRenftNftId = (
     id: string
   ): { address: Token["address"]; tokenId: Token["tokenId"] } => {
-    const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+    console.log("id", id);
+    const [address, tokenId] = (id || "").split(RENFT_SUBGRAPH_ID_SEPARATOR);
     return { address, tokenId };
   };
 
@@ -310,7 +311,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     // TODO: are raw in here. Create a function that parses the raw
     // * into these types and wrap / call that function in here
     const data: {
-      nfts: (Pick<Nft, "id"> & { lending: Lending[]; renting?: Renting[] })[];
+      nfts: { lending: Lending[]; renting?: Renting[] }[];
     } = await request(
       ENDPOINT_RENFT_DEV,
       // todo
@@ -323,23 +324,25 @@ export const GraphProvider: React.FC = ({ children }) => {
     const tmpLendingById: LendingById = {};
     const tmpRentingById: RentingById = {};
     for (const _nft of _nfts) {
-      const { address, tokenId } = _parseRenftNftId(_nft.id);
       // each Nft has an array of lending and renting, only the last
       // item in each one is the source of truth when it comes to
       // ability to lend or rent
       for (const lending of _nft.lending) {
+        console.log("lending", lending);
         tmpLendingById[lending.id] = {
-          address,
-          tokenId,
+          address: lending.nftAddress,
+          tokenId: lending.tokenId,
         };
       }
-      for (const renting of _nft.renting ?? []) {
-        tmpRentingById[renting.id] = {
-          address,
-          tokenId,
-        };
-      }
+      // TODO
+      // for (const renting of _nft.renting ?? []) {
+      //   tmpRentingById[renting.id] = {
+      //     address: renting.nftAddress,
+      //     tokenId: renting.tokenid,
+      //   };
+      // }
 
+      console.log("tempLending", tmpLendingById);
       setLendingById(tmpLendingById);
       setRentingById(tmpRentingById);
 
@@ -419,6 +422,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const getUsersNfts = async () => await _getERCNftFromToken(usersNfts);
 
   const getLending = async () => {
+    console.log("getLending user.elnding", user.lending);
     const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
     return await _getERCNftFromToken(_tokens);
   };
@@ -427,6 +431,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     const _tokens: Token[] = user.renting?.map((id) => rentingById[id]) ?? [];
     return await _getERCNftFromToken(_tokens);
   };
+
+  console.log("state lendingByid", lendingById);
 
   return (
     <GraphContext.Provider

@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext, useCallback, useState, useEffect } from "react";
 import { BigNumber } from "ethers";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/Graph";
@@ -52,10 +52,23 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 };
 
 const UserLendings: React.FC = () => {
-  const myLendings: ERCNft[] = [];
+  const { getLending } = useContext(GraphContext);
+  const [usersLending, setUsersLending] = useState<ERCNft[]>([]);
+
+  useEffect(() => {
+    getLending()
+      .then((data) => {
+        setUsersLending(data);
+      })
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      });
+  }, [getLending]);
+
   return (
     <>
-      {myLendings.map((nft) => {
+      {usersLending.map((nft) => {
         const nftAddress = `${nft.contract?.address ?? ""}`;
         const nftId = `${nftAddress}::${nft.tokenId}`;
         return (
