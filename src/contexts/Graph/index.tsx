@@ -135,8 +135,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   // all the seen nfts in renft client
   const [nfts, setNfts] = useState<Nfts>(DefaultGraphContext["nfts"]);
   // an array of Omit<Token, 'tokenURI'> of a user to map back to nfts above
+  // usersNfts is a set of all of the NFTs of the user
   const [usersNfts, setUsersNfts] = useState<Omit<Token, "tokenURI">[]>([]);
   // an array of user's lendings and rentings on renft
+  // user is the set of all of the NFTs of the user that are related to ReNFT
   const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
   const [lendingById, setLendingById] = useState<LendingById>(
     DefaultGraphContext["lendingById"]
