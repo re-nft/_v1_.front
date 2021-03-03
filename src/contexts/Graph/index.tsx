@@ -307,31 +307,28 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!data?.nfts) return;
 
     const { nfts: _nfts } = data;
+    const tmpLendingById: LendingById = {};
+    const tmpRentingById: RentingById = {};
     for (const _nft of _nfts) {
       const { address, tokenId } = _parseRenftNftId(_nft.id);
       // each Nft has an array of lending and renting, only the last
       // item in each one is the source of truth when it comes to
       // ability to lend or rent
       for (const lending of _nft.lending) {
-        if (lendingById[lending.id]) continue;
-        setLendingById((prev) => ({
-          ...prev,
-          [lending.id]: {
-            address,
-            tokenId,
-          },
-        }));
+        tmpLendingById[lending.id] = {
+          address,
+          tokenId,
+        };
       }
       for (const renting of _nft.renting ?? []) {
-        if (rentingById[renting.id]) continue;
-        setRentingById((prev) => ({
-          ...prev,
-          [renting.id]: {
-            address,
-            tokenId,
-          },
-        }));
+        tmpRentingById[renting.id] = {
+          address,
+          tokenId,
+        };
       }
+
+      setLendingById(tmpLendingById);
+      setRentingById(tmpRentingById);
 
       console.log("lendingById", lendingById);
       console.log("rentingById", rentingById);
