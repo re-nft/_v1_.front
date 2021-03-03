@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import { useContext, useCallback } from "react";
 
 import { BigNumber } from "ethers";
 
@@ -7,19 +7,12 @@ import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
-import { ERC1155 } from "../../../hardhat/typechain/ERC1155";
-import { ERC721 } from "../../../hardhat/typechain/ERC721";
+// * circular-dep
+import { Nfts } from "../index";
 
 const BigNumZero = BigNumber.from("0");
 
-export const useFetchNftDev = (): (() => Promise<{
-  [x: string]: {
-    contract: ERC721 | ERC1155;
-    isApprovedForAll: boolean;
-    isERC721: boolean;
-    tokenIds: any;
-  };
-}>) => {
+export const useFetchNftDev = (): (() => Promise<Nfts>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(RentNftContext);
 
@@ -78,7 +71,7 @@ export const useFetchNftDev = (): (() => Promise<{
         contract,
         isApprovedForAll,
         isERC721: true,
-        tokenIds: tokenIdsObj,
+        tokens: tokenIdsObj,
       },
     };
   }, [renft.instance, currentAddress, myERC721.instance]);

@@ -47,9 +47,6 @@ export const AvailableToLend: React.FC = () => {
   const handleStartLend = useCallback(
     async (nft) => {
       if (!nft.contract || !renft || !currentAddress) return;
-      const isApproved = await nft.contract
-        .isApprovedForAll(currentAddress, renft.address)
-        .catch(() => false);
       setSelectedNft(nft);
       setModalOpen(true);
     },
@@ -72,7 +69,7 @@ export const AvailableToLend: React.FC = () => {
                 key={nftId}
                 tokenId={tokenId}
                 nftAddress={nftAddress}
-                image={nfts[nftAddress].tokens[tokenId].meta?.mediaURI}
+                // image={nfts[nftAddress].tokens[tokenId].meta?.mediaURI}
               >
                 <div className="Nft__card" style={{ marginTop: "8px" }}>
                   <LendButton

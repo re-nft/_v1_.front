@@ -94,12 +94,9 @@ export type Renting = {
 // If, however, lending.length === renting.length, then it is being currently
 // rented by someone.
 export type Nft = {
-  id: string;
-  address: string;
-  tokenId: string;
-  tokenURI?: string;
+  id: Address;
   lending: Lending["id"][];
-  renting: Renting["id"][];
+  renting?: Renting["id"][];
 };
 
 // ! Tracks all of the lending / renting per user
@@ -109,7 +106,7 @@ export type Nft = {
 // nftAddress and tokenId. Recall, in AllRenft each lending is the
 // same nftAddress and tokenId combo. Same reasoning applies to renting.
 export type User = {
-  address: Address;
+  id: Address;
   lending?: Lending["id"][];
   renting?: Renting["id"][];
 };

@@ -9,7 +9,10 @@ import {
 } from "../../hardhat/SymfoniContext";
 import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
+import {
+  SECOND_IN_MILLISECONDS,
+  RENFT_SUBGRAPH_ID_SEPARATOR,
+} from "../../consts";
 
 import { Address } from "../../types";
 import {
@@ -18,7 +21,15 @@ import {
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import { Lending, User, ERC1155s, ERC721s, ERCNft } from "./types";
+import {
+  Lending,
+  Renting,
+  User,
+  ERC1155s,
+  ERC721s,
+  ERCNft,
+  Nft,
+} from "./types";
 import { parseLending } from "./utils";
 // * only in dev env
 import useFetchNftDev from "./hooks/useFetchNftDev";
@@ -51,7 +62,7 @@ const ENDPOINT_EIP1155_PROD =
 
 // differently arranged (for efficiency) Nft
 // '0x123...456': { tokens: { '1': ..., '2': ... } }
-type Nfts = {
+export type Nfts = {
   // nft address
   [key: string]: {
     contract: ERCNft["contract"];
@@ -103,7 +114,7 @@ const DefaultGraphContext: GraphContextType = {
   lendingById: {},
   rentingById: {},
   user: {
-    address: "",
+    id: "",
   },
   removeLending: THROWS,
   fetchMyNfts: THROWS,
@@ -150,7 +161,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   };
 
   const _setContract = async (token: Token, isERC721: boolean) => {
-    if (nfts[token.address].contract) return;
+    if (nfts[token.address]?.contract) return;
 
     const contract = isERC721
       ? getERC721(token.address, signer)
@@ -167,13 +178,19 @@ export const GraphProvider: React.FC = ({ children }) => {
         isApprovedForAll,
         isERC721,
         tokens: {
-          ...prev[token.address].tokens,
           [token.tokenId]: {
             tokenURI: token.tokenURI,
           },
         },
       },
     }));
+  };
+
+  const _parseRenftNftId = (
+    id: string
+  ): { address: Token["address"]; tokenId: Token["tokenId"] } => {
+    const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+    return { address, tokenId };
   };
 
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
@@ -238,39 +255,49 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchUser = useCallback(async () => {
     const query = queryUserRenft(currentAddress);
-    const data: {
-      user: User;
+    // todo: the types for lending and renting not correct, because we get raw
+    // response from request. Wrap the call in a parsing function
+    const data: Pick<User, "id"> & {
+      lending?: Lending[];
+      renting?: Renting[];
     } = await request(
       // TODO
       ENDPOINT_RENFT_DEV,
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    if (!data?.user) return [];
+    console.log("user data", data);
+    if (!data?.lending && !data?.renting) {
+      console.warn("no lending and renting for user");
+      return;
+    }
 
-    const { lending, renting } = data.user;
-    // todo: only ids are of interest here
+    const { lending, renting } = data;
+    // * updated all the time, need to compute hash of the lists
+    // * as we go along to then simply check that the combined hash
+    // * hasn't changed, to determine if we need to update the state
     setUser({
-      address: currentAddress,
-      lending: lending || [],
-      renting: renting || [],
+      id: currentAddress,
+      lending: lending?.map((l) => l.id) ?? [],
+      renting: renting?.map((r) => r.id) ?? [],
     });
   }, [currentAddress]);
 
   // these are all the NFTs that are available for rent
   const fetchAllLendingAndRenting = useCallback(async () => {
     const query = queryAllRenft();
-    const { nfts } = await request(
+    const data: { nfts: Nft[] } = await request(
       ENDPOINT_RENFT_DEV,
       // todo
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    if (!nfts) return [];
+    if (!data?.nfts) return;
 
-    for (let i = 0; i < nfts.length; i++) {
-      const numTimesLent = nfts[i].lending.length;
-      const numTimesRented = nfts[i].renting?.length ?? 0;
+    const { nfts: _nfts } = data;
+    for (let i = 0; i < _nfts.length; i++) {
+      const numTimesLent = _nfts[i].lending.length;
+      const numTimesRented = _nfts[i].renting?.length ?? 0;
       // each Nft has an array of lending and renting, only the last
       // item in each one is the source of truth when it comes to
       // ability to lend or rent
@@ -291,10 +318,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, [fetchAllERCs, fetchNftDev]);
 
-  usePoller(fetchMyNfts, 30 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
-  usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
-  usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
-  usePoller(fetchUser, 7 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
+  usePoller(fetchMyNfts, 10 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
+  // usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
+  // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
+  usePoller(fetchUser, 9 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
   return (
     <GraphContext.Provider
