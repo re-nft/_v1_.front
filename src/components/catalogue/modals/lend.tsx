@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
-import { BigNumber } from "ethers";
-
-import { decimalToPaddedHexString } from "../../../utils";
+import { ProviderContext } from "../../../hardhat/SymfoniContext";
 import { PaymentToken } from "../../../types";
 import RainbowButton from "../../rainbow-button";
 import CssTextField from "../../css-text-field";
@@ -16,10 +14,9 @@ import {
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/Graph";
 import { ERCNft } from "../../../contexts/Graph/types";
-import ApproveButton from "../../approve-button";
 import { useStyles } from "./styles";
-import { SECOND_IN_MILLISECONDS } from "../../../consts";
-import usePoller from "../../../hooks/usePoller";
+import startLend from '../../../services/start-lend';
+import ActionButton from "../../action-button";
 
 type ValueValid = {
   value: string;
@@ -32,11 +29,13 @@ type LendOneInputs = {
   nftPrice: ValueValid;
 };
 
+type NFT = {
+  contract?: ERCNft["contract"];
+  tokenId?: ERCNft["tokenId"];
+};
+
 type LendModalProps = {
-  nft: {
-    contract?: ERCNft["contract"];
-    tokenId?: ERCNft["tokenId"];
-  };
+  nft: NFT;
   open: boolean;
   setOpen: (open: boolean) => void;
 };
@@ -63,29 +62,20 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const { fetchMyNfts } = useContext(GraphContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
+  const [provider] = useContext(ProviderContext);
+  const [isApproved, setIsApproved] = useState<boolean>();
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>(
     DefaultLendOneInputs
   );
-  const [isApproved, setIsApproved] = useState<boolean>();
 
   const handleLend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
 
       if (!renft || isActive || !nft.contract || !nft.tokenId) return;
-      // need to approve if it wasn't: nft
-      // * mocks only allow two payment tokens right now
-      // ETH and DAI
-      // indices of these, as per contracts repo/src/Resolver.sol are: 1 and 2
-      // only the above will work in the development environment for now
-      const tx = await renft.lend(
-        [nft.contract.address],
-        [nft.tokenId],
-        [BigNumber.from(lendOneInputs.maxDuration.value)],
-        [decimalToPaddedHexString(Number(lendOneInputs.borrowPrice.value), 32)], // min 0.0001 max number 9_999.9999
-        [decimalToPaddedHexString(Number(lendOneInputs.nftPrice.value), 32)], // min 0.0001 max number 9_999.9999
-        [pmtToken.toString()]
-      );
+      
+      const {maxDuration, borrowPrice, nftPrice} = lendOneInputs;
+      const tx = await startLend(renft, nft, maxDuration.value, borrowPrice.value, nftPrice.value, pmtToken);
 
       setHash(tx.hash);
       setOpen(false);
@@ -103,14 +93,26 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     ]
   );
 
-  const handleChange = useCallback(
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.FocusEvent<HTMLInputElement>
-    ) => {
-      const target = e.target.name;
-      const value = e.target.value;
+  const handleApproveAll = useCallback(async (nft: NFT) => {
+    if (!currentAddress || !renft || isActive || !nft.contract || !provider)
+      return;
+    const tx = await nft.contract.setApprovalForAll(renft.address, true);
+    setHash(tx.hash);
+    const receipt = await provider.getTransactionReceipt(tx.hash);
+    const status = receipt.status ?? 0;
+    if (status === 1) {
+      setIsApproved(true);
+    }
+  }, [
+    currentAddress,
+    renft,
+    nft.contract,
+    isActive,
+    setHash,
+    provider
+  ]);
+  
+  const handleStateChange = useCallback((target: string, value: string) => {
       setLendOneInputs({
         ...lendOneInputs,
         [target]: {
@@ -118,24 +120,15 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           valid: true,
         },
       });
-    },
-    [lendOneInputs, setLendOneInputs]
-  );
+  }, [lendOneInputs, setLendOneInputs]);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleStateChange(e.target.name, e.target.value);
+  };
 
-  const onHandleBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      const target = e.target.name;
-      const value = e.target.value;
-      setLendOneInputs({
-        ...lendOneInputs,
-        [target]: {
-          value,
-          valid: true,
-        },
-      });
-    },
-    [lendOneInputs, setLendOneInputs]
-  );
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      handleStateChange(e.target.name, e.target.value);
+  };
 
   const onSelectPaymentToken = useCallback(
     (value: number) => setPmtToken(value),
@@ -154,7 +147,9 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     setIsApproved(_isApproved);
   }, [currentAddress, nft.contract, renft?.instance, nft.tokenId]);
 
-  usePoller(checkIsApproved, 2 * SECOND_IN_MILLISECONDS);
+  useEffect(() => {
+    checkIsApproved();
+  }, [])
 
   return (
     <Modal open={open} handleClose={handleClose}>
@@ -179,7 +174,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
               !lendOneInputs.maxDuration.valid ? "Must be a natural number" : ""
             }
             onChange={handleChange}
-            onBlur={onHandleBlur}
+            onBlur={handleBlur}
             name="maxDuration"
           />
           <CssTextField
@@ -196,7 +191,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
                 : ""
             }
             onChange={handleChange}
-            onBlur={onHandleBlur}
+            onBlur={handleBlur}
             name="borrowPrice"
           />
           <CssTextField
@@ -213,7 +208,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
                 : ""
             }
             onChange={handleChange}
-            onBlur={onHandleBlur}
+            onBlur={handleBlur}
             name="nftPrice"
           />
           <FormControl variant="outlined">
@@ -224,8 +219,16 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
           </FormControl>
         </Box>
         <Box className={classes.buttons}>
-          {!isApproved && <ApproveButton nft={nft} />}
-          <RainbowButton type="submit" text="Lend" disabled={!isApproved} />
+          {!isApproved && (
+            <ActionButton
+              title="Approve all"
+              nft={nft}
+              onClick={handleApproveAll}
+            />
+          )}
+          {isApproved && (
+              <RainbowButton type="submit" text="Lend" disabled={!isApproved} />
+          )}
         </Box>
       </form>
     </Modal>

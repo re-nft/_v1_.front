@@ -15,7 +15,7 @@ import { getERC20 } from "../../../utils";
 import { MAX_UINT256 } from "../../../consts";
 import CatalogueItem from "../../catalogue/catalogue-item";
 import BatchRentModal from "../modals/batch-rent";
-import ActionButton from "../../action-button";
+//import ActionButton from "../../action-button";
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
@@ -163,13 +163,13 @@ export const AvailableToRent: React.FC = () => {
               value={String(0)}
               unit={PaymentToken[PaymentToken.DAI]}
             />
-            <div className="Nft__card">
+            {/*<div className="Nft__card">
               <ActionButton
                 onClick={handleBatchModalOpen}
                 nft={nft}
                 title="Rent Now"
               />
-            </div>
+            </div>*/}
           </CatalogueItem>
         );
       })}

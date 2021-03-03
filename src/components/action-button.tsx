@@ -1,10 +1,15 @@
 import React, { useCallback } from "react";
 import { ERCNft } from "../contexts/Graph/types";
 
+type NFT = {
+  contract?: ERCNft["contract"];
+  tokenId?: ERCNft["tokenId"];
+};
+
 type ActionButtonProps = {
-  nft: ERCNft;
+  nft: NFT;
   title: string;
-  onClick: (lending: ERCNft) => void;
+  onClick: (lending: NFT) => void;
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({ nft, title, onClick }) => {

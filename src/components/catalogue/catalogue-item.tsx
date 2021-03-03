@@ -31,7 +31,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         </div>
       )}
       <div className="Nft" data-item-id={tokenId}>
-        <div className="Nft__image">{mediaURI ?? ""}</div>
+        <div className="Nft__image">
+          {mediaURI && <img loading="lazy" src={mediaURI} />}
+        </div>
         <div className="Nft__card">
           <p className="Nft__text_overflow">
             <a
