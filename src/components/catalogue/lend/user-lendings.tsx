@@ -1,12 +1,10 @@
 import React, { useContext, useCallback } from "react";
-import { Box } from "@material-ui/core";
 import { BigNumber } from "ethers";
-
-import { RentNftContext } from "../../hardhat/SymfoniContext";
-import GraphContext from "../../contexts/Graph";
-import { ERCNft } from "../../contexts/Graph/types";
-import { TransactionStateContext } from "../../contexts/TransactionState";
-import CatalogueItem from "../CatalogueItem";
+import { RentNftContext } from "../../../hardhat/SymfoniContext";
+import GraphContext from "../../../contexts/Graph";
+import { ERCNft } from "../../../contexts/Graph/types";
+import { TransactionStateContext } from "../../../contexts/TransactionState";
+import CatalogueItem from "../../catalogue/catalogue-item";
 
 type StopLendButtonProps = {
   nft: ERCNft;
@@ -53,31 +51,28 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   );
 };
 
-export const AllMyLending: React.FC = () => {
-  // todo
+const UserLendings: React.FC = () => {
   const myLendings: ERCNft[] = [];
   return (
-    <Box>
-      <Box className="Catalogue">
-        {myLendings.map((nft) => {
-          const nftAddress = `${nft.contract?.address ?? ""}`;
-          const nftId = `${nftAddress}::${nft.tokenId}`;
-          return (
-            <CatalogueItem
-              key={nftId}
-              tokenId={nft.tokenId}
-              nftAddress={nftAddress}
-              image={nft.meta?.mediaURI}
-            >
-              <div className="Nft__card" style={{ marginTop: "8px" }}>
-                <StopLendButton nft={nft} />
-              </div>
-            </CatalogueItem>
-          );
-        })}
-      </Box>
-    </Box>
+    <>
+      {myLendings.map((nft) => {
+        const nftAddress = `${nft.contract?.address ?? ""}`;
+        const nftId = `${nftAddress}::${nft.tokenId}`;
+        return (
+          <CatalogueItem
+            key={nftId}
+            tokenId={nft.tokenId}
+            nftAddress={nftAddress}
+            mediaURI={nft.meta?.mediaURI}
+          >
+            <div className="Nft__card" style={{ marginTop: "8px" }}>
+              <StopLendButton nft={nft} />
+            </div>
+          </CatalogueItem>
+        );
+      })}
+    </>
   );
 };
 
-export default AllMyLending;
+export default UserLendings;

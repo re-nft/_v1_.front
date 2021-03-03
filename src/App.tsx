@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import Layout from "./layouts/index";
-import Rent from "./components/RentCatalogue/Rent";
-import Lend from "./components/LendCatalogue/Lend";
-import ButHow from "./components/FAQ";
-import Stats from "./components/Stats";
-import { TransactionNotifier } from "./components/TransactionNotifier";
+import Layout from "./components/layout";
+import Rent from "./components/pages/rent";
+import Lend from "./components/pages/lend";
+import Faq from "./components/pages/faq";
+import Dashboard from "./components/pages/dashboard";
+import { TransactionNotifier } from "./components/transaction-notifier";
 
 enum Tabs {
   RENT,
@@ -92,8 +92,8 @@ const App: React.FC = () => {
       >
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
-        <ButHow hidden={activeTab !== Tabs.HOW} />
-        <Stats hidden={activeTab !== Tabs.STATS} />
+        <Faq hidden={activeTab !== Tabs.HOW} />
+        <Dashboard hidden={activeTab !== Tabs.STATS} />
       </Box>
     </Layout>
   );

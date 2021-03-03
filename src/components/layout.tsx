@@ -6,11 +6,7 @@ import "../style/index.scss";
 import { CurrentAddressContext } from "../../src/hardhat/SymfoniContext";
 import { short } from "../utils";
 
-type LayoutProps = {
-  children: React.ReactNode;
-};
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
 
   return (

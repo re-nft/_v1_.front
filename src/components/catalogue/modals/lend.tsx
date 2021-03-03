@@ -3,23 +3,23 @@ import { Box } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import { BigNumber } from "ethers";
 
-import { decimalToPaddedHexString } from "../../utils";
-import { PaymentToken } from "../../types";
-import RainbowButton from "../RainbowButton";
-import CssTextField from "../CssTextField";
-import Modal from "../Modal";
-import MinimalSelect from "../MinimalSelect";
+import { decimalToPaddedHexString } from "../../../utils";
+import { PaymentToken } from "../../../types";
+import RainbowButton from "../../rainbow-button";
+import CssTextField from "../../css-text-field";
+import Modal from "../../modal";
+import MinimalSelect from "../../MinimalSelect";
 import {
   CurrentAddressContext,
   RentNftContext,
-} from "../../hardhat/SymfoniContext";
-import { TransactionStateContext } from "../../contexts/TransactionState";
-import GraphContext from "../../contexts/Graph";
-import { ERCNft } from "../../contexts/Graph/types";
-import ApproveButton from "../ApproveButton";
+} from "../../../hardhat/SymfoniContext";
+import { TransactionStateContext } from "../../../contexts/TransactionState";
+import GraphContext from "../../../contexts/Graph";
+import { ERCNft } from "../../../contexts/Graph/types";
+import ApproveButton from "../../approve-button";
 import { useStyles } from "./styles";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
-import usePoller from "../../hooks/usePoller";
+import { SECOND_IN_MILLISECONDS } from "../../../consts";
+import usePoller from "../../../hooks/usePoller";
 
 type ValueValid = {
   value: string;

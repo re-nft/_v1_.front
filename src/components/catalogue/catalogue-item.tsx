@@ -2,10 +2,9 @@ import React from "react";
 import { Checkbox } from "@material-ui/core";
 
 export type CatalogueItemProps = {
-  // lending or Renting NFT specific fields
   tokenId: string;
   nftAddress: string;
-  image?: string;
+  mediaURI?: string;
   // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
   onCheckboxChange?: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -16,7 +15,7 @@ export type CatalogueItemProps = {
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   tokenId,
   nftAddress,
-  image,
+  mediaURI,
   onCheckboxChange,
   children,
 }) => {
@@ -32,13 +31,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         </div>
       )}
       <div className="Nft" data-item-id={tokenId}>
-        <div className="Nft__image">
-          {image && (
-            <a href={image}>
-              <img alt="nft" src={image} />
-            </a>
-          )}
-        </div>
+        <div className="Nft__image">{mediaURI ?? ""}</div>
         <div className="Nft__card">
           <p className="Nft__text_overflow">
             <a

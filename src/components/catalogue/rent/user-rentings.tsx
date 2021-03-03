@@ -1,15 +1,13 @@
 import React, { useContext, useCallback, useState } from "react";
-import { Box } from "@material-ui/core";
-
-import { ERCNft } from "../../contexts/Graph/types";
-import { PaymentToken } from "../../types";
-import NumericField from "../NumericField";
-import CatalogueItem from "../CatalogueItem";
-import { RentNftContext } from "../../hardhat/SymfoniContext";
-import { TransactionStateContext } from "../../contexts/TransactionState";
-import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
-import ReturnModal from "./ReturnModal";
-import { ProviderContext } from "../../hardhat/SymfoniContext";
+import { ERCNft } from "../../../contexts/Graph/types";
+import { PaymentToken } from "../../../types";
+import NumericField from "../../numeric-field";
+import CatalogueItem from "../../catalogue/catalogue-item";
+import { RentNftContext } from "../../../hardhat/SymfoniContext";
+import { TransactionStateContext } from "../../../contexts/TransactionState";
+import { CurrentAddressContext } from "../../../hardhat/SymfoniContext";
+import ReturnModal from "../modals/return";
+import { ProviderContext } from "../../../hardhat/SymfoniContext";
 
 type ReturnItButtonProps = {
   nft: ERCNft;
@@ -31,7 +29,7 @@ const ReturnItButton: React.FC<ReturnItButtonProps> = ({ nft, onClick }) => {
   );
 };
 
-export const AllMyRenting: React.FC = () => {
+const UserRentings: React.FC = () => {
   const allMyRentings: ERCNft[] = [];
   const [modalOpen, setModalOpen] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
@@ -90,7 +88,7 @@ export const AllMyRenting: React.FC = () => {
   );
 
   return (
-    <Box>
+    <>
       {selectedNft && (
         <ReturnModal
           open={modalOpen}
@@ -101,36 +99,30 @@ export const AllMyRenting: React.FC = () => {
           onApproveAll={handleApproveAll}
         />
       )}
-      <Box className="Catalogue">
-        {allMyRentings.map((nft: ERCNft) => {
-          const id = `${nft.address}::${nft.tokenId}`;
-          return (
-            <CatalogueItem
-              key={id}
-              tokenId={nft.tokenId}
-              nftAddress={nft.contract?.address ?? ""}
-              // TODO: name it meta
-              image={nft.tokenURI}
-            >
-              <NumericField
-                text="Daily price"
-                value={String(0)}
-                unit={PaymentToken[PaymentToken.DAI]}
-              />
-              <NumericField
-                text="Rent Duration"
-                value={String(0)}
-                unit="days"
-              />
-              <div className="Nft__card">
-                <ReturnItButton nft={nft} onClick={handleOpenModal} />
-              </div>
-            </CatalogueItem>
-          );
-        })}
-      </Box>
-    </Box>
+      {allMyRentings.map((nft: ERCNft) => {
+        const id = `${nft.address}::${nft.tokenId}`;
+        return (
+          <CatalogueItem
+            key={id}
+            tokenId={nft.tokenId}
+            nftAddress={nft.contract?.address ?? ""}
+            // TODO: name it meta
+            mediaURI={nft.tokenURI}
+          >
+            <NumericField
+              text="Daily price"
+              value={String(0)}
+              unit={PaymentToken[PaymentToken.DAI]}
+            />
+            <NumericField text="Rent Duration" value={String(0)} unit="days" />
+            <div className="Nft__card">
+              <ReturnItButton nft={nft} onClick={handleOpenModal} />
+            </div>
+          </CatalogueItem>
+        );
+      })}
+    </>
   );
 };
 
-export default AllMyRenting;
+export default UserRentings;

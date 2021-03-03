@@ -1,7 +1,5 @@
 import React, { useCallback, useState, useContext, useMemo } from "react";
-import { Box } from "@material-ui/core";
 import { ethers } from "ethers";
-
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -9,15 +7,15 @@ import {
   ResolverContext,
   // todo: remove for prod
   MyERC20Context,
-} from "../../hardhat/SymfoniContext";
-import { ERCNft } from "../../contexts/Graph/types";
-import { RentButton } from "./RentButton";
-import NumericField from "../NumericField";
-import { PaymentToken } from "../../types";
-import { getERC20 } from "../../utils";
-import { MAX_UINT256 } from "../../consts";
-import CatalogueItem from "../CatalogueItem";
-import BatchRentModal from "./BatchRentModal";
+} from "../../../hardhat/SymfoniContext";
+import { ERCNft } from "../../../contexts/Graph/types";
+import NumericField from "../../numeric-field";
+import { PaymentToken } from "../../../types";
+import { getERC20 } from "../../../utils";
+import { MAX_UINT256 } from "../../../consts";
+import CatalogueItem from "../../catalogue/catalogue-item";
+import BatchRentModal from "../modals/batch-rent";
+import ActionButton from "../../action-button";
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
@@ -134,48 +132,48 @@ export const AvailableToRent: React.FC = () => {
   const countOfCheckedItems = checkedItems.length;
 
   return (
-    <Box>
+    <>
       <BatchRentModal
         nft={checkedItems}
         open={isOpenBatchModel}
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
-      <Box className="Catalogue">
-        {allRentings.map((nft: ERCNft) => {
-          // TODO: get it
-          const rentingId = -1;
-          const id = `${nft.address}::${nft.tokenId}::${rentingId}`;
+      {allRentings.map((nft: ERCNft) => {
+        const rentingId = -1;
+        const id = `${nft.address}::${nft.tokenId}::${rentingId}`;
 
-          return (
-            <CatalogueItem
-              key={id}
-              tokenId={nft.tokenId}
-              nftAddress={nft.contract?.address ?? ""}
-              // TODO: name it meta
-              image={nft.meta?.mediaURI}
-              onCheckboxChange={handleCheckboxChange}
-            >
-              <NumericField
-                text="Daily price"
-                value={String(0)}
-                unit={PaymentToken[PaymentToken.DAI]}
+        return (
+          <CatalogueItem
+            key={id}
+            tokenId={nft.tokenId}
+            nftAddress={nft.contract?.address ?? ""}
+            // TODO: name it meta
+            mediaURI={nft.meta?.mediaURI}
+            onCheckboxChange={handleCheckboxChange}
+          >
+            <NumericField
+              text="Daily price"
+              value={String(0)}
+              unit={PaymentToken[PaymentToken.DAI]}
+            />
+            <NumericField text="Max duration" value={String(0)} unit="days" />
+            <NumericField
+              text="Collateral"
+              value={String(0)}
+              unit={PaymentToken[PaymentToken.DAI]}
+            />
+            <div className="Nft__card">
+              <ActionButton
+                onClick={handleBatchModalOpen}
+                nft={nft}
+                title="Rent Now"
               />
-              <NumericField text="Max duration" value={String(0)} unit="days" />
-              <NumericField
-                text="Collateral"
-                value={String(0)}
-                unit={PaymentToken[PaymentToken.DAI]}
-              />
-              <div className="Nft__card">
-                <RentButton handleRent={handleBatchModalOpen} nft={nft} />
-              </div>
-            </CatalogueItem>
-          );
-        })}
-      </Box>
-      {}
-    </Box>
+            </div>
+          </CatalogueItem>
+        );
+      })}
+    </>
   );
 };
 

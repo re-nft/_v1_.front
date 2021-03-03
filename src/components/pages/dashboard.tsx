@@ -2,11 +2,10 @@ import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import moment from "moment";
 
-import Table from "./Table";
-import { ERCNft } from "../contexts/Graph/types";
-import { short } from "../utils";
-import { PaymentToken } from "../types";
-import { RentNftContext } from "../hardhat/SymfoniContext";
+import Table from "../table";
+import { ERCNft } from "../../contexts/Graph/types";
+import { short } from "../../utils";
+import { RentNftContext } from "../../hardhat/SymfoniContext";
 
 type StatsProps = {
   hidden: boolean;

@@ -3,11 +3,11 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 import moment from "moment";
 
-import FunnySpinner from "../Spinner";
-import RainbowButton from "../RainbowButton";
-import CssTextField from "../CssTextField";
-import Modal from "../Modal";
-import { ERCNft } from "../../contexts/Graph/types";
+import FunnySpinner from "../../spinner";
+import RainbowButton from "../../rainbow-button";
+import CssTextField from "../../css-text-field";
+import Modal from "../../modal";
+import { ERCNft } from "../../../contexts/Graph/types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -48,7 +48,7 @@ type RentModalProps = {
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
 
-export const RentModal: React.FC<RentModalProps> = ({
+const RentModal: React.FC<RentModalProps> = ({
   open,
   handleClose,
   nft,

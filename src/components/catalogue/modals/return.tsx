@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
-import { ERCNft } from "../../contexts/Graph/types";
-import Modal from "../Modal";
+import { ERCNft } from "../../../contexts/Graph/types";
+import Modal from "../../modal";
 
 type ReturnModalProps = {
   nft: ERCNft;

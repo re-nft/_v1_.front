@@ -1,14 +1,12 @@
 import React, { useState, useCallback, useContext } from "react";
-import { Box } from "@material-ui/core";
-
-import GraphContext from "../../contexts/Graph";
-import { ERCNft } from "../../contexts/Graph/types";
-import { LendModal } from "../LendModal";
+import GraphContext from "../../../contexts/Graph";
+import { ERCNft } from "../../../contexts/Graph/types";
+import { LendModal } from "../modals/lend";
 import {
   CurrentAddressContext,
   RentNftContext,
-} from "../../hardhat/SymfoniContext";
-import CatalogueItem from "../CatalogueItem";
+} from "../../../hardhat/SymfoniContext";
+import CatalogueItem from "../../catalogue/catalogue-item";
 
 type MinimalNft = {
   contract?: ERCNft["contract"];
@@ -37,7 +35,7 @@ const LendButton: React.FC<LendButtonProps> = ({ handleLend, nft }) => {
   );
 };
 
-export const AvailableToLend: React.FC = () => {
+const Lendings: React.FC = () => {
   const [selectedNft, setSelectedNft] = useState<MinimalNft>();
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -56,37 +54,35 @@ export const AvailableToLend: React.FC = () => {
   const nfts = getUsersNfts();
 
   return (
-    <Box>
+    <>
       <LendModal
         nft={{ contract: selectedNft?.contract, tokenId: selectedNft?.tokenId }}
         open={modalOpen}
         setOpen={setModalOpen}
       />
-      <Box className="Catalogue">
-        {nfts.map((nft) => {
-          const nftId = `${nft.address}::${nft.tokenId}`;
-          return (
-            <CatalogueItem
-              key={nftId}
-              tokenId={nft.tokenId}
-              nftAddress={nft.address}
-              image={nft.meta?.mediaURI ?? ""}
-            >
-              <div className="Nft__card" style={{ marginTop: "8px" }}>
-                <LendButton
-                  nft={{
-                    contract: nft.contract,
-                    tokenId: nft.tokenId,
-                  }}
-                  handleLend={handleStartLend}
-                />
-              </div>
-            </CatalogueItem>
-          );
-        })}
-      </Box>
-    </Box>
+      {nfts.map((nft) => {
+        const nftId = `${nft.address}::${nft.tokenId}`;
+        return (
+          <CatalogueItem
+            key={nftId}
+            tokenId={nft.tokenId}
+            nftAddress={nft.address}
+            mediaURI={nft.meta?.mediaURI ?? ""}
+          >
+            <div className="Nft__card" style={{ marginTop: "8px" }}>
+              <LendButton
+                nft={{
+                  contract: nft.contract,
+                  tokenId: nft.tokenId,
+                }}
+                handleLend={handleStartLend}
+              />
+            </div>
+          </CatalogueItem>
+        );
+      })}
+    </>
   );
 };
 
-export default AvailableToLend;
+export default Lendings;
