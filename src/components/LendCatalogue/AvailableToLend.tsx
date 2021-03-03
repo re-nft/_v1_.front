@@ -42,7 +42,7 @@ export const AvailableToLend: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  const { myNfts } = useContext(GraphContext);
+  const { nfts } = useContext(GraphContext);
 
   const handleStartLend = useCallback(
     async (nft) => {
@@ -64,20 +64,20 @@ export const AvailableToLend: React.FC = () => {
         setOpen={setModalOpen}
       />
       <Box className="Catalogue">
-        {Object.keys(myNfts).map((nftAddress) => {
-          Object.keys(myNfts[nftAddress]).map((tokenId) => {
+        {Object.keys(nfts).map((nftAddress) => {
+          Object.keys(nfts[nftAddress]).map((tokenId) => {
             const nftId = `${nftAddress}::${tokenId}`;
             return (
               <CatalogueItem
                 key={nftId}
                 tokenId={tokenId}
                 nftAddress={nftAddress}
-                image={myNfts[nftAddress].tokens[tokenId].meta?.mediaURI}
+                image={nfts[nftAddress].tokens[tokenId].meta?.mediaURI}
               >
                 <div className="Nft__card" style={{ marginTop: "8px" }}>
                   <LendButton
                     nft={{
-                      contract: myNfts[nftAddress].contract,
+                      contract: nfts[nftAddress].contract,
                       tokenId,
                     }}
                     handleLend={handleStartLend}

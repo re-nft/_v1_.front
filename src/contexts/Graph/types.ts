@@ -10,12 +10,17 @@ export type ERCNft = {
   tokenURI?: string;
   // ERC1155 can be semi-fungible
   amount?: number;
+  // * we have meta here, because we will pull extra info in the future
+  // * like attributes, preview image if available, and so on
   meta?: {
     // * if we can only get a blob from ipfs, then we createObjectURI
     mediaURI?: string;
   };
-  lending?: Lending[];
-  renting?: Renting[];
+  // links up with the data structure in Graph context that will
+  // give you the lending related data if you access it with this
+  // id
+  lending?: Lending["id"][];
+  renting?: Renting["id"][];
 };
 
 // ! NON-RENFT SUBGRAPHS for 721 and 1155
@@ -90,8 +95,11 @@ export type Renting = {
 // rented by someone.
 export type Nft = {
   id: string;
-  lending: Lending[];
-  renting: Renting[];
+  address: string;
+  tokenId: string;
+  tokenURI?: string;
+  lending: Lending["id"][];
+  renting: Renting["id"][];
 };
 
 // ! Tracks all of the lending / renting per user
@@ -102,6 +110,6 @@ export type Nft = {
 // same nftAddress and tokenId combo. Same reasoning applies to renting.
 export type User = {
   address: Address;
-  lending?: ERCNft[];
-  renting?: ERCNft[];
+  lending?: Lending["id"][];
+  renting?: Renting["id"][];
 };
