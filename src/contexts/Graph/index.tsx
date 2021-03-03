@@ -96,6 +96,7 @@ type RentingById = LendingById;
 
 type GraphContextType = {
   nfts: Nfts;
+  usersNfts: Omit<Token, "tokenURI">[];
   lendingById: LendingById;
   rentingById: RentingById;
   user: User;
@@ -111,11 +112,10 @@ type Token = {
 
 const DefaultGraphContext: GraphContextType = {
   nfts: {},
+  usersNfts: [],
   lendingById: {},
   rentingById: {},
-  user: {
-    id: "",
-  },
+  user: {},
   removeLending: THROWS,
   fetchMyNfts: THROWS,
 };
@@ -132,7 +132,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [signer] = useContext(SignerContext);
   const { instance: renft } = useContext(RentNftContext);
 
+  // all the seen nfts in renft client
   const [nfts, setNfts] = useState<Nfts>(DefaultGraphContext["nfts"]);
+  // an array of Omit<Token, 'tokenURI'> of a user to map back to nfts above
+  const [usersNfts, setUsersNfts] = useState<Omit<Token, "tokenURI">[]>([]);
+  // an array of user's lendings and rentings on renft
   const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
   const [lendingById, setLendingById] = useState<LendingById>(
     DefaultGraphContext["lendingById"]
@@ -257,9 +261,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserRenft(currentAddress);
     // todo: the types for lending and renting not correct, because we get raw
     // response from request. Wrap the call in a parsing function
-    const data: Pick<User, "id"> & {
-      lending?: Lending[];
-      renting?: Renting[];
+    const data: {
+      lending?: { id: string }[];
+      renting?: { id: string }[];
     } = await request(
       // TODO
       ENDPOINT_RENFT_DEV,
@@ -366,6 +370,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         removeLending: () => {
           true;
         },
+        usersNfts,
         user,
         lendingById,
         rentingById,

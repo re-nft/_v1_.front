@@ -106,7 +106,6 @@ export type Nft = {
 // nftAddress and tokenId. Recall, in AllRenft each lending is the
 // same nftAddress and tokenId combo. Same reasoning applies to renting.
 export type User = {
-  id: Address;
   lending?: Lending["id"][];
   renting?: Renting["id"][];
 };
