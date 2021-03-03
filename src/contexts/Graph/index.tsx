@@ -7,6 +7,8 @@ import {
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
+import { ERC721 } from "../../hardhat/typechain/ERC721";
+import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
 import {
@@ -103,9 +105,9 @@ type GraphContextType = {
   user: User;
   fetchMyNfts: () => void;
   removeLending: (nfts: ERCNft[]) => void;
-  getUsersNfts: () => ERCNft[];
-  getRenting: () => ERCNft[];
-  getLending: () => ERCNft[];
+  getUsersNfts: () => Promise<ERCNft[]>;
+  getRenting: () => Promise<ERCNft[]>;
+  getLending: () => Promise<ERCNft[]>;
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -174,6 +176,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   };
 
   const _setContract = async (token: Token, isERC721: boolean) => {
+    // is already set
     if (nfts[token.address]?.contract) return;
 
     const contract = isERC721
@@ -197,6 +200,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         },
       },
     }));
+
+    return { contract, isApprovedForAll };
   };
 
   const _parseRenftNftId = (
@@ -385,13 +390,21 @@ export const GraphProvider: React.FC = ({ children }) => {
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
-  const _getERCNftFromToken = (tokens: Token[]) => {
+  const _getERCNftFromToken = async (tokens: Token[]) => {
     const _nfts: ERCNft[] = [];
-    for (const _token of usersNfts) {
-      if (!nfts[_token.address]) continue;
-      const _contract = nfts[_token.address];
+    for (const _token of tokens) {
+      let contract: ERC721 | ERC1155 | undefined = undefined;
+      if (!nfts[_token.address]) {
+        // TODO
+        const isERC721 = true;
+        const res = await _setContract(_token, isERC721);
+        if (!res) continue;
+        contract = res.contract;
+        _setTokenId(_token);
+      }
+      const _contract = nfts[_token.address] ?? undefined;
       _nfts.push({
-        contract: _contract.contract,
+        contract: _contract.contract ?? contract,
         isERC721: _contract.isERC721,
         address: _token.address,
         tokenId: _token.tokenId,
@@ -403,16 +416,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     return _nfts;
   };
 
-  const getUsersNfts = () => _getERCNftFromToken(usersNfts);
+  const getUsersNfts = async () => await _getERCNftFromToken(usersNfts);
 
-  const getLending = () => {
+  const getLending = async () => {
     const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
-    return _getERCNftFromToken(_tokens);
+    return await _getERCNftFromToken(_tokens);
   };
 
-  const getRenting = () => {
+  const getRenting = async () => {
     const _tokens: Token[] = user.renting?.map((id) => rentingById[id]) ?? [];
-    return _getERCNftFromToken(_tokens);
+    return await _getERCNftFromToken(_tokens);
   };
 
   return (
