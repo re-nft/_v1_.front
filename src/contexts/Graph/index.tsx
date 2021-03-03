@@ -29,6 +29,7 @@ import {
   ERC721s,
   ERCNft,
   Nft,
+  Token,
 } from "./types";
 import { parseLending } from "./utils";
 // * only in dev env
@@ -104,12 +105,6 @@ type GraphContextType = {
   removeLending: (nfts: ERCNft[]) => void;
 };
 
-type Token = {
-  address: ERCNft["address"];
-  tokenId: ERCNft["tokenId"];
-  tokenURI?: ERCNft["tokenURI"];
-};
-
 const DefaultGraphContext: GraphContextType = {
   nfts: {},
   usersNfts: [],
@@ -147,7 +142,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     DefaultGraphContext["rentingById"]
   );
 
-  const fetchNftDev = useFetchNftDev();
+  const fetchNftDev = useFetchNftDev(setUsersNfts);
 
   const _setTokenId = (token: Token) => {
     if (hasPath([token.address, "tokenIds", token.tokenId])(nfts)) return;
@@ -348,6 +343,23 @@ export const GraphProvider: React.FC = ({ children }) => {
   // - another poller looks through fetched nfts from eip721 and 1155,
   // sees that meta is missing, tries to fetch it with the exponential backoff
 
+  // little helper table
+  // - fetchAllERCs(721)         | all my nfts 721   | available for lend | could have been rented
+  // - fetchAllERCs(1155)        | all my nfts 1155  | available for lend | could have been rented
+  // - fetchNftDev               | all my nfts mock  | available for lend | could have been rented
+  // - fetchAllLendingAndRenting | all renft nfts    | available for rent | available for re-lend  | current re-lendings and re-rentings
+  // - fetchUser                 | all my renft nfts | I lend | I rent
+  // * What goes into nfts state?
+  // * fetchAllERCs, fetchNftDev
+  // * --------------------------
+  // * User's lendings will not be returned in fetchAllERCs, fetchNftDev
+  // * because they are owned by someone else
+  // * To instantiate these contracts, we first pull all of the user's
+  // * lendings and rentings with fetchUser
+  // * We do one set here, to nfts. Therefore this is a central source of
+  // * truth about all the NFTs seen by reNFT's client.
+  // * To understand which Nfts the user owns, look into the usersNfts state var.
+  // * This only gets set in fetchAllERCs and fetchNftDev
   const fetchMyNfts = useCallback(async () => {
     if (IS_PROD) {
       fetchAllERCs(FetchType.ERC721);

@@ -109,3 +109,9 @@ export type User = {
   lending?: Lending["id"][];
   renting?: Renting["id"][];
 };
+
+export type Token = {
+  address: ERCNft["address"];
+  tokenId: ERCNft["tokenId"];
+  tokenURI?: ERCNft["tokenURI"];
+};

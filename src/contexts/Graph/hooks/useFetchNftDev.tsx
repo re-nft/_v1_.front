@@ -7,12 +7,15 @@ import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
+import { Token } from "../../Graph/types";
 // * circular-dep
 import { Nfts } from "../index";
 
 const BigNumZero = BigNumber.from("0");
 
-export const useFetchNftDev = (): (() => Promise<Nfts>) => {
+export const useFetchNftDev = (
+  setUsersNfts: (nfts: Omit<Token, "tokenURI">[]) => void
+): (() => Promise<Nfts>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(RentNftContext);
 
@@ -24,6 +27,7 @@ export const useFetchNftDev = (): (() => Promise<Nfts>) => {
 
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
+    const usersNfts: Omit<Token, "tokenURI">[] = [];
 
     // * only fetching ERC721s in dev right now
     // todo: add ERC1155s
@@ -45,6 +49,10 @@ export const useFetchNftDev = (): (() => Promise<Nfts>) => {
       const metaURI = await contract.tokenURI(tokenId).catch(() => "");
       if (!metaURI) continue;
 
+      usersNfts.push({
+        address: contract.address,
+        tokenId: tokenId.toString(),
+      });
       tokenIds.push(tokenId.toString());
       toFetch.push(
         fetch(metaURI, {
@@ -61,10 +69,11 @@ export const useFetchNftDev = (): (() => Promise<Nfts>) => {
     for (let i = 0; i < res.length; i++) {
       Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
     }
-
     const isApprovedForAll = await contract
       .isApprovedForAll(currentAddress, renft.instance?.address ?? "")
       .catch(() => false);
+
+    setUsersNfts(usersNfts);
 
     return {
       [contract.address]: {
@@ -74,7 +83,7 @@ export const useFetchNftDev = (): (() => Promise<Nfts>) => {
         tokens: tokenIdsObj,
       },
     };
-  }, [renft.instance, currentAddress, myERC721.instance]);
+  }, [renft.instance, currentAddress, myERC721.instance, setUsersNfts]);
 
   return fetchNftDev;
 };
