@@ -37,7 +37,7 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
     const tx = await renft.stopLending(
       [nft.contract.address],
       [nft.tokenId],
-      [BigNumber.from(lending.id)]
+      [BigNumber.from("100")]
     );
 
     const isSuccess = await setHash(tx.hash);

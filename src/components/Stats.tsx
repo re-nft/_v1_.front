@@ -155,17 +155,22 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
               lending.map((l) => {
                 return (
                   <TableRow
-                    key={`${l.address}::${l.tokenId}::${l.lending?.[0].id}`}
+                    key="deal wiv it"
+                    // key={`${l.address}::${l.tokenId}::${l.lending?.[0].id}`}
                     address={l.address}
                     tokenId={String(l.tokenId)}
-                    id={String(l.lending?.[0].id)}
-                    dailyPrice={`${
-                      PaymentToken[l.lending?.[0].paymentToken ?? 0]
-                    } ${String(l.lending?.[0].dailyRentPrice)}`}
-                    collateral={`${
-                      PaymentToken[l.lending?.[0].paymentToken ?? 0]
-                    } ${String(l.lending?.[0].nftPrice)}`}
-                    maxDuration={String(l.lending?.[0].maxRentDuration)}
+                    // id={String(l.lending?.[0].id)}
+                    id="0"
+                    // dailyPrice={`${
+                    //   PaymentToken[l.lending?.[0].paymentToken ?? 0]
+                    // } ${String(l.lending?.[0].dailyRentPrice)}`}
+                    // collateral={`${
+                    //   PaymentToken[l.lending?.[0].paymentToken ?? 0]
+                    // } ${String(l.lending?.[0].nftPrice)}`}
+                    // maxDuration={String(l.lending?.[0].maxRentDuration)}
+                    dailyPrice="1"
+                    collateral="1"
+                    maxDuration="1"
                     claim={<ClaimButton lending={l} />}
                     greenHighlight={Boolean(l.renting)}
                   />
@@ -182,22 +187,27 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
             {renting.length > 0 &&
               renting.map((r) => (
                 <TableRow
-                  key={`${r.address}::${r.tokenId}::${r.renting?.[0].id}`}
+                  // key={`${r.address}::${r.tokenId}::${r.renting?.[0].id}`}
+                  key="deal wiv it"
                   address={r.address}
                   tokenId={String(r.tokenId)}
-                  id={String(r.renting?.[0].id)}
-                  dailyPrice={`${
-                    PaymentToken[r.lending?.[0].paymentToken ?? 0]
-                  } ${String(r.lending?.[0].dailyRentPrice)}`}
-                  collateral={`${
-                    PaymentToken[r.lending?.[0].paymentToken ?? 0]
-                  } ${String(r.lending?.[0].nftPrice)}`}
-                  maxDuration={String(
-                    returnBy(
-                      r.renting?.[0].rentedAt ?? 0,
-                      r.renting?.[0].rentDuration ?? 0
-                    )
-                  )}
+                  id="1"
+                  dailyPrice="1"
+                  collateral="1"
+                  maxDuration="1"
+                  // id={String(r.renting?.[0].id)}
+                  // dailyPrice={`${
+                  //   PaymentToken[r.lending?.[0].paymentToken ?? 0]
+                  // } ${String(r.lending?.[0].dailyRentPrice)}`}
+                  // collateral={`${
+                  //   PaymentToken[r.lending?.[0].paymentToken ?? 0]
+                  // } ${String(r.lending?.[0].nftPrice)}`}
+                  // maxDuration={String(
+                  //   returnBy(
+                  //     r.renting?.[0].rentedAt ?? 0,
+                  //     r.renting?.[0].rentDuration ?? 0
+                  //   )
+                  // )}
                 />
               ))}
           </tbody>

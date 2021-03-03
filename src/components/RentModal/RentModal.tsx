@@ -106,17 +106,17 @@ export const RentModal: React.FC<RentModalProps> = ({
           resetState();
           setRentDuration(String(SENSIBLE_MAX_DURATION));
           return;
-        } else if (num > (nft.lending?.[0].maxRentDuration ?? num + 1)) {
+          // } else if (num > (nft.lending?.[0].maxRentDuration ?? num + 1)) {
+          // TODO
+        } else if (num > 1_000) {
           resetState();
           setErrorText(
-            `You cannot borrow this NFT for longer than ${nft.lending?.[0].maxRentDuration} days`
+            `You cannot borrow this NFT for longer than 1_000 days`
+
+            // `You cannot borrow this NFT for longer than ${nft.lending?.[0].maxRentDuration} days`
           );
           return;
         }
-
-        // if the above conditions weren't caught, everything is fine
-        setInputsValid(true);
-        setTotalRent(num * 1);
       } catch (err) {
         console.debug("could not convert rent duration to number");
         resetState();
@@ -163,21 +163,22 @@ export const RentModal: React.FC<RentModalProps> = ({
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Daily rent price: ${nft.lending?.[0].dailyRentPrice}`}
+              label="lol"
+              // label={`Daily rent price: ${nft.lending?.[0].dailyRentPrice}`}
               disabled
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Rent: ${nft.lending?.[0].dailyRentPrice} x ${
-                !rentDuration ? "👾" : rentDuration
-              } days = ${
+              // label={`Rent: ${nft.lending?.[0].dailyRentPrice} x ${
+              label={`Lol x ${!rentDuration ? "👾" : rentDuration} days = ${
                 totalRent === 0 ? "e ^ (i * π) + 1" : totalRent.toFixed(2)
               }`}
               disabled
             />
             <LegibleTextField
               id="standard-basic"
-              label={`Collateral: ${nft.lending?.[0].nftPrice}`}
+              label="rofl"
+              // label={`Collateral: ${nft.lending?.[0].nftPrice}`}
               disabled
             />
             <Box

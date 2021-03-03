@@ -60,7 +60,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   const classes = useStyles();
   const { instance: renft } = useContext(RentNftContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
-  const { fetchAvailableNfts } = useContext(GraphContext);
+  const { fetchMyNfts } = useContext(GraphContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<PaymentToken>(PaymentToken.DAI);
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>(
@@ -89,7 +89,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
 
       setHash(tx.hash);
       setOpen(false);
-      fetchAvailableNfts();
+      fetchMyNfts();
     },
     [
       nft,
@@ -97,7 +97,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       setHash,
       setOpen,
       isActive,
-      fetchAvailableNfts,
+      fetchMyNfts,
       lendOneInputs,
       pmtToken,
     ]
