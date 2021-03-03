@@ -103,6 +103,7 @@ type GraphContextType = {
   user: User;
   fetchMyNfts: () => void;
   removeLending: (nfts: ERCNft[]) => void;
+  getUsersNfts: () => ERCNft[];
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -113,6 +114,9 @@ const DefaultGraphContext: GraphContextType = {
   user: {},
   removeLending: THROWS,
   fetchMyNfts: THROWS,
+  getUsersNfts: () => {
+    throw new Error("must be implemented");
+  },
 };
 
 enum FetchType {
@@ -376,6 +380,22 @@ export const GraphProvider: React.FC = ({ children }) => {
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 9 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
+  const getUsersNfts = () => {
+    const _nfts: ERCNft[] = [];
+    for (const _token of usersNfts) {
+      if (!nfts[_token.address]) continue;
+      _nfts.push({
+        contract: nfts[_token.address].contract,
+        isERC721: nfts[_token.address].isERC721,
+        address: _token.address,
+        tokenId: _token.tokenId,
+        tokenURI: nfts[_token.address].tokens[_token.tokenId].tokenURI,
+        // TODO: meta, lending, renting
+      });
+    }
+    return _nfts;
+  };
+
   return (
     <GraphContext.Provider
       value={{
@@ -384,6 +404,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         removeLending: () => {
           true;
         },
+        getUsersNfts,
         usersNfts,
         user,
         lendingById,

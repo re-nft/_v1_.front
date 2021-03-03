@@ -42,7 +42,7 @@ export const AvailableToLend: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  const { nfts } = useContext(GraphContext);
+  const { getUsersNfts } = useContext(GraphContext);
 
   const handleStartLend = useCallback(
     async (nft) => {
@@ -53,6 +53,8 @@ export const AvailableToLend: React.FC = () => {
     [renft, currentAddress]
   );
 
+  const nfts = getUsersNfts();
+
   return (
     <Box>
       <LendModal
@@ -61,28 +63,26 @@ export const AvailableToLend: React.FC = () => {
         setOpen={setModalOpen}
       />
       <Box className="Catalogue">
-        {Object.keys(nfts).map((nftAddress) => {
-          Object.keys(nfts[nftAddress]).map((tokenId) => {
-            const nftId = `${nftAddress}::${tokenId}`;
-            return (
-              <CatalogueItem
-                key={nftId}
-                tokenId={tokenId}
-                nftAddress={nftAddress}
-                image={nfts[nftAddress].tokens[tokenId]?.meta?.mediaURI}
-              >
-                <div className="Nft__card" style={{ marginTop: "8px" }}>
-                  <LendButton
-                    nft={{
-                      contract: nfts[nftAddress].contract,
-                      tokenId,
-                    }}
-                    handleLend={handleStartLend}
-                  />
-                </div>
-              </CatalogueItem>
-            );
-          });
+        {nfts.map((nft) => {
+          const nftId = `${nft.address}::${nft.tokenId}`;
+          return (
+            <CatalogueItem
+              key={nftId}
+              tokenId={nft.tokenId}
+              nftAddress={nft.address}
+              image={nft.tokenURI}
+            >
+              <div className="Nft__card" style={{ marginTop: "8px" }}>
+                <LendButton
+                  nft={{
+                    contract: nft.contract,
+                    tokenId: nft.tokenId,
+                  }}
+                  handleLend={handleStartLend}
+                />
+              </div>
+            </CatalogueItem>
+          );
         })}
       </Box>
     </Box>
