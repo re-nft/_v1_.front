@@ -6,7 +6,11 @@ type ModalProps = {
   handleClose: () => void;
 };
 
-const Modal: React.FC<ModalProps> = ({ children, open, handleClose }) => {
+export const Modal: React.FC<ModalProps> = ({
+  children,
+  open,
+  handleClose,
+}) => {
   return (
     <Dialog open={open} onClose={handleClose}>
       <Box style={{ background: "#550099", border: "3px solid black" }}>
