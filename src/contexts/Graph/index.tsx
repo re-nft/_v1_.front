@@ -266,7 +266,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    console.log("user data", data);
     if (!data?.lending && !data?.renting) {
       console.warn("no lending and renting for user");
       return;
@@ -276,11 +275,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     // * updated all the time, need to compute hash of the lists
     // * as we go along to then simply check that the combined hash
     // * hasn't changed, to determine if we need to update the state
-    setUser({
+    const _user = {
       id: currentAddress,
       lending: lending?.map((l) => l.id) ?? [],
       renting: renting?.map((r) => r.id) ?? [],
-    });
+    };
+    console.log("setting user", _user);
+
+    setUser(_user);
   }, [currentAddress]);
 
   // these are all the NFTs that are available for rent
