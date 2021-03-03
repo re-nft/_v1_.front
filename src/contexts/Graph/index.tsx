@@ -104,6 +104,8 @@ type GraphContextType = {
   fetchMyNfts: () => void;
   removeLending: (nfts: ERCNft[]) => void;
   getUsersNfts: () => ERCNft[];
+  getRenting: () => ERCNft[];
+  getLending: () => ERCNft[];
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -115,6 +117,12 @@ const DefaultGraphContext: GraphContextType = {
   removeLending: THROWS,
   fetchMyNfts: THROWS,
   getUsersNfts: () => {
+    throw new Error("must be implemented");
+  },
+  getRenting: () => {
+    throw new Error("must be implemented");
+  },
+  getLending: () => {
     throw new Error("must be implemented");
   },
 };
@@ -377,7 +385,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
-  const getUsersNfts = () => {
+  const _getERCNftFromToken = (tokens: Token[]) => {
     const _nfts: ERCNft[] = [];
     for (const _token of usersNfts) {
       if (!nfts[_token.address]) continue;
@@ -389,10 +397,22 @@ export const GraphProvider: React.FC = ({ children }) => {
         tokenId: _token.tokenId,
         tokenURI: _contract.tokens[_token.tokenId].tokenURI,
         meta: _contract.tokens[_token.tokenId].meta,
-        // TODO: renting (lending not here, because you are not owner)
+        renting: user.renting ?? [],
       });
     }
     return _nfts;
+  };
+
+  const getUsersNfts = () => _getERCNftFromToken(usersNfts);
+
+  const getLending = () => {
+    const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
+    return _getERCNftFromToken(_tokens);
+  };
+
+  const getRenting = () => {
+    const _tokens: Token[] = user.renting?.map((id) => rentingById[id]) ?? [];
+    return _getERCNftFromToken(_tokens);
   };
 
   return (
@@ -404,6 +424,8 @@ export const GraphProvider: React.FC = ({ children }) => {
           true;
         },
         getUsersNfts,
+        getRenting,
+        getLending,
         usersNfts,
         user,
         lendingById,
