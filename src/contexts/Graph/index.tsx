@@ -288,7 +288,12 @@ export const GraphProvider: React.FC = ({ children }) => {
   // these are all the NFTs that are available for rent
   const fetchAllLendingAndRenting = useCallback(async () => {
     const query = queryAllRenft();
-    const data: { nfts: Nft[] } = await request(
+    // * type is not exactly correct because lending and renting
+    // TODO: are raw in here. Create a function that parses the raw
+    // * into these types and wrap / call that function in here
+    const data: {
+      nfts: (Pick<Nft, "id"> & { lending: Lending[]; renting?: Renting[] })[];
+    } = await request(
       ENDPOINT_RENFT_DEV,
       // todo
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
@@ -297,15 +302,45 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!data?.nfts) return;
 
     const { nfts: _nfts } = data;
-    for (let i = 0; i < _nfts.length; i++) {
-      const numTimesLent = _nfts[i].lending.length;
-      const numTimesRented = _nfts[i].renting?.length ?? 0;
+    for (const _nft of _nfts) {
+      const { address, tokenId } = _parseRenftNftId(_nft.id);
       // each Nft has an array of lending and renting, only the last
       // item in each one is the source of truth when it comes to
       // ability to lend or rent
-      const isAvailableForRent = numTimesLent === numTimesRented + 1;
+      for (const lending of _nft.lending) {
+        if (lendingById[lending.id]) continue;
+        setLendingById((prev) => ({
+          ...prev,
+          [lending.id]: {
+            address,
+            tokenId,
+          },
+        }));
+      }
+      for (const renting of _nft.renting ?? []) {
+        if (rentingById[renting.id]) continue;
+        setRentingById((prev) => ({
+          ...prev,
+          [renting.id]: {
+            address,
+            tokenId,
+          },
+        }));
+      }
+
+      console.log("lendingById", lendingById);
+      console.log("rentingById", rentingById);
     }
+    // ! do not add lendingById and rentingById in deps
+    // ! you will have an infinite loop
+    /* eslint-disable-next-line */
   }, []);
+
+  // - separation of concerns. set whatever you need to set, single purpose
+  // - separate poller, glues together. looks through lending ids and sees
+  // that there is no contract for that nft, instantiates
+  // - another poller looks through fetched nfts from eip721 and 1155,
+  // sees that meta is missing, tries to fetch it with the exponential backoff
 
   const fetchMyNfts = useCallback(async () => {
     if (IS_PROD) {
@@ -319,7 +354,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, [fetchAllERCs, fetchNftDev]);
 
   usePoller(fetchMyNfts, 10 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
-  // usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
+  usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 9 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
