@@ -375,22 +375,24 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
   }, [fetchAllERCs, fetchNftDev]);
 
-  usePoller(fetchMyNfts, 10 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
+  usePoller(fetchMyNfts, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (unrelated or related to ReNFT)
   usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
-  usePoller(fetchUser, 9 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
+  usePoller(fetchUser, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
   const getUsersNfts = () => {
     const _nfts: ERCNft[] = [];
     for (const _token of usersNfts) {
       if (!nfts[_token.address]) continue;
+      const _contract = nfts[_token.address];
       _nfts.push({
-        contract: nfts[_token.address].contract,
-        isERC721: nfts[_token.address].isERC721,
+        contract: _contract.contract,
+        isERC721: _contract.isERC721,
         address: _token.address,
         tokenId: _token.tokenId,
-        tokenURI: nfts[_token.address].tokens[_token.tokenId].tokenURI,
-        // TODO: meta, lending, renting
+        tokenURI: _contract.tokens[_token.tokenId].tokenURI,
+        meta: _contract.tokens[_token.tokenId].meta,
+        // TODO: renting (lending not here, because you are not owner)
       });
     }
     return _nfts;

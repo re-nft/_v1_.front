@@ -65,9 +65,13 @@ export const useFetchNftDev = (
     if (toFetch.length === 0) return {};
 
     const res = await Promise.all(toFetch);
-    const tokenIdsObj = {};
+    const tokenIdsObj: Nfts[0]["tokens"] = {};
     for (let i = 0; i < res.length; i++) {
       Object.assign(tokenIdsObj, { [tokenIds[i]]: res[i] });
+      tokenIdsObj[tokenIds[i]].meta = {
+        //@ts-ignore
+        mediaURI: res[i]?.image ?? "",
+      };
     }
     const isApprovedForAll = await contract
       .isApprovedForAll(currentAddress, renft.instance?.address ?? "")

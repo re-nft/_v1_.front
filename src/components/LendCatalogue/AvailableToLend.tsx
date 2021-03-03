@@ -70,7 +70,7 @@ export const AvailableToLend: React.FC = () => {
               key={nftId}
               tokenId={nft.tokenId}
               nftAddress={nft.address}
-              image={nft.tokenURI}
+              image={nft.meta?.mediaURI ?? ""}
             >
               <div className="Nft__card" style={{ marginTop: "8px" }}>
                 <LendButton
