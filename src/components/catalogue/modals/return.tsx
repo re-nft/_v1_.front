@@ -1,14 +1,14 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
-import { ERCNft } from "../../../contexts/graph/types";
+import { Nft } from "../../../contexts/graph/classes";
 import Modal from "../../modal";
 
 type ReturnModalProps = {
-  nft: ERCNft;
+  nft: Nft;
   isApproved: boolean;
   open: boolean;
-  onReturn(nft: ERCNft): void;
-  onApproveAll(nft: ERCNft): void;
+  onReturn(nft: Nft): void;
+  onApproveAll(nft: Nft): void;
   onClose: () => void;
 };
 

@@ -20,7 +20,7 @@ class Nft {
   contract = (): ERC721 | ERC1155 => {
     return {} as ERC721;
   };
-  tokenURI = async (): Promise<string | null> => {
+  tokenURI = async (): Promise<string | undefined> => {
     return "";
   };
 
@@ -38,7 +38,7 @@ class Nft {
    * tokenURI directly gives a link to media, instead of
    * meta...
    */
-  mediaURI = async (): Promise<string | null> => {
+  mediaURI = async (): Promise<string | undefined> => {
     return "";
   };
 }

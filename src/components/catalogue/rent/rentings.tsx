@@ -8,7 +8,7 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import { ERCNft } from "../../../contexts/graph/types";
+import { Nft } from "../../../contexts/graph/classes";
 import NumericField from "../../numeric-field";
 import { PaymentToken } from "../../../types";
 import { getERC20 } from "../../../utils";
@@ -19,25 +19,25 @@ import BatchRentModal from "../modals/batch-rent";
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [checkedItems, setCheckedItems] = useState<ERCNft[]>([]);
+  const [checkedItems, setCheckedItems] = useState<Nft[]>([]);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
-  const allRentings: ERCNft[] = useMemo(() => [], []);
+  const allRentings: Nft[] = useMemo(() => [], []);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
   }, []);
 
-  const handleBatchModalOpen = useCallback((nft: ERCNft) => {
+  const handleBatchModalOpen = useCallback((nft: Nft) => {
     setCheckedItems([nft]);
     setOpenBatchModel(true);
   }, []);
 
   const handleRent = useCallback(
-    async (nft: ERCNft[], { rentDuration }: { rentDuration: string[] }) => {
+    async (nft: Nft[], { rentDuration }: { rentDuration: string[] }) => {
       // todo: myERC20 to be removed in prod
       if (
         nft.length === 0 ||
@@ -60,7 +60,7 @@ export const AvailableToRent: React.FC = () => {
       //@ts-ignore
       const isETHPayment = pmtToken === PaymentToken.ETH;
 
-      const addresses = nft.map((x) => x.contract?.address);
+      const addresses = nft.map((x) => x.address);
       const tokenIds = nft.map((x) => x.tokenId);
       const lendingIds = nft.map((x) => 0);
       const durations = Object.values(rentDuration).map((x) => Number(x));
@@ -112,7 +112,7 @@ export const AvailableToRent: React.FC = () => {
   const handleCheckboxChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const target = evt.target.name;
-      const sources: ERCNft[] = checkedItems.slice(0);
+      const sources: Nft[] = checkedItems.slice(0);
       const item = allRentings.find((nft) => nft.tokenId === target);
       const sourceIndex = checkedItems.findIndex(
         (nft) => nft.tokenId === target
@@ -138,17 +138,18 @@ export const AvailableToRent: React.FC = () => {
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
-      {allRentings.map((nft: ERCNft) => {
+      {allRentings.map(async (nft: Nft) => {
         const rentingId = -1;
         const id = `${nft.address}::${nft.tokenId}::${rentingId}`;
+        const mediaURI = await nft.mediaURI();
 
         return (
           <CatalogueItem
             key={id}
             tokenId={nft.tokenId}
-            nftAddress={nft.contract?.address ?? ""}
+            nftAddress={nft.address}
             // TODO: name it meta
-            mediaURI={nft.meta?.mediaURI}
+            mediaURI={mediaURI}
             onCheckboxChange={handleCheckboxChange}
           >
             <NumericField

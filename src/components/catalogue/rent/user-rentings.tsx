@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useState } from "react";
-import { ERCNft } from "../../../contexts/graph/types";
+import { Nft } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../numeric-field";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -10,8 +10,8 @@ import ReturnModal from "../modals/return";
 import { ProviderContext } from "../../../hardhat/SymfoniContext";
 
 type ReturnItButtonProps = {
-  nft: ERCNft;
-  onClick(nft: ERCNft): void;
+  nft: Nft;
+  onClick(nft: Nft): void;
 };
 
 const ReturnItButton: React.FC<ReturnItButtonProps> = ({ nft, onClick }) => {
@@ -30,20 +30,20 @@ const ReturnItButton: React.FC<ReturnItButtonProps> = ({ nft, onClick }) => {
 };
 
 const UserRentings: React.FC = () => {
-  const allMyRentings: ERCNft[] = [];
+  const allMyRentings: Nft[] = [];
   const [modalOpen, setModalOpen] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
-  const [selectedNft, setSelectedNft] = useState<ERCNft>();
+  const [selectedNft, setSelectedNft] = useState<Nft>();
   const { setHash } = useContext(TransactionStateContext);
   const [provider] = useContext(ProviderContext);
 
   const handleReturnNft = useCallback(
-    async (nft: ERCNft) => {
+    async (nft: Nft) => {
       if (!renft || !nft.contract) return;
       const tx = await renft.returnIt(
-        [nft.contract.address],
+        [nft.address],
         [nft.tokenId],
         // TODO
         //@ts-ignore
@@ -58,9 +58,10 @@ const UserRentings: React.FC = () => {
   );
 
   const handleApproveAll = useCallback(
-    async (nft: ERCNft) => {
+    async (nft: Nft) => {
       if (!currentAddress || !renft || !nft.contract || !provider) return;
-      const tx = await nft.contract.setApprovalForAll(renft.address, true);
+      const contract = nft.contract();
+      const tx = await contract.setApprovalForAll(renft.address, true);
       setHash(tx.hash);
       const receipt = await provider.getTransactionReceipt(tx.hash);
       const status = receipt.status ?? 0;
@@ -74,9 +75,10 @@ const UserRentings: React.FC = () => {
   const handleCloseModal = useCallback(() => setModalOpen(false), []);
 
   const handleOpenModal = useCallback(
-    async (nft: ERCNft) => {
+    async (nft: Nft) => {
       if (!nft.contract || !renft || !currentAddress) return;
-      const isApproved = await nft.contract.isApprovedForAll(
+      const contract = nft.contract();
+      const isApproved = await contract.isApprovedForAll(
         currentAddress,
         renft.address
       );
@@ -99,15 +101,16 @@ const UserRentings: React.FC = () => {
           onApproveAll={handleApproveAll}
         />
       )}
-      {allMyRentings.map((nft: ERCNft) => {
+      {allMyRentings.map(async (nft: Nft) => {
         const id = `${nft.address}::${nft.tokenId}`;
+        const mediaURI = await nft.mediaURI();
         return (
           <CatalogueItem
             key={id}
             tokenId={nft.tokenId}
-            nftAddress={nft.contract?.address ?? ""}
+            nftAddress={nft.address}
             // TODO: name it meta
-            mediaURI={nft.tokenURI}
+            mediaURI={mediaURI}
           >
             <NumericField
               text="Daily price"

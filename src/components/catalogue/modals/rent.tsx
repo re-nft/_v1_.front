@@ -7,7 +7,7 @@ import FunnySpinner from "../../spinner";
 import RainbowButton from "../../rainbow-button";
 import CssTextField from "../../css-text-field";
 import Modal from "../../modal";
-import { ERCNft } from "../../../contexts/graph/types";
+import { Nft } from "../../../contexts/graph/classes";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -42,8 +42,8 @@ const LegibleTextField = withStyles({
 type RentModalProps = {
   open: boolean;
   handleClose: () => void;
-  nft: ERCNft;
-  onSubmit(nft: ERCNft, rentDuration: string): void;
+  nft: Nft;
+  onSubmit(nft: Nft, rentDuration: string): void;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";

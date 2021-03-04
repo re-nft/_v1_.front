@@ -3,9 +3,10 @@ import { Box } from "@material-ui/core";
 import moment from "moment";
 
 import Table from "../table";
-import { ERCNft } from "../../contexts/graph/types";
+import { Lending } from "../../contexts/graph/classes";
 import { short } from "../../utils";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
+import GraphContext from "../../contexts/graph";
 
 type StatsProps = {
   hidden: boolean;
@@ -53,7 +54,7 @@ type TableRowProps = {
 };
 
 type ClaimButtonProps = {
-  lending: ERCNft;
+  lending: Lending;
 };
 
 const TableRow: React.FC<TableRowProps> = ({
@@ -114,9 +115,10 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
     );
   }, [renft, lending]);
 
-  if (!lending.renting) {
-    return <span onClick={handleStopLend}>❌</span>;
-  }
+  // todo
+  // if (!lending.renting) {
+  //   return <span onClick={handleStopLend}>❌</span>;
+  // }
 
   const _now = moment();
   const _returnBy = returnBy(
@@ -135,9 +137,7 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
 };
 
 const Stats: React.FC<StatsProps> = ({ hidden }) => {
-  // TODO
-  const lending: ERCNft[] = [];
-  const renting: ERCNft[] = [];
+  const { usersLending, usersRenting } = useContext(GraphContext);
 
   if (hidden) return <></>;
 
@@ -150,8 +150,8 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.LEND} />
           <tbody>
-            {lending.length > 0 &&
-              lending.map((l) => {
+            {usersLending.length > 0 &&
+              usersLending.map((l) => {
                 return (
                   <TableRow
                     key="deal wiv it"
@@ -171,7 +171,8 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
                     collateral="1"
                     maxDuration="1"
                     claim={<ClaimButton lending={l} />}
-                    greenHighlight={Boolean(l.renting)}
+                    // todo
+                    // greenHighlight={Boolean(l.renting)}
                   />
                 );
               })}
@@ -183,8 +184,8 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
         <Table>
           <TableHead tableType={TableType.BORROW} />
           <tbody>
-            {renting.length > 0 &&
-              renting.map((r) => (
+            {usersRenting.length > 0 &&
+              usersRenting.map((r) => (
                 <TableRow
                   // key={`${r.address}::${r.tokenId}::${r.renting?.[0].id}`}
                   key="deal wiv it"

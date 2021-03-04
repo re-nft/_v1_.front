@@ -207,7 +207,7 @@ export const timeItAsync = async <T>(
 export const getContract = async (
   tokenAddress: string,
   signer: ethers.Signer
-): { contract: ERC721 | ERC1155; isERC721: boolean } => {
+): Promise<{ contract: ERC721 | ERC1155; isERC721: boolean }> => {
   let contract: ERC721 | ERC1155;
   let isERC721 = false;
   // todo: don't think this will actually work

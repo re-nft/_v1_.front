@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { request } from "graphql-request";
 
 import {
@@ -69,8 +75,8 @@ type GraphContextType = {
   renftsLending: RenftsLending;
   renftsRenting: RenftsRenting;
   usersNfts: Nft[];
-  usersLending: LendingId[];
-  usersRenting: RentingId[];
+  usersLending: Lending[];
+  usersRenting: Renting[];
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -102,12 +108,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [usersNfts, setUsersNfts] = useState<Nft[]>(
     DefaultGraphContext["usersNfts"]
   );
-  const [usersLending, setUsersLending] = useState<Lending["id"][]>(
-    DefaultGraphContext["usersLending"]
-  );
-  const [usersRenting, setUsersRenting] = useState<Renting["id"][]>(
-    DefaultGraphContext["usersRenting"]
-  );
+  const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
+  const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
 
   const fetchAllERCs = useCallback(
     async (fetchType: FetchType) => {
@@ -153,6 +155,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     [currentAddress, renft?.address, signer]
   );
 
+  const getUsersLending = useMemo(() => {
+    return _usersLending.map((l) => renftsLending[l]);
+  }, [_usersLending, renftsLending]);
+
+  const getUsersRenting = useMemo(() => {
+    return _usersRenting.map((r) => renftsRenting[r]);
+  }, [_usersRenting, renftsRenting]);
+
   /**
    * Only used in the dev environment to pull third account's (test test ... junk)
    * mock NFTs
@@ -177,8 +187,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         renftsLending,
         renftsRenting,
         usersNfts,
-        usersLending,
-        usersRenting,
+        usersLending: getUsersLending,
+        usersRenting: getUsersRenting,
       }}
     >
       {children}

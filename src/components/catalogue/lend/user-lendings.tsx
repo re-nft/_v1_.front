@@ -2,12 +2,12 @@ import React, { useContext, useCallback, useState, useEffect } from "react";
 import { BigNumber } from "ethers";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
-import { ERCNft } from "../../../contexts/graph/types";
+import { Nft } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../catalogue/catalogue-item";
 
 type StopLendButtonProps = {
-  nft: ERCNft;
+  nft: Nft;
 };
 
 // todo: handleStopLend batch as well
@@ -16,28 +16,19 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   const { setHash } = useContext(TransactionStateContext);
 
   const handleStopLend = useCallback(async () => {
-    const lending = nft.lending?.[nft.lending?.length - 1];
-
-    if (!renft || !nft.contract || !lending) return;
-    if (nft.lending?.length === nft.renting?.length) {
-      // ! we should forbid this from happening, by some sort of visual cue
-      // ! for example, a green outline around your lendings means they are
-      // ! being currently rented by someone
-      console.warn("can't stop lend. it is being rented by someone");
-      return;
-    }
+    if (!renft) return;
 
     // todo: another point: if someone is renting we also need
     // to show the button: "Claim Collateral" in place of Stop Lending
     // This button will be active ONLY if the renter exceeded their
     // rent duration (that they choose in the modal in the Rent tab)
     const tx = await renft.stopLending(
-      [nft.contract.address],
+      [nft.address],
       [nft.tokenId],
       [BigNumber.from("100")]
     );
 
-    const isSuccess = await setHash(tx.hash);
+    await setHash(tx.hash);
   }, [nft, renft, setHash]);
 
   return (
@@ -48,28 +39,19 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
 };
 
 const UserLendings: React.FC = () => {
-  const { getLending } = useContext(GraphContext);
-  const [usersLending, setUsersLending] = useState<ERCNft[]>([]);
-
-  useEffect(() => {
-    getLending()
-      .then((data) => {
-        setUsersLending(data);
-      })
-      .catch(() => []);
-  }, [getLending]);
+  const { usersLending } = useContext(GraphContext);
 
   return (
     <>
-      {usersLending.map((nft) => {
-        const nftAddress = `${nft.contract?.address ?? ""}`;
-        const nftId = `${nftAddress}::${nft.tokenId}`;
+      {usersLending.map(async (nft) => {
+        const mediaURI = await nft.mediaURI();
+        const nftId = `${nft.address}::${nft.tokenId}`;
         return (
           <CatalogueItem
             key={nftId}
             tokenId={nft.tokenId}
-            nftAddress={nftAddress}
-            mediaURI={nft.meta?.mediaURI}
+            nftAddress={nft.address}
+            mediaURI={mediaURI}
           >
             <div className="Nft__card" style={{ marginTop: "8px" }}>
               <StopLendButton nft={nft} />
