@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Lending from "../catalogue/lend/lendings";
 import UserLending from "../catalogue/lend/user-lendings";
-import PageLayout from "../page-layout";
+import PageLayout from "../layout/page-layout";
 
 type LendProps = {
   hidden: boolean;

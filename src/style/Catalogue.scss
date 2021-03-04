@@ -1,5 +1,13 @@
 .Catalogue {
   margin: 4vh 0;
+  position: relative;
+}
+
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -21px;
 }
 
 .Nft__item {

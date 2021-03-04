@@ -2,9 +2,9 @@ import React, { useContext } from "react";
 import Helmet from "react-helmet";
 import { Box } from "@material-ui/core";
 
-import "../style/index.scss";
-import { CurrentAddressContext } from "../../src/hardhat/SymfoniContext";
-import { short } from "../utils";
+import "../../style/index.scss";
+import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
+import { short } from "../../utils";
 
 const Layout: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Rentings from "../catalogue/rent/rentings";
 import UserRentings from "../catalogue/rent/user-rentings";
-import PageLayout from "../page-layout";
+import PageLayout from "../layout/page-layout";
 
 type RentProps = {
   hidden: boolean;

@@ -3,10 +3,10 @@ import { Box } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
 import { ProviderContext } from "../../../hardhat/SymfoniContext";
 import { PaymentToken } from "../../../types";
-import RainbowButton from "../../rainbow-button";
-import CssTextField from "../../css-text-field";
-import Modal from "../../modal";
-import MinimalSelect from "../../MinimalSelect";
+import RainbowButton from "../../forms/rainbow-button";
+import CssTextField from "../../forms/css-text-field";
+import Modal from "./modal";
+import MinimalSelect from "../../select";
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -15,7 +15,7 @@ import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { Nft } from "../../../contexts/graph/classes";
 import { useStyles } from "./styles";
 import startLend from "../../../services/start-lend";
-import ActionButton from "../../action-button";
+import ActionButton from "../../forms/action-button";
 
 type ValueValid = {
   value: string;
@@ -31,25 +31,21 @@ type LendOneInputs = {
 type LendModalProps = {
   nft: Nft;
   open: boolean;
-  setOpen: (open: boolean) => void;
+  onClose(): void;
+};
+
+const defaulLandValue = {
+    value: "",
+    valid: true,
 };
 
 const DefaultLendOneInputs = {
-  maxDuration: {
-    value: "7",
-    valid: true,
-  },
-  borrowPrice: {
-    value: "10",
-    valid: true,
-  },
-  nftPrice: {
-    value: "100",
-    valid: true,
-  },
+  maxDuration: defaulLandValue,
+  borrowPrice: defaulLandValue,
+  nftPrice: defaulLandValue,
 };
 
-export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
+export const LendModal: React.FC<LendModalProps> = ({ nft, open, onClose }) => {
   const classes = useStyles();
   const { instance: renft } = useContext(RentNftContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
@@ -78,9 +74,9 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
       );
 
       setHash(tx.hash);
-      setOpen(false);
+      onClose();
     },
-    [nft, renft, setHash, setOpen, isActive, lendOneInputs, pmtToken]
+    [nft, renft, setHash, onClose, isActive, lendOneInputs, pmtToken]
   );
 
   const handleApproveAll = useCallback(
@@ -95,7 +91,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
         setIsApproved(true);
       }
     },
-    [currentAddress, renft, isActive, setHash, provider]
+    [currentAddress, renft, isActive, setHash, provider, setIsApproved]
   );
 
   const handleStateChange = useCallback(
@@ -124,8 +120,6 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
     []
   );
 
-  const handleClose = useCallback(() => setOpen(false), [setOpen]);
-
   const checkIsApproved = useCallback(async () => {
     if (!currentAddress || !renft?.instance) return false;
     const contract = await nft.contract();
@@ -141,7 +135,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, setOpen }) => {
   }, []);
 
   return (
-    <Modal open={open} handleClose={handleClose}>
+    <Modal open={open} handleClose={onClose}>
       <form
         noValidate
         autoComplete="off"

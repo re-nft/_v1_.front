@@ -3,7 +3,7 @@ import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import DoneOutlineIcon from "@material-ui/icons/DoneOutline";
 import Slide from "@material-ui/core/Slide";
 
-import Spinner from "./spinner";
+import Spinner from "./layout/spinner";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { TransactionStateEnum } from "../types";
 

@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useContext, useMemo } from "react";
-import { ethers } from "ethers";
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -9,13 +8,13 @@ import {
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
 import { Nft } from "../../../contexts/graph/classes";
-import NumericField from "../../numeric-field";
+import NumericField from "../../forms/numeric-field";
 import { PaymentToken } from "../../../types";
-import { getERC20 } from "../../../utils";
-import { MAX_UINT256 } from "../../../consts";
 import CatalogueItem from "../../catalogue/catalogue-item";
 import BatchRentModal from "../modals/batch-rent";
-//import ActionButton from "../../action-button";
+import ActionButton from "../../forms/action-button";
+import startRent from '../../../services/start-rent';
+import CatalogueLoader from '../catalogue-loader';
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
@@ -38,7 +37,6 @@ export const AvailableToRent: React.FC = () => {
 
   const handleRent = useCallback(
     async (nft: Nft[], { rentDuration }: { rentDuration: string[] }) => {
-      // todo: myERC20 to be removed in prod
       if (
         nft.length === 0 ||
         !currentAddress ||
@@ -48,63 +46,9 @@ export const AvailableToRent: React.FC = () => {
         !myERC20
       )
         return;
-
-      const pmtToken = PaymentToken.DAI;
-      const amountPayable = nft.reduce((sum, item, index) => {
-        const dailyRentPrice = 0;
-        const collateral = 0;
-        const duration = Object.values(rentDuration);
-        sum += Number(duration[index]) * dailyRentPrice + collateral;
-        return sum;
-      }, 0);
-      //@ts-ignore
-      const isETHPayment = pmtToken === PaymentToken.ETH;
-
-      const addresses = nft.map((x) => x.address);
-      const tokenIds = nft.map((x) => x.tokenId);
-      const lendingIds = nft.map((x) => 0);
-      const durations = Object.values(rentDuration).map((x) => Number(x));
-
-      if (isETHPayment) {
-        // ! will only ever fail if the user does not have enough ETH
-        // ! or the arguments here are incorrect (e.g. rentDuration exceeds maxRentDuration)
-        await renft.rent(
-          // @ts-ignore
-          addresses,
-          tokenIds,
-          lendingIds,
-          durations,
-          { value: amountPayable }
-        );
-      } else {
-        const erc20Address = await resolver.getPaymentToken(pmtToken);
-        if (!erc20Address) {
-          console.warn("could not fetch address for payment token");
-          return;
-        }
-        const erc20 = getERC20(erc20Address, signer);
-        if (!erc20) {
-          console.warn("could not fetch erc20 contract");
-          return;
-        }
-        // check if reNFT contract is approved for the required amount to be spent
-        const allowance = await erc20.allowance(currentAddress, renft.address);
-        // TODO: fix amountPayable
-        const notEnough = ethers.utils
-          .parseEther(String(amountPayable))
-          .gt(allowance);
-        if (notEnough) {
-          await erc20.approve(renft.address, MAX_UINT256);
-        }
-
-        await renft.rent(
-          // @ts-ignore
-          addresses,
-          tokenIds,
-          lendingIds,
-          durations
-        );
-      }
+      
+      const pmtToken = PaymentToken.DAI;  
+      await startRent(renft, nft, resolver, currentAddress, signer, rentDuration, pmtToken);
     },
     [renft, currentAddress, signer, resolver, myERC20]
   );
@@ -129,7 +73,11 @@ export const AvailableToRent: React.FC = () => {
   );
 
   const countOfCheckedItems = checkedItems.length;
-
+  
+  if (allRentings.length === 0) {
+    return <CatalogueLoader/>
+  }
+  
   return (
     <>
       <BatchRentModal
@@ -140,15 +88,12 @@ export const AvailableToRent: React.FC = () => {
       />
       {allRentings.map(async (nft: Nft) => {
         const rentingId = -1;
-        const id = `${nft.address}::${nft.tokenId}::${rentingId}`;
         const mediaURI = await nft.mediaURI();
-
         return (
           <CatalogueItem
-            key={id}
+            key={`${nft.address}::${nft.tokenId}::${rentingId}`}
             tokenId={nft.tokenId}
             nftAddress={nft.address}
-            // TODO: name it meta
             mediaURI={mediaURI}
             onCheckboxChange={handleCheckboxChange}
           >
@@ -163,13 +108,11 @@ export const AvailableToRent: React.FC = () => {
               value={String(0)}
               unit={PaymentToken[PaymentToken.DAI]}
             />
-            {/*<div className="Nft__card">
-              <ActionButton
-                onClick={handleBatchModalOpen}
-                nft={nft}
-                title="Rent Now"
-              />
-            </div>*/}
+            <ActionButton
+              onClick={handleBatchModalOpen}
+              nft={nft}
+              title="Rent Now"
+            />
           </CatalogueItem>
         );
       })}

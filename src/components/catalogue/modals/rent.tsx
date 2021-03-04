@@ -1,35 +1,15 @@
 import React, { useCallback, useState, useContext, useMemo } from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 import moment from "moment";
 
-import FunnySpinner from "../../spinner";
-import RainbowButton from "../../rainbow-button";
-import CssTextField from "../../css-text-field";
-import Modal from "../../modal";
+import FunnySpinner from "../../layout/spinner";
+import RainbowButton from "../../forms/rainbow-button";
+import CssTextField from "../../forms/css-text-field";
+import Modal from "./modal";
 import { Nft } from "../../../contexts/graph/classes";
+import {useRentFormStyles} from './styles';
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    inputs: {
-      display: "flex",
-      flexDirection: "column",
-      padding: "32px",
-      // matches direct div children of inputs
-      "& > div": {
-        marginBottom: "16px",
-      },
-      margin: "0 auto",
-    },
-    buttons: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-    },
-  })
-);
 
 const LegibleTextField = withStyles({
   root: {
@@ -54,7 +34,7 @@ const RentModal: React.FC<RentModalProps> = ({
   nft,
   onSubmit,
 }) => {
-  const classes = useStyles();
+  const classes = useRentFormStyles();
   const [rentDuration, setRentDuration] = useState<string>("");
   const [busy, setIsBusy] = useState(false);
   const [totalRent, setTotalRent] = useState(0);

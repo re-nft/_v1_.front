@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Box } from "@material-ui/core";
 
-import Layout from "./components/layout";
+import Layout from "./components/layout/layout";
 import Rent from "./components/pages/rent";
 import Lend from "./components/pages/lend";
 import Faq from "./components/pages/faq";

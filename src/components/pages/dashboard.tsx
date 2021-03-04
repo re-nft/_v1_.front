@@ -115,11 +115,6 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
     );
   }, [renft, lending]);
 
-  // todo
-  // if (!lending.renting) {
-  //   return <span onClick={handleStopLend}>❌</span>;
-  // }
-
   const _now = moment();
   const _returnBy = returnBy(
     // @ts-ignore

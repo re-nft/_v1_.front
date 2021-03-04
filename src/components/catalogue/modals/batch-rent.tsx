@@ -2,9 +2,9 @@ import React, { useCallback, useState } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 
-import RainbowButton from "../../rainbow-button";
-import CssTextField from "../../css-text-field";
-import Modal from "../../modal";
+import RainbowButton from "../../forms/rainbow-button";
+import CssTextField from "../../forms/css-text-field";
+import Modal from "./modal";
 import { Nft } from "../../../contexts/graph/classes";
 
 // const SENSIBLE_MAX_DURATION = 10 * 365;

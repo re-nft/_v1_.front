@@ -1,14 +1,19 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
+import Modal from "./modal";
 import { Nft } from "../../../contexts/graph/classes";
-import Modal from "../../modal";
+import { RentNftContext } from "../../../hardhat/SymfoniContext";
+import { TransactionStateContext } from "../../../contexts/TransactionState";
+import { CurrentAddressContext } from "../../../hardhat/SymfoniContext";
+import { ProviderContext } from "../../../hardhat/SymfoniContext";
+import ActionButton from "../../forms/action-button";
+import isApprovalForAll from '../../../services/is-approval-for-all';
+import returnIt from '../../../services/return-it';
+import setApprovalForAll from '../../../services/set-approval-for-all';
 
 type ReturnModalProps = {
   nft: Nft;
-  isApproved: boolean;
   open: boolean;
-  onReturn(nft: Nft): void;
-  onApproveAll(nft: Nft): void;
   onClose: () => void;
 };
 
@@ -16,17 +21,47 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   nft,
   open,
   onClose,
-  isApproved,
-  onReturn,
-  onApproveAll,
 }) => {
-  const handleApprove = useCallback(() => {
-    onApproveAll(nft);
-  }, [onApproveAll, nft]);
+  const [isApproved, setIsApproved] = useState(false);
+  const [currentAddress] = useContext(CurrentAddressContext);
+  const { instance: renft } = useContext(RentNftContext);
+  const { setHash } = useContext(TransactionStateContext);
+  const [provider] = useContext(ProviderContext);
 
-  const handleReturn = useCallback(() => {
-    onReturn(nft);
-  }, [onReturn, nft]);
+  const handleReturnNft = useCallback(
+    async (nft: Nft) => {
+      if (!renft || !nft.contract) return;
+      const tx = await returnIt(renft, nft);
+      const isSuccess = await setHash(tx.hash);
+      if (isSuccess) {
+        onClose();
+      }
+    },
+    [renft, setHash]
+  );
+
+  const handleApproveAll = useCallback(
+    async (nft: Nft) => {
+      if (!currentAddress || !renft || !nft.contract || !provider) return;
+      const contract = nft.contract();
+      const tx = await setApprovalForAll(renft, contract);
+      setHash(tx.hash);
+      const receipt = await provider.getTransactionReceipt(tx.hash);
+      const status = receipt.status ?? 0;
+      if (status === 1) {
+        setIsApproved(true);
+      }
+    },
+    [currentAddress, renft, provider, setHash, setIsApproved]
+  );
+
+  useEffect(() => {
+    if (!nft.contract || !renft || !currentAddress) return;
+    const contract = nft.contract();
+    isApprovalForAll(renft, contract, currentAddress).then((isApproved: boolean) => {
+      setIsApproved(isApproved);
+    }).catch(() => false);
+  }, [isApproved, setIsApproved, nft, renft]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -35,14 +70,10 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         <Box>
           <div className="Nft__card" style={{ justifyContent: "center" }}>
             {!isApproved && (
-              <div className="Nft__card" onClick={handleApprove}>
-                <span className="Nft__button">Approve All</span>
-              </div>
+              <ActionButton title="Approve All" nft={nft} onClick={handleApproveAll}/>
             )}
             {isApproved && (
-              <div className="Nft__card" onClick={handleReturn}>
-                <span className="Nft__button">Return it</span>
-              </div>
+              <ActionButton title="Return It" nft={nft} onClick={handleReturnNft}/>
             )}
           </div>
         </Box>

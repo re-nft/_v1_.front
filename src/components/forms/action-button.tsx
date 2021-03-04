@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Nft } from "../../contexts/graph/classes";
 
 type ActionButtonProps = {
   nft: Nft;
@@ -13,10 +13,12 @@ const ActionButton: React.FC<ActionButtonProps> = ({ nft, title, onClick }) => {
   }, [onClick, nft]);
 
   return (
-    <div className="Nft__card">
-      <span className="Nft__button" onClick={onClickHandler}>
+    <div className="Nft__card" style={{ marginTop: "8px" }}>
+      <div className="Nft__card">
+        <span className="Nft__button" onClick={onClickHandler}>
         {title}
-      </span>
+        </span>
+      </div>
     </div>
   );
 };
