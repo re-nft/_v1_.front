@@ -23,18 +23,10 @@ import {
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import {
-  Lending,
-  Renting,
-  User,
-  ERC1155s,
-  ERC721s,
-  Token,
-  LendingRaw,
-  RentingRaw,
-} from "./types";
-// * only in dev env
-import useFetchNftDev from "./hooks/useFetchNftDev";
+import { ERC1155s, ERC721s, NftToken, LendingRaw, RentingRaw } from "./types";
+import { Nft, Lending, Renting } from "./classes";
+// // * only in dev env
+// import useFetchNftDev from "./hooks/useFetchNftDev";
 
 /**
  * Useful links
@@ -62,23 +54,31 @@ const ENDPOINT_EIP721_PROD =
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
 
-export type Nfts = {
-  lending?: {
-    [key: string]: Lending;
-  };
-  renting?: {
-    [key: string]: Renting;
-  };
+type RenftsLending = {
+  [key: string]: Lending;
 };
 
+type RenftsRenting = {
+  [key: string]: Renting;
+};
+
+type LendingId = string;
+type RentingId = LendingId;
+
 type GraphContextType = {
-  nfts: Nfts;
-  user: User;
+  renftsLending: RenftsLending;
+  renftsRenting: RenftsRenting;
+  usersNfts: Nft[];
+  usersLending: LendingId[];
+  usersRenting: RentingId[];
 };
 
 const DefaultGraphContext: GraphContextType = {
-  nfts: {},
-  user: {},
+  renftsLending: {},
+  renftsRenting: {},
+  usersNfts: [],
+  usersLending: [],
+  usersRenting: [],
 };
 
 enum FetchType {
@@ -93,21 +93,21 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [signer] = useContext(SignerContext);
   const { instance: renft } = useContext(RentNftContext);
 
-  const [nfts, setNfts] = useState<Nfts>(DefaultGraphContext["nfts"]);
-  const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
-
-  const getContract = async (tokenAddress: string) => {
-    let contract: ERC721 | ERC1155 | undefined;
-    let isERC721 = false;
-    if (!signer) return { contract };
-    try {
-      contract = getERC721(tokenAddress, signer);
-      isERC721 = true;
-    } catch {
-      contract = getERC1155(tokenAddress, signer);
-    }
-    return { contract, isERC721 };
-  };
+  const [renftsLending, setRenftsLending] = useState<RenftsLending>(
+    DefaultGraphContext["renftsLending"]
+  );
+  const [renftsRenting, setRenftsRenting] = useState<RenftsRenting>(
+    DefaultGraphContext["renftsRenting"]
+  );
+  const [usersNfts, setUsersNfts] = useState<Nft[]>(
+    DefaultGraphContext["usersNfts"]
+  );
+  const [usersLending, setUsersLending] = useState<Lending["id"][]>(
+    DefaultGraphContext["usersLending"]
+  );
+  const [usersRenting, setUsersRenting] = useState<Renting["id"][]>(
+    DefaultGraphContext["usersRenting"]
+  );
 
   const fetchAllERCs = useCallback(
     async (fetchType: FetchType) => {
@@ -130,7 +130,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         async () => await request(subgraphURI, query)
       );
 
-      let tokens: Token[] = [];
+      let tokens: NftToken[] = [];
       switch (fetchType) {
         case FetchType.ERC721:
           tokens = (response as ERC721s).tokens.map((t) => {
@@ -157,25 +157,28 @@ export const GraphProvider: React.FC = ({ children }) => {
    * Only used in the dev environment to pull third account's (test test ... junk)
    * mock NFTs
    */
-  const fetchNftDev = useFetchNftDev();
+  // const fetchNftDev = useFetchNftDev();
 
-  const fetchMyNfts = useCallback(async () => {
-    if (IS_PROD) {
-      fetchAllERCs(FetchType.ERC721);
-      fetchAllERCs(FetchType.ERC1155);
-    } else {
-      const _nfts = await fetchNftDev();
-      setNfts(_nfts);
-    }
-  }, [fetchAllERCs, fetchNftDev]);
+  // const fetchMyNfts = useCallback(async () => {
+  //   if (IS_PROD) {
+  //     fetchAllERCs(FetchType.ERC721);
+  //     fetchAllERCs(FetchType.ERC1155);
+  //   } else {
+  //     const _nfts = await fetchNftDev();
+  //     setNfts(_nfts);
+  //   }
+  // }, [fetchAllERCs, fetchNftDev]);
 
-  usePoller(fetchMyNfts, 3 * SECOND_IN_MILLISECONDS);
+  // usePoller(fetchMyNfts, 3 * SECOND_IN_MILLISECONDS);
 
   return (
     <GraphContext.Provider
       value={{
-        nfts,
-        user,
+        renftsLending,
+        renftsRenting,
+        usersNfts,
+        usersLending,
+        usersRenting,
       }}
     >
       {children}
