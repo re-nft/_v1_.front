@@ -111,7 +111,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
 
-  const fetchAllERCs = useCallback(
+  const fetchUsersNfts = useCallback(
     async (fetchType: FetchType) => {
       let query = "";
       let subgraphURI = "";

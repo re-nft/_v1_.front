@@ -9,18 +9,27 @@ import {
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
 
+type NftOptions = {
+  tokenURI?: string;
+};
+
 class Nft {
-  constructor(nftAddress: Address, tokenId: string) {
+  constructor(nftAddress: Address, tokenId: string, options?: NftOptions) {
     this.address = nftAddress;
     this.tokenId = tokenId;
-    true;
+
+    if (options?.tokenURI) {
+      this._tokenURI = options?.tokenURI;
+    }
   }
   address: Address;
   tokenId: string;
+  _tokenURI: string | undefined;
   contract = (): ERC721 | ERC1155 => {
     return {} as ERC721;
   };
   tokenURI = async (): Promise<string | undefined> => {
+    if (this._tokenURI) return this._tokenURI;
     return "";
   };
 
@@ -44,8 +53,13 @@ class Nft {
 }
 
 class Lending extends Nft {
-  constructor(nftAddress: Address, tokenId: string, lendingRaw: LendingRaw) {
-    super(nftAddress, tokenId);
+  constructor(
+    nftAddress: Address,
+    tokenId: string,
+    lendingRaw: LendingRaw,
+    options?: NftOptions
+  ) {
+    super(nftAddress, tokenId, options);
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
@@ -55,8 +69,13 @@ class Lending extends Nft {
 }
 
 class Renting extends Nft {
-  constructor(nftAddress: Address, tokenId: string, rentingRaw: RentingRaw) {
-    super(nftAddress, tokenId);
+  constructor(
+    nftAddress: Address,
+    tokenId: string,
+    rentingRaw: RentingRaw,
+    options?: NftOptions
+  ) {
+    super(nftAddress, tokenId, options);
 
     this.renting = parseRenting(rentingRaw);
     this.id = rentingRaw.id;
