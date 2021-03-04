@@ -33,6 +33,7 @@ export const queryMyERC1155s = (user: string): string => {
 export const queryAllRenft = (): string => {
   return `{
     nfts {
+      id
       lending {
         id
         nftAddress
@@ -74,6 +75,26 @@ export const queryUserRenft = (user: string): string => {
           nftAddress
           tokenId
         }
+      }
+    }
+  }`;
+};
+
+export const queryUserLendingRenft = (user: string): string => {
+  return `{
+    user(id: "${user.toLowerCase()}") {
+      lending {
+        id
+      }
+    }
+  }`;
+};
+
+export const queryUserRentingRenft = (user: string): string => {
+  return `{
+    user(id: "${user.toLowerCase()}") {
+      renting {
+        id
       }
     }
   }`;

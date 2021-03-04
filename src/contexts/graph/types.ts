@@ -45,8 +45,8 @@ export type Lending = {
   dailyRentPrice: number;
   nftPrice: number;
   paymentToken: PaymentToken;
-  renting?: string;
   collateralClaimed: boolean;
+  rentingId?: string;
 };
 
 export type LendingRaw = Omit<
@@ -70,4 +70,12 @@ export type Renting = {
 export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
+};
+
+export type NftRaw = {
+  nfts: {
+    id: string;
+    lending?: LendingRaw[];
+    renting?: RentingRaw[];
+  }[];
 };

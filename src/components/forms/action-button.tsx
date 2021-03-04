@@ -4,7 +4,7 @@ import { Nft } from "../../contexts/graph/classes";
 type ActionButtonProps = {
   nft: Nft;
   title: string;
-  onClick: (lending: Nft) => void;
+  onClick: (nft: Nft) => void;
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({ nft, title, onClick }) => {
@@ -16,7 +16,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({ nft, title, onClick }) => {
     <div className="Nft__card" style={{ marginTop: "8px" }}>
       <div className="Nft__card">
         <span className="Nft__button" onClick={onClickHandler}>
-        {title}
+          {title}
         </span>
       </div>
     </div>

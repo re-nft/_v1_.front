@@ -7,7 +7,7 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import { Nft } from "../../../contexts/graph/classes";
+import { Nft, Lending } from "../../../contexts/graph/classes";
 import NumericField from "../../forms/numeric-field";
 import { PaymentToken } from "../../../types";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -15,28 +15,33 @@ import BatchRentModal from "../modals/batch-rent";
 import ActionButton from "../../forms/action-button";
 import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../catalogue-loader";
+import GraphContext from "../../../contexts/graph";
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [checkedItems, setCheckedItems] = useState<Nft[]>([]);
+  const [checkedItems, setCheckedItems] = useState<Lending[]>([]);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
-  const allRentings: Nft[] = useMemo(() => [], []);
+  const { renftsLending } = useContext(GraphContext);
+
+  const allRentings = useMemo(() => {
+    return Object.values(renftsLending);
+  }, [renftsLending]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
   }, []);
 
-  const handleBatchModalOpen = useCallback((nft: Nft) => {
+  const handleBatchModalOpen = useCallback((nft: Lending) => {
     setCheckedItems([nft]);
     setOpenBatchModel(true);
   }, []);
 
   const handleRent = useCallback(
-    async (nft: Nft[], { rentDuration }: { rentDuration: string[] }) => {
+    async (nft: Lending[], { rentDuration }: { rentDuration: string[] }) => {
       if (
         nft.length === 0 ||
         !currentAddress ||
@@ -64,7 +69,7 @@ export const AvailableToRent: React.FC = () => {
   const handleCheckboxChange = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement>) => {
       const target = evt.target.name;
-      const sources: Nft[] = checkedItems.slice(0);
+      const sources: Lending[] = checkedItems.slice(0);
       const item = allRentings.find((nft) => nft.tokenId === target);
       const sourceIndex = checkedItems.findIndex(
         (nft) => nft.tokenId === target
@@ -94,33 +99,36 @@ export const AvailableToRent: React.FC = () => {
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
-      {allRentings.map((nft: Nft) => {
-        const rentingId = -1;
-        return (
-          <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}::${rentingId}`}
+      {allRentings.map((nft: Lending) => (
+        <CatalogueItem
+          key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
+          nft={nft}
+          onCheckboxChange={handleCheckboxChange}
+        >
+          <NumericField
+            text="Daily price"
+            value={String(nft.lending.dailyRentPrice)}
+            unit={PaymentToken[nft.lending.paymentToken]}
+          />
+          <NumericField
+            text="Max duration"
+            value={String(nft.lending.maxRentDuration)}
+            unit="days"
+          />
+          <NumericField
+            text="Collateral"
+            value={String(nft.lending.nftPrice)}
+            unit={PaymentToken[nft.lending.paymentToken]}
+          />
+          <ActionButton
+            // TODO
+            //@ts-ignore
+            onClick={handleBatchModalOpen}
             nft={nft}
-            onCheckboxChange={handleCheckboxChange}
-          >
-            <NumericField
-              text="Daily price"
-              value={String(0)}
-              unit={PaymentToken[PaymentToken.DAI]}
-            />
-            <NumericField text="Max duration" value={String(0)} unit="days" />
-            <NumericField
-              text="Collateral"
-              value={String(0)}
-              unit={PaymentToken[PaymentToken.DAI]}
-            />
-            <ActionButton
-              onClick={handleBatchModalOpen}
-              nft={nft}
-              title="Rent Now"
-            />
-          </CatalogueItem>
-        );
-      })}
+            title="Rent Now"
+          />
+        </CatalogueItem>
+      ))}
     </>
   );
 };

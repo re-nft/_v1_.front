@@ -21,7 +21,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     const mediaURI = await nft.mediaURI();
     return mediaURI;
   };
-
   useEffect(() => {
     loadMediaURI()
       .then((mediaUri) => setImg(mediaUri))

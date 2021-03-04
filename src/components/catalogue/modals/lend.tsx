@@ -122,7 +122,7 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, onClose }) => {
   );
 
   const checkIsApproved = useCallback(async () => {
-    if (!currentAddress || !renft?.instance) return false;
+    if (!currentAddress || !renft) return false;
     const contract = await nft.contract();
     const isApproved = await isApprovedForAll(renft, contract, currentAddress);
     setIsApproved(isApproved);

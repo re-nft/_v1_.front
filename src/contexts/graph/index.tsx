@@ -27,10 +27,19 @@ import { Address } from "../../types";
 import {
   queryUserRenft,
   queryAllRenft,
+  queryUserLendingRenft,
+  queryUserRentingRenft,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import { ERC1155s, ERC721s, NftToken, LendingRaw, RentingRaw } from "./types";
+import {
+  NftRaw,
+  ERC1155s,
+  ERC721s,
+  NftToken,
+  LendingRaw,
+  RentingRaw,
+} from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 // // * only in dev env
@@ -179,11 +188,65 @@ export const GraphProvider: React.FC = ({ children }) => {
     setUsersNfts(_nfts);
   };
 
+  const fetchUserLending = async () => {
+    if (!currentAddress) return;
+    const query = queryUserLendingRenft(currentAddress);
+    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const response: {
+      user?: { lending?: { id: LendingId }[] };
+    } = await timeItAsync(
+      `Pulled My Lending Nfts`,
+      async () => await request(subgraphURI, query)
+    );
+    const lendingsIds = response.user?.lending?.map(({ id }) => id) ?? [];
+    _setUsersLending(lendingsIds);
+  };
+
+  const fetchUserRenting = async () => {
+    if (!currentAddress) return;
+    const query = queryUserRentingRenft(currentAddress);
+    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const response: {
+      user?: { renting?: { id: RentingId }[] };
+    } = await timeItAsync(
+      `Pulled My Renting Nfts`,
+      async () => await request(subgraphURI, query)
+    );
+    const rentingsIds = response.user?.renting?.map(({ id }) => id) ?? [];
+    _setUsersRenting(rentingsIds);
+  };
+
+  const fetchRenftsAll = async () => {
+    if (!signer) return;
+    const query = queryAllRenft();
+    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const response: NftRaw = await timeItAsync(
+      `Pulled All Renft Nfts`,
+      async () => await request(subgraphURI, query)
+    );
+    const _allRenftsLending: { [key: string]: Lending } = {};
+    const _allRenftsRenting: { [key: string]: Renting } = {};
+    response?.nfts.forEach(({ id, lending, renting }) => {
+      const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+      lending?.forEach((l) => {
+        _allRenftsLending[l.id] = new Lending(address, tokenId, signer, l);
+      });
+      renting?.forEach((r) => {
+        _allRenftsRenting[r.id] = new Renting(address, tokenId, signer, r);
+      });
+    });
+
+    setRenftsLending(_allRenftsLending);
+    setRenftsRenting(_allRenftsRenting);
+  };
+
   const getUsersLending = useMemo(() => {
+    if (Object.keys(renftsLending).length === 0) return [];
     return _usersLending.map((l) => renftsLending[l]);
   }, [_usersLending, renftsLending]);
 
   const getUsersRenting = useMemo(() => {
+    if (Object.keys(renftsRenting).length === 0) return [];
     return _usersRenting.map((r) => renftsRenting[r]);
   }, [_usersRenting, renftsRenting]);
 
@@ -194,7 +257,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   // const fetchNftDev = useFetchNftDev();
 
   useEffect(() => {
+    fetchRenftsAll();
     fetchUsersNfts();
+    fetchUserLending();
+    fetchUserRenting();
     /* eslint-disable-next-line */
   }, []);
 

@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { TextField, Box, withStyles } from "@material-ui/core";
 
 import RainbowButton from "../../forms/rainbow-button";
 import CssTextField from "../../forms/css-text-field";
 import Modal from "./modal";
-import { Nft } from "../../../contexts/graph/classes";
+import { Lending } from "../../../contexts/graph/classes";
 
 // const SENSIBLE_MAX_DURATION = 10 * 365;
 
@@ -39,8 +39,8 @@ const LegibleTextField = withStyles({
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
-  nft: Nft[];
-  onSubmit(nft: Nft[], options: { rentDuration: string[] }): void;
+  nft: Lending[];
+  onSubmit(nft: Lending[], options: { rentDuration: string[] }): void;
 };
 
 const DEFAULT_ERROR_TEXT = "Must be a natural number e.g. 1, 2, 3";
@@ -84,7 +84,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <Box style={{ padding: "32px" }}>
           <Box className={classes.inputs}>
-            {nft.map((item: Nft) => {
+            {nft.map((item: Lending) => {
               return (
                 <Box key={item.tokenId} className={classes.inputs}>
                   <LegibleTextField

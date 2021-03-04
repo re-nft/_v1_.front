@@ -2,14 +2,14 @@ import { RentNft } from "../hardhat/typechain/RentNft";
 import { Signer } from "ethers";
 import { ethers } from "ethers";
 import { PaymentToken } from "../types";
-import { Nft } from "../contexts/graph/classes";
+import { Nft, Lending } from "../contexts/graph/classes";
 import { Resolver } from "../hardhat/typechain/Resolver";
 import { getERC20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 
 export default async function startRent(
   renft: RentNft,
-  nft: Nft[],
+  nft: Lending[],
   resolver: Resolver,
   currentAddress: string,
   signer: Signer,
@@ -17,8 +17,8 @@ export default async function startRent(
   pmtToken: PaymentToken
 ): Promise<void> {
   const amountPayable = nft.reduce((sum, item, index) => {
-    const dailyRentPrice = 0;
-    const collateral = 0;
+    const dailyRentPrice = item.lending.dailyRentPrice;
+    const collateral = item.lending.nftPrice;
     sum += Number(rentDurations[index]) * dailyRentPrice + collateral;
     return sum;
   }, 0);
@@ -30,7 +30,9 @@ export default async function startRent(
   const durations = rentDurations.map((x) => Number(x));
 
   if (isETHPayment) {
-    await renft.rent(addresses, tokenIds, lendingIds, durations, { value: amountPayable });
+    await renft.rent(addresses, tokenIds, lendingIds, durations, {
+      value: amountPayable,
+    });
   } else {
     const erc20Address = await resolver.getPaymentToken(pmtToken);
 
@@ -46,11 +48,11 @@ export default async function startRent(
     }
 
     const allowance = await erc20.allowance(currentAddress, renft.address);
-    
+
     const notEnough = ethers.utils
       .parseEther(String(amountPayable))
       .gt(allowance);
-    
+
     if (notEnough) {
       await erc20.approve(renft.address, MAX_UINT256);
     }
