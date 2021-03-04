@@ -14,7 +14,6 @@ type StopLendButtonProps = {
 const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
   const { instance: renft } = useContext(RentNftContext);
   const { setHash } = useContext(TransactionStateContext);
-  const { removeLending } = useContext(GraphContext);
 
   const handleStopLend = useCallback(async () => {
     const lending = nft.lending?.[nft.lending?.length - 1];
@@ -39,10 +38,7 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({ nft }) => {
     );
 
     const isSuccess = await setHash(tx.hash);
-    if (isSuccess) {
-      removeLending([nft]);
-    }
-  }, [nft, renft, setHash, removeLending]);
+  }, [nft, renft, setHash]);
 
   return (
     <div className="Nft__card" onClick={handleStopLend}>
@@ -60,10 +56,7 @@ const UserLendings: React.FC = () => {
       .then((data) => {
         setUsersLending(data);
       })
-      .catch((e) => {
-        console.warn(e);
-        return [];
-      });
+      .catch(() => []);
   }, [getLending]);
 
   return (

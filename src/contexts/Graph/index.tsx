@@ -30,7 +30,6 @@ import {
   ERC1155s,
   ERC721s,
   ERCNft,
-  Nft,
   Token,
 } from "./types";
 import { parseLending } from "./utils";
@@ -63,7 +62,7 @@ const ENDPOINT_EIP721_PROD =
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
 
-// differently arranged (for efficiency) Nft
+// differently arranged (for efficiency) ERCNft
 // '0x123...456': { tokens: { '1': ..., '2': ... } }
 export type Nfts = {
   // nft address
@@ -104,7 +103,6 @@ type GraphContextType = {
   rentingById: RentingById;
   user: User;
   fetchMyNfts: () => void;
-  removeLending: (nfts: ERCNft[]) => void;
   getUsersNfts: () => Promise<ERCNft[]>;
   getRenting: () => Promise<ERCNft[]>;
   getLending: () => Promise<ERCNft[]>;
@@ -116,7 +114,6 @@ const DefaultGraphContext: GraphContextType = {
   lendingById: {},
   rentingById: {},
   user: {},
-  removeLending: THROWS,
   fetchMyNfts: THROWS,
   getUsersNfts: () => {
     throw new Error("must be implemented");
@@ -175,23 +172,34 @@ export const GraphProvider: React.FC = ({ children }) => {
     }));
   };
 
-  const _setContract = async (token: Token, isERC721: boolean) => {
-    // is already set
-    if (nfts[token.address]?.contract) return;
+  const _getContract = async (tokenAddress: string) => {
+    let contract: ERC721 | ERC1155 | undefined;
+    let isERC721 = false;
+    if (!signer) return { contract };
+    try {
+      contract = getERC721(tokenAddress, signer);
+      isERC721 = true;
+    } catch {
+      contract = getERC1155(tokenAddress, signer);
+    }
+    return { contract, isERC721 };
+  };
 
-    const contract = isERC721
-      ? getERC721(token.address, signer)
-      : getERC1155(token.address, signer);
-    const isApprovedForAll = await contract
-      .isApprovedForAll(currentAddress, renft?.address ?? "")
-      .catch(() => false);
+  // const _getTokenURI = async (contract: ERC721 | ERC1155, tokenId: string) => {
+  //   // const isERC721 = contract.interface === ERC721Interface;
+  // };
+
+  const _setContract = async (token: Token) => {
+    // if is already set
+    if (nfts[token.address]?.contract) return {};
+
+    const { contract, isERC721 } = await _getContract(token.address);
 
     setNfts((prev) => ({
       ...prev,
       [token.address]: {
         ...prev[token.address],
         contract,
-        isApprovedForAll,
         isERC721,
         tokens: {
           [token.tokenId]: {
@@ -201,13 +209,13 @@ export const GraphProvider: React.FC = ({ children }) => {
       },
     }));
 
-    return { contract, isApprovedForAll };
+    return { contract, isERC721 };
   };
 
   const _parseRenftNftId = (
     id: string
   ): { address: Token["address"]; tokenId: Token["tokenId"] } => {
-    console.log("id", id);
+    // TODO
     const [address, tokenId] = (id || "").split(RENFT_SUBGRAPH_ID_SEPARATOR);
     return { address, tokenId };
   };
@@ -241,7 +249,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
-      console.log(response);
 
       let tokens: Token[] = [];
       switch (fetchType) {
@@ -263,7 +270,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
       for (const token of tokens) {
         // ? await in loop is safe?
-        await _setContract(token, fetchType === FetchType.ERC721);
+        await _setContract(token);
         _setTokenId(token);
       }
     },
@@ -277,20 +284,19 @@ export const GraphProvider: React.FC = ({ children }) => {
     // todo: the types for lending and renting not correct, because we get raw
     // response from request. Wrap the call in a parsing function
     const data: {
-      lending?: { id: string }[];
-      renting?: { id: string }[];
+      user: {
+        id: string; // this is user's address
+        lending?: { id: string }[];
+        renting?: { id: string }[];
+      };
     } = await request(
       // TODO
       ENDPOINT_RENFT_DEV,
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
-    if (!data?.lending && !data?.renting) {
-      console.warn("no lending and renting for user");
-      return;
-    }
 
-    const { lending, renting } = data;
+    const { lending, renting } = data?.user;
     // * updated all the time, need to compute hash of the lists
     // * as we go along to then simply check that the combined hash
     // * hasn't changed, to determine if we need to update the state
@@ -299,7 +305,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       lending: lending?.map((l) => l.id) ?? [],
       renting: renting?.map((r) => r.id) ?? [],
     };
-    console.log("setting user", _user);
 
     setUser(_user);
   }, [currentAddress]);
@@ -328,26 +333,24 @@ export const GraphProvider: React.FC = ({ children }) => {
       // item in each one is the source of truth when it comes to
       // ability to lend or rent
       for (const lending of _nft.lending) {
-        console.log("lending", lending);
         tmpLendingById[lending.id] = {
           address: lending.nftAddress,
           tokenId: lending.tokenId,
         };
       }
-      // TODO
-      // for (const renting of _nft.renting ?? []) {
-      //   tmpRentingById[renting.id] = {
-      //     address: renting.nftAddress,
-      //     tokenId: renting.tokenid,
-      //   };
-      // }
+      for (const renting of _nft.renting ?? []) {
+        let lending = tmpLendingById[renting.lendingId];
+        if (!lending) {
+          lending = lendingById[renting.lendingId];
+        }
+        tmpRentingById[renting.id] = {
+          address: lending.address,
+          tokenId: lending.tokenId,
+        };
+      }
 
-      console.log("tempLending", tmpLendingById);
       setLendingById(tmpLendingById);
       setRentingById(tmpRentingById);
-
-      console.log("lendingById", lendingById);
-      console.log("rentingById", rentingById);
     }
     // ! do not add lendingById and rentingById in deps
     // ! you will have an infinite loop
@@ -383,7 +386,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       fetchAllERCs(FetchType.ERC1155);
     } else {
       const _nfts = await fetchNftDev();
-      console.log("fetched my dev nfts", _nfts);
       setNfts(_nfts);
     }
   }, [fetchAllERCs, fetchNftDev]);
@@ -393,22 +395,24 @@ export const GraphProvider: React.FC = ({ children }) => {
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
 
+  // is called when someone calls getUser, getLending or getRenting
+  // user's lending is not in nfts, and so may need instantiation for tokenURI
   const _getERCNftFromToken = async (tokens: Token[]) => {
     const _nfts: ERCNft[] = [];
     for (const _token of tokens) {
-      let contract: ERC721 | ERC1155 | undefined = undefined;
+      let contract: ERC721 | ERC1155 | undefined;
+      let isERC721 = false;
       if (!nfts[_token.address]) {
-        // TODO
-        const isERC721 = true;
-        const res = await _setContract(_token, isERC721);
-        if (!res) continue;
+        const res = await _setContract(_token);
+        if (!res?.contract) continue;
         contract = res.contract;
+        isERC721 = res.isERC721 ?? false;
         _setTokenId(_token);
       }
-      const _contract = nfts[_token.address] ?? undefined;
+      const _contract = nfts[_token.address] ?? null;
       _nfts.push({
         contract: _contract.contract ?? contract,
-        isERC721: _contract.isERC721,
+        isERC721: _contract.isERC721 ?? isERC721,
         address: _token.address,
         tokenId: _token.tokenId,
         tokenURI: _contract.tokens[_token.tokenId].tokenURI,
@@ -422,7 +426,6 @@ export const GraphProvider: React.FC = ({ children }) => {
   const getUsersNfts = async () => await _getERCNftFromToken(usersNfts);
 
   const getLending = async () => {
-    console.log("getLending user.elnding", user.lending);
     const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
     return await _getERCNftFromToken(_tokens);
   };
@@ -432,16 +435,11 @@ export const GraphProvider: React.FC = ({ children }) => {
     return await _getERCNftFromToken(_tokens);
   };
 
-  console.log("state lendingByid", lendingById);
-
   return (
     <GraphContext.Provider
       value={{
         nfts,
         fetchMyNfts,
-        removeLending: () => {
-          true;
-        },
         getUsersNfts,
         getRenting,
         getLending,

@@ -4,7 +4,7 @@ import { Address, PaymentToken, TokenId } from "../../types";
 
 export type ERCNft = {
   contract?: ERC721 | ERC1155;
-  isERC721: boolean;
+  isERC721?: boolean;
   address: Address;
   tokenId: string;
   tokenURI?: string;

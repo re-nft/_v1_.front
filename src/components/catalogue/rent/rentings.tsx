@@ -119,7 +119,6 @@ export const AvailableToRent: React.FC = () => {
       );
       if (sourceIndex === -1 && item) {
         sources.push(item);
-        console.log(sources);
         setCheckedItems(sources);
       } else {
         sources.splice(sourceIndex, 1);
