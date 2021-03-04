@@ -1,26 +1,9 @@
-import { ERC721 } from "../../hardhat/typechain/ERC721";
-import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { Address, PaymentToken, TokenId } from "../../types";
 
-export type ERCNft = {
-  contract?: ERC721 | ERC1155;
-  isERC721?: boolean;
+export type Token = {
   address: Address;
-  tokenId: string;
-  tokenURI?: string;
-  // ERC1155 can be semi-fungible
-  amount?: number;
-  // * we have meta here, because we will pull extra info in the future
-  // * like attributes, preview image if available, and so on
-  meta?: {
-    // * if we can only get a blob from ipfs, then we createObjectURI
-    mediaURI?: string;
-  };
-  // links up with the data structure in Graph context that will
-  // give you the lending related data if you access it with this
-  // id
-  lending?: Lending["id"][];
-  renting?: Renting["id"][];
+  tokenId: TokenId;
+  uri?: string;
 };
 
 // ! NON-RENFT SUBGRAPHS for 721 and 1155
@@ -29,7 +12,7 @@ export type ERCNft = {
 export type ERC721s = {
   tokens: {
     id: string; // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
-    tokenURI?: ERCNft["tokenURI"]; // e.g. "https://nft.service.cometh.io/3000013"
+    tokenURI?: Token["uri"]; // e.g. "https://nft.service.cometh.io/3000013"
   }[];
 };
 
@@ -39,8 +22,8 @@ export type ERC1155s = {
     balances: {
       amount: number;
       token: {
-        tokenId: ERCNft["tokenId"];
-        tokenURI?: ERCNft["tokenURI"];
+        tokenId: Token["tokenId"];
+        tokenURI?: Token["uri"];
         registry: {
           contractAddress: Address;
         };
@@ -123,10 +106,4 @@ export type Nft = {
 export type User = {
   lending?: Lending["id"][];
   renting?: Renting["id"][];
-};
-
-export type Token = {
-  address: ERCNft["address"];
-  tokenId: ERCNft["tokenId"];
-  tokenURI?: ERCNft["tokenURI"];
 };

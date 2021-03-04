@@ -13,9 +13,7 @@ import { Nfts } from "../index";
 
 const BigNumZero = BigNumber.from("0");
 
-export const useFetchNftDev = (
-  setUsersNfts: (nfts: Omit<Token, "tokenURI">[]) => void
-): (() => Promise<Nfts>) => {
+export const useFetchNftDev = (): (() => Promise<Nfts>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(RentNftContext);
 

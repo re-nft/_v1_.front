@@ -54,7 +54,7 @@ export const queryAllRenft = (): string => {
   }`;
 };
 
-// reNFT's query to pull all lendings and rentings per user
+// reNFT's query to pull all user's lendings and rentings
 export const queryUserRenft = (user: string): string => {
   return `{
     user(id: "${user.toLowerCase()}") {
@@ -63,32 +63,16 @@ export const queryUserRenft = (user: string): string => {
         id
         nftAddress
         tokenId
-        lenderAddress
-        maxRentDuration
-        dailyRentPrice
-        nftPrice
-        paymentToken
         renting {
           id
-          renterAddress
-          rentDuration
-          rentedAt
         }
       }
       renting {
         id
-        rentDuration
-        rentedAt
         lending {
           id
           nftAddress
           tokenId
-          lenderAddress
-          maxRentDuration
-          dailyRentPrice
-          nftPrice
-          paymentToken
-          collateralClaimed
         }
       }
     }
