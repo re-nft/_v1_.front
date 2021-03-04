@@ -149,11 +149,23 @@ export const GraphProvider: React.FC = ({ children }) => {
           }));
           break;
       }
+
+      return tokens;
     },
     // ! do not add nfts as a dep, will cause infinite loop
     /* eslint-disable-next-line */
     [currentAddress, renft?.address, signer]
   );
+
+  const fetchUsersNfts = async () => {
+    if (!signer) return;
+    const usersNfts721 = await fetchAllERCs(FetchType.ERC721);
+    const usersNfts1155 = await fetchAllERCs(FetchType.ERC1155);
+    const __usersNfts = usersNfts721.concat(usersNfts1155);
+    const _usersNfts = __usersNfts.map(
+      (nft) => new Nft(nft.address, nft.tokenId, signer)
+    );
+  };
 
   const getUsersLending = useMemo(() => {
     return _usersLending.map((l) => renftsLending[l]);
