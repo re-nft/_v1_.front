@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 import { request } from "graphql-request";
 
@@ -31,6 +32,7 @@ import {
 } from "./queries";
 import { ERC1155s, ERC721s, NftToken, LendingRaw, RentingRaw } from "./types";
 import { Nft, Lending, Renting } from "./classes";
+import useFetchNftDev from "./hooks/useFetchNftDev";
 // // * only in dev env
 // import useFetchNftDev from "./hooks/useFetchNftDev";
 
@@ -111,7 +113,9 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
 
-  const fetchUsersNfts = useCallback(
+  const fetchNftDev = useFetchNftDev(signer);
+
+  const fetchUserProd = useCallback(
     async (fetchType: FetchType) => {
       let query = "";
       let subgraphURI = "";
@@ -159,12 +163,20 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchUsersNfts = async () => {
     if (!signer) return;
-    const usersNfts721 = await fetchAllERCs(FetchType.ERC721);
-    const usersNfts1155 = await fetchAllERCs(FetchType.ERC1155);
+    const usersNfts721 = await fetchUserProd(FetchType.ERC721);
+    const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
     const __usersNfts = usersNfts721.concat(usersNfts1155);
     const _usersNfts = __usersNfts.map(
       (nft) => new Nft(nft.address, nft.tokenId, signer)
     );
+    let _nfts: Nft[] = _usersNfts;
+
+    if (!IS_PROD) {
+      const __nfts = await fetchNftDev();
+      _nfts = _nfts.concat(__nfts);
+    }
+
+    setUsersNfts(_nfts);
   };
 
   const getUsersLending = useMemo(() => {
@@ -181,17 +193,12 @@ export const GraphProvider: React.FC = ({ children }) => {
    */
   // const fetchNftDev = useFetchNftDev();
 
-  // const fetchMyNfts = useCallback(async () => {
-  //   if (IS_PROD) {
-  //     fetchAllERCs(FetchType.ERC721);
-  //     fetchAllERCs(FetchType.ERC1155);
-  //   } else {
-  //     const _nfts = await fetchNftDev();
-  //     setNfts(_nfts);
-  //   }
-  // }, [fetchAllERCs, fetchNftDev]);
+  useEffect(() => {
+    fetchUsersNfts();
+    /* eslint-disable-next-line */
+  }, []);
 
-  // usePoller(fetchMyNfts, 3 * SECOND_IN_MILLISECONDS);
+  usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
 
   return (
     <GraphContext.Provider

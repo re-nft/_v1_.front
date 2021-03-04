@@ -5,11 +5,11 @@ import NumericField from "../../forms/numeric-field";
 import CatalogueItem from "../../catalogue/catalogue-item";
 import ReturnModal from "../modals/return";
 import ActionButton from "../../forms/action-button";
-import CatalogueLoader from '../catalogue-loader';
+import CatalogueLoader from "../catalogue-loader";
 
 const UserRentings: React.FC = () => {
   const allMyRentings: Nft[] = [];
-  const [modalOpen, setModalOpen] = useState(false);  
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedNft, setSelectedNft] = useState<Nft>();
   const handleCloseModal = useCallback(() => setModalOpen(false), []);
   const handleOpenModal = useCallback(
@@ -21,29 +21,33 @@ const UserRentings: React.FC = () => {
   );
 
   if (allMyRentings.length === 0) {
-    return <CatalogueLoader/>
+    return <CatalogueLoader />;
   }
 
   return (
     <>
-      {selectedNft && <ReturnModal open={modalOpen} nft={selectedNft} onClose={handleCloseModal} />}
-      {allMyRentings.map(async (nft: Nft) => {
+      {selectedNft && (
+        <ReturnModal
+          open={modalOpen}
+          nft={selectedNft}
+          onClose={handleCloseModal}
+        />
+      )}
+      {allMyRentings.map((nft: Nft) => {
         const id = `${nft.address}::${nft.tokenId}`;
-        const mediaURI = await nft.mediaURI();
         return (
-          <CatalogueItem
-            key={id}
-            tokenId={nft.tokenId}
-            nftAddress={nft.address}
-            mediaURI={mediaURI}
-          >
+          <CatalogueItem key={id} nft={nft}>
             <NumericField
               text="Daily price"
               value={String(0)}
               unit={PaymentToken[PaymentToken.DAI]}
             />
             <NumericField text="Rent Duration" value={String(0)} unit="days" />
-            <ActionButton title="Return It" nft={nft} onClick={handleOpenModal} />
+            <ActionButton
+              title="Return It"
+              nft={nft}
+              onClick={handleOpenModal}
+            />
           </CatalogueItem>
         );
       })}

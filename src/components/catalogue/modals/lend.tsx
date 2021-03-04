@@ -15,6 +15,7 @@ import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { Nft } from "../../../contexts/graph/classes";
 import { useStyles } from "./styles";
 import startLend from "../../../services/start-lend";
+import isApprovedForAll from "../../../services/is-approval-for-all";
 import ActionButton from "../../forms/action-button";
 
 type ValueValid = {
@@ -35,8 +36,8 @@ type LendModalProps = {
 };
 
 const defaulLandValue = {
-    value: "",
-    valid: true,
+  value: "",
+  valid: true,
 };
 
 const DefaultLendOneInputs = {
@@ -123,16 +124,13 @@ export const LendModal: React.FC<LendModalProps> = ({ nft, open, onClose }) => {
   const checkIsApproved = useCallback(async () => {
     if (!currentAddress || !renft?.instance) return false;
     const contract = await nft.contract();
-    const _isApproved = await contract
-      .isApprovedForAll(currentAddress, renft.instance.address ?? "")
-      .then((r) => r)
-      .catch(() => false);
-    setIsApproved(_isApproved);
-  }, [currentAddress, renft?.instance, nft]);
+    const isApproved = await isApprovedForAll(renft, contract, currentAddress);
+    setIsApproved(isApproved);
+  }, [currentAddress, renft, nft]);
 
   useEffect(() => {
     checkIsApproved();
-  }, []);
+  }, [checkIsApproved]);
 
   return (
     <Modal open={open} handleClose={onClose}>

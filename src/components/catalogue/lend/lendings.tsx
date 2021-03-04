@@ -8,7 +8,7 @@ import {
 } from "../../../hardhat/SymfoniContext";
 import CatalogueItem from "../../catalogue/catalogue-item";
 import ActionButton from "../../forms/action-button";
-import CatalogueLoader from '../catalogue-loader';
+import CatalogueLoader from "../catalogue-loader";
 
 const Lendings: React.FC = () => {
   const [selectedNft, setSelectedNft] = useState<Nft>();
@@ -16,7 +16,6 @@ const Lendings: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const { usersNfts } = useContext(GraphContext);
-  
   const handleClose = useCallback(() => setModalOpen(false), [setModalOpen]);
   const handleStartLend = useCallback(
     async (nft) => {
@@ -26,30 +25,26 @@ const Lendings: React.FC = () => {
     },
     [renft, currentAddress]
   );
-  
+
   if (usersNfts.length === 0) {
-    return <CatalogueLoader/>
+    return <CatalogueLoader />;
   }
-  
+
   return (
     <>
       {selectedNft && (
-        <LendModal 
-          nft={selectedNft} 
-          open={modalOpen} 
-          onClose={handleClose}
-        />
+        <LendModal nft={selectedNft} open={modalOpen} onClose={handleClose} />
       )}
-      {usersNfts.map(async (nft) => {
-        const mediaURI = await nft.mediaURI();
-        <CatalogueItem
-          key={`${nft.address}::${nft.tokenId}`}
-          tokenId={nft.tokenId}
-          nftAddress={nft.address}
-          mediaURI={mediaURI ?? ""}
-        >
-            <ActionButton nft={nft} title="Lend now" onClick={handleStartLend}/> 
-        </CatalogueItem>;
+      {usersNfts.map((nft) => {
+        return (
+          <CatalogueItem key={`${nft.address}::${nft.tokenId}`} nft={nft}>
+            <ActionButton
+              nft={nft}
+              title="Lend now"
+              onClick={handleStartLend}
+            />
+          </CatalogueItem>
+        );
       })}
     </>
   );

@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Checkbox } from "@material-ui/core";
+import { Nft } from "../../contexts/graph/classes";
 
 export type CatalogueItemProps = {
-  tokenId: string;
-  nftAddress: string;
-  mediaURI?: string;
+  nft: Nft;
   // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
   onCheckboxChange?: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -13,43 +12,54 @@ export type CatalogueItemProps = {
 };
 
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
-  tokenId,
-  nftAddress,
-  mediaURI,
+  nft,
   onCheckboxChange,
   children,
 }) => {
+  const [img, setImg] = useState<string>();
+  const loadMediaURI = async () => {
+    const mediaURI = await nft.mediaURI();
+    return mediaURI;
+  };
+
+  useEffect(() => {
+    loadMediaURI()
+      .then((mediaUri) => setImg(mediaUri))
+      .catch(() => "");
+    /* eslint-disable-next-line */
+  }, []);
+
   return (
-    <div className="Nft__item" key={tokenId}>
+    <div className="Nft__item" key={nft.tokenId}>
       {onCheckboxChange && (
         <div className="Nft__checkbox">
           <Checkbox
-            name={tokenId}
+            name={nft.tokenId}
             onChange={onCheckboxChange}
             inputProps={{ "aria-label": "primary checkbox" }}
           />
         </div>
       )}
-      <div className="Nft" data-item-id={tokenId}>
+      <div className="Nft" data-item-id={nft.tokenId}>
         <div className="Nft__image">
-          {mediaURI && <img loading="lazy" src={mediaURI} />}
+          {img && <img loading="lazy" src={img} />}
         </div>
         <div className="Nft__card">
           <p className="Nft__text_overflow">
             <a
-              href={`https://goerli.etherscan.io/address/${nftAddress}`}
+              href={`https://goerli.etherscan.io/address/${nft.address}`}
               target="_blank"
               rel="noreferrer"
               style={{ textDecoration: "none", color: "black" }}
             >
-              {nftAddress}
+              {nft.address}
             </a>
           </p>
         </div>
         <div className="Nft__card">
           <p className="Nft__text_overflow">
             <span className="Nft__label">Token id</span>
-            <span className="Nft__value">{tokenId}</span>
+            <span className="Nft__value">{nft.tokenId}</span>
           </p>
         </div>
         {/* description fields */}

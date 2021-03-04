@@ -14,6 +14,8 @@ import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__fac
 
 type NftOptions = {
   tokenURI?: string;
+  mediaURI?: string;
+  name?: string;
 };
 
 class Nft {
@@ -28,16 +30,18 @@ class Nft {
     this.signer = signer;
     this.isERC721 = false;
 
-    if (options?.tokenURI) {
-      this._tokenURI = options?.tokenURI;
-    }
+    this.name = options?.name ?? "";
+    this._tokenURI = options?.tokenURI ?? "";
+    this._mediaURI = options?.mediaURI ?? "";
   }
 
   address: Address;
   tokenId: string;
   signer: ethers.Signer;
   isERC721: boolean;
-  _tokenURI: string | undefined;
+  name: string;
+  _tokenURI: string;
+  _mediaURI: string;
   _contract: ERC721 | ERC1155 | undefined;
 
   contract = (): ERC721 | ERC1155 => {
@@ -82,6 +86,7 @@ class Nft {
    * meta...
    */
   mediaURI = async (): Promise<string | undefined> => {
+    if (this._mediaURI) return this._mediaURI;
     // todo: ipfs
     return "";
   };

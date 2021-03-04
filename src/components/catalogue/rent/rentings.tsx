@@ -13,8 +13,8 @@ import { PaymentToken } from "../../../types";
 import CatalogueItem from "../../catalogue/catalogue-item";
 import BatchRentModal from "../modals/batch-rent";
 import ActionButton from "../../forms/action-button";
-import startRent from '../../../services/start-rent';
-import CatalogueLoader from '../catalogue-loader';
+import startRent from "../../../services/start-rent";
+import CatalogueLoader from "../catalogue-loader";
 
 export const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
@@ -46,9 +46,17 @@ export const AvailableToRent: React.FC = () => {
         !myERC20
       )
         return;
-      
-      const pmtToken = PaymentToken.DAI;  
-      await startRent(renft, nft, resolver, currentAddress, signer, rentDuration, pmtToken);
+
+      const pmtToken = PaymentToken.DAI;
+      await startRent(
+        renft,
+        nft,
+        resolver,
+        currentAddress,
+        signer,
+        rentDuration,
+        pmtToken
+      );
     },
     [renft, currentAddress, signer, resolver, myERC20]
   );
@@ -73,11 +81,11 @@ export const AvailableToRent: React.FC = () => {
   );
 
   const countOfCheckedItems = checkedItems.length;
-  
+
   if (allRentings.length === 0) {
-    return <CatalogueLoader/>
+    return <CatalogueLoader />;
   }
-  
+
   return (
     <>
       <BatchRentModal
@@ -86,15 +94,12 @@ export const AvailableToRent: React.FC = () => {
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
-      {allRentings.map(async (nft: Nft) => {
+      {allRentings.map((nft: Nft) => {
         const rentingId = -1;
-        const mediaURI = await nft.mediaURI();
         return (
           <CatalogueItem
             key={`${nft.address}::${nft.tokenId}::${rentingId}`}
-            tokenId={nft.tokenId}
-            nftAddress={nft.address}
-            mediaURI={mediaURI}
+            nft={nft}
             onCheckboxChange={handleCheckboxChange}
           >
             <NumericField
