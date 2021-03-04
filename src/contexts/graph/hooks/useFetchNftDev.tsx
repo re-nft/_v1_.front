@@ -7,7 +7,7 @@ import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
-import { Token } from "../../Graph/types";
+import { Token } from "../types";
 // * circular-dep
 import { Nfts } from "../index";
 

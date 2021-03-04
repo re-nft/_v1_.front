@@ -64,12 +64,27 @@ export type Lending = {
   collateralClaimed: boolean;
 };
 
+export type LendingRaw = Omit<
+  Lending,
+  "maxRentDuration" | "dailyRentPrice" | "nftPrice" | "paymentToken"
+> & {
+  maxRentDuration: string;
+  dailyRentPrice: string;
+  nftPrice: string;
+  paymentToken: string;
+};
+
 export type Renting = {
   id: string;
   renterAddress: Address;
   rentDuration: number;
   rentedAt: number;
   lendingId: string;
+};
+
+export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
+  rentDuration: string;
+  rentedAt: string;
 };
 
 // ! Tracks all of the lending of renting of a single NFT

@@ -1,8 +1,8 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 import { BigNumber } from "ethers";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
-import GraphContext from "../../../contexts/Graph";
-import { ERCNft } from "../../../contexts/Graph/types";
+import GraphContext from "../../../contexts/graph";
+import { ERCNft } from "../../../contexts/graph/types";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../catalogue/catalogue-item";
 

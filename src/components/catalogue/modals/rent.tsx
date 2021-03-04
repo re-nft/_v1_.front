@@ -7,7 +7,7 @@ import FunnySpinner from "../../spinner";
 import RainbowButton from "../../rainbow-button";
 import CssTextField from "../../css-text-field";
 import Modal from "../../modal";
-import { ERCNft } from "../../../contexts/Graph/types";
+import { ERCNft } from "../../../contexts/graph/types";
 
 const SENSIBLE_MAX_DURATION = 10 * 365;
 

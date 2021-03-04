@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useState } from "react";
-import { ERCNft } from "../../../contexts/Graph/types";
+import { ERCNft } from "../../../contexts/graph/types";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../numeric-field";
 import CatalogueItem from "../../catalogue/catalogue-item";

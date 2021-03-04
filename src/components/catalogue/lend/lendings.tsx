@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-import GraphContext from "../../../contexts/Graph";
-import { ERCNft } from "../../../contexts/Graph/types";
+import GraphContext from "../../../contexts/graph";
+import { ERCNft } from "../../../contexts/graph/types";
 import { LendModal } from "../modals/lend";
 import {
   CurrentAddressContext,

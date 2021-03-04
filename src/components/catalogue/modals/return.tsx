@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
-import { ERCNft } from "../../../contexts/Graph/types";
+import { ERCNft } from "../../../contexts/graph/types";
 import Modal from "../../modal";
 
 type ReturnModalProps = {

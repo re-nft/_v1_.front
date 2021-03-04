@@ -31,8 +31,9 @@ import {
   ERC721s,
   ERCNft,
   Token,
+  LendingRaw,
+  RentingRaw,
 } from "./types";
-import { parseLending } from "./utils";
 // * only in dev env
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
@@ -145,6 +146,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [usersNfts, setUsersNfts] = useState<Omit<Token, "tokenURI">[]>([]);
   // an array of user's lendings and rentings on renft
   // user is the set of all of the NFTs of the user that are related to ReNFT
+  // lending and renting ids, use lendingById and rentingById to map into the nfts
   const [user, setUser] = useState<User>(DefaultGraphContext["user"]);
   const [lendingById, setLendingById] = useState<LendingById>(
     DefaultGraphContext["lendingById"]
@@ -152,8 +154,6 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [rentingById, setRentingById] = useState<RentingById>(
     DefaultGraphContext["rentingById"]
   );
-
-  const fetchNftDev = useFetchNftDev(setUsersNfts);
 
   const _setTokenId = (token: Token) => {
     if (hasPath([token.address, "tokenIds", token.tokenId])(nfts)) return;
@@ -212,13 +212,65 @@ export const GraphProvider: React.FC = ({ children }) => {
     return { contract, isERC721 };
   };
 
-  const _parseRenftNftId = (
-    id: string
-  ): { address: Token["address"]; tokenId: Token["tokenId"] } => {
-    // TODO
-    const [address, tokenId] = (id || "").split(RENFT_SUBGRAPH_ID_SEPARATOR);
-    return { address, tokenId };
+  // is called when someone calls getUser, getLending or getRenting
+  // user's lending is not in nfts, and so may need instantiation for tokenURI
+  const _getERCNftFromToken = async (tokens: Token[]) => {
+    const _nfts: ERCNft[] = [];
+    for (const _token of tokens) {
+      let contract: ERC721 | ERC1155 | undefined;
+      let isERC721 = false;
+      if (!nfts[_token.address]) {
+        const res = await _setContract(_token);
+        if (!res?.contract) continue;
+        contract = res.contract;
+        isERC721 = res.isERC721 ?? false;
+        _setTokenId(_token);
+      }
+      const _contract = nfts[_token.address] ?? null;
+      _nfts.push({
+        contract: _contract.contract ?? contract,
+        isERC721: _contract.isERC721 ?? isERC721,
+        address: _token.address,
+        tokenId: _token.tokenId,
+        tokenURI: _contract.tokens[_token.tokenId].tokenURI,
+        meta: _contract.tokens[_token.tokenId].meta,
+        renting: user.renting ?? [],
+      });
+    }
+    return _nfts;
   };
+
+  const getUsersNfts = async () => await _getERCNftFromToken(usersNfts);
+
+  const getLending = async () => {
+    const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
+    return await _getERCNftFromToken(_tokens);
+  };
+
+  const getRenting = async () => {
+    const _tokens: Token[] = user.renting?.map((id) => rentingById[id]) ?? [];
+    return await _getERCNftFromToken(_tokens);
+  };
+
+  // ------
+  // HELPER
+  // ------
+  // - fetchAllERCs(721)         | all my nfts 721   | available for lend | could have been rented
+  // - fetchAllERCs(1155)        | all my nfts 1155  | available for lend | could have been rented
+  // - fetchNftDev               | all my nfts mock  | available for lend | could have been rented
+  // - fetchAllLendingAndRenting | all renft nfts    | available for rent | available for re-lend  | current re-lendings and re-rentings
+  // - fetchUser                 | all my renft nfts | I lend | I rent
+  // * What goes into nfts state?
+  // * fetchAllERCs, fetchNftDev
+  // * --------------------------
+  // * User's lendings will not be returned in fetchAllERCs, fetchNftDev
+  // * because they are owned by someone else
+  // * To instantiate these contracts, we first pull all of the user's
+  // * lendings and rentings with fetchUser
+  // * We do one set here, to nfts. Therefore this is a central source of
+  // * truth about all the NFTs seen by reNFT's client.
+  // * To understand which Nfts the user owns, look into the usersNfts state var.
+  // * This only gets set in fetchAllERCs and fetchNftDev
 
   // * uses the eip1155 subgraph to pull all your erc1155 holdings
   // * uses the eip721  subgraph to pull all your erc721  holdings
@@ -279,15 +331,68 @@ export const GraphProvider: React.FC = ({ children }) => {
     [currentAddress, renft?.address, signer]
   );
 
+  /**
+   * Only used in the dev environment to pull third account's (test test ... junk)
+   * mock NFTs
+   */
+  const fetchNftDev = useFetchNftDev(setUsersNfts);
+
+  /**
+   * These are all the NFTs that are being lent / rented on reNFT
+   */
+  const fetchAllLendingAndRenting = useCallback(async () => {
+    const query = queryAllRenft();
+    const data: {
+      nfts: { lending?: LendingRaw[]; renting?: RentingRaw[] }[];
+    } = await request(
+      ENDPOINT_RENFT_DEV,
+      // todo
+      // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
+      query
+    );
+    if (!data?.nfts) return;
+
+    const { nfts: _nfts } = data;
+
+    // Dima's ingenuity to reduce the number of state update calls
+    const tmpLendingById: LendingById = {};
+    const tmpRentingById: RentingById = {};
+
+    for (const _nft of _nfts) {
+      for (const lending of _nft.lending ?? []) {
+        tmpLendingById[lending.id] = {
+          address: lending.nftAddress,
+          tokenId: lending.tokenId,
+        };
+      }
+      for (const renting of _nft.renting ?? []) {
+        const lending =
+          tmpLendingById[renting.lendingId] ?? lendingById[renting.lendingId];
+        tmpRentingById[renting.id] = {
+          address: lending.address,
+          tokenId: lending.tokenId,
+        };
+      }
+    }
+
+    setLendingById(tmpLendingById);
+    setRentingById(tmpRentingById);
+    // ! do not add lendingById and rentingById in deps
+    // ! you will have an infinite loop
+    /* eslint-disable-next-line */
+  }, []);
+
+  /**
+   * Pulls all the lendings and rentings of the currentAddress user
+   */
   const fetchUser = useCallback(async () => {
     const query = queryUserRenft(currentAddress);
     // todo: the types for lending and renting not correct, because we get raw
     // response from request. Wrap the call in a parsing function
     const data: {
-      user: {
-        id: string; // this is user's address
-        lending?: { id: string }[];
-        renting?: { id: string }[];
+      user?: {
+        lending?: LendingRaw[];
+        renting?: RentingRaw[];
       };
     } = await request(
       // TODO
@@ -295,8 +400,11 @@ export const GraphProvider: React.FC = ({ children }) => {
       // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
       query
     );
+    console.log("raw user data", data);
 
-    const { lending, renting } = data?.user;
+    if (!data?.user) return;
+
+    const { lending, renting } = data.user;
     // * updated all the time, need to compute hash of the lists
     // * as we go along to then simply check that the combined hash
     // * hasn't changed, to determine if we need to update the state
@@ -309,77 +417,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     setUser(_user);
   }, [currentAddress]);
 
-  // these are all the NFTs that are available for rent
-  const fetchAllLendingAndRenting = useCallback(async () => {
-    const query = queryAllRenft();
-    // * type is not exactly correct because lending and renting
-    // TODO: are raw in here. Create a function that parses the raw
-    // * into these types and wrap / call that function in here
-    const data: {
-      nfts: { lending: Lending[]; renting?: Renting[] }[];
-    } = await request(
-      ENDPOINT_RENFT_DEV,
-      // todo
-      // IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV,
-      query
-    );
-    if (!data?.nfts) return;
-
-    const { nfts: _nfts } = data;
-    const tmpLendingById: LendingById = {};
-    const tmpRentingById: RentingById = {};
-    for (const _nft of _nfts) {
-      // each Nft has an array of lending and renting, only the last
-      // item in each one is the source of truth when it comes to
-      // ability to lend or rent
-      for (const lending of _nft.lending) {
-        tmpLendingById[lending.id] = {
-          address: lending.nftAddress,
-          tokenId: lending.tokenId,
-        };
-      }
-      for (const renting of _nft.renting ?? []) {
-        let lending = tmpLendingById[renting.lendingId];
-        if (!lending) {
-          lending = lendingById[renting.lendingId];
-        }
-        tmpRentingById[renting.id] = {
-          address: lending.address,
-          tokenId: lending.tokenId,
-        };
-      }
-
-      setLendingById(tmpLendingById);
-      setRentingById(tmpRentingById);
-    }
-    // ! do not add lendingById and rentingById in deps
-    // ! you will have an infinite loop
-    /* eslint-disable-next-line */
-  }, []);
-
-  // - separation of concerns. set whatever you need to set, single purpose
-  // - separate poller, glues together. looks through lending ids and sees
-  // that there is no contract for that nft, instantiates
-  // - another poller looks through fetched nfts from eip721 and 1155,
-  // sees that meta is missing, tries to fetch it with the exponential backoff
-
-  // little helper table
-  // - fetchAllERCs(721)         | all my nfts 721   | available for lend | could have been rented
-  // - fetchAllERCs(1155)        | all my nfts 1155  | available for lend | could have been rented
-  // - fetchNftDev               | all my nfts mock  | available for lend | could have been rented
-  // - fetchAllLendingAndRenting | all renft nfts    | available for rent | available for re-lend  | current re-lendings and re-rentings
-  // - fetchUser                 | all my renft nfts | I lend | I rent
-  // * What goes into nfts state?
-  // * fetchAllERCs, fetchNftDev
-  // * --------------------------
-  // * User's lendings will not be returned in fetchAllERCs, fetchNftDev
-  // * because they are owned by someone else
-  // * To instantiate these contracts, we first pull all of the user's
-  // * lendings and rentings with fetchUser
-  // * We do one set here, to nfts. Therefore this is a central source of
-  // * truth about all the NFTs seen by reNFT's client.
-  // * To understand which Nfts the user owns, look into the usersNfts state var.
-  // * This only gets set in fetchAllERCs and fetchNftDev
+  /**
+   * A wrapper for fetchAllERCs and fetchNftDev
+   */
   const fetchMyNfts = useCallback(async () => {
     if (IS_PROD) {
       fetchAllERCs(FetchType.ERC721);
@@ -394,46 +434,6 @@ export const GraphProvider: React.FC = ({ children }) => {
   usePoller(fetchAllLendingAndRenting, 9 * SECOND_IN_MILLISECONDS); // all of the lent NFTs on ReNFT
   // usePoller(fetchRenting, 8 * SECOND_IN_MILLISECONDS); // all of the rented NFTs on ReNFT
   usePoller(fetchUser, 3 * SECOND_IN_MILLISECONDS); // all of my NFTs (related to ReNFT)
-
-  // is called when someone calls getUser, getLending or getRenting
-  // user's lending is not in nfts, and so may need instantiation for tokenURI
-  const _getERCNftFromToken = async (tokens: Token[]) => {
-    const _nfts: ERCNft[] = [];
-    for (const _token of tokens) {
-      let contract: ERC721 | ERC1155 | undefined;
-      let isERC721 = false;
-      if (!nfts[_token.address]) {
-        const res = await _setContract(_token);
-        if (!res?.contract) continue;
-        contract = res.contract;
-        isERC721 = res.isERC721 ?? false;
-        _setTokenId(_token);
-      }
-      const _contract = nfts[_token.address] ?? null;
-      _nfts.push({
-        contract: _contract.contract ?? contract,
-        isERC721: _contract.isERC721 ?? isERC721,
-        address: _token.address,
-        tokenId: _token.tokenId,
-        tokenURI: _contract.tokens[_token.tokenId].tokenURI,
-        meta: _contract.tokens[_token.tokenId].meta,
-        renting: user.renting ?? [],
-      });
-    }
-    return _nfts;
-  };
-
-  const getUsersNfts = async () => await _getERCNftFromToken(usersNfts);
-
-  const getLending = async () => {
-    const _tokens: Token[] = user.lending?.map((id) => lendingById[id]) ?? [];
-    return await _getERCNftFromToken(_tokens);
-  };
-
-  const getRenting = async () => {
-    const _tokens: Token[] = user.renting?.map((id) => rentingById[id]) ?? [];
-    return await _getERCNftFromToken(_tokens);
-  };
 
   return (
     <GraphContext.Provider

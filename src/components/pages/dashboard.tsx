@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import moment from "moment";
 
 import Table from "../table";
-import { ERCNft } from "../../contexts/Graph/types";
+import { ERCNft } from "../../contexts/graph/types";
 import { short } from "../../utils";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 

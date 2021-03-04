@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { ERCNft } from "../contexts/Graph/types";
+import { ERCNft } from "../contexts/graph/types";
 
 type NFT = {
   contract?: ERCNft["contract"];

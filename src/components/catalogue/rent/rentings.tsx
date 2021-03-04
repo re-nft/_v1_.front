@@ -8,7 +8,7 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import { ERCNft } from "../../../contexts/Graph/types";
+import { ERCNft } from "../../../contexts/graph/types";
 import NumericField from "../../numeric-field";
 import { PaymentToken } from "../../../types";
 import { getERC20 } from "../../../utils";
