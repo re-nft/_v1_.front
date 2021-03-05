@@ -44,29 +44,43 @@ class Nft {
   _mediaURI: string;
   _contract: ERC721 | ERC1155 | undefined;
 
+  /**
+   * If previously instantiated, will return that instance, otherwise, will instantiate
+   * a contract for you
+   * @returns ERC721 or ERC1155 instance that can be signed by the currentAddress
+   */
   contract = (): ERC721 | ERC1155 => {
     if (this._contract) return this._contract;
-    // todo: not exactly sure if this will work
+    let _contract: ERC721 | ERC1155;
+    // TODO not exactly sure if this will work
     try {
-      const __contract = ERC721__factory.connect(this.address, this.signer);
+      _contract = ERC721__factory.connect(this.address, this.signer);
       this.isERC721 = true;
-      this._contract = __contract;
-      return __contract;
+      console.log("instantiated erc721", _contract);
     } catch {
-      const __contract = ERC1155__factory.connect(this.address, this.signer);
-      this._contract = __contract;
-      return __contract;
+      _contract = ERC1155__factory.connect(this.address, this.signer);
     }
+    this._contract = _contract;
+    return _contract;
   };
 
+  /**
+   * Fetches the metadata URI of the token
+   * @returns Promise<string | undefined>
+   */
   tokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
     if (!this._contract) this.contract();
+    let fetchedTokenURI;
+    // ! will fail when a new NFT spec will be born || we add L2s
     if (this.isERC721) {
-      return await this.contract().tokenURI();
+      fetchedTokenURI = await this.contract().tokenURI();
     } else {
-      return `${await this.contract().uri()}/${this.tokenId}`;
+      fetchedTokenURI = `${await this.contract().uri()}/${this.tokenId}`;
     }
+    this._tokenURI = fetchedTokenURI;
+    console.log("fetched tokenURI", fetchedTokenURI);
+    return fetchedTokenURI;
   };
 
   // todo: look at the meta definition
@@ -81,14 +95,14 @@ class Nft {
   };
 
   /**
-   * This is image from meta or from tokenURI. Sometimes,
+   * This is image from meta. Sometimes,
    * tokenURI directly gives a link to media, instead of
    * meta...
    */
   mediaURI = async (): Promise<string | undefined> => {
     if (this._mediaURI) return this._mediaURI;
     // todo: ipfs
-    return "";
+    return;
   };
 }
 
