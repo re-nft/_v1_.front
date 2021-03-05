@@ -13,37 +13,23 @@ import {
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-import { ERC721 } from "../../hardhat/typechain/ERC721";
-import { ERC1155 } from "../../hardhat/typechain/ERC1155";
-import { getERC1155, getERC721, THROWS, timeItAsync } from "../../utils";
 import { usePoller } from "../../hooks/usePoller";
 import {
   SECOND_IN_MILLISECONDS,
   RENFT_SUBGRAPH_ID_SEPARATOR,
 } from "../../consts";
-import { parseLending, parseRenting } from "./utils";
+import { timeItAsync } from "../../utils";
 
-import { Address } from "../../types";
 import {
-  queryUserRenft,
   queryAllRenft,
   queryUserLendingRenft,
   queryUserRentingRenft,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
-import {
-  NftRaw,
-  ERC1155s,
-  ERC721s,
-  NftToken,
-  LendingRaw,
-  RentingRaw,
-} from "./types";
+import { NftRaw, ERC1155s, ERC721s, NftToken } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
-// // * only in dev env
-// import useFetchNftDev from "./hooks/useFetchNftDev";
 
 /**
  * Useful links
@@ -122,8 +108,15 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
 
+  /**
+   * Only for dev purposes
+   */
   const fetchNftDev = useFetchNftDev(signer);
 
+  /**
+   * Pings the eip721 and eip1155 subgraphs in prod, to determine what
+   * NFTs you own
+   */
   const fetchUserProd = useCallback(
     async (fetchType: FetchType) => {
       let query = "";
@@ -170,6 +163,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     [currentAddress, renft?.address, signer]
   );
 
+  /**
+   * Sets the usersNfts state to an array of all the users Nft types
+   * @returns Promise<void>
+   */
   const fetchUsersNfts = async () => {
     if (!signer) return;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
@@ -188,6 +185,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     setUsersNfts(_nfts);
   };
 
+  /**
+   * Sets the _userLending to whatever the user is lending (ids)
+   * @returns Promise<void>
+   */
   const fetchUserLending = async () => {
     if (!currentAddress) return;
     const query = queryUserLendingRenft(currentAddress);
@@ -202,6 +203,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     _setUsersLending(lendingsIds);
   };
 
+  /**
+   * Sets the _usersRenting state to whatever the user is renting (ids)
+   * @returns Promise<void>
+   */
   const fetchUserRenting = async () => {
     if (!currentAddress) return;
     const query = queryUserRentingRenft(currentAddress);
@@ -216,6 +221,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     _setUsersRenting(rentingsIds);
   };
 
+  /**
+   * Sets the renftsLending and renftsRenting state. These are mappings from
+   * lending id, renting id respectively to Lending, Renting instances,
+   * respectively. These are all the NFTs on reNFT platform
+   * @returns Promise<void>
+   */
   const fetchRenftsAll = async () => {
     if (!signer) return;
     const query = queryAllRenft();
@@ -224,8 +235,10 @@ export const GraphProvider: React.FC = ({ children }) => {
       `Pulled All Renft Nfts`,
       async () => await request(subgraphURI, query)
     );
+
     const _allRenftsLending: { [key: string]: Lending } = {};
     const _allRenftsRenting: { [key: string]: Renting } = {};
+
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
@@ -240,30 +253,35 @@ export const GraphProvider: React.FC = ({ children }) => {
     setRenftsRenting(_allRenftsRenting);
   };
 
+  /**
+   * Convenvience function that maps from lending id to instance, and returns
+   * the set of all the Lending instances of the user.
+   */
   const getUsersLending = useMemo(() => {
     if (Object.keys(renftsLending).length === 0) return [];
     return _usersLending.map((l) => renftsLending[l]);
   }, [_usersLending, renftsLending]);
 
+  /**
+   * Convenvience function that maps from renting id to instance, and returns
+   * the set of all the Renting instances of the user.
+   */
   const getUsersRenting = useMemo(() => {
     if (Object.keys(renftsRenting).length === 0) return [];
     return _usersRenting.map((r) => renftsRenting[r]);
   }, [_usersRenting, renftsRenting]);
 
-  /**
-   * Only used in the dev environment to pull third account's (test test ... junk)
-   * mock NFTs
-   */
-  // const fetchNftDev = useFetchNftDev();
-
   useEffect(() => {
     fetchRenftsAll();
-    fetchUsersNfts();
     fetchUserLending();
     fetchUserRenting();
+    fetchUsersNfts();
     /* eslint-disable-next-line */
   }, []);
 
+  usePoller(fetchRenftsAll, 8 * SECOND_IN_MILLISECONDS);
+  usePoller(fetchUserLending, 10 * SECOND_IN_MILLISECONDS);
+  usePoller(fetchUserRenting, 10 * SECOND_IN_MILLISECONDS);
   usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
 
   return (
