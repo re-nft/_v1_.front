@@ -284,6 +284,12 @@ export const GraphProvider: React.FC = ({ children }) => {
   usePoller(fetchUserRenting, 10 * SECOND_IN_MILLISECONDS);
   usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
 
+  console.log("renftsLending", renftsLending);
+  console.log("renftsRenting", renftsRenting);
+  console.log("usersNfts", usersNfts);
+  console.log("usersLending", getUsersLending);
+  console.log("usersRenting", getUsersRenting);
+
   return (
     <GraphContext.Provider
       value={{
