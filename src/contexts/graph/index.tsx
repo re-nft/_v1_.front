@@ -134,7 +134,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
 
       const response: ERC721s | ERC1155s = await timeItAsync(
-        `Pulled My ${FetchType[fetchType]} NFTs`,
+        `Pulled My Prod ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
 
@@ -196,7 +196,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { lending?: { id: LendingId }[] };
     } = await timeItAsync(
-      `Pulled My Lending Nfts`,
+      `Pulled My Renft Lending Nfts`,
       async () => await request(subgraphURI, query)
     );
     const lendingsIds = response.user?.lending?.map(({ id }) => id) ?? [];
@@ -214,7 +214,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { renting?: { id: RentingId }[] };
     } = await timeItAsync(
-      `Pulled My Renting Nfts`,
+      `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)
     );
     const rentingsIds = response.user?.renting?.map(({ id }) => id) ?? [];
