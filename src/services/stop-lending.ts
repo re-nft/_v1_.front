@@ -1,13 +1,12 @@
 import { RentNft } from "../hardhat/typechain/RentNft";
 import { BigNumber, ContractTransaction } from "ethers";
-import { Nft } from "../contexts/graph/classes";
+import { Lending, Nft } from "../contexts/graph/classes";
 
-export default async function stopLend(renft: RentNft, nft: Nft,lendingId: string): Promise<ContractTransaction> {
-  const result = await renft.stopLending(
-    [nft.address ?? ""],
-    [nft.tokenId ?? ""],
-    [BigNumber.from(lendingId)]
-  );
+export default async function stopLend(renft: RentNft, nfts: Nft[]): Promise<ContractTransaction> {
+  const address = nfts.map(item => item.address);
+  const tokenIds = nfts.map(item => item.tokenId);
+  const lendingIds = (nfts as any[] as Lending[]).map((item: Lending) => BigNumber.from(item.lending.id));
+  const result = await renft.stopLending(address, tokenIds, lendingIds);
   
   return result;
 }

@@ -6,19 +6,25 @@ import { decimalToPaddedHexString } from "../utils";
 
 export default async function startLend(
   renft: RentNft,
-  nft: Nft,
-  maxDuration: string,
-  borrowPrice: string,
-  nftPrice: string,
-  pmtToken: PaymentToken
+  nfts: Nft[],
+  maxDurations: string[],
+  borrowPrices: string[],
+  nftPrices: string[],
+  pmtTokens: PaymentToken[]
 ): Promise<ContractTransaction> {
+  const address = nfts.map(nft => nft.address);
+  const tokenIds = nfts.map(nft => nft.tokenId);
+  const durations = maxDurations.map(item => BigNumber.from(item));
+  const bPrices = borrowPrices.map(item => decimalToPaddedHexString(Number(item), 32));
+  const nPrices = nftPrices.map(item => decimalToPaddedHexString(Number(item), 32));
+  const _pmtTokens = pmtTokens.map(item => item.toString());
   const result = await renft.lend(
-    [nft.address ?? ""],
-    [nft.tokenId ?? ""],
-    [BigNumber.from(maxDuration)],
-    [decimalToPaddedHexString(Number(borrowPrice), 32)],
-    [decimalToPaddedHexString(Number(nftPrice), 32)],
-    [pmtToken.toString()]
+    address,
+    tokenIds,
+    durations,
+    bPrices,
+    nPrices,
+    _pmtTokens
   );
 
   return result;

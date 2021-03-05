@@ -26,9 +26,9 @@ export default async function startRent(
   const isETHPayment = pmtToken === PaymentToken.ETH;
   const addresses = nft.map((x) => x.address);
   const tokenIds = nft.map((x) => x.tokenId);
-  const lendingIds = nft.map((x) => 0);
+  const lendingIds = nft.map((x) => x.lending.id);
   const durations = rentDurations.map((x) => Number(x));
-
+  console.log(addresses, tokenIds, lendingIds, durations, amountPayable);
   if (isETHPayment) {
     await renft.rent(addresses, tokenIds, lendingIds, durations, {
       value: amountPayable,

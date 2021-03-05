@@ -7,6 +7,7 @@ import { Lending } from "../../contexts/graph/classes";
 import { short } from "../../utils";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/graph";
+import { PaymentToken } from "../../types";
 
 type StatsProps = {
   hidden: boolean;
@@ -149,22 +150,17 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
               usersLending.map((l) => {
                 return (
                   <TableRow
-                    key="deal wiv it"
-                    // key={`${l.address}::${l.tokenId}::${l.lending?.[0].id}`}
+                    key={`${l.address}::${l.tokenId}::${l.lending.id}`}
                     address={l.address}
                     tokenId={String(l.tokenId)}
-                    // id={String(l.lending?.[0].id)}
-                    id="0"
-                    // dailyPrice={`${
-                    //   PaymentToken[l.lending?.[0].paymentToken ?? 0]
-                    // } ${String(l.lending?.[0].dailyRentPrice)}`}
-                    // collateral={`${
-                    //   PaymentToken[l.lending?.[0].paymentToken ?? 0]
-                    // } ${String(l.lending?.[0].nftPrice)}`}
-                    // maxDuration={String(l.lending?.[0].maxRentDuration)}
-                    dailyPrice="1"
-                    collateral="1"
-                    maxDuration="1"
+                    id={String(l.lending.id)}
+                    dailyPrice={`${
+                       PaymentToken[l.lending.paymentToken ?? 0]
+                    } ${String(l.lending.dailyRentPrice)}`}
+                    collateral={`${
+                       PaymentToken[l.lending.paymentToken ?? 0]
+                    } ${String(l.lending.nftPrice)}`}
+                    maxDuration={String(l.lending.maxRentDuration)}
                     claim={<ClaimButton lending={l} />}
                     // todo
                     // greenHighlight={Boolean(l.renting)}
@@ -182,27 +178,24 @@ const Stats: React.FC<StatsProps> = ({ hidden }) => {
             {usersRenting.length > 0 &&
               usersRenting.map((r) => (
                 <TableRow
-                  // key={`${r.address}::${r.tokenId}::${r.renting?.[0].id}`}
-                  key="deal wiv it"
+                  key={`${r.address}::${r.tokenId}::${r.renting.id}`}
                   address={r.address}
                   tokenId={String(r.tokenId)}
-                  id="1"
-                  dailyPrice="1"
-                  collateral="1"
-                  maxDuration="1"
-                  // id={String(r.renting?.[0].id)}
+                  id={String(r.renting.id)}
                   // dailyPrice={`${
-                  //   PaymentToken[r.lending?.[0].paymentToken ?? 0]
-                  // } ${String(r.lending?.[0].dailyRentPrice)}`}
+                  //   PaymentToken[r.renting.paymentToken ?? 0]
+                  // } ${String(r.lending.dailyRentPrice)}`}
                   // collateral={`${
-                  //   PaymentToken[r.lending?.[0].paymentToken ?? 0]
-                  // } ${String(r.lending?.[0].nftPrice)}`}
-                  // maxDuration={String(
-                  //   returnBy(
-                  //     r.renting?.[0].rentedAt ?? 0,
-                  //     r.renting?.[0].rentDuration ?? 0
-                  //   )
-                  // )}
+                  //   PaymentToken[r.lending.paymentToken ?? 0]
+                  // } ${String(r.lending.nftPrice)}`}
+                  dailyPrice={"0"}
+                  collateral={"0"}
+                  maxDuration={String(
+                    returnBy(
+                      r.renting.rentedAt ?? 0,
+                      r.renting.rentDuration ?? 0
+                    )
+                  )}
                 />
               ))}
           </tbody>

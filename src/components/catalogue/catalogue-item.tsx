@@ -4,6 +4,7 @@ import { Nft } from "../../contexts/graph/classes";
 
 export type CatalogueItemProps = {
   nft: Nft;
+  checked?: boolean;
   // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
   onCheckboxChange?: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -13,6 +14,7 @@ export type CatalogueItemProps = {
 
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
+  checked,
   onCheckboxChange,
   children,
 }) => {
@@ -34,6 +36,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Nft__checkbox">
           <Checkbox
             name={nft.tokenId}
+            checked={checked}
             onChange={onCheckboxChange}
             inputProps={{ "aria-label": "primary checkbox" }}
           />
@@ -43,6 +46,11 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Nft__image">
           {img && <img loading="lazy" src={img} />}
         </div>
+        {nft.name && nft.name.trim() !== "" && (
+          <div className="Nft__card">
+            <p style={{ fontWeight: 600 }}>{nft.name}</p>
+          </div>
+        )}
         <div className="Nft__card">
           <p className="Nft__text_overflow">
             <a

@@ -30,9 +30,12 @@
   border: 3px solid black;
   padding: 7px;
   width: 100%;
+  min-height: 300px;
   position: relative;
   margin-bottom: 25px;
   box-shadow: 9px 9px black;
+  display: flex;
+  align-items: center;
   cursor: auto;
 
   img {
@@ -124,24 +127,6 @@
   &:hover {
     text-decoration: underline;
     cursor: cell;
-
-    &:before {
-      content: "Yes now";
-      position: absolute;
-      top: -6px;
-      left: 100%;
-      margin-left: 10px;
-      white-space: nowrap;
-      font-family: "times new roman", times, serif;
-      font-weight: normal;
-      font-style: italic;
-      mix-blend-mode: difference;
-      text-transform: lowercase;
-      text-decoration: overline;
-      color: #663399;
-      font-size: 2em;
-      animation: blink 6s steps(4, end) infinite alternate-reverse;
-    }
   }
 }
 

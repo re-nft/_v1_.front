@@ -10,10 +10,10 @@ export const useStyles = makeStyles({
   inputs: {
     display: "flex",
     flexDirection: "column",
-    padding: "32px",
+    padding: "8px 0",
     // matches direct div children of inputs
     "& > div": {
-      marginBottom: "16px",
+      marginBottom: "8px",
     },
     margin: "0 auto",
   },
@@ -29,10 +29,10 @@ export const useRentFormStyles = makeStyles(() =>
     inputs: {
       display: "flex",
       flexDirection: "column",
-      padding: "32px",
+      padding: "8px 0",
       // matches direct div children of inputs
       "& > div": {
-        marginBottom: "16px",
+        marginBottom: "8px",
       },
       margin: "0 auto",
     },

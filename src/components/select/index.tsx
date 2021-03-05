@@ -61,8 +61,9 @@ const MinimalSelect: React.FC<MinimalSelectProps> = ({
         IconComponent={iconComponent}
         value={selectedValue}
         onChange={handleChange}
+        defaultValue={-1}
       >
-        <MenuItem disabled>Payment Token *</MenuItem>
+        <MenuItem disabled value={-1}>Select Payment Token *</MenuItem>
         <MenuItem
           value={PaymentToken.ETH}
           style={{ color: "teal", fontWeight: 1000 }}
