@@ -5,6 +5,8 @@ import { purple } from "@material-ui/core/colors";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
+import BatchProvider from '../controller/batch-controller';
+import { Nft } from "../../contexts/graph/classes";
 
 const PurpleSwitch = withStyles({
   switchBase: {
@@ -55,7 +57,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 					</Box>
 				</Box>
 			</Box>
-			<Box className="Catalogue">{children}</Box>
+			<BatchProvider>
+				<Box className="Catalogue">{children}</Box>
+			</BatchProvider>			
 		</Box>
 	</Box>
   );

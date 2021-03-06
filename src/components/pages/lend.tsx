@@ -25,7 +25,6 @@ export const Lend: React.FC<LendProps> = ({ hidden }) => {
     );
   }, []);
 
-  // TODO: wtf?
   if (hidden) return <></>;
 
   return (

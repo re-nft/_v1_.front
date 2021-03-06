@@ -6,66 +6,49 @@ import CatalogueItem from "../../catalogue/catalogue-item";
 import ActionButton from "../../forms/action-button";
 import CatalogueLoader from "../catalogue-loader";
 import BatchBar from '../batch-bar';
+import {BatchContext} from '../../controller/batch-controller';
 
 const Lendings: React.FC = () => {
-  const [checkedItems, setCheckedItems] = useState<Nft[]>([]);
-  const [checkedMap, setCheckedMap] = useState<Record<string, boolean>>({});
+  const { 
+    checkedItems, 
+    checkedMap, 
+    countOfCheckedItems, 
+    onReset, 
+    onCheckboxChange, 
+    onSetCheckedItem, 
+    onSetItems 
+  } = useContext(BatchContext);
   const [modalOpen, setModalOpen] = useState(false);
   const { usersNfts } = useContext(GraphContext);
+  
   const handleClose = useCallback(() => {
-    setCheckedItems([]);
     setModalOpen(false);
-  }, [setModalOpen, setCheckedItems]);
-  const handleStartLend = useCallback(async (nft) => {
-      setCheckedItems([nft]);
+    onReset();
+  }, [setModalOpen]);
+  
+  const handleStartLend = useCallback(async (nft: Nft) => {
+      onSetCheckedItem(nft);
       setModalOpen(true);
     },
-    [setCheckedItems, setModalOpen]
+    [setModalOpen]
   );
 
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const handleCheckboxChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const target = evt.target.name;
-      const checked = evt.target.checked;
-      const sources: Nft[] = checkedItems.slice(0);
-      const item = usersNfts.find((nft) => nft.tokenId === target);
-      const sourceIndex = checkedItems.findIndex(
-        (nft) => nft.tokenId === target
-      );
-      setCheckedMap({
-        ...checkedMap,
-        [target]: checked,
-      })
-      if (sourceIndex === -1 && item) {
-        sources.push(item);
-        setCheckedItems(sources);
-      } else {
-        sources.splice(sourceIndex, 1);
-        setCheckedItems(sources);
-      }
-    },
-    [checkedItems, setCheckedItems, usersNfts, setCheckedMap, checkedMap]
-  );
-
-  const resetCheckBoxState = useCallback(() => {
-    setCheckedMap({});
-  }, [setCheckedMap]);
-
   useEffect(() => {
-    if (checkedItems.length === 0) {
-      resetCheckBoxState();
-    }
-  }, [checkedItems]);
+    onSetItems(usersNfts);
+    return () => {
+      console.log('Lendings:onReset');
+      return onReset();
+    };
+  }, []);
 
   if (usersNfts.length === 0) {
     return <CatalogueLoader />;
   }
-
-  const countOfCheckedItems = checkedItems.length;
+  console.log('Lendings ', checkedMap, checkedItems);
   return (
     <>
       {modalOpen && <BatchLendModal nfts={checkedItems} open={modalOpen} onClose={handleClose} />}
@@ -74,9 +57,9 @@ const Lendings: React.FC = () => {
             key={`${nft.address}::${nft.tokenId}`} 
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
-            onCheckboxChange={handleCheckboxChange}
+            onCheckboxChange={onCheckboxChange}
           >
-            <ActionButton
+            <ActionButton<Nft>
               nft={nft}
               title="Lend now"
               onClick={handleStartLend}
@@ -84,7 +67,12 @@ const Lendings: React.FC = () => {
           </CatalogueItem>
         ))}
       {countOfCheckedItems > 1 && (
-        <BatchBar title={`Batch lend ${countOfCheckedItems} items`} actionTitle="Lend all" onClick={handleBatchModalOpen} />
+        <BatchBar 
+          title={`Batch lend ${countOfCheckedItems} items`} 
+          actionTitle="Lend all" 
+          onCancel={onReset} 
+          onClick={handleBatchModalOpen} 
+        />
       )}
     </>
   );

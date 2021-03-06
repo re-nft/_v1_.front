@@ -15,7 +15,7 @@ import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { Nft } from "../../../contexts/graph/classes";
 import { useStyles } from "./styles";
 import startLend from "../../../services/start-lend";
-import isApprovedForAll from "../../../services/is-approval-for-all";
+import isApprovalForAll from "../../../services/is-approval-for-all";
 import ActionButton from "../../forms/action-button";
 
 type LendOneInputs = {
@@ -113,21 +113,13 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
     [pmtToken, setPmtToken]
   );
 
-  const checkIsApproved = useCallback(async () => {
-    if (!currentAddress || !renft || !nft || !nft.contract) return false;
-    const contract = await nft.contract();
-    try {
-      const isApproved = await isApprovedForAll(renft, contract, currentAddress);
-      setIsApproved(isApproved);
-    } catch (e) {
-      console.warn(e);
-      setIsApproved(false);
-    }
-  }, [currentAddress, renft, nft]);
-
   useEffect(() => {
-    checkIsApproved();
-  }, [checkIsApproved]);
+    if (!nft.contract || !renft || !currentAddress) return;
+    const contract = nft.contract();
+    isApprovalForAll(renft, contract, currentAddress).then((isApproved: boolean) => {
+      setIsApproved(isApproved);
+    }).catch(() => false);
+  }, [isApproved, setIsApproved, nft, renft]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -200,7 +192,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
         <div className="float-button">
           <Box className={classes.buttons}>
             {!isApproved && (
-              <ActionButton
+              <ActionButton<Nft>
                 title="Approve all"
                 nft={nft}
                 onClick={handleApproveAll}

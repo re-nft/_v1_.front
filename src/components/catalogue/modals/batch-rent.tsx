@@ -101,7 +101,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                     <CssTextField
                       required
                       label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
-                      id="duration"
+                      id={`${item.tokenId}::duration`}
                       variant="outlined"
                       type="number"
                       name={item.tokenId}

@@ -7,7 +7,7 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import { Lending } from "../../../contexts/graph/classes";
+import { Lending, Nft } from "../../../contexts/graph/classes";
 import NumericField from "../../forms/numeric-field";
 import { PaymentToken } from "../../../types";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -17,11 +17,19 @@ import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../catalogue-loader";
 import GraphContext from "../../../contexts/graph";
 import BatchBar from '../batch-bar';
+import {BatchContext} from '../../controller/batch-controller';
 
 export const AvailableToRent: React.FC = () => {
+  const { 
+    checkedItems, 
+    checkedMap, 
+    countOfCheckedItems, 
+    onReset, 
+    onCheckboxChange, 
+    onSetCheckedItem, 
+    onSetItems 
+  } = useContext(BatchContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [checkedItems, setCheckedItems] = useState<Lending[]>([]);
-  const [checkedMap, setCheckedMap] = useState<Record<string, boolean>>({});
   const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(RentNftContext);
   const [signer] = useContext(SignerContext);
@@ -35,12 +43,12 @@ export const AvailableToRent: React.FC = () => {
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
-    setCheckedItems([]);
-    resetCheckBoxState();
+    onReset();
   }, []);
 
   const handleBatchModalOpen = useCallback((nft: Lending) => {
-    setCheckedItems([nft]);
+    // @ts-ignore
+    onSetCheckedItem(nft);
     setOpenBatchModel(true);
   }, []);
 
@@ -74,50 +82,22 @@ export const AvailableToRent: React.FC = () => {
     setOpenBatchModel(true);
   }, [setOpenBatchModel]);
 
-  const handleCheckboxChange = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => {
-      const target = evt.target.name;
-      const checked = evt.target.checked;
-      const sources: Lending[] = checkedItems.slice(0);
-      const item = allRentings.find((nft) => nft.tokenId === target);
-      const sourceIndex = checkedItems.findIndex(
-        (nft) => nft.tokenId === target
-      );
-      setCheckedMap({
-        ...checkedMap,
-        [target]: checked,
-      })
-      if (sourceIndex === -1 && item) {
-        sources.push(item);
-        setCheckedItems(sources);
-      } else {
-        sources.splice(sourceIndex, 1);
-        setCheckedItems(sources);
-      }
-    },
-    [checkedItems, setCheckedItems, allRentings, setCheckedMap, checkedMap]
-  );
-
-  const resetCheckBoxState = useCallback(() => {
-    setCheckedMap({});
-  }, [setCheckedMap]);
-
   useEffect(() => {
-    if (checkedItems.length === 0) {
-      resetCheckBoxState();
-    }
-  }, [checkedItems]);
-
-  const countOfCheckedItems = checkedItems.length;
+    onSetItems(allRentings);
+    return () => {
+      console.log('Rentings:onReset');
+      return onReset();
+    };
+  }, []);
 
   if (allRentings.length === 0) {
     return <CatalogueLoader />;
   }
-
+  console.log('Rentings', checkedMap, checkedItems);
   return (
     <>
       <BatchRentModal
-        nft={checkedItems}
+        nft={checkedItems as any as Lending[]}
         open={isOpenBatchModel}
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
@@ -127,7 +107,7 @@ export const AvailableToRent: React.FC = () => {
           key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
           nft={nft}
           checked={checkedMap[nft.tokenId] || false}
-          onCheckboxChange={handleCheckboxChange}
+          onCheckboxChange={onCheckboxChange}
         >
           <NumericField
             text="Daily price"
@@ -144,16 +124,21 @@ export const AvailableToRent: React.FC = () => {
             value={String(nft.lending.nftPrice)}
             unit={PaymentToken[nft.lending.paymentToken]}
           />
-          <ActionButton
-            // TODO
-            //@ts-ignore
+          <ActionButton<Lending>
             onClick={handleBatchModalOpen}
             nft={nft}
             title="Rent Now"
           />
         </CatalogueItem>
       ))}
-      {countOfCheckedItems > 1 && <BatchBar title={`Batch ${countOfCheckedItems} rents`} actionTitle="Rents All" onClick={handleBatchRent} />}
+      {countOfCheckedItems > 1 && (
+        <BatchBar 
+          title={`Batch ${countOfCheckedItems} rents`} 
+          actionTitle="Rents All" 
+          onCancel={onReset} 
+          onClick={handleBatchRent} 
+        />
+      )}
     </>
   );
 };
