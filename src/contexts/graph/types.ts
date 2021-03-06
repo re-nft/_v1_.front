@@ -3,7 +3,12 @@ import { Address, PaymentToken, TokenId } from "../../types";
 export type NftToken = {
   address: Address;
   tokenId: TokenId;
-  uri?: string;
+  tokenURI?: string;
+  meta?: {
+    name: string;
+    image: string;
+    // * and more in fact
+  };
 };
 
 // ! NON-RENFT SUBGRAPHS for 721 and 1155
@@ -14,7 +19,7 @@ export type ERC721s = {
     // e.g. "0xbcd4f1ecff4318e7a0c791c7728f3830db506c71_3000013"
     id: string;
     // e.g. "https://nft.service.cometh.io/3000013"
-    tokenURI?: NftToken["uri"];
+    tokenURI?: NftToken["tokenURI"];
   }[];
 };
 
@@ -25,7 +30,7 @@ export type ERC1155s = {
       amount: number;
       token: {
         tokenId: NftToken["tokenId"];
-        tokenURI?: NftToken["uri"];
+        tokenURI?: NftToken["tokenURI"];
         registry: {
           contractAddress: Address;
         };

@@ -6,6 +6,7 @@ import {
   RentingRaw,
   Lending as LendingType,
   Renting as RentingType,
+  NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
 import { ethers } from "ethers";
@@ -15,7 +16,7 @@ import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__fac
 type NftOptions = {
   tokenURI?: string;
   mediaURI?: string;
-  name?: string;
+  meta?: NftToken["meta"];
 };
 
 class Nft {
@@ -30,7 +31,7 @@ class Nft {
     this.signer = signer;
     this.isERC721 = false;
 
-    this.name = options?.name ?? "";
+    this._meta = options?.meta;
     this._tokenURI = options?.tokenURI ?? "";
     this._mediaURI = options?.mediaURI ?? "";
   }
@@ -39,7 +40,7 @@ class Nft {
   tokenId: string;
   signer: ethers.Signer;
   isERC721: boolean;
-  name: string;
+  _meta: NftToken["meta"] | undefined;
   _tokenURI: string;
   _mediaURI: string;
   _contract: ERC721 | ERC1155 | undefined;
@@ -90,8 +91,9 @@ class Nft {
   /**
    * This is parsed tokenURI is JSON
    */
-  meta = async (): Promise<any> => {
-    return {};
+  meta = async (): Promise<NftToken["meta"]> => {
+    if (this._meta) return this._meta;
+    return { name: "", image: "" };
   };
 
   /**

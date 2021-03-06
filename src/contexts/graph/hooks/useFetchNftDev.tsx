@@ -75,6 +75,18 @@ export const useFetchNftDev = (
         })
       );
     }
+
+    for (let i = 0; i < myNfts1155.length; i++) {
+      if (!myNfts1155[i].gt(BigNumZero)) continue;
+      const tokenURI = await myERC1155.uri(myNfts1155[i]);
+      // {"external_url":"https://www.bondly.finance/","image":"https://api.bccg.digital/images/ARCA.png","name":"Arca (Thriller)","description":"Arca is an ex-spy.  She's part cybernetic and has incredible strength and agility. Prefers bladed weapons for stealthy quick kills.  ","attributes":[{"trait_type":"ARC","value":"Arca"},{"trait_type":"T","value":"Thriller"},{"trait_type":"1S","value":"First Edition"},{"trait_type":"Villain","value":"Villain"}]}
+      usersDevNfts.push(
+        new Nft(myERC1155.address, myNfts1155[i].toString(), signer, {
+          tokenURI: tokenURI,
+        })
+      );
+    }
+
     return usersDevNfts;
   }, [renft.instance, currentAddress, myERC721.instance, signer]);
 
