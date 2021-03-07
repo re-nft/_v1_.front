@@ -46,9 +46,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <div className="Nft__image">
           {img && <img loading="lazy" src={img} />}
         </div>
-        {nft.name && nft.name.trim() !== "" && (
+        {nft.meta.name && nft.meta.name.trim() !== "" && (
           <div className="Nft__card">
-            <p style={{ fontWeight: 600 }}>{nft.name}</p>
+            <p style={{ fontWeight: 600 }}>{nft.meta.name}</p>
           </div>
         )}
         <div className="Nft__card">
