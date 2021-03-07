@@ -40,7 +40,6 @@ const Lendings: React.FC = () => {
   useEffect(() => {
     onSetItems(usersNfts);
     return () => {
-      console.log('Lendings:onReset');
       return onReset();
     };
   }, []);
@@ -48,7 +47,7 @@ const Lendings: React.FC = () => {
   if (usersNfts.length === 0) {
     return <CatalogueLoader />;
   }
-  console.log('Lendings ', checkedMap, checkedItems);
+
   return (
     <>
       {modalOpen && <BatchLendModal nfts={checkedItems} open={modalOpen} onClose={handleClose} />}

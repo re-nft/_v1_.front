@@ -26,10 +26,11 @@ const UserLendings: React.FC = () => {
     return usersLending.filter(Boolean);
   }, [usersLending]);
 
-  const handleStopLend = useCallback(async (nft: Nft[]) => {
+  const handleStopLend = useCallback(async (nfts: Nft[]) => {
       if (!renft) return;     
-      const tx = await stopLend(renft, nft);
+      const tx = await stopLend(renft, nfts);
       await setHash(tx.hash);
+      onReset();
     },
     [renft, setHash]
   );
@@ -46,7 +47,6 @@ const UserLendings: React.FC = () => {
   useEffect(() => {
     onSetItems(allUsersLendings);
     return () => {
-      console.log('User Lendings:onReset');
       return onReset();
     };
   }, []);
@@ -54,7 +54,7 @@ const UserLendings: React.FC = () => {
   if (allUsersLendings.length === 0) {
     return <CatalogueLoader />;
   }
-  console.log('User Lendengs ', checkedMap, checkedItems);
+
   return (
     <>
       {allUsersLendings.map((nft) => (

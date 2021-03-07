@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import Modal from "./modal";
-import { Lending } from "../../../contexts/graph/classes";
+import { Renting } from "../../../contexts/graph/classes";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { CurrentAddressContext } from "../../../hardhat/SymfoniContext";
@@ -12,7 +12,7 @@ import returnIt from '../../../services/return-it';
 import setApprovalForAll from '../../../services/set-approval-for-all';
 
 type ReturnModalProps = {
-  nfts: Lending[];
+  nfts: Renting[];
   open: boolean;
   onClose: () => void;
 };
@@ -43,9 +43,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
   const handleApproveAll = useCallback(
     async () => {
-      if (!currentAddress || !renft || !nft.contract || !provider) return;
-      const contract = nft.contract();
-      const tx = await setApprovalForAll(renft, contract);
+      if (!currentAddress || !renft || !provider) return;
+      const [tx] = await setApprovalForAll(renft, nfts);
       setHash(tx.hash);
       const receipt = await provider.getTransactionReceipt(tx.hash);
       const status = receipt.status ?? 0;
@@ -57,12 +56,13 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   );
 
   useEffect(() => {
-    if (!nft.contract || !renft || !currentAddress) return;
-    const contract = nft.contract();
-    isApprovalForAll(renft, contract, currentAddress).then((isApproved: boolean) => {
+    if (!renft || !currentAddress) return;
+    isApprovalForAll(renft, nfts, currentAddress).then(isApproved => {
       setIsApproved(isApproved);
-    }).catch(() => false);
-  }, [isApproved, setIsApproved, nft, renft]);
+    }).catch(e => {
+      console.warn(e);
+    });
+  }, [nfts, currentAddress, setIsApproved]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -71,10 +71,10 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         <Box>
           <div className="Nft__card" style={{ justifyContent: "center" }}>
             {!isApproved && (
-              <ActionButton<Lending> title="Approve All" nft={nft} onClick={handleApproveAll}/>
+              <ActionButton<Renting> title="Approve All" nft={nft} onClick={handleApproveAll}/>
             )}
             {isApproved && (
-              <ActionButton<Lending> title="Return It" nft={nft} onClick={handleReturnNft}/>
+              <ActionButton<Renting> title="Return It" nft={nft} onClick={handleReturnNft}/>
             )}
           </div>
         </Box>

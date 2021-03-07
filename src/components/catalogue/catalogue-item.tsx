@@ -35,7 +35,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {onCheckboxChange && (
         <div className="Nft__checkbox">
           <Checkbox
-            name={nft.tokenId}
+            name={`${nft.address}::${nft.tokenId}`}
             checked={checked}
             onChange={onCheckboxChange}
             inputProps={{ "aria-label": "primary checkbox" }}

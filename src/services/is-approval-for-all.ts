@@ -1,16 +1,18 @@
 import { RentNft } from "../hardhat/typechain/RentNft";
-import { ERC721 } from "../hardhat/typechain/ERC721";
-import { ERC1155 } from "../hardhat/typechain/ERC1155";
+import {Nft} from '../contexts/graph/classes';
 
 export default async function isApprovalForAll(
     renft: RentNft,
-    contract: ERC721 | ERC1155,
+    nft: Nft[],
     currentAddress: string
 ): Promise<boolean> {
-    const isApproved = await contract.isApprovedForAll(
-        currentAddress,
-        renft.address
+    const distinctItems = nft.filter((item, index, all) => 
+        all.findIndex(nft => nft.address === item.address) === index
     );
+    const result = await Promise.all(distinctItems.map(nft => {
+        const contract = nft.contract();
+        return contract.isApprovedForAll(currentAddress, renft.address);
+    }));
 
-    return isApproved;
+    return result.every((isApproved) => isApproved);
 }

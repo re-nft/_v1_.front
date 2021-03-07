@@ -85,7 +85,6 @@ export const AvailableToRent: React.FC = () => {
   useEffect(() => {
     onSetItems(allRentings);
     return () => {
-      console.log('Rentings:onReset');
       return onReset();
     };
   }, []);
@@ -93,7 +92,7 @@ export const AvailableToRent: React.FC = () => {
   if (allRentings.length === 0) {
     return <CatalogueLoader />;
   }
-  console.log('Rentings', checkedMap, checkedItems);
+
   return (
     <>
       <BatchRentModal

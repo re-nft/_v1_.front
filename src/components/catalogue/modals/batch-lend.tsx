@@ -16,6 +16,7 @@ import { Nft } from "../../../contexts/graph/classes";
 import { useStyles } from "./styles";
 import startLend from "../../../services/start-lend";
 import isApprovalForAll from "../../../services/is-approval-for-all";
+import setApprovalForAll from "../../../services/set-approval-for-all";
 import ActionButton from "../../forms/action-button";
 
 type LendOneInputs = {
@@ -44,7 +45,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      if (!renft || isActive || !nft.contract || !nft.tokenId) return;
+      if (!renft || isActive) return;
 
       const lendOneInputsValues = Object.values(lendOneInputs);
       const maxDurationsValues = lendOneInputsValues.map(item => item['maxDuration']);
@@ -69,8 +70,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
   const handleApproveAll = useCallback(
     async () => {
       if (!currentAddress || !renft || isActive || !provider) return;
-      const contract = await nft.contract();
-      const tx = await contract.setApprovalForAll(renft.address, true);
+      const [tx] = await setApprovalForAll(renft, nfts);
       setHash(tx.hash);
       const receipt = await provider.getTransactionReceipt(tx.hash);
       const status = receipt.status ?? 0;
@@ -112,14 +112,15 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
     },
     [pmtToken, setPmtToken]
   );
-
+  
   useEffect(() => {
-    if (!nft.contract || !renft || !currentAddress) return;
-    const contract = nft.contract();
-    isApprovalForAll(renft, contract, currentAddress).then((isApproved: boolean) => {
+    if (!renft || !currentAddress) return;
+    isApprovalForAll(renft, nfts, currentAddress).then(isApproved => {
       setIsApproved(isApproved);
-    }).catch(() => false);
-  }, [isApproved, setIsApproved, nft, renft]);
+    }).catch(e => {
+      console.warn(e);
+    });
+  }, [nfts, currentAddress, setIsApproved]);
 
   return (
     <Modal open={open} handleClose={onClose}>

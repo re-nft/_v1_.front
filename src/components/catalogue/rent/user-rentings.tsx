@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useEffect, useContext } from "react";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import React, { useCallback, useState, useEffect, useContext, useMemo } from "react";
+import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../forms/numeric-field";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -8,6 +8,7 @@ import ActionButton from "../../forms/action-button";
 import CatalogueLoader from "../catalogue-loader";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
+import GraphContext from "../../../contexts/graph";
 
 const UserRentings: React.FC = () => {
   const { 
@@ -19,12 +20,15 @@ const UserRentings: React.FC = () => {
     onSetCheckedItem, 
     onSetItems 
   } = useContext(BatchContext);
-  const allMyRentings: Lending[] = [];
+  const { renftsRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
+  const allRentings = useMemo(() => {
+    return Object.values(renftsRenting);
+  }, [renftsRenting]);
   const handleCloseModal = useCallback(() => setModalOpen(false), [setModalOpen]);
   const handleBatchStopRent = useCallback(() => setModalOpen(true), [setModalOpen]);
   const handleOpenModal = useCallback(
-    async (nft: Lending) => {
+    async (nft: Renting) => {
       onSetCheckedItem(nft);
       setModalOpen(true);
     },
@@ -32,14 +36,13 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    onSetItems(allMyRentings);
+    onSetItems(allRentings);
     return () => {
-      console.log('User Rentings:onReset');
       return onReset();
     };
   }, []);
 
-  if (allMyRentings.length === 0) {
+  if (allRentings.length === 0) {
     return <CatalogueLoader />;
   }
 
@@ -52,7 +55,7 @@ const UserRentings: React.FC = () => {
           onClose={handleCloseModal}
         />
       )}
-      {allMyRentings.map((nft: Lending) => {
+      {allRentings.map((nft: Renting) => {
         const id = `${nft.address}::${nft.tokenId}`;
         return (
           <CatalogueItem 
@@ -67,7 +70,7 @@ const UserRentings: React.FC = () => {
               unit={PaymentToken[PaymentToken.DAI]}
             />
             <NumericField text="Rent Duration" value={String(0)} unit="days" />
-            <ActionButton<Lending>
+            <ActionButton<Renting>
               title="Return It"
               nft={nft}
               onClick={handleOpenModal}

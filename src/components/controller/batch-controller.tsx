@@ -41,7 +41,6 @@ class BatchProvider extends React.Component<Props, State> {
     };
 
     handleReset = () => {
-        console.log(' handleReset ');
         this.setState({
             checkedMap: {},
             checkedItems: []
@@ -49,12 +48,10 @@ class BatchProvider extends React.Component<Props, State> {
     };
 
     handleSetCheckedItem = (item: Nft) => {
-        console.log(' handleSetCheckedItem ', item);
         this.setState({ checkedItems: [item] });
     };
 
     handleSetItems = (items: Nft[]) => {
-        console.log(' handleSetItems ', items);
         this.setState({ items });
     };
 
@@ -62,15 +59,16 @@ class BatchProvider extends React.Component<Props, State> {
         const {checkedItems, checkedMap, items} = this.state;
 
         const target = evt.target.name;
+        const [address, tokenId] = target.split('::');
         const checked = evt.target.checked;
         const sources = checkedItems.slice(0);
-        const item = items.find((nft) => nft.tokenId === target);
-        const sourceIndex = checkedItems.findIndex((nft) => nft.tokenId === target);
+        const item = items.find((nft) => nft.address === address && nft.tokenId === tokenId);
+        const sourceIndex = checkedItems.findIndex((nft) => nft.address === address && nft.tokenId === tokenId);
         
         this.setState({
             checkedMap: {
                 ...checkedMap,
-                [target]: checked,
+                [tokenId]: checked,
             }
         })
 
