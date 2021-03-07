@@ -30,7 +30,6 @@ import {
 import { NftRaw, ERC1155s, ERC721s, NftToken } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
-import { getFromIPFS } from "./ipfs";
 
 /**
  * Useful links
@@ -142,38 +141,23 @@ export const GraphProvider: React.FC = ({ children }) => {
       let tokens: NftToken[] = [];
       switch (fetchType) {
         case FetchType.ERC721:
-          tokens = (response as ERC721s).tokens.map((t) => {
+          tokens = (response as ERC721s).tokens.map((token) => {
             // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
-            const [address, tokenId] = t.id.split("_");
-            console.log("ERC721 tokenURI", t.tokenURI);
-            return { address, tokenId, tokenURI: t.tokenURI };
+            const [address, tokenId] = token.id.split("_");
+            return { address, tokenId, tokenURI: token.tokenURI };
           });
           break;
-        // TODO: should fetch image here as well
         case FetchType.ERC1155:
-          for (
-            let i = 0;
-            i < (response as ERC1155s).account.balances.length;
-            i++
-          ) {
-            const r = (response as ERC1155s).account.balances[i];
-            const { tokenId, tokenURI } = r.token;
-            const meta = r.token.tokenURI
-              ? (JSON.parse(
-                  (await getFromIPFS(r.token.tokenURI))?.toString() ??
-                    "{name:'',image:''}"
-                ) as { name: string; image: string })
-              : undefined;
-            tokens.push({
-              address: r.token.registry.contractAddress,
-              tokenId,
-              tokenURI,
-              meta,
-            });
-          }
+          tokens = (response as ERC1155s).account.balances.map(({ token }) => ({
+            address: token.registry.contractAddress,
+            tokenId: token.tokenId,
+            tokenURI: token.tokenURI,
+          }));
           break;
       }
 
+      // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
+      // TODO: nothing has changed
       return tokens;
     },
     // ! do not add nfts as a dep, will cause infinite loop
@@ -189,15 +173,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-    const __usersNfts = usersNfts721.concat(usersNfts1155);
-    const _usersNfts = __usersNfts.map(
-      (nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta })
-    );
-    let _nfts: Nft[] = _usersNfts;
 
+    const _usersNfts = usersNfts721
+      .concat(usersNfts1155)
+      .map(
+        (nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta })
+      );
+
+    let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
-      const __nfts = await fetchNftDev();
-      _nfts = _nfts.concat(__nfts);
+      _nfts = (await fetchNftDev()).concat(_nfts);
     }
 
     setUsersNfts(_nfts);
