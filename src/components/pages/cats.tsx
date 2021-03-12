@@ -72,19 +72,21 @@ export const Cats: React.FC = () => {
 
   return (
     <div className="content">
-		<div className="content__row content__items">
-            {!isCatLoaded && (
-                <div className="content-center">
-                    <button className="nft__button" onClick={onClick}>
-                        Show me my cats
-                    </button>
-                </div>
-            )}
-            {isCatLoaded && cats && (
-                cats.map(catId => <CatItem key={catId} catId={catId}/>)
-            )}
-            
-		</div>
+      <div className="content__row content__items">
+        {!isCatLoaded && (
+            <div className="content-center">
+                <button className="nft__button" onClick={onClick}>
+                    Show me my cats
+                </button>
+            </div>
+        )}
+        {isCatLoaded && cats.length !== 0 && (
+            cats.map(catId => <CatItem key={catId} catId={catId}/>)
+        )}
+        {isCatLoaded && cats.length === 0 && (
+          <div className="no-cats">Sorry, You don&apos;t have any cats</div>
+        )}  
+      </div>
 	</div>
   );
 };

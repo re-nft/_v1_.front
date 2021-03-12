@@ -215,16 +215,16 @@ export const GraphProvider: React.FC = ({ children }) => {
       const query = queryMyMoonCats(currentAddress);
       const subgraphURI = ENDPOINT_MOONCAT_PROD;
       const response: {
-        moonRescuers: { cats?: {id: string}[] }
+        moonRescuers: { cats?: {id: string}[] }[]
       } = await timeItAsync(
         `Pulled My Moon Cat Nfts`,
         async () => await request(subgraphURI, query)
       );
-      // @ts-ignore
-      const [{cats}] = response.moonRescuers;
-      // @ts-ignore
-      const catsIds = cats.map(({ id }) => id) ?? [];
-      setUsersMoonCats(catsIds);
+      const [first] = response.moonRescuers;
+      if (first) {
+        const catsIds = first?.cats?.map(({ id }) => id) ?? [];
+        setUsersMoonCats(catsIds);
+      }
     };
 
   /**
