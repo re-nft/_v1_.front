@@ -13,9 +13,8 @@ import {
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-import { usePoller } from "../../hooks/usePoller";
+// import { usePoller } from "../../hooks/usePoller";
 import {
-  SECOND_IN_MILLISECONDS,
   RENFT_SUBGRAPH_ID_SEPARATOR,
 } from "../../consts";
 import { timeItAsync } from "../../utils";
@@ -26,6 +25,7 @@ import {
   queryUserRentingRenft,
   queryMyERC721s,
   queryMyERC1155s,
+  queryMyMoonCats
 } from "./queries";
 import { NftRaw, ERC1155s, ERC721s, NftToken } from "./types";
 import { Nft, Lending, Renting } from "./classes";
@@ -56,6 +56,7 @@ const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
+const ENDPOINT_MOONCAT_PROD = "https://api.thegraph.com/subgraphs/name/rentft/moon-cat-rescue";
 
 type RenftsLending = {
   [key: string]: Lending;
@@ -74,6 +75,7 @@ type GraphContextType = {
   usersNfts: Nft[];
   usersLending: Lending[];
   usersRenting: Renting[];
+  usersMoonCats: string[];
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -82,6 +84,7 @@ const DefaultGraphContext: GraphContextType = {
   usersNfts: [],
   usersLending: [],
   usersRenting: [],
+  usersMoonCats: [],
 };
 
 enum FetchType {
@@ -107,6 +110,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   );
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
+  const [usersMoonCats, setUsersMoonCats] = useState<string[]>([]);
 
   /**
    * Only for dev purposes
@@ -206,6 +210,23 @@ export const GraphProvider: React.FC = ({ children }) => {
     _setUsersLending(lendingsIds);
   };
 
+  const fetchMyMoonCats = async () => {
+      if (!currentAddress) return;
+      const query = queryMyMoonCats(currentAddress);
+      const subgraphURI = ENDPOINT_MOONCAT_PROD;
+      const response: {
+        moonRescuers: { cats?: {id: string}[] }
+      } = await timeItAsync(
+        `Pulled My Moon Cat Nfts`,
+        async () => await request(subgraphURI, query)
+      );
+      // @ts-ignore
+      const [{cats}] = response.moonRescuers;
+      // @ts-ignore
+      const catsIds = cats.map(({ id }) => id) ?? [];
+      setUsersMoonCats(catsIds);
+    };
+
   /**
    * Sets the _usersRenting state to whatever the user is renting (ids)
    * @returns Promise<void>
@@ -275,21 +296,23 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, [_usersRenting, renftsRenting]);
 
   useEffect(() => {
-    fetchRenftsAll();
-    fetchUserLending();
-    fetchUserRenting();
-    fetchUsersNfts();
+    fetchMyMoonCats();
+    // fetchRenftsAll();
+    // fetchUserLending();
+    // fetchUserRenting();
+    // fetchUsersNfts();
     /* eslint-disable-next-line */
   }, []);
 
-  usePoller(fetchRenftsAll, 8 * SECOND_IN_MILLISECONDS);
-  usePoller(fetchUserLending, 10 * SECOND_IN_MILLISECONDS);
-  usePoller(fetchUserRenting, 10 * SECOND_IN_MILLISECONDS);
-  usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
+  // usePoller(fetchRenftsAll, 8 * SECOND_IN_MILLISECONDS);
+  // usePoller(fetchUserLending, 10 * SECOND_IN_MILLISECONDS);
+  // usePoller(fetchUserRenting, 10 * SECOND_IN_MILLISECONDS);
+  // usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
 
   return (
     <GraphContext.Provider
       value={{
+        usersMoonCats,
         renftsLending,
         renftsRenting,
         usersNfts,
