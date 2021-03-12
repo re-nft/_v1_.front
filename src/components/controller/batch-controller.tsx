@@ -15,7 +15,7 @@ import { Nft } from "../../contexts/graph/classes";
     countOfCheckedItems: number;
     onReset(): void
     onSetItems(items: Nft[]): void;
-    onCheckboxChange(evt: React.ChangeEvent<HTMLInputElement>): void;
+    onCheckboxChange(name: string, checked: boolean): void;
     onSetCheckedItem(items: Nft): void;
   };
 
@@ -55,12 +55,10 @@ class BatchProvider extends React.Component<Props, State> {
         this.setState({ items });
     };
 
-    handleCheckboxChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    handleCheckboxChange = (name: string, checked: boolean) => {
         const {checkedItems, checkedMap, items} = this.state;
 
-        const target = evt.target.name;
-        const [address, tokenId] = target.split('::');
-        const checked = evt.target.checked;
+        const [address, tokenId] = name.split('::');
         const sources = checkedItems.slice(0);
         const item = items.find((nft) => nft.address === address && nft.tokenId === tokenId);
         const sourceIndex = checkedItems.findIndex((nft) => nft.address === address && nft.tokenId === tokenId);
@@ -80,10 +78,6 @@ class BatchProvider extends React.Component<Props, State> {
             this.setState({ checkedItems: sources });
         }
     };
-
-    // componentDidMount () {
-        
-    // }
 
     componentWillUnmount () {
         // When component will unmount we should reset controller state

@@ -13,12 +13,10 @@ class ActionButton<T extends any> extends React.Component<ActionButtonProps<T>> 
   render() {
     const {title} = this.props;
     return (
-      <div className="Nft__card" style={{ marginTop: "8px" }}>
-        <div className="Nft__card">
-          <span className="Nft__button" onClick={this.onClickHandler}>
-            {title}
-          </span>
-        </div>
+      <div className="nft__control">
+        <button className="nft__button" onClick={this.onClickHandler}>
+          {title}
+        </button>
       </div>
     );
   }

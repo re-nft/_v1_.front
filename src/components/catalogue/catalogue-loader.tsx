@@ -1,9 +1,9 @@
 import React from "react";
-import Spinner from '../layout/spinner';
+import Loader from '../loader';
 
 const CatalogueLoader: React.FC = () => (
     <div className="center">
-        <Spinner/>
+        <Loader/>
     </div>
 );
 

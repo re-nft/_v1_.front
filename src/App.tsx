@@ -1,5 +1,4 @@
-import React, { useState, useCallback } from "react";
-import { Box } from "@material-ui/core";
+import React, { useState, useCallback, useEffect } from "react";
 
 import Layout from "./components/layout/layout";
 import Rent from "./components/pages/rent";
@@ -36,65 +35,78 @@ const Tab: React.FC<TabProps> = ({
   }, [setTab, thisTab]);
 
   return (
-    <div role="button" style={{ marginRight: "16px" }} onClick={handleClick}>
-      <span className={isFocused ? "active-tab" : "Navigation__button"}>
-        {buttonName}
-      </span>
-    </div>
+    <button className={`menu__item ${isFocused ? 'menu__item-active' : ''}`} onClick={handleClick}>
+      {buttonName}
+    </button>
   );
 };
 
+const OFFSET_TOP = 180;
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState(Tabs.RENT);
+  const [scrollY, setScrollY] = useState(0);
 
+  const updateHeaderPosition = () => {
+    setScrollY(window.pageYOffset);
+  }
+
+  useEffect(() => {
+    function watchScroll() {
+      window.addEventListener("scroll", updateHeaderPosition);
+    }
+    watchScroll();
+    return () => {
+      window.removeEventListener("scroll", updateHeaderPosition);
+    };
+  });
+  
   return (
     <Layout>
-      <Box
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          padding: "0 0 32px 0",
-        }}
-      >
-        <Tab
-          setTab={setActiveTab}
-          isFocused={activeTab === Tabs.RENT}
-          thisTab={Tabs.RENT}
-          buttonName="Rent NFT"
-        />
-        <Tab
-          setTab={setActiveTab}
-          isFocused={activeTab === Tabs.LEND}
-          thisTab={Tabs.LEND}
-          buttonName="Lend NFT"
-        />
-        <Tab
-          setTab={setActiveTab}
-          isFocused={activeTab === Tabs.STATS}
-          thisTab={Tabs.STATS}
-          buttonName="My Dashboard"
-        />
-        <Tab
-          setTab={setActiveTab}
-          isFocused={activeTab === Tabs.HOW}
-          thisTab={Tabs.HOW}
-          buttonName="FAQ"
-        />
-      </Box>
-      <TransactionNotifier />
-      <Box
-        style={{
-          padding: "32px 64px",
-          border: "3px solid black",
-          overflowY: "scroll",
-          height: "80vh",
-        }}
-      >
+      {/* MENU */}
+      <div className={`content-wrapper mb-l ${scrollY > OFFSET_TOP ? 'fixed-position' : ''}`}>
+        <div className="menu">
+          <Tab
+            setTab={setActiveTab}
+            isFocused={activeTab === Tabs.RENT}
+            thisTab={Tabs.RENT}
+            buttonName="Rent NFT"
+          />
+          <Tab
+            setTab={setActiveTab}
+            isFocused={activeTab === Tabs.LEND}
+            thisTab={Tabs.LEND}
+            buttonName="Lend NFT"
+          />
+          <Tab
+            setTab={setActiveTab}
+            isFocused={activeTab === Tabs.STATS}
+            thisTab={Tabs.STATS}
+            buttonName="My Dashboard"
+          />
+          <Tab
+            setTab={setActiveTab}
+            isFocused={activeTab === Tabs.LEADER}
+            thisTab={Tabs.LEADER}
+            buttonName="Leaderboard"
+          />
+          <Tab
+            setTab={setActiveTab}
+            isFocused={activeTab === Tabs.HOW}
+            thisTab={Tabs.HOW}
+            buttonName="FAQ"
+          />
+        </div>
+      </div>
+      {/* CONTENT */}
+      <div className="content-wrapper main-content mb-l">
         <Rent hidden={activeTab !== Tabs.RENT} />
         <Lend hidden={activeTab !== Tabs.LEND} />
         <Faq hidden={activeTab !== Tabs.HOW} />
         <Dashboard hidden={activeTab !== Tabs.STATS} />
-      </Box>
+      </div>
+      {/* FOOTER */}
+      <div className="content-wrapper footer-content">2021 ReNFT</div>
+      <TransactionNotifier />
     </Layout>
   );
 };
