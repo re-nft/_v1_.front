@@ -12,7 +12,7 @@ export const queryMyERC721s = (user: string): string => {
 
 export const queryMyMoonCats = (user: string): string => {
   return `{
-    moonRescuers(where: { id: ${user.toLowerCase()} }) {
+    moonRescuers(where: { id: "${user.toLowerCase()}" }) {
       id,
       cats {
         id
