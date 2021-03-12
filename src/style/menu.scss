@@ -1,0 +1,52 @@
+.menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    &__item {
+        background: #9a65ca;
+        border: 0;
+        font-family: 'Press Start 2P';
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 400;
+        padding: 10px 16px 8px;
+        line-height: 1;
+        color: #fff;
+        box-shadow: 4px 4px #6b3b9b, 3px 3px #6b3b9b, 2px 2px #6b3b9b, 1px 1px #6b3b9b;
+        cursor: pointer;
+        outline: none;
+        position: relative;
+        transition: all 250ms;
+        
+        &:hover {
+            color: #996fc8;
+            background: #eee6f6;
+            box-shadow: 4px 4px #eee6f6, 3px 3px #eee6f6, 2px 2px #eee6f6, 1px 1px #eee6f6;
+        }
+        
+        &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            box-shadow: 10px 0px #000, 0px 10px #000, 10px 10px #000;
+        }
+        
+        &-active {
+            background: #eee6f6;
+            color: #996fc8;
+            box-shadow: 2px 2px #eee6f6, 1px 1px #eee6f6;
+
+            &:before {
+                box-shadow: 8px 0px #000, -6px -6px #000, -6px 10px #000, 8px 10px #000, 8px -6px #000;
+            }
+        }
+    }
+}

@@ -129,68 +129,59 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
         autoComplete="off"
         onSubmit={handleLend}
         className={classes.form}
-        style={{ padding: "32px" }}
       >
         {nfts.map((nftItem: Nft) => {
             return (
-              <div className="form-section" key={`${nftItem.address}::${nftItem.tokenId}`}>
-                  <div className="for">Token Id: {nftItem.tokenId}</div>
-                      <Box>
-                      <div className="fields">
-                        <Box className={classes.inputs}>
-                          <CssTextField
-                            required
-                            label="Max lend duration"
-                            id={`${nftItem.tokenId}::maxDuration`}
-                            variant="outlined"
-                            value={lendOneInputs[nftItem.tokenId]?.maxDuration ?? ""}
-                            type="number"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            name={`${nftItem.tokenId}::maxDuration`}
-                          />
-                        </Box>
-                        <Box className={classes.inputs}>
-                        <CssTextField
-                          required
-                          label="Borrow Price"
-                          id={`${nftItem.tokenId}::borrowPrice`}
-                          variant="outlined"
-                          value={lendOneInputs[nftItem.tokenId]?.borrowPrice ?? ""}
-                          type="number"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          name={`${nftItem.tokenId}::borrowPrice`}
-                        />
-                        </Box>
-                        <Box className={classes.inputs}>
-                        <CssTextField
-                          required
-                          label="Collateral"
-                          id={`${nftItem.tokenId}::nftPrice`}
-                          variant="outlined"
-                          value={lendOneInputs[nftItem.tokenId]?.nftPrice ?? ""}
-                          type="number"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          name={`${nftItem.tokenId}::nftPrice`}
-                        />
-                        </Box>
-                        <Box className={classes.inputs}>
-                        <FormControl variant="outlined">
-                          <MinimalSelect
-                            // @ts-ignore
-                            onSelect={(value) => onSelectPaymentToken(value, nftItem.tokenId)}
-                            selectedValue={pmtToken[nftItem.tokenId] ?? -1}
-                          />
-                        </FormControl>
-                        </Box>
-                  </div>
-                  </Box>
+              <div className="modal-dialog-section" key={`${nftItem.address}::${nftItem.tokenId}`}>
+                <div className="modal-dialog-for">
+                  <div className="label">Token Id</div>
+                  <div className="dot"></div>
+                  <div className="label">{nftItem.tokenId}</div>
+                </div>
+                <div className="modal-dialog-fields">
+                  <CssTextField
+                    required
+                    label="Max lend duration"
+                    id={`${nftItem.tokenId}::maxDuration`}
+                    variant="outlined"
+                    value={lendOneInputs[nftItem.tokenId]?.maxDuration ?? ""}
+                    type="number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name={`${nftItem.tokenId}::maxDuration`}
+                  />
+                  <CssTextField
+                    required
+                    label="Borrow Price"
+                    id={`${nftItem.tokenId}::borrowPrice`}
+                    variant="outlined"
+                    value={lendOneInputs[nftItem.tokenId]?.borrowPrice ?? ""}
+                    type="number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name={`${nftItem.tokenId}::borrowPrice`}
+                  />
+                  <CssTextField
+                    required
+                    label="Collateral"
+                    id={`${nftItem.tokenId}::nftPrice`}
+                    variant="outlined"
+                    value={lendOneInputs[nftItem.tokenId]?.nftPrice ?? ""}
+                    type="number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name={`${nftItem.tokenId}::nftPrice`}
+                  />
+                  <MinimalSelect
+                    // @ts-ignore
+                    onSelect={(value) => onSelectPaymentToken(value, nftItem.tokenId)}
+                    selectedValue={pmtToken[nftItem.tokenId] ?? -1}
+                  />
+                </div>
               </div>  
             );
         })}
-        <div className="float-button">
+        <div className="modal-dialog-button">
           <Box className={classes.buttons}>
             {!isApproved && (
               <ActionButton<Nft>
@@ -200,7 +191,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
               />
             )}
             {isApproved && (
-              <RainbowButton type="submit" text="Lend" disabled={!isApproved} />
+              <div className="nft__control">
+                <button type="submit" className="nft__button">{nfts.length > 1 ? 'Lend all' : 'Lend'}</button>
+              </div>
             )}
           </Box>
         </div>

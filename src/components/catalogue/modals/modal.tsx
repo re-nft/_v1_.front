@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Box } from "@material-ui/core";
+import { Dialog } from "@material-ui/core";
 
 type ModalProps = {
   open: boolean;
@@ -13,9 +13,9 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={open} onClose={handleClose}>
-      <Box style={{ background: "#550099", border: "3px solid black" }}>
+      <div className="modal-dialog">
         {children}
-      </Box>
+      </div>
     </Dialog>
   );
 };

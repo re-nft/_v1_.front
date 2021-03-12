@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Checkbox } from "@material-ui/core";
 import { Nft } from "../../contexts/graph/classes";
 
@@ -6,10 +6,7 @@ export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
-  onCheckboxChange?: (
-    e: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => void;
+  onCheckboxChange?: (name: string, checked: boolean) => void;
 };
 
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
@@ -19,10 +16,20 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
 }) => {
   const [img, setImg] = useState<string>();
+  const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const loadMediaURI = async () => {
     const mediaURI = await nft.mediaURI();
     return mediaURI;
   };
+  const onCheckboxClick = useCallback(() => {
+    setIsChecked(!isChecked);
+    onCheckboxChange && onCheckboxChange(`${nft.address}::${nft.tokenId}`, !isChecked);
+  }, [nft, isChecked]);
+  
+  useEffect(() => {
+    setIsChecked(checked || false);
+  }, [checked]);
+
   useEffect(() => {
     loadMediaURI()
       .then((mediaUri) => setImg(mediaUri))
@@ -31,47 +38,39 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }, []);
 
   return (
-    <div className="Nft__item" key={nft.tokenId}>
+    <div className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
       {onCheckboxChange && (
-        <div className="Nft__checkbox">
-          <Checkbox
-            name={`${nft.address}::${nft.tokenId}`}
-            checked={checked}
-            onChange={onCheckboxChange}
-            inputProps={{ "aria-label": "primary checkbox" }}
-          />
+        <div className="nft__checkbox">
+          <div onClick={onCheckboxClick} className={`checkbox ${isChecked ? 'checked' : ''}`}></div>
         </div>
       )}
-      <div className="Nft" data-item-id={nft.tokenId}>
-        <div className="Nft__image">
-          {img && <img loading="lazy" src={img} />}
-        </div>
+      <div className="nft__image">
+          {img ? <img loading="lazy" src={img} /> : <div className="no-img">NO IMG</div>}
+      </div>
+      <div className="nft__meta"> 
         {nft.meta.name && nft.meta.name.trim() !== "" && (
-          <div className="Nft__card">
-            <p style={{ fontWeight: 600 }}>{nft.meta.name}</p>
-          </div>
+          <div className="nft__name">{nft.meta.name}</div>
         )}
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
+        <div className="nft__meta_row">
+          <div className="nft__meta_title">NFT Address</div>
+          <div className="nft__meta_dot"></div>
+          <div className="nft__meta_value">
             <a
               href={`https://goerli.etherscan.io/address/${nft.address}`}
               target="_blank"
               rel="noreferrer"
-              style={{ textDecoration: "none", color: "black" }}
             >
               {nft.address}
             </a>
-          </p>
+          </div>
         </div>
-        <div className="Nft__card">
-          <p className="Nft__text_overflow">
-            <span className="Nft__label">Token id</span>
-            <span className="Nft__value">{nft.tokenId}</span>
-          </p>
+        <div className="nft__meta_row">
+          <div className="nft__meta_title">Token id</div>
+          <div className="nft__meta_dot"></div>
+          <div className="nft__meta_value">{nft.tokenId}</div>
         </div>
-        {/* description fields */}
-        {children}
       </div>
+      {children}
     </div>
   );
 };

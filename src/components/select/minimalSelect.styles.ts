@@ -4,22 +4,20 @@ import { deepPurple } from "@material-ui/core/colors";
 const minimalSelectStyles = () => ({
   select: {
     minWidth: 200,
-    background: "#550099",
-    color: "teal",
+    background: "#eee6f6",
+    color: "#000",
     fontWeight: 1000,
     // borderStyle: "none",
     borderColor: "black",
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: 4,
     paddingLeft: 24,
     paddingTop: 14,
     paddingBottom: 15,
-    boxShadow: "0px 5px 8px -3px rgba(0,0,0,0.42)",
+    border: '3px solid #996fc8',
     "&:focus": {
-      borderRadius: 12,
-      background: "#550099",
-      // borderColor: "black",
-      // borderColor: deepPurple[100],
+      borderRadius: 4,
+      background: "#eee6f6",
     },
   },
   icon: {
@@ -30,13 +28,13 @@ const minimalSelectStyles = () => ({
     pointerEvents: "none",
   },
   paper: {
-    borderRadius: 12,
+    borderRadius: 4,
     marginTop: 8,
   },
   list: {
     paddingTop: 0,
     paddingBottom: 0,
-    background: "#550099",
+    background: "#eee6f6",
     "& li": {
       fontWeight: 200,
       paddingTop: 12,

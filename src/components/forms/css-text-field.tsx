@@ -3,15 +3,18 @@ import { withStyles } from "@material-ui/core/styles";
 
 const fancyStyle = {
   root: {
+    margin: '10px 0',
     "& label": {
-      color: "teal",
+      color: "#000",
     },
     "& input": {
-      color: "teal",
-      fontWeight: "1000",
+      color: "#000",
+      fontWeight: "400",
+      padding: '15px 12px',
     },
     "& label.Mui-focused": {
-      color: "white",
+      color: "#000",
+      background: '#eee6f6',
     },
     "& .MuiInput-underline:after": {
       borderBottomColor: "black",

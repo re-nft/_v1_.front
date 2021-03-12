@@ -87,7 +87,7 @@ video {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: Righteous, consolas, Menlo, monospace, sans-serif;
+  font-family: 'VT323', monospace, sans-serif;
   vertical-align: baseline;
 }
 
@@ -132,18 +132,17 @@ table {
   border-spacing: 0;
 }
 
+html, body {
+  min-height: 100%;
+  height: 100%;
+}
+
 body {
-  background: linear-gradient(
-    to bottom,
-    white,
-    cyan,
-    white,
-    MediumVioletRed,
-    white,
-    Green,
-    white,
-    cyan
-  );
+  background: #fff;
+  display: flex;  
+  flex-direction: column;
+  font-family: 'VT323';
+  font-size: 13px;
 }
 
 .active-tab {
