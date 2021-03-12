@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
+
+import GraphContext from '../../contexts/graph/index';
 import mooncatparser from '../../lib/mooncatparser';
 
 function drawCat(catId: string, size: number){
@@ -31,7 +33,7 @@ const CatItem: React.FC<{ catId: string }> = ({ catId }) => {
               {img ? <img loading="lazy" src={img} /> : <div className="no-img">NO CAT</div>}
           </div>
           <div className="nft__meta"> 
-            <div className="nft__meta_row">
+            {/*<div className="nft__meta_row">
               <div className="nft__meta_title">Address</div>
               <div className="nft__meta_dot"></div>
               <div className="nft__meta_value">
@@ -43,7 +45,7 @@ const CatItem: React.FC<{ catId: string }> = ({ catId }) => {
                   {address}
                 </a>
               </div>
-            </div>
+            </div>*/}
             <div className="nft__meta_row">
               <div className="nft__meta_title">Cat id</div>
               <div className="nft__meta_dot"></div>
@@ -55,12 +57,18 @@ const CatItem: React.FC<{ catId: string }> = ({ catId }) => {
 };
 
 export const Cats: React.FC = () => {
+  const { usersMoonCats } = useContext(GraphContext);
   const [cats, setCats] = useState<string[]>([]);  
   const [isCatLoaded, setIsCatLoaded] = useState<boolean>(false);  
+
   const onClick = useCallback(() => {
-    setCats(['0x00f9e605e3', '0x00f9e605e3', '0x00f9e605e3', '0x00f9e605e3', '0x00f9e605e3', '0x00f9e605e3']);
+    setCats(usersMoonCats);
     setIsCatLoaded(true);
-  }, [setCats]);
+  }, [setCats, usersMoonCats]);
+
+  useEffect(() => {
+    setCats(usersMoonCats);
+  }, [usersMoonCats]);
 
   return (
     <div className="content">
