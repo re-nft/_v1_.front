@@ -84,7 +84,7 @@ export const Cats: React.FC = () => {
             cats.map(catId => <CatItem key={catId} catId={catId}/>)
         )}
         {isCatLoaded && cats.length === 0 && (
-          <div className="no-cats">Sorry, You don&apos;t have any cats</div>
+          <div className="no-cats">No cats? Did you only &apos;RescueCat&apos; and not &apos;GiveCat&apos; function as well?</div>
         )}  
       </div>
 	</div>
