@@ -16,6 +16,7 @@ export const queryMyMoonCats = (user: string): string => {
       id,
       cats {
         id
+        inMyWallet
       }
     }
   }`;

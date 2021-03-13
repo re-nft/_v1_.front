@@ -33,19 +33,6 @@ const CatItem: React.FC<{ catId: string }> = ({ catId }) => {
               {img ? <img loading="lazy" src={img} /> : <div className="no-img">NO CAT</div>}
           </div>
           <div className="nft__meta"> 
-            {/*<div className="nft__meta_row">
-              <div className="nft__meta_title">Address</div>
-              <div className="nft__meta_dot"></div>
-              <div className="nft__meta_value">
-                <a
-                  href={`https://goerli.etherscan.io/address/${address}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {address}
-                </a>
-              </div>
-            </div>*/}
             <div className="nft__meta_row">
               <div className="nft__meta_title">Cat id</div>
               <div className="nft__meta_dot"></div>
@@ -58,7 +45,7 @@ const CatItem: React.FC<{ catId: string }> = ({ catId }) => {
 
 export const Cats: React.FC = () => {
   const { usersMoonCats } = useContext(GraphContext);
-  const [cats, setCats] = useState<string[]>([]);  
+  const [cats, setCats] = useState<{ id: string; inMyWallet: boolean }[]>([]);  
   const [isCatLoaded, setIsCatLoaded] = useState<boolean>(false);  
 
   const onClick = useCallback(() => {
@@ -70,24 +57,37 @@ export const Cats: React.FC = () => {
     setCats(usersMoonCats);
   }, [usersMoonCats]);
 
+  const inMyWallet = cats.filter(({ inMyWallet }) => inMyWallet);
+  const onTheMoon = cats.filter(({ inMyWallet }) => !inMyWallet);
   return (
     <div className="content">
-      <div className="content__row content__items">
-        {!isCatLoaded && (
-            <div className="content-center">
-                <button className="nft__button" onClick={onClick}>
-                    Show me my cats
-                </button>
-            </div>
-        )}
-        {isCatLoaded && cats.length !== 0 && (
-            cats.map(catId => <CatItem key={catId} catId={catId}/>)
-        )}
-        {isCatLoaded && cats.length === 0 && (
-          <div className="no-cats">No cats? Did you only &apos;RescueCat&apos; and not &apos;GiveCat&apos; function as well?</div>
-        )}  
-      </div>
-	</div>
+      {!isCatLoaded && (
+          <div className="content-center">
+              <button className="nft__button" onClick={onClick}>
+                  Show me my cats
+              </button>
+          </div>
+      )}
+      {isCatLoaded && cats.length === 0 && (
+        <div className="no-cats">No cats? Did you only &apos;RescueCat&apos; and not &apos;GiveCat&apos; function as well?</div>
+      )}  
+      {isCatLoaded && inMyWallet.length !== 0 && (
+        <>
+          <h2 className="content-header">In My Wallet</h2>
+          <div className="content__row content__items">
+              {inMyWallet.map(({ id }) => <CatItem key={id} catId={id}/>)}
+          </div>
+        </>
+      )}
+      {isCatLoaded && onTheMoon.length !== 0 && (
+        <>
+          <h2 className="content-header">On The Moon</h2>
+          <div className="content__row content__items">
+            {onTheMoon.map(({ id }) => <CatItem key={id} catId={id}/>)}
+          </div>
+        </>
+      )}
+	  </div>
   );
 };
 

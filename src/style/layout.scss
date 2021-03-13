@@ -20,6 +20,24 @@
     }
 }
 
+.content-header {
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 16px;
+    color: #fff;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #fff;
+}
+
+.no-cats {
+    font-size: 24px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .content-wrapper.footer-content {
     line-height: 1;
     padding: 24px 0;

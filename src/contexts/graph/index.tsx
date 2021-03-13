@@ -75,7 +75,7 @@ type GraphContextType = {
   usersNfts: Nft[];
   usersLending: Lending[];
   usersRenting: Renting[];
-  usersMoonCats: string[];
+  usersMoonCats: { id: string; inMyWallet: boolean }[];
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -110,7 +110,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   );
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
-  const [usersMoonCats, setUsersMoonCats] = useState<string[]>([]);
+  const [usersMoonCats, setUsersMoonCats] = useState<{ id: string, inMyWallet: boolean }[]>([]);
 
   /**
    * Only for dev purposes
@@ -215,15 +215,14 @@ export const GraphProvider: React.FC = ({ children }) => {
       const query = queryMyMoonCats(currentAddress);
       const subgraphURI = ENDPOINT_MOONCAT_PROD;
       const response: {
-        moonRescuers: { cats?: {id: string}[] }[]
+        moonRescuers: { cats?: {id: string, inMyWallet: boolean}[] }[]
       } = await timeItAsync(
         `Pulled My Moon Cat Nfts`,
         async () => await request(subgraphURI, query)
       );
       const [first] = response.moonRescuers;
       if (first) {
-        const catsIds = first?.cats?.map(({ id }) => id) ?? [];
-        setUsersMoonCats(catsIds);
+        setUsersMoonCats(first?.cats ?? []);
       }
     };
 

@@ -10,7 +10,9 @@ const Layout: React.FC = ({ children }) => {
 
   return (
     <div className="app">
-      <Helmet title="ReNFT"/>
+      <Helmet title="ReNFT">
+        {/* <meta property="og:image" content={shareImg} /> */}
+      </Helmet>
       <div className="app__container">
         <div className="main">
           {/* HEADER */}
