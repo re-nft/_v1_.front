@@ -6,6 +6,8 @@ const fancyStyle = {
     margin: '10px 0',
     "& label": {
       color: "#000",
+      background: '#eee6f6',
+      paddingRight: '12px'
     },
     "& input": {
       color: "#000",

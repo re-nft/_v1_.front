@@ -84,3 +84,8 @@ export type NftRaw = {
     renting?: RentingRaw[];
   }[];
 };
+
+export type UserData = {
+  name: string;
+  favorites?: Record<string, boolean>;
+};

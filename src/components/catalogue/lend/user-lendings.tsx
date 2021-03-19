@@ -58,6 +58,7 @@ const UserLendings: React.FC = () => {
   return (
     <>
       {allUsersLendings.map((nft) => (
+        // @ts-ignore
         <CatalogueItem 
           key={`${nft.address}::${nft.tokenId}`}
           checked={checkedMap[nft.tokenId] || false}
@@ -83,4 +84,4 @@ const UserLendings: React.FC = () => {
   );
 };
 
-export default UserLendings;
+export default React.memo(UserLendings);

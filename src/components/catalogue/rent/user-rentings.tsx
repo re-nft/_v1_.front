@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useContext, useMemo } from "react";
-import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
+import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../forms/numeric-field";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -58,6 +58,7 @@ const UserRentings: React.FC = () => {
       {allRentings.map((nft: Renting) => {
         const id = `${nft.address}::${nft.tokenId}`;
         return (
+          // @ts-ignore
           <CatalogueItem 
             key={id} 
             nft={nft}
@@ -90,4 +91,4 @@ const UserRentings: React.FC = () => {
   );
 };
 
-export default UserRentings;
+export default React.memo(UserRentings);

@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Checkbox } from "@material-ui/core";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Nft } from "../../contexts/graph/classes";
+import {CurrentAddressContext} from "../../hardhat/SymfoniContext";
+import GraphContext from "../../contexts/graph";
+import {addOrRemoveUserFavorite, nftId} from '../../services/firebase';
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -15,7 +17,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   onCheckboxChange,
   children,
 }) => {
+  const [currentAddress] = useContext(CurrentAddressContext);
+  const { userData } = useContext(GraphContext);
   const [img, setImg] = useState<string>();
+  const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const loadMediaURI = async () => {
     const mediaURI = await nft.mediaURI();
@@ -26,6 +31,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     onCheckboxChange && onCheckboxChange(`${nft.address}::${nft.tokenId}`, !isChecked);
   }, [nft, isChecked]);
   
+  const addOrRemoveFavorite = useCallback(() => {
+    addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then((resp: boolean) => {
+      setInFavorites(resp);
+    });
+  }, [nft]);
+
   useEffect(() => {
     setIsChecked(checked || false);
   }, [checked]);
@@ -37,8 +48,15 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     /* eslint-disable-next-line */
   }, []);
 
+  const id = nftId(nft.address, nft.tokenId);
+  const addedToFavorites = inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   return (
     <div className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
+      <div className="nft__overlay">
+        <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
+        <div className="nft__vote nft__vote-plus">+1</div>
+        <div className="nft__vote nft__vote-minus">-1</div>
+      </div>
       {onCheckboxChange && (
         <div className="nft__checkbox">
           <div onClick={onCheckboxClick} className={`checkbox ${isChecked ? 'checked' : ''}`}></div>
@@ -75,4 +93,4 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 };
 
-export default CatalogueItem;
+export default React.memo(CatalogueItem);

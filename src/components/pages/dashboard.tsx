@@ -9,10 +9,6 @@ import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/graph";
 import { PaymentToken } from "../../types";
 
-type StatsProps = {
-  hidden: boolean;
-};
-
 enum TableType {
   BORROW,
   LEND,
@@ -132,10 +128,8 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
   );
 };
 
-const Stats: React.FC<StatsProps> = ({ hidden }) => {
+const Stats: React.FC = () => {
   const { usersLending, usersRenting } = useContext(GraphContext);
-
-  if (hidden) return <></>;
 
   return (
     <Box

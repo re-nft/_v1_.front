@@ -3,16 +3,12 @@ import Lending from "../catalogue/lend/lendings";
 import UserLending from "../catalogue/lend/user-lendings";
 import PageLayout from "../layout/page-layout";
 
-type LendProps = {
-  hidden: boolean;
-};
-
 enum LendSpecificity {
   ALL,
   LENDING,
 }
 
-export const Lend: React.FC<LendProps> = ({ hidden }) => {
+export const Lend: React.FC = () => {
   const [specificity, setSpecificiy] = useState<LendSpecificity>(
     LendSpecificity.ALL
   );
@@ -24,8 +20,6 @@ export const Lend: React.FC<LendProps> = ({ hidden }) => {
         : LendSpecificity.ALL
     );
   }, []);
-
-  if (hidden) return <></>;
 
   return (
     <PageLayout

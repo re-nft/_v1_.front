@@ -6,7 +6,6 @@ import CatalogueItem from "../../catalogue/catalogue-item";
 import ActionButton from "../../forms/action-button";
 import CatalogueLoader from "../catalogue-loader";
 import BatchBar from '../batch-bar';
-import VotingBtn from '../voting-btn';
 import {BatchContext} from '../../controller/batch-controller';
 
 const Lendings: React.FC = () => {
@@ -53,20 +52,18 @@ const Lendings: React.FC = () => {
     <>
       {modalOpen && <BatchLendModal nfts={checkedItems} open={modalOpen} onClose={handleClose} />}
       {usersNfts.map((nft) => (
+          // @ts-ignore
           <CatalogueItem 
             key={`${nft.address}::${nft.tokenId}`} 
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
           >
-            <div className="button-groupe">
-              <VotingBtn/>
-              <ActionButton<Nft>
-                nft={nft}
-                title="Lend now"
-                onClick={handleStartLend}
-              />
-            </div>
+            <ActionButton<Nft>
+              nft={nft}
+              title="Lend now"
+              onClick={handleStartLend}
+            />
           </CatalogueItem>
         ))}
       {countOfCheckedItems > 1 && (
@@ -81,4 +78,4 @@ const Lendings: React.FC = () => {
   );
 };
 
-export default Lendings;
+export default React.memo(Lendings);

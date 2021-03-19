@@ -3,16 +3,12 @@ import Rentings from "../catalogue/rent/rentings";
 import UserRentings from "../catalogue/rent/user-rentings";
 import PageLayout from "../layout/page-layout";
 
-type RentProps = {
-  hidden: boolean;
-};
-
 enum RentSpecificity {
   ALL,
   RENTING,
 }
 
-export const Rent: React.FC<RentProps> = ({ hidden }) => {
+export const Rent: React.FC = () => {
   const [specificity, setSpecificiy] = useState<RentSpecificity>(
     RentSpecificity.ALL
   );
@@ -24,8 +20,6 @@ export const Rent: React.FC<RentProps> = ({ hidden }) => {
         : RentSpecificity.ALL
     );
   }, []);
-
-  if (hidden) return <></>;
 
   return (
     <PageLayout

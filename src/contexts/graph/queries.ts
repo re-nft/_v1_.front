@@ -10,18 +10,6 @@ export const queryMyERC721s = (user: string): string => {
   }`;
 };
 
-export const queryMyMoonCats = (user: string): string => {
-  return `{
-    moonRescuers(where: { id: "${user.toLowerCase()}" }) {
-      id,
-      cats {
-        id
-        inMyWallet
-      }
-    }
-  }`;
-}
-
 // non-reNFT's subgraph, with this query we pull all of user's
 // ERC1155 tokens (will work only in prod)
 export const queryMyERC1155s = (user: string): string => {

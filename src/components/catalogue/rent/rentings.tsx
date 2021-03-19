@@ -19,7 +19,7 @@ import GraphContext from "../../../contexts/graph";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 
-export const AvailableToRent: React.FC = () => {
+const AvailableToRent: React.FC = () => {
   const { 
     checkedItems, 
     checkedMap, 
@@ -102,6 +102,7 @@ export const AvailableToRent: React.FC = () => {
         handleClose={handleBatchModalClose}
       />
       {allRentings.map((nft: Lending) => (
+        // @ts-ignore
         <CatalogueItem
           key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
           nft={nft}
@@ -142,4 +143,4 @@ export const AvailableToRent: React.FC = () => {
   );
 };
 
-export default AvailableToRent;
+export default React.memo(AvailableToRent);
