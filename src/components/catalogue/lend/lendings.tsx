@@ -7,6 +7,7 @@ import ActionButton from "../../forms/action-button";
 import CatalogueLoader from "../catalogue-loader";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
+import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 
 const Lendings: React.FC = () => {
   const { 
@@ -18,8 +19,10 @@ const Lendings: React.FC = () => {
     onSetCheckedItem, 
     onSetItems 
   } = useContext(BatchContext);
+  const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const { usersNfts } = useContext(GraphContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [nftItems, setNftItems] = useState<Nft[]>([]);
   
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -38,21 +41,41 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    onSetItems(usersNfts);
-    return () => {
-      return onReset();
-    };
+    setIsLoading(true);    
+    
+    const getUserNftsRequest = createCancellablePromise(getUserNfts());
+
+    getUserNftsRequest.promise.then((items: Nft[] | undefined) => {
+      if (items) {
+        setNftItems(items);
+        onSetItems(items);
+        setIsLoading(false);
+      } else {
+        onSetItems([]);
+        setNftItems([]);
+        setIsLoading(false);
+      }
+    });
+  
+    return getUserNftsRequest.cancel;
   }, []);
 
-  if (usersNfts.length === 0) {
+  if (isLoading) {
     return <CatalogueLoader />;
+  }
+
+  if (!isLoading && nftItems.length === 0) {
+    return (
+      <div className="center">
+        You dont have any NFTs
+      </div>
+    );
   }
   
   return (
     <>
       {modalOpen && <BatchLendModal nfts={checkedItems} open={modalOpen} onClose={handleClose} />}
-      {usersNfts.map((nft) => (
-          // @ts-ignore
+      {nftItems.map((nft) => (
           <CatalogueItem 
             key={`${nft.address}::${nft.tokenId}`} 
             nft={nft}

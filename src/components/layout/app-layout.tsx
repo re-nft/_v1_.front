@@ -10,6 +10,8 @@ import Rent from "../pages/rent";
 import Lend from "../pages/lend";
 import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
+import MyFavorites from "../pages/favourites";
+import Leaderboard from '../pages/leaderboard';
 import { TransactionNotifier } from "../transaction-notifier";
 
 const OFFSET_TOP = 180;
@@ -116,10 +118,10 @@ const App: React.FC = () => {
               <Dashboard />
             </Route>
             <Route exact path="/favourites">
-              <div>My Favourites Content Here</div>
+              <MyFavorites/>
             </Route>
             <Route exact path="/leaderboard">
-              <div>Leaderboard Content Here</div>
+              <Leaderboard/>
             </Route>
             <Route exact path="/faq">
               <Faq />

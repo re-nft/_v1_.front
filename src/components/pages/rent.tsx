@@ -33,4 +33,4 @@ export const Rent: React.FC = () => {
   );
 };
 
-export default Rent;
+export default React.memo(Rent);

@@ -28,8 +28,6 @@ firebase.initializeApp(config);
 
 const database = firebase.database();
 
-
-
 export const nftId = (nftAddress: Address, tokenId: string) => {
   return `${nftAddress}::${tokenId}`;
 };
@@ -73,11 +71,9 @@ export const addOrRemoveUserFavorite = async (currentAddress: string, nftAddress
     return new Promise((resolve, reject) => {
         userRef.once('value').then((snapshot) => {
             if (snapshot.val()) {
-                console.log(' no ', snapshot.val());
                 userRef.set(false);
                 resolve(false);
             } else {
-                console.log(' yes ');
                 userRef.set(true);
                 resolve(true);
             }

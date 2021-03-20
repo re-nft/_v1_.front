@@ -9,6 +9,8 @@ import CatalogueLoader from "../catalogue-loader";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import GraphContext from "../../../contexts/graph";
+import { Nft } from "../../../contexts/graph/classes";
+import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 
 const UserRentings: React.FC = () => {
   const { 
@@ -20,15 +22,15 @@ const UserRentings: React.FC = () => {
     onSetCheckedItem, 
     onSetItems 
   } = useContext(BatchContext);
-  const { renftsRenting } = useContext(GraphContext);
+  const { getUserRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const allRentings = useMemo(() => {
-    return Object.values(renftsRenting);
-  }, [renftsRenting]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [nftItems, setNftItems] = useState<Nft[]>([]);
+  
   const handleCloseModal = useCallback(() => setModalOpen(false), [setModalOpen]);
   const handleBatchStopRent = useCallback(() => setModalOpen(true), [setModalOpen]);
   const handleOpenModal = useCallback(
-    async (nft: Renting) => {
+    async (nft: Nft) => {
       onSetCheckedItem(nft);
       setModalOpen(true);
     },
@@ -36,14 +38,35 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    onSetItems(allRentings);
-    return () => {
-      return onReset();
-    };
+    setIsLoading(true);
+
+    const getUserRentingRequest = createCancellablePromise(getUserRenting());
+
+    getUserRentingRequest.promise.then((userRenting: Renting[] | undefined) => {
+      if (userRenting) {
+        onSetItems(userRenting);
+        setNftItems(userRenting);
+        setIsLoading(false);
+      } else {
+        onSetItems([]);
+        setNftItems([]);
+        setIsLoading(false);
+      }
+    });
+
+    return getUserRentingRequest.cancel;
   }, []);
 
-  if (allRentings.length === 0) {
+  if (isLoading) {
     return <CatalogueLoader />;
+  }
+
+  if (!isLoading && nftItems.length === 0) {
+    return (
+      <div className="center">
+        You dont have any lend anything yet
+      </div>
+    )
   }
 
   return (
@@ -55,10 +78,9 @@ const UserRentings: React.FC = () => {
           onClose={handleCloseModal}
         />
       )}
-      {allRentings.map((nft: Renting) => {
+      {nftItems.map((nft: Nft) => {
         const id = `${nft.address}::${nft.tokenId}`;
         return (
-          // @ts-ignore
           <CatalogueItem 
             key={id} 
             nft={nft}
@@ -71,7 +93,7 @@ const UserRentings: React.FC = () => {
               unit={PaymentToken[PaymentToken.DAI]}
             />
             <NumericField text="Rent Duration" value={String(0)} unit="days" />
-            <ActionButton<Renting>
+            <ActionButton<Nft>
               title="Return It"
               nft={nft}
               onClick={handleOpenModal}

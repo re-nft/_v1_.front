@@ -33,4 +33,4 @@ export const Lend: React.FC = () => {
   );
 };
 
-export default Lend;
+export default React.memo(Lend);

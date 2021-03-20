@@ -93,4 +93,4 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 };
 
-export default React.memo(CatalogueItem);
+export default CatalogueItem;

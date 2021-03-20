@@ -3,7 +3,7 @@ import { Box } from "@material-ui/core";
 import moment from "moment";
 
 import Table from "../table";
-import { Lending } from "../../contexts/graph/classes";
+import { Lending, Renting } from "../../contexts/graph/classes";
 import { short } from "../../utils";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/graph";
@@ -128,8 +128,9 @@ const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
   );
 };
 
-const Stats: React.FC = () => {
-  const { usersLending, usersRenting } = useContext(GraphContext);
+const Dashboard: React.FC = () => {
+  const usersLending: Lending[] = [];
+  const usersRenting: Renting[] = [];
 
   return (
     <Box
@@ -199,4 +200,4 @@ const Stats: React.FC = () => {
   );
 };
 
-export default Stats;
+export default React.memo(Dashboard);

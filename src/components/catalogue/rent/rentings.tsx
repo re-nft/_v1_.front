@@ -7,7 +7,6 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import { Lending, Nft } from "../../../contexts/graph/classes";
 import NumericField from "../../forms/numeric-field";
 import { PaymentToken } from "../../../types";
 import CatalogueItem from "../../catalogue/catalogue-item";
@@ -16,8 +15,10 @@ import ActionButton from "../../forms/action-button";
 import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../catalogue-loader";
 import GraphContext from "../../../contexts/graph";
+import { Nft, Lending } from "../../../contexts/graph/classes";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
+import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 
 const AvailableToRent: React.FC = () => {
   const { 
@@ -35,11 +36,10 @@ const AvailableToRent: React.FC = () => {
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
-  const { renftsLending } = useContext(GraphContext);
 
-  const allRentings = useMemo(() => {
-    return Object.values(renftsLending);
-  }, [renftsLending]);
+  const { getUsersLending } = useContext(GraphContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [nftItems, setNftItems] = useState<Lending[]>([]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
@@ -83,14 +83,35 @@ const AvailableToRent: React.FC = () => {
   }, [setOpenBatchModel]);
 
   useEffect(() => {
-    onSetItems(allRentings);
-    return () => {
-      return onReset();
-    };
+    setIsLoading(true);
+
+    const getUsersLendingRequest = createCancellablePromise(getUsersLending());
+
+    getUsersLendingRequest.promise.then((usersLnding: Lending[] | undefined) => {
+      if (usersLnding) {
+        onSetItems(usersLnding);
+        setNftItems(usersLnding);
+        setIsLoading(false);
+      } else {
+        onSetItems([]);
+        setNftItems([]);
+        setIsLoading(false);
+      }
+    });
+    
+    return getUsersLendingRequest.cancel;
   }, []);
 
-  if (allRentings.length === 0) {
+  if (isLoading) {
     return <CatalogueLoader />;
+  }
+
+  if (!isLoading && nftItems.length === 0) {
+    return (
+      <div className="center">
+        You dont have any lend anything yet
+      </div>
+    )
   }
 
   return (
@@ -101,8 +122,7 @@ const AvailableToRent: React.FC = () => {
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
-      {allRentings.map((nft: Lending) => (
-        // @ts-ignore
+      {nftItems.map((nft: Lending) => (
         <CatalogueItem
           key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
           nft={nft}
