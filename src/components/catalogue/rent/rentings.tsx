@@ -15,7 +15,7 @@ import ActionButton from "../../forms/action-button";
 import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../catalogue-loader";
 import GraphContext from "../../../contexts/graph";
-import { Nft, Lending } from "../../../contexts/graph/classes";
+import { Lending } from "../../../contexts/graph/classes";
 import BatchBar from '../batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import createCancellablePromise from '../../../contexts/create-cancellable-promise';

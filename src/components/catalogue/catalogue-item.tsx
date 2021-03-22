@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Nft } from "../../contexts/graph/classes";
 import {CurrentAddressContext} from "../../hardhat/SymfoniContext";
 import GraphContext from "../../contexts/graph";
-import {addOrRemoveUserFavorite, nftId} from '../../services/firebase';
+import {addOrRemoveUserFavorite, nftId, upvoteOrDownvote, getNftVote} from '../../services/firebase';
+import { CalculatedUserVote, UserData, UsersVote } from "../../contexts/graph/types";
+import {calculateVoteByUser} from '../../services/vote';
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -18,14 +20,17 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
 }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { userData } = useContext(GraphContext);
+  const { userData, calculatedUsersVote, usersVote } = useContext(GraphContext);
   const [img, setImg] = useState<string>();
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
+  const [currentVote, setCurrentVote] = useState<{downvote?: number, upvote?: number}>();
+  
   const loadMediaURI = async () => {
     const mediaURI = await nft.mediaURI();
     return mediaURI;
   };
+  
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
     onCheckboxChange && onCheckboxChange(`${nft.address}::${nft.tokenId}`, !isChecked);
@@ -36,6 +41,18 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       setInFavorites(resp);
     });
   }, [nft]);
+
+  const handleVote = useCallback((vote: number) => {
+    upvoteOrDownvote(currentAddress, nft.address, nft.tokenId, vote).then(() => {
+      getNftVote(nft.address, nft.tokenId).then((resp: UsersVote) => {
+        const id = nftId(nft.address, nft.tokenId);
+        const voteData: CalculatedUserVote = calculateVoteByUser(resp, id);
+        // @ts-ignore
+        const currentAddressVote = voteData?.[id] ?? {}; 
+        setCurrentVote(currentAddressVote);
+      });
+    });
+  }, [nft, currentAddress]);
 
   useEffect(() => {
     setIsChecked(checked || false);
@@ -50,12 +67,20 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites = inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
+
+  // const currentAddressVote = usersVote?.[id]?.[currentAddress] ?? {}; 
+  const nftVote = currentVote == undefined ? calculatedUsersVote[id] : currentVote;
+  
   return (
     <div className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
       <div className="nft__overlay">
         <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
-        <div className="nft__vote nft__vote-plus">+1</div>
-        <div className="nft__vote nft__vote-minus">-1</div>
+        <div className="nft__vote nft__vote-plus" onClick={() => handleVote(1)}>
+          +{nftVote?.upvote || '?'}
+        </div>
+        <div className="nft__vote nft__vote-minus" onClick={() => handleVote(-1)}>
+          -{nftVote?.downvote || '?'}
+        </div>
       </div>
       {onCheckboxChange && (
         <div className="nft__checkbox">

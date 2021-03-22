@@ -21,8 +21,9 @@ import {
   queryMyERC721s,
   queryMyERC1155s
 } from "./queries";
-import {getUserDataOrCrateNew} from '../../services/firebase';
-import { NftRaw, ERC1155s, ERC721s, NftToken, UserData } from "./types";
+import {getUserDataOrCrateNew, getAllUsersVote} from '../../services/firebase';
+import {calculateVoteByUsers} from '../../services/vote';
+import { NftRaw, ERC1155s, ERC721s, NftToken, UserData, CalculatedUserVote, UsersVote } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
@@ -65,6 +66,8 @@ type RentingId = LendingId;
 
 type GraphContextType = {
   userData: UserData;
+  usersVote: UsersVote;
+  calculatedUsersVote: CalculatedUserVote;
   getUserNfts() : Promise<Nft[] | undefined>;
   getUserLending(): Promise<Lending[] | undefined>;
   getUsersLending(): Promise<Lending[] | undefined>;
@@ -79,6 +82,8 @@ const defaultUserData = {
 
 const DefaultGraphContext: GraphContextType = {
   userData: defaultUserData,
+  usersVote: {},
+  calculatedUsersVote: {},
   getUserNfts: () => Promise.resolve([]),
   getUserLending: () => Promise.resolve([]),
   getUsersLending: () => Promise.resolve([]),
@@ -100,6 +105,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
+  const [calculatedUsersVote, setCalculatedUsersVote] = useState<CalculatedUserVote>({});
+  const [usersVote, setUsersVote] = useState<UsersVote>({});
 
   /**
    * Only for dev purposes
@@ -297,9 +304,18 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (currentAddress) {
-      const getUserDataRequest = createCancellablePromise(getUserData());
+      const getUserDataRequest = createCancellablePromise(Promise.all([
+        getAllUsersVote(),
+        getUserData(),
+      ]));
       
-      getUserDataRequest.promise.then((userData: UserData | undefined) => {
+      getUserDataRequest.promise.then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
+        if (usersVote && Object.keys(usersVote).length !== 0) {
+          const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(usersVote);
+          
+          setCalculatedUsersVote(calculatedUsersVote);
+          setUsersVote(usersVote);
+        }
         if (userData) {
           setUserData(userData);
         }
@@ -312,6 +328,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     <GraphContext.Provider
       value={{
         userData,
+        usersVote,
+        calculatedUsersVote,
         getUserNfts,
         getUserLending,
         getUsersLending,
