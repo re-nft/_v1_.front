@@ -1,12 +1,12 @@
 import React, { useCallback, useState, useEffect, useContext, useMemo } from "react";
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
-import NumericField from "../../forms/numeric-field";
-import CatalogueItem from "../../catalogue/catalogue-item";
+import NumericField from "../components/numeric-field";
+import CatalogueItem from "../components/catalogue-item";
 import ReturnModal from "../modals/return";
-import ActionButton from "../../forms/action-button";
-import CatalogueLoader from "../catalogue-loader";
-import BatchBar from '../batch-bar';
+import ActionButton from "../components/action-button";
+import CatalogueLoader from "../components/catalogue-loader";
+import BatchBar from '../components/batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";

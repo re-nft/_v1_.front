@@ -216,3 +216,29 @@
       flex-grow: 1;
     }
   }
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: #fff;
+    transform: translate(-50%, -50%);
+    font-size: 25px;
+}
+
+.batch {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #9a65ca;
+    border-top: 8px solid #000;
+    width: 100%;
+    padding: 32px;
+    z-index: 9;
+}
+
+.batch__inner {
+    display: flex;
+    align-items: center;
+}
+  

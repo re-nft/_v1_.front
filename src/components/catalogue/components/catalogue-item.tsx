@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
-import { Nft } from "../../contexts/graph/classes";
-import {CurrentAddressContext} from "../../hardhat/SymfoniContext";
-import GraphContext from "../../contexts/graph";
-import {addOrRemoveUserFavorite, nftId, upvoteOrDownvote, getNftVote} from '../../services/firebase';
-import { CalculatedUserVote, UserData, UsersVote } from "../../contexts/graph/types";
-import {calculateVoteByUser} from '../../services/vote';
+import { Nft } from "../../../contexts/graph/classes";
+import {CurrentAddressContext} from "../../../hardhat/SymfoniContext";
+import GraphContext from "../../../contexts/graph";
+import {addOrRemoveUserFavorite, nftId, upvoteOrDownvote, getNftVote} from '../../../services/firebase';
+import { CalculatedUserVote, UserData, UsersVote } from "../../../contexts/graph/types";
+import {calculateVoteByUser} from '../../../services/vote';
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -20,7 +20,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
 }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { userData, calculatedUsersVote, usersVote } = useContext(GraphContext);
+  const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [img, setImg] = useState<string>();
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);

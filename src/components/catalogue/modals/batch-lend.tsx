@@ -1,23 +1,19 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-import { Box } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
 import { ProviderContext } from "../../../hardhat/SymfoniContext";
 import { PaymentToken } from "../../../types";
-import RainbowButton from "../../forms/rainbow-button";
-import CssTextField from "../../forms/css-text-field";
+import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
-import MinimalSelect from "../../select";
+import MinimalSelect from "../components/select";
 import {
   CurrentAddressContext,
   RentNftContext,
 } from "../../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { Nft } from "../../../contexts/graph/classes";
-import { useStyles } from "./styles";
 import startLend from "../../../services/start-lend";
 import isApprovalForAll from "../../../services/is-approval-for-all";
 import setApprovalForAll from "../../../services/set-approval-for-all";
-import ActionButton from "../../forms/action-button";
+import ActionButton from "../components/action-button";
 
 type LendOneInputs = {
   [key: string] : {
@@ -32,7 +28,6 @@ type LendModalProps = {
 };
 
 export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }) => {
-  const classes = useStyles();
   const { instance: renft } = useContext(RentNftContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -128,7 +123,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
         noValidate
         autoComplete="off"
         onSubmit={handleLend}
-        className={classes.form}
       >
         {nfts.map((nftItem: Nft) => {
             return (
@@ -182,20 +176,18 @@ export const BatchLendModal: React.FC<LendModalProps> = ({ nfts, open, onClose }
             );
         })}
         <div className="modal-dialog-button">
-          <Box className={classes.buttons}>
-            {!isApproved && (
-              <ActionButton<Nft>
-                title="Approve all"
-                nft={nft}
-                onClick={handleApproveAll}
-              />
-            )}
-            {isApproved && (
-              <div className="nft__control">
-                <button type="submit" className="nft__button">{nfts.length > 1 ? 'Lend all' : 'Lend'}</button>
-              </div>
-            )}
-          </Box>
+          {!isApproved && (
+            <ActionButton<Nft>
+              title="Approve all"
+              nft={nft}
+              onClick={handleApproveAll}
+            />
+          )}
+          {isApproved && (
+            <div className="nft__control">
+              <button type="submit" className="nft__button">{nfts.length > 1 ? 'Lend all' : 'Lend'}</button>
+            </div>
+          )}
         </div>
       </form>
     </Modal>

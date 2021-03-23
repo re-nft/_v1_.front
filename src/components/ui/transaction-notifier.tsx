@@ -2,8 +2,8 @@ import React, { useContext, useEffect } from "react";
 import Slide from "@material-ui/core/Slide";
 
 import Loader from "./loader";
-import { TransactionStateContext } from "../contexts/TransactionState";
-import { TransactionStateEnum } from "../types";
+import { TransactionStateContext } from "../../contexts/TransactionState";
+import { TransactionStateEnum } from "../../types";
 
 export const TransactionNotifier: React.FC = () => {
   const { hash, isActive, txnState } = useContext(TransactionStateContext);

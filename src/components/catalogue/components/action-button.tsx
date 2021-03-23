@@ -1,5 +1,4 @@
-import React, { useCallback } from "react";
-import { Nft } from "../../contexts/graph/classes";
+import React from "react";
 
 type ActionButtonProps<T> = {
   nft: T;

@@ -2,10 +2,10 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import BatchLendModal from "../modals/batch-lend";
-import CatalogueItem from "../../catalogue/catalogue-item";
-import ActionButton from "../../forms/action-button";
-import CatalogueLoader from "../catalogue-loader";
-import BatchBar from '../batch-bar';
+import CatalogueItem from "../components/catalogue-item";
+import ActionButton from "../components/action-button";
+import CatalogueLoader from "../components/catalogue-loader";
+import BatchBar from '../components/batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 

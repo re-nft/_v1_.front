@@ -12,7 +12,7 @@ import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
 import Leaderboard from '../pages/leaderboard';
-import { TransactionNotifier } from "../transaction-notifier";
+import { TransactionNotifier } from "../ui/transaction-notifier";
 
 const OFFSET_TOP = 180;
 const App: React.FC = () => {

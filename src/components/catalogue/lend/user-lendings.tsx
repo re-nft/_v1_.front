@@ -3,11 +3,11 @@ import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import { Lending, Nft } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
-import CatalogueItem from "../../catalogue/catalogue-item";
-import ActionButton from "../../forms/action-button";
+import CatalogueItem from "../components/catalogue-item";
+import ActionButton from "../components/action-button";
 import stopLend from "../../../services/stop-lending";
-import CatalogueLoader from "../catalogue-loader";
-import BatchBar from '../batch-bar';
+import CatalogueLoader from "../components/catalogue-loader";
+import BatchBar from '../components/batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 

@@ -7,16 +7,16 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import NumericField from "../../forms/numeric-field";
+import NumericField from "../components/numeric-field";
 import { PaymentToken } from "../../../types";
-import CatalogueItem from "../../catalogue/catalogue-item";
+import CatalogueItem from "../components/catalogue-item";
 import BatchRentModal from "../modals/batch-rent";
-import ActionButton from "../../forms/action-button";
+import ActionButton from "../components/action-button";
 import startRent from "../../../services/start-rent";
-import CatalogueLoader from "../catalogue-loader";
+import CatalogueLoader from "../components/catalogue-loader";
 import GraphContext from "../../../contexts/graph";
 import { Lending } from "../../../contexts/graph/classes";
-import BatchBar from '../batch-bar';
+import BatchBar from '../components/batch-bar';
 import {BatchContext} from '../../controller/batch-controller';
 import createCancellablePromise from '../../../contexts/create-cancellable-promise';
 

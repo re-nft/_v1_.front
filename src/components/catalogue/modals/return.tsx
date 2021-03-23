@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-import { Box } from "@material-ui/core";
 import Modal from "./modal";
 import { Renting } from "../../../contexts/graph/classes";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { CurrentAddressContext } from "../../../hardhat/SymfoniContext";
 import { ProviderContext } from "../../../hardhat/SymfoniContext";
-import ActionButton from "../../forms/action-button";
+import ActionButton from "../components/action-button";
 import isApprovalForAll from '../../../services/is-approval-for-all';
 import returnIt from '../../../services/return-it';
 import setApprovalForAll from '../../../services/set-approval-for-all';
@@ -66,18 +65,15 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
   return (
     <Modal open={open} handleClose={onClose}>
-      <div style={{ padding: "32px", width: "440px" }}>
-        <div style={{ padding: "32px" }}>TBD</div>
-        <Box>
-          <div className="Nft__card" style={{ justifyContent: "center" }}>
-            {!isApproved && (
-              <ActionButton<Renting> title="Approve All" nft={nft} onClick={handleApproveAll}/>
-            )}
-            {isApproved && (
-              <ActionButton<Renting> title="Return It" nft={nft} onClick={handleReturnNft}/>
-            )}
-          </div>
-        </Box>
+      <div className="modal-dialog-section">
+        <div className="modal-dialog-button">
+          {!isApproved && (
+            <ActionButton<Renting> title="Approve All" nft={nft} onClick={handleApproveAll}/>
+          )}
+          {isApproved && (
+            <ActionButton<Renting> title="Return It" nft={nft} onClick={handleReturnNft}/>
+          )}
+        </div>
       </div>
     </Modal>
   );

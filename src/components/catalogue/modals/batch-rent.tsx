@@ -1,31 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { Box } from "@material-ui/core";
-import RainbowButton from "../../forms/rainbow-button";
-import CssTextField from "../../forms/css-text-field";
+import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import { Lending } from "../../../contexts/graph/classes";
-
-// const SENSIBLE_MAX_DURATION = 10 * 365;
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    inputs: {
-      display: "flex",
-      flexDirection: "column",
-      // matches direct div children of inputs
-      "& > div": {
-        marginBottom: "12px",
-      },
-      margin: "0 auto",
-    },
-    buttons: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-    },
-  })
-);
 
 type BatchRentModalProps = {
   open: boolean;
@@ -40,7 +16,6 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   nft,
   onSubmit,
 }) => {
-  const classes = useStyles();
   const [duration, setDuration] = useState<Record<string, string>>({});
   const [totalRent, setTotalRent] = useState<Record<string, number>>({});
   const handleChange = useCallback(
@@ -74,46 +49,56 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-        <Box style={{ padding: "32px", width: '500px' }}>
-          <Box className={classes.inputs}>
-            {nft.map((item: Lending) => {
-              return (
-                <div className="form-section" key={item.tokenId}>
-                  <Box className={classes.inputs}>
-                    <div className="legend-field">{`TokenId: ${item.tokenId}`}</div>
-                    <CssTextField
-                      required
-                      label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
-                      id={`${item.tokenId}::duration`}
-                      variant="outlined"
-                      type="number"
-                      name={item.tokenId}
-                      value={duration[item.tokenId]}
-                      onChange={handleChange}
-                    />
-                    <div className="legend-field">{`Daily rent price: ${item.lending.dailyRentPrice}`}</div>
-                    <div className="legend-field">{`Rent: ${item.lending.dailyRentPrice} x ${
-                          !duration[item.tokenId] ? "👾" : duration[item.tokenId]
-                        } days + ${item.lending.nftPrice} = ${
-                          totalRent[item.tokenId]
-                            ? totalRent[item.tokenId].toFixed(2)
-                            : "👾"
-                        }`}
-                    </div>
-                    <div className="legend-field">{`Collateral: ${item.lending.nftPrice}`}</div>
-                    <Box
-                      className={classes.buttons}
-                      style={{ paddingBottom: "16px" }}
-                    ></Box>
-                  </Box>
+          {nft.map((item: Lending) => {
+            return (
+              <div className="modal-dialog-section" key={`${item.address}::${item.tokenId}`}>
+                <div className="modal-dialog-for">
+                  <div className="label">Token Id</div>
+                  <div className="dot"></div>
+                  <div className="label">{item.tokenId}</div>
                 </div>
-              );
-            })}
-          </Box>
-          <Box className={classes.buttons}>
-            <RainbowButton type="submit" text="RENT ALL" disabled={false} />
-          </Box>
-        </Box>
+                <div className="modal-dialog-fields">
+                  <CssTextField
+                    required
+                    label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
+                    id={`${item.tokenId}::duration`}
+                    variant="outlined"
+                    type="number"
+                    name={item.tokenId}
+                    value={duration[item.tokenId]}
+                    onChange={handleChange}
+                  />
+                  <div className="nft__meta_row">
+                    <div className="nft__meta_title">Daily rent price</div>
+                    <div className="nft__meta_dot"></div>
+                    <div className="nft__meta_value">{item.lending.dailyRentPrice}</div>
+                  </div>
+                  <div className="nft__meta_row">
+                    <div className="nft__meta_title">Rent</div>
+                    <div className="nft__meta_dot"></div>
+                    <div className="nft__meta_value">
+                      {item.lending.dailyRentPrice}
+                      {` x ${
+                        !duration[item.tokenId] ? "👾" : duration[item.tokenId]
+                      } days + ${item.lending.nftPrice} = ${
+                        totalRent[item.tokenId]
+                          ? totalRent[item.tokenId].toFixed(2)
+                          : "👾"
+                      }`}
+                    </div>
+                  </div>
+                  <div className="nft__meta_row">
+                    <div className="nft__meta_title">Collateral</div>
+                    <div className="nft__meta_dot"></div>
+                    <div className="nft__meta_value">{item.lending.nftPrice}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        <div className="modal-dialog-button">
+          <button type="submit" className="nft__button">{nft.length > 1 ? 'Rent all' : 'Rent'}</button>
+        </div>
       </form>
     </Modal>
   );

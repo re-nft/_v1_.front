@@ -2,11 +2,10 @@ import React, { useContext, useCallback } from "react";
 import { Box } from "@material-ui/core";
 import moment from "moment";
 
-import Table from "../table";
+import Table from "../ui/table";
 import { Lending, Renting } from "../../contexts/graph/classes";
 import { short } from "../../utils";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
-import GraphContext from "../../contexts/graph";
 import { PaymentToken } from "../../types";
 
 enum TableType {

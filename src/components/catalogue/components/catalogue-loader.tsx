@@ -1,5 +1,5 @@
 import React from "react";
-import Loader from '../loader';
+import Loader from '../../ui/loader';
 
 const CatalogueLoader: React.FC = () => (
     <div className="center">

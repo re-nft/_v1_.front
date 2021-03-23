@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import GraphContext from "../../contexts/graph";
 import { UserData } from "../../contexts/graph/types";
-import CatalogueLoader from "../catalogue/catalogue-loader";
+import CatalogueLoader from "../catalogue/components/catalogue-loader";
 import { Nft } from "../../contexts/graph/classes";
 import createCancellablePromise from '../../contexts/create-cancellable-promise';
-import CatalogueItem from "../catalogue/catalogue-item";
+import CatalogueItem from "../catalogue/components/catalogue-item";
 
 export const MyFavorites: React.FC = () => {
   const {getUserData, getUserNfts} = useContext(GraphContext);
