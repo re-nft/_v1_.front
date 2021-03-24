@@ -34,10 +34,9 @@ export const useFetchNftDev = (
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
 
-    const myNfts1155 = await myERC1155.balanceOfBatch(
-      Array(erc1155Ids.length).fill(currentAddress),
-      erc1155Ids
-    );
+    const myNfts1155 = await myERC1155
+      .balanceOfBatch(Array(erc1155Ids.length).fill(currentAddress), erc1155Ids)
+      .catch(() => []);
 
     for (let i = 0; i < numNfts721.toNumber(); i++) {
       const tokenId = await myERC721.tokenOfOwnerByIndex(currentAddress, i);
