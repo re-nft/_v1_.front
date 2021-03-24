@@ -11,19 +11,30 @@ import {
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-import {RENFT_SUBGRAPH_ID_SEPARATOR} from "../../consts";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";
 import { timeItAsync } from "../../utils";
-import createCancellablePromise from '../create-cancellable-promise';
+import createCancellablePromise from "../create-cancellable-promise";
 import {
   queryAllRenft,
   queryUserLendingRenft,
   queryUserRentingRenft,
   queryMyERC721s,
-  queryMyERC1155s
+  queryMyERC1155s,
 } from "./queries";
-import {getUserDataOrCrateNew, getAllUsersVote} from '../../services/firebase';
-import {calculateVoteByUsers} from '../../services/vote';
-import { NftRaw, ERC1155s, ERC721s, NftToken, UserData, CalculatedUserVote, UsersVote } from "./types";
+import {
+  getUserDataOrCrateNew,
+  getAllUsersVote,
+} from "../../services/firebase";
+import { calculateVoteByUsers } from "../../services/vote";
+import {
+  NftRaw,
+  ERC1155s,
+  ERC721s,
+  NftToken,
+  UserData,
+  CalculatedUserVote,
+  UsersVote,
+} from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
@@ -68,7 +79,7 @@ type GraphContextType = {
   userData: UserData;
   usersVote: UsersVote;
   calculatedUsersVote: CalculatedUserVote;
-  getUserNfts() : Promise<Nft[] | undefined>;
+  getUserNfts(): Promise<Nft[] | undefined>;
   getUserLending(): Promise<Lending[] | undefined>;
   getUsersLending(): Promise<Lending[] | undefined>;
   getUserRenting(): Promise<Renting[] | undefined>;
@@ -76,7 +87,7 @@ type GraphContextType = {
 };
 
 const defaultUserData = {
-  name: '',
+  name: "",
   favorites: {},
 };
 
@@ -105,7 +116,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
-  const [calculatedUsersVote, setCalculatedUsersVote] = useState<CalculatedUserVote>({});
+  const [
+    calculatedUsersVote,
+    setCalculatedUsersVote,
+  ] = useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
 
   /**
@@ -165,7 +179,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     [currentAddress, renft?.address, signer]
   );
 
-
   const fetchUsersNfts = async (): Promise<Nft[] | undefined> => {
     if (!signer) return undefined;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
@@ -195,7 +208,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       `Pulled My Renft Lending Nfts`,
       async () => await request(subgraphURI, query)
     );
-    
+
     return response.user?.lending?.map(({ id }) => id) ?? [];
   };
 
@@ -209,7 +222,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)
     );
-    
+
     return response.user?.renting?.map(({ id }) => id) ?? [];
   };
 
@@ -220,10 +233,10 @@ export const GraphProvider: React.FC = ({ children }) => {
    */
   type ReturnReNftAll = {
     lending: {
-      [key: string]: Lending
+      [key: string]: Lending;
     };
     renting: {
-      [key: string]: Renting
+      [key: string]: Renting;
     };
   };
   const fetchRenftsAll = async (): Promise<ReturnReNftAll | undefined> => {
@@ -247,8 +260,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         _allRenftsRenting[r.id] = new Renting(address, tokenId, signer, r);
       });
     });
- 
-    return { lending: _allRenftsLending, renting:  _allRenftsRenting }
+
+    return { lending: _allRenftsLending, renting: _allRenftsRenting };
   };
 
   // PUBLIC API
@@ -263,23 +276,23 @@ export const GraphProvider: React.FC = ({ children }) => {
   // AVAILABLE TO RENT
   const getUsersLending = async (): Promise<Lending[] | undefined> => {
     const renftAll = await fetchRenftsAll();
-      if (renftAll) {
-        return Object.values(renftAll.lending);
-      }
+    if (renftAll) {
+      return Object.values(renftAll.lending);
+    }
 
-      return undefined;
+    return undefined;
   };
 
   // LENDING
   const getUserLending = async (): Promise<Lending[] | undefined> => {
-      const renftAll = await fetchRenftsAll();
-      if (renftAll) {
-        const userLending = await fetchUserLending();
-        const { lending } = renftAll;
-        return userLending?.map((id: string) => lending[id]) || [];
-      }
+    const renftAll = await fetchRenftsAll();
+    if (renftAll) {
+      const userLending = await fetchUserLending();
+      const { lending } = renftAll;
+      return userLending?.map((id: string) => lending[id]) || [];
+    }
 
-      return undefined;
+    return undefined;
   };
 
   // RENTING
@@ -288,41 +301,44 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (renftAll) {
       const userRenting = await fetchUserRenting();
       const { renting } = renftAll;
-      return userRenting?.map((id: string) => renting[id]) || [];;
+      return userRenting?.map((id: string) => renting[id]) || [];
     }
 
     return undefined;
   };
 
-  const getUserData = async (): Promise<UserData | undefined> => {
+  const getUserData = useCallback(async (): Promise<UserData | undefined> => {
     if (currentAddress) {
       const userData = await getUserDataOrCrateNew(currentAddress);
       return userData;
     }
     return undefined;
-  }
+  }, [currentAddress]);
 
   useEffect(() => {
     if (currentAddress) {
-      const getUserDataRequest = createCancellablePromise(Promise.all([
-        getAllUsersVote(),
-        getUserData(),
-      ]));
-      
-      getUserDataRequest.promise.then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
-        if (usersVote && Object.keys(usersVote).length !== 0) {
-          const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(usersVote);
-          
-          setCalculatedUsersVote(calculatedUsersVote);
-          setUsersVote(usersVote);
+      const getUserDataRequest = createCancellablePromise(
+        Promise.all([getAllUsersVote(), getUserData()])
+      );
+
+      getUserDataRequest.promise.then(
+        ([usersVote, userData]: [UsersVote, UserData | undefined]) => {
+          if (usersVote && Object.keys(usersVote).length !== 0) {
+            const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
+              usersVote
+            );
+
+            setCalculatedUsersVote(calculatedUsersVote);
+            setUsersVote(usersVote);
+          }
+          if (userData) {
+            setUserData(userData);
+          }
         }
-        if (userData) {
-          setUserData(userData);
-        }
-      });
+      );
       return getUserDataRequest.cancel;
-    }  
-  }, [currentAddress]);
+    }
+  }, [currentAddress, getUserData]);
 
   return (
     <GraphContext.Provider
@@ -334,7 +350,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         getUserLending,
         getUsersLending,
         getUserRenting,
-        getUserData
+        getUserData,
       }}
     >
       {children}
