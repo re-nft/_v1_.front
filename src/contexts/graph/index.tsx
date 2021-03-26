@@ -183,12 +183,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return undefined;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-
     const _usersNfts = usersNfts721
       .concat(usersNfts1155)
-      .map(
-        (nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta })
-      );
+      .map((nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta, tokenURI: nft.tokenURI }));
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {

@@ -5,9 +5,9 @@ export type NftToken = {
   tokenId: TokenId;
   tokenURI?: string;
   meta?: {
-    name: string;
-    image: string;
-    // * and more in fact
+    name?: string;
+    image?: string;
+    description?: string;
   };
 };
 

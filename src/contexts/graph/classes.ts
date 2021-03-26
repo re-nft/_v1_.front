@@ -9,9 +9,11 @@ import {
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
+import { urlFromIPFS } from "../../utils";
 import { ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
+import {getFromIPFS} from '../../contexts/graph/ipfs';
 
 type NftOptions = {
   tokenURI?: string;
@@ -57,7 +59,7 @@ class Nft {
     try {
       _contract = ERC721__factory.connect(this.address, this.signer);
       this.isERC721 = true;
-      console.log("instantiated erc721", _contract);
+      // console.log("instantiated erc721", _contract);
     } catch {
       _contract = ERC1155__factory.connect(this.address, this.signer);
     }
@@ -65,46 +67,82 @@ class Nft {
     return _contract;
   };
 
-  /**
-   * Fetches the metadata URI of the token
-   * @returns Promise<string | undefined>
-   */
-  tokenURI = async (): Promise<string | undefined> => {
+  loadTokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
     if (!this._contract) this.contract();
-    let fetchedTokenURI;
-    // ! will fail when a new NFT spec will be born || we add L2s
-    if (this.isERC721) {
-      fetchedTokenURI = await this.contract().tokenURI();
-    } else {
-      fetchedTokenURI = `${await this.contract().uri()}/${this.tokenId}`;
+    console.log(' this.tokenId ', this.tokenId);
+    try {
+      if (this.isERC721) {
+        return await this.contract().tokenURI(this.tokenId);
+      } else {
+        return await this.contract().uri();
+      }
+    } catch(err) {
+      console.warn(' loadTokenURI ', err);
     }
-    this._tokenURI = fetchedTokenURI;
-    console.log("fetched tokenURI", fetchedTokenURI);
-    return fetchedTokenURI;
   };
 
-  // todo: look at the meta definition
-  // todo: https://github.com/ethereum/eips/issues/721#issuecomment-343246872
-  // todo: there is another link, not this one
-  // todo: also, we need this https://github.com/0xsequence/collectible-lists
-  /**
-   * This is parsed tokenURI is JSON
-   */
   meta = async (): Promise<NftToken["meta"]> => {
-    if (this._meta) return this._meta;
-    return { name: "", image: "" };
-  };
+    const fromIPFS = urlFromIPFS(this._tokenURI);
+    if (this._mediaURI) {
+      return {
+        image: this._mediaURI
+      };
+    }
 
-  /**
-   * This is image from meta. Sometimes,
-   * tokenURI directly gives a link to media, instead of
-   * meta...
-   */
-  mediaURI = async (): Promise<string | undefined> => {
-    if (this._mediaURI) return this._mediaURI;
-    // todo: ipfs
-    return;
+    if (this._tokenURI) {
+      try {
+        if (fromIPFS) {
+          // console.log(' this._tokenURI ', this._tokenURI);
+          const ipfsImage = await getFromIPFS(this._tokenURI);
+          const jsonFromIPFS = JSON.parse(ipfsImage?.toString() || "");
+          if (urlFromIPFS(jsonFromIPFS?.image || "")) {
+            const ipfsSecondImage = await getFromIPFS(jsonFromIPFS?.image.slice(6));
+            return {
+              //image: stringImage2
+            };
+          }
+          return {
+              image: jsonFromIPFS?.image,
+              description: jsonFromIPFS?.description,
+              name: jsonFromIPFS?.name
+          };
+        } else {
+          try {
+            const response = await fetch(this._tokenURI);
+            const data = await response?.json();
+            return {
+              image: data?.image,
+              description: data?.description,
+              name: data?.name
+            };
+          } catch(err) {
+            console.warn(' JSON.parse ', err);
+          }
+        }
+      } catch(err) {
+        console.warn(' load image ', err);
+      }
+    }
+    // TODO
+    if (!this._tokenURI && !this._mediaURI) {
+      const fetchedTokenURI = await this.loadTokenURI();
+      console.log(' NO meta, _tokenURI ', fetchedTokenURI);
+      if (fetchedTokenURI) {
+        try {
+          if (this.isERC721) {
+            const raw = await fetch(fetchedTokenURI);
+            console.log("isERC721 fetch url >>>>>", raw);
+          } else {
+            console.log(' <<<<<<< !isERC721 ', fetchedTokenURI);
+          }
+        } catch(err) {
+          console.warn(' loadTokenURI ', err);
+        }
+      }
+    }
+
+    return Promise.resolve({});
   };
 }
 

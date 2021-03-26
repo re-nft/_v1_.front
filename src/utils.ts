@@ -220,3 +220,23 @@ export const getContract = async (
   }
   return { contract, isERC721 };
 };
+
+export const urlFromIPFS = (uri: string): boolean => (uri || '').startsWith('/ipfs/') || (uri || '').startsWith('ipfs://ipfs');
+
+export const toDataURLFromBlob = (
+  blob: Blob
+): Promise<string | ArrayBuffer | null> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+export const toDataURLFromURL = (
+  url: string
+): Promise<string | ArrayBuffer | null> =>
+  fetch(url)
+    .then((response) => response.blob())
+    .then((blob) => toDataURLFromBlob(blob));

@@ -3,8 +3,10 @@ import { Nft } from "../../../contexts/graph/classes";
 import {CurrentAddressContext} from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import {addOrRemoveUserFavorite, nftId, upvoteOrDownvote, getNftVote} from '../../../services/firebase';
-import { CalculatedUserVote, UserData, UsersVote } from "../../../contexts/graph/types";
+import { CalculatedUserVote, UsersVote } from "../../../contexts/graph/types";
 import {calculateVoteByUser} from '../../../services/vote';
+import CatalogueItemRow from './catalogue-item-row';
+import useIntersectionObserver from '../../../hooks/use-Intersection-observer';
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -19,17 +21,15 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   onCheckboxChange,
   children,
 }) => {
+  const [ref, { entry }] = useIntersectionObserver();
+  const isVisible = entry && entry.isIntersecting;
+
   const [currentAddress] = useContext(CurrentAddressContext);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
-  const [img, setImg] = useState<string>();
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const [currentVote, setCurrentVote] = useState<{downvote?: number, upvote?: number}>();
-  
-  const loadMediaURI = async () => {
-    const mediaURI = await nft.mediaURI();
-    return mediaURI;
-  };
+  const [meta, setMeta] = useState<{ name?: string; image?: string; description?: string; }>()
   
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -56,23 +56,18 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   useEffect(() => {
     setIsChecked(checked || false);
-  }, [checked]);
-
-  useEffect(() => {
-    loadMediaURI()
-      .then((mediaUri) => setImg(mediaUri))
-      .catch(() => "");
-    /* eslint-disable-next-line */
-  }, []);
+    if (isVisible && !meta?.image) {
+      nft.meta().then(res => setMeta(res));
+    }
+  }, [checked, isVisible, meta?.image]);
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites = inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
-
-  // const currentAddressVote = usersVote?.[id]?.[currentAddress] ?? {}; 
   const nftVote = currentVote == undefined ? calculatedUsersVote[id] : currentVote;
+  const { name, image, description } = meta || {};  
   
   return (
-    <div className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
+    <div ref={ref} className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
       <div className="nft__overlay">
         <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
         <div className="nft__vote nft__vote-plus" onClick={() => handleVote(1)}>
@@ -88,16 +83,13 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         </div>
       )}
       <div className="nft__image">
-          {img ? <img loading="lazy" src={img} /> : <div className="no-img">NO IMG</div>}
+          {image ? <img loading="lazy" src={image} /> : <div className="no-img">NO IMG</div>}
       </div>
       <div className="nft__meta"> 
-        {nft.meta.name && nft.meta.name.trim() !== "" && (
-          <div className="nft__name">{nft.meta.name}</div>
-        )}
-        <div className="nft__meta_row">
-          <div className="nft__meta_title">NFT Address</div>
-          <div className="nft__meta_dot"></div>
-          <div className="nft__meta_value">
+        {name && (<div className="nft__name">{name}</div>)}
+        <CatalogueItemRow 
+          text="NFT Address" 
+          value={
             <a
               href={`https://goerli.etherscan.io/address/${nft.address}`}
               target="_blank"
@@ -105,13 +97,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             >
               {nft.address}
             </a>
-          </div>
-        </div>
-        <div className="nft__meta_row">
-          <div className="nft__meta_title">Token id</div>
-          <div className="nft__meta_dot"></div>
-          <div className="nft__meta_value">{nft.tokenId}</div>
-        </div>
+          } 
+        />
+        <CatalogueItemRow text="Token id" value={nft.tokenId} />
       </div>
       {children}
     </div>
