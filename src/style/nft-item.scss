@@ -1,22 +1,22 @@
 .nft {
     position: relative;
-    width: 260px;
+    width: 250px;
     display: flex;
-    margin: 0 20px 40px;
-    color: #fff;
+    margin: 0 24px 40px;
+    color: #000;
     font-size: 21px;
     flex-direction: column;
+    background: #fff;
     z-index: 1;
+    border: 5px solid #000;
 
     &__image {
         width: 100%;
         height: 300px;
         display: flex;
         justify-content: center;
-        background: #fff;
-        box-shadow: 5px 5px 0 #000;
         overflow: hidden;
-        margin-bottom: 12px;
+        margin: 8px 0;
 
         img {
             height: auto;
@@ -24,6 +24,8 @@
     }
 
     &__meta {
+        color: #000;
+        padding: 0 10px;
     
         &_row {
             display: flex;
@@ -32,74 +34,98 @@
         }
 
         &_value {
-            max-width: 150px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: #000;
 
             a {
-                color: #fff;
+                color: #000;
                 text-decoration: none;
             }
         }
 
         &_dot {
             flex-grow: 1;
-            border-bottom: 2px dotted #fff;
+            border-bottom: 2px dotted #000;
             margin: 0 8px;
         }
         
     }
 
     &__overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        box-shadow: 5px 5px #fff;
+        display: flex;
+        position: relative;
     }
 
     &__favourites {
         cursor: pointer;
-        width: 36px;
-        height: 38px;
-        border: 2px solid #000;
-        background: url(./img/hearts.png) -74px -2px no-repeat;
-        background-size: 115px auto;
+        width: 28px;
+        height: 28px;
+        background: url(./img/h.png) 0 -31px no-repeat;
+        background-size: 22px auto;
+        margin: 10px 5px 0;
+        overflow: hidden;
         
         &:hover {
-            background-position-x: -9px;
+            background-position-y: 0;
         }
         
         &-on {
-            background-position-x: -9px;
+            background-position-y: 0;
         }
     }
 
     &__vote {
-        width: 36px;
-        height: 36px;
+        width: 42px;
+        height: 38px;
         text-align: center;
         cursor: pointer;
+        line-height: 38px;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        margin-right: 5px;
 
-        &-plus {
-            background: #30cea4;
+        .icon-minus {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background: url(./img/arr.png) 0 -23px no-repeat;
+            background-size: 20px auto;
+            top: 2px;
+            position: relative;
 
             &:hover {
-                background: #30af8d;
+                background-position-y: -67px;
             }
         }
 
-        &-minus {
-            background: #d8401b;
+        .icon-plus {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background: url(./img/arr.png) 0 -2px no-repeat;
+            background-size: 20px auto;
 
             &:hover {
-                background: #af4228;
+                background-position-y: -46px;
             }
+        }
+
+        &-plus {
+            color: #759D47;
+        }
+
+        &-minus {
+            color: #E25241;
         }
     }
 
     &__control {
         text-align: center;
-        padding-top: 12px;
+        padding: 4px 0 20px;
     }
 
     .no-img {
@@ -160,12 +186,6 @@
         }
     }
 
-    &__checkbox {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
     &__button {
         position: relative;
         background: #30cea4;
@@ -210,34 +230,88 @@
     align-items: center;
 }
 
+.spacer {
+    flex-grow: 1;
+}
 
+.nft__checkbox {
+    position: relative;
+    left: -4px;
+}
 
 .checkbox {
     position: relative;
-    width: 44px;
-    height: 44px;
-    background: #000;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
-    border: 8px solid #36cba5;
     box-sizing: border-box;
     transition: all 250ms;
+    background: #36cba5;
     box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c, 1px 1px 0 #299b7c;
+
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        box-shadow: 8px 0px #000, 0px 8px #000, 8px 8px #000;
+    }
 
     &:hover {
         background: #fc9706;
+        box-shadow: 4px 4px #DF732C, 3px 3px #DF732C, 2px 2px #DF732C, 1px 1px #DF732C;
     }
 
     &.checked {
-        &:after {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            width: 28px;
-            height: 28px;
-            background: #fc9706;
-            z-index: 4;
-            box-shadow: 4px 4px 0 #f58901, 3px 3px 0 #f58901, 2px 2px 0 #f58901, 1px 1px 0 #f58901;
+        background: #fc9706;
+        box-shadow: none;
+
+        &:before {
+            box-shadow: 4px 0px #000, -4px -4px #000, -4px 7px #000, 6px 7px #000, 6px -4px #000;
         }
     }
+}
+
+.skeleton {
+    height: 510px;
+    &-item {
+        background: rgb(243, 243, 243);
+        margin: 6px auto;
+        border-radius: 4px;
+        background-image: linear-gradient(90deg, #ddd 0px, #e8e8e8 40px, #ddd 80px);
+        background-size: 250px;
+        animation: skeletonAnim 1s infinite linear;
+        
+        &.control {
+            width: 90%;
+            height: 32px;
+        }
+        &.img {
+            width: 90%;
+            height: 300px;
+        }
+        &.meta-line {
+            width: 90%;
+            height: 22px;
+        }
+    
+        &.btn {
+            width: 60%;
+            height: 40px;
+        }
+    }
+}
+
+
+@keyframes skeletonAnim {
+  0% {
+    background-position: -100px;
+  }
+  40%, 100% {
+    background-position: 250px
+  }
 }

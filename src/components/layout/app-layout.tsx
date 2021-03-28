@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,28 +14,11 @@ import MyFavorites from "../pages/favourites";
 import Leaderboard from '../pages/leaderboard';
 import { TransactionNotifier } from "../ui/transaction-notifier";
 
-const OFFSET_TOP = 180;
-const App: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  const updateHeaderPosition = () => {
-    setScrollY(window.pageYOffset);
-  }
-
-  useEffect(() => {
-    function watchScroll() {
-      window.addEventListener("scroll", updateHeaderPosition);
-    }
-    watchScroll();
-    return () => {
-      window.removeEventListener("scroll", updateHeaderPosition);
-    };
-  });
-  
+const App: React.FC = () => {  
   return (
     <Layout>
       <Router>
-        <div className={`content-wrapper mb-l ${scrollY > OFFSET_TOP ? 'fixed-position' : ''}`}>
+        <div className="content-wrapper mb-l">
           <div className="menu">
             <NavLink
               className="menu__item"

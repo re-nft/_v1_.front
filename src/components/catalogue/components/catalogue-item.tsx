@@ -30,12 +30,20 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const [currentVote, setCurrentVote] = useState<{downvote?: number, upvote?: number}>();
   const [meta, setMeta] = useState<{ name?: string; image?: string; description?: string; }>()
-  
+  const [imageIsReady, setImageIsReady] = useState<boolean>(false);
+
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
     onCheckboxChange && onCheckboxChange(`${nft.address}::${nft.tokenId}`, !isChecked);
   }, [nft, isChecked]);
   
+  const preloadImage = (imgSrc: string) => {
+    const img = new Image();
+    img.onload = () => setImageIsReady(true);
+    img.onerror = () => setImageIsReady(true);
+    img.src = imgSrc;
+  };
+
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then((resp: boolean) => {
       setInFavorites(resp);
@@ -57,7 +65,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   useEffect(() => {
     setIsChecked(checked || false);
     if (isVisible && !meta?.image) {
-      nft.meta().then(res => setMeta(res));
+      nft.meta().then(res => {
+        if (res?.image) {
+          preloadImage(res?.image);
+        } else {
+          setImageIsReady(true);
+        }
+        setMeta(res);
+      });
     }
   }, [checked, isVisible, meta?.image]);
 
@@ -68,40 +83,57 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   
   return (
     <div ref={ref} className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
-      <div className="nft__overlay">
-        <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
-        <div className="nft__vote nft__vote-plus" onClick={() => handleVote(1)}>
-          +{nftVote?.upvote || '?'}
-        </div>
-        <div className="nft__vote nft__vote-minus" onClick={() => handleVote(-1)}>
-          -{nftVote?.downvote || '?'}
-        </div>
-      </div>
-      {onCheckboxChange && (
-        <div className="nft__checkbox">
-          <div onClick={onCheckboxClick} className={`checkbox ${isChecked ? 'checked' : ''}`}></div>
+      {!imageIsReady && (
+        <div className="skeleton">
+          <div className="skeleton-item control"></div>
+          <div className="skeleton-item img"></div>
+          <div className="skeleton-item meta-line"></div>
+          <div className="skeleton-item meta-line"></div>
+          <div className="skeleton-item meta-line"></div>
+          <div className="skeleton-item btn"></div>
         </div>
       )}
-      <div className="nft__image">
-          {image ? <img loading="lazy" src={image} /> : <div className="no-img">NO IMG</div>}
-      </div>
-      <div className="nft__meta"> 
-        {name && (<div className="nft__name">{name}</div>)}
-        <CatalogueItemRow 
-          text="NFT Address" 
-          value={
-            <a
-              href={`https://goerli.etherscan.io/address/${nft.address}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {nft.address}
-            </a>
-          } 
-        />
-        <CatalogueItemRow text="Token id" value={nft.tokenId} />
-      </div>
-      {children}
+      {imageIsReady && (
+        <>
+          <div className="nft__overlay">
+            <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
+            <div className="nft__vote nft__vote-plus" onClick={() => handleVote(1)}>
+              <span className="icon-plus"/>
+              +{nftVote?.upvote || '?'}
+            </div>
+            <div className="nft__vote nft__vote-minus" onClick={() => handleVote(-1)}>
+              <span className="icon-minus"/>
+              -{nftVote?.downvote || '?'}
+            </div>
+            <div className="spacer"/>
+            {onCheckboxChange && (
+              <div className="nft__checkbox">
+                <div onClick={onCheckboxClick} className={`checkbox ${isChecked ? 'checked' : ''}`}></div>
+              </div>
+            )}
+          </div>
+          <div className="nft__image">
+              {image ? <img loading="lazy" src={image} /> : <div className="no-img">NO IMG</div>}
+          </div>
+          <div className="nft__meta"> 
+            {name && (<div className="nft__name">{name}</div>)}
+            <CatalogueItemRow 
+              text="NFT Address" 
+              value={
+                <a
+                  href={`https://goerli.etherscan.io/address/${nft.address}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {nft.address}
+                </a>
+              } 
+            />
+            <CatalogueItemRow text="Token id" value={nft.tokenId} />
+          </div>
+          {children}
+        </>
+      )}
     </div>
   );
 };

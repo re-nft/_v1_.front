@@ -43,7 +43,6 @@ const UserLendings: React.FC = () => {
     handleStopLend(checkedItems);
   }, [handleStopLend, checkedItems]);
 
-
   useEffect(() => {
     setIsLoading(true);
 
