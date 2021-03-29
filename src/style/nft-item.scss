@@ -201,6 +201,21 @@
         padding: 5px 12px;
         box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492, 2px 2px 0 #33b492, 1px 1px 0 #33b492;
         
+        &.disabled {
+            background: #cacaca;
+            box-shadow: 5px 5px 0 #bdbdbd, 4px 4px 0 #bdbdbd, 3px 3px 0 #bdbdbd, 2px 2px 0 #bdbdbd, 1px 1px 0 #bdbdbd;
+            
+            &:active,
+            &:hover {
+                background: #cacaca;
+                box-shadow: 5px 5px 0 #bdbdbd, 4px 4px 0 #bdbdbd, 3px 3px 0 #bdbdbd, 2px 2px 0 #bdbdbd, 1px 1px 0 #bdbdbd;
+            }
+            
+            &:before {
+                box-shadow: 10px 10px #000, 0px 10px #000, 10px 0px #000;
+            }
+        }
+
         &:hover {
             background: #fc9706;
             box-shadow: 5px 5px 0 #f58901, 4px 4px 0 #f58901, 3px 3px 0 #f58901, 2px 2px 0 #f58901, 1px 1px 0 #f58901;

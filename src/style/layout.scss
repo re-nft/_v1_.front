@@ -410,3 +410,19 @@
         text-align: left;
     }
 }
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 32px;
+
+    li {
+        margin: 0 8px;
+
+        &.page-count {
+            color: #fff;
+            font-size: 28px;
+        }
+    }
+}

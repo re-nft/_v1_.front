@@ -1,90 +1,3 @@
-// import React, { useContext, useCallback } from "react";
-// import { Box } from "@material-ui/core";
-
-
-// import Table from "../ui/table";
-// import { Lending, Renting } from "../../contexts/graph/classes";
-// import { short } from "../../utils";
-// import { RentNftContext } from "../../hardhat/SymfoniContext";
-// import { PaymentToken } from "../../types";
-
-// enum TableType {
-//   BORROW,
-//   LEND,
-// }
-
-// type TableHeadProps = {
-//   tableType: TableType;
-// };
-
-
-
-// const TableHead: React.FC<TableHeadProps> = ({ tableType }) => {
-//   return (
-//     <thead>
-//       <tr>
-//         <th>NFT Addr</th>
-//         <th>Token</th>
-//         <th>ID</th>
-//         <th>Rate</th>
-//         <th>Collateral</th>
-//         {tableType === TableType.LEND && <th>Max Duration</th>}
-//         {tableType === TableType.BORROW && <th>Return by</th>}
-//         {tableType === TableType.LEND && <th>Claim</th>}
-//       </tr>
-//     </thead>
-//   );
-// };
-
-// type TableRowProps = {
-//   address: string;
-//   tokenId: string;
-//   id: string;
-//   dailyPrice: string;
-//   collateral: string;
-//   maxDuration: string;
-//   claim?: React.ReactNode;
-//   greenHighlight?: boolean;
-// };
-
-// type ClaimButtonProps = {
-//   lending: Lending;
-// };
-
-// const TableRow: React.FC<TableRowProps> = ({
-//   address,
-//   tokenId,
-//   id,
-//   dailyPrice,
-//   collateral,
-//   maxDuration,
-//   claim,
-//   greenHighlight,
-// }) => {
-//   const _greenHighlight = {
-//     backgroundColor: "rgba(102,51,153,0.4)",
-//   };
-
-//   return (
-//     <tr>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{short(address)}</td>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{tokenId}</td>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{id}</td>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{dailyPrice}</td>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{collateral}</td>
-//       <td style={greenHighlight ? _greenHighlight : {}}>{maxDuration}</td>
-//       <td
-//         style={greenHighlight ? { ..._greenHighlight, cursor: "pointer" } : {}}
-//       >
-//         {claim}
-//       </td>
-//     </tr>
-//   );
-// };
-
-// const ClaimButton: React.FC<ClaimButtonProps> = ({ lending }) => {
-
-
 // const Dashboard: React.FC = () => {
 //   const usersLending: Lending[] = [];
 //   const usersRenting: Renting[] = [];
@@ -154,10 +67,7 @@
 //         </Table>
 //       </Box>
 //     </Box>
-//   );
-// };
 
-// export default React.memo(Dashboard);
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
 import PageLayout from "../layout/page-layout";
@@ -176,6 +86,20 @@ enum DashboardSpecificity {
   LIST_VIEW,
   MINIATURE_VIEW,
 }
+
+const LendingTableHead: React.FC = () => (
+  <thead>
+    <th style={{ width: '5%' }}>Name</th>
+    <th style={{ width: '30%' }}>NFT Address</th>
+    <th style={{ width: '5%' }}>TokenId</th>
+    <th style={{ width: '10%' }}>ERC20 Payment</th>
+    <th style={{ width: '7%' }}>Duration</th>
+    <th style={{ width: '7%' }}>% Complete</th>
+    <th style={{ width: '10%' }}>Collateral Paid</th>
+    <th style={{ width: '6%' }}>Rent Paid</th>
+    <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
+  </thead>
+);
 
 export const Dashboard: React.FC = () => {
   const { getUserLending, getUserRenting } = useContext(GraphContext);
@@ -271,17 +195,7 @@ export const Dashboard: React.FC = () => {
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
               <table className="list">
-                <thead>
-                  <th style={{ width: '5%' }}>Name</th>
-                  <th style={{ width: '30%' }}>NFT Address</th>
-                  <th style={{ width: '5%' }}>TokenId</th>
-                  <th style={{ width: '10%' }}>ERC20 Payment</th>
-                  <th style={{ width: '7%' }}>Duration</th>
-                  <th style={{ width: '7%' }}>% Complete</th>
-                  <th style={{ width: '10%' }}>Collateral Paid</th>
-                  <th style={{ width: '6%' }}>Rent Paid</th>
-                  <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
-                </thead>
+                <LendingTableHead />
                 <tbody>
                 {lendingItems.map((lend: Lending) => {
                   const lending = lend.lending;
@@ -321,20 +235,3 @@ export const Dashboard: React.FC = () => {
 };
 
 export default React.memo(Dashboard);
-
-//                   <TableRow
-//                     key={`${l.address}::${l.tokenId}::${l.lending.id}`}
-//                     address={l.address}
-//                     tokenId={String(l.tokenId)}
-//                     id={String(l.lending.id)}
-//                     dailyPrice={`${
-//                        PaymentToken[l.lending.paymentToken ?? 0]
-//                     } ${String(l.lending.dailyRentPrice)}`}
-//                     collateral={`${
-//                        PaymentToken[l.lending.paymentToken ?? 0]
-//                     } ${String(l.lending.nftPrice)}`}
-//                     maxDuration={String(l.lending.maxRentDuration)}
-//                     claim={<ClaimButton lending={l} />}
-//                     // todo
-//                     // greenHighlight={Boolean(l.renting)}
-//                   />

@@ -14,78 +14,53 @@ import MyFavorites from "../pages/favourites";
 import Leaderboard from '../pages/leaderboard';
 import { TransactionNotifier } from "../ui/transaction-notifier";
 
+const ROUTES = [
+  {
+    path: "/",
+    name: "Rent NFT"
+  },
+  {
+    path: "/lend",
+    name: "Lend NFT"
+  },
+  {
+    path: "/dashboard",
+    name: "My Dashboard"
+  },
+  {
+    path: "/favourites",
+    name: "My Favourites"
+  },
+  {
+    path: "/leaderboard",
+    name: "Leaderboard"
+  },
+  {
+    path: "/faq",
+    name: "FAQ"
+  },
+];
+
 const App: React.FC = () => {  
   return (
     <Layout>
       <Router>
         <div className="content-wrapper mb-l">
           <div className="menu">
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/"
-              isActive={(_, location) => {
-                if (location.pathname === "/") return true;
-                return false;
-              }}
-            >
-                Rent NFT
-            </NavLink>
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/lend"
-              isActive={(_, location) => {
-                if (location.pathname === "/lend") return true;
-                return false;
-              }}
-            >
-                Lend NFT
-            </NavLink>
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/dashboard"
-              isActive={(_, location) => {
-                if (location.pathname === "/dashboard") return true;
-                return false;
-              }}
-            >
-                My Dashboard
-            </NavLink>
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/favourites"
-              isActive={(_, location) => {
-                if (location.pathname === "/favourites") return true;
-                return false;
-              }}
-            >
-                My Favourites
-            </NavLink>
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/leaderboard"
-              isActive={(_, location) => {
-                if (location.pathname === "/leaderboard") return true;
-                return false;
-              }}
-            >
-                Leaderboard
-            </NavLink>
-            <NavLink
-              className="menu__item"
-              activeClassName="menu__item-active"
-              to="/faq"
-              isActive={(_, location) => {
-                if (location.pathname === "/faq") return true;
-                return false;
-              }}
-            >
-                FAQ
-            </NavLink>
+            {ROUTES.map((route) => (
+              <NavLink
+                key={route.path}
+                className="menu__item"
+                activeClassName="menu__item-active"
+                to={route.path}
+                isActive={(_, location) => {
+                  if (location.pathname === route.path) return true;
+                  return false;
+                }}
+              >
+                {route.name}
+              </NavLink>
+            ))}
           </div>
         </div>
         {/* CONTENT */}

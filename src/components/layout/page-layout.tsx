@@ -1,5 +1,6 @@
 import React from "react";
 import BatchProvider from '../controller/batch-controller';
+import PageProvider from '../controller/page-controller';
 
 type PageLayoutProps = {
   onSwitch(): void;
@@ -25,11 +26,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 				</div>
 			</div>
 		</div>
-		<div className="content__row content__items">
+		<PageProvider>
 			<BatchProvider>
 				{children}
 			</BatchProvider>	
-		</div>
+		</PageProvider>
 	</div>
   );
 };

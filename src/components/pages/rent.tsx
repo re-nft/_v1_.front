@@ -28,7 +28,7 @@ export const Rent: React.FC = () => {
       onSwitch={switchSpecificity}
     >
       {specificity === RentSpecificity.RENTING && <UserRentings />}
-      {specificity === RentSpecificity.ALL && <Rentings />}
+      {specificity === RentSpecificity.ALL && <Rentings />} 
     </PageLayout>
   );
 };
