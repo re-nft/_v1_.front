@@ -70,79 +70,15 @@ class Nft {
   loadTokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
     if (!this._contract) this.contract();
-    console.log(' this.tokenId ', this.tokenId);
     try {
       if (this.isERC721) {
-        return await this.contract().tokenURI(this.tokenId);
+        return await this.contract().tokenURI(ethers.BigNumber.from(this.tokenId));
       } else {
         return await this.contract().uri();
       }
     } catch(err) {
       console.warn(' loadTokenURI ', err);
     }
-  };
-
-  meta = async (): Promise<NftToken["meta"]> => {
-    const fromIPFS = urlFromIPFS(this._tokenURI);
-    if (this._mediaURI) {
-      return {
-        image: this._mediaURI
-      };
-    }
-
-    if (this._tokenURI) {
-      try {
-        if (fromIPFS) {
-          // console.log(' this._tokenURI ', this._tokenURI);
-          const ipfsImage = await getFromIPFS(this._tokenURI);
-          const jsonFromIPFS = JSON.parse(ipfsImage?.toString() || "");
-          if (urlFromIPFS(jsonFromIPFS?.image || "")) {
-            const ipfsSecondImage = await getFromIPFS(jsonFromIPFS?.image.slice(6));
-            return {
-              //image: stringImage2
-            };
-          }
-          return {
-              image: jsonFromIPFS?.image,
-              description: jsonFromIPFS?.description,
-              name: jsonFromIPFS?.name
-          };
-        } else {
-          try {
-            const response = await fetch(this._tokenURI);
-            const data = await response?.json();
-            return {
-              image: data?.image,
-              description: data?.description,
-              name: data?.name
-            };
-          } catch(err) {
-            console.warn(' JSON.parse ', err);
-          }
-        }
-      } catch(err) {
-        console.warn(' load image ', err);
-      }
-    }
-    // TODO
-    if (!this._tokenURI && !this._mediaURI) {
-      const fetchedTokenURI = await this.loadTokenURI();
-      console.log(' NO meta, _tokenURI ', fetchedTokenURI);
-      if (fetchedTokenURI) {
-        try {
-          if (this.isERC721) {
-            const raw = await fetch(fetchedTokenURI);
-            console.log("isERC721 fetch url >>>>>", raw);
-          } else {
-            console.log(' <<<<<<< !isERC721 ', fetchedTokenURI);
-          }
-        } catch(err) {
-          console.warn(' loadTokenURI ', err);
-        }
-      }
-    }
-
-    return Promise.resolve({});
   };
 }
 

@@ -7,6 +7,7 @@ import { CalculatedUserVote, UsersVote } from "../../../contexts/graph/types";
 import {calculateVoteByUser} from '../../../services/vote';
 import CatalogueItemRow from './catalogue-item-row';
 import useIntersectionObserver from '../../../hooks/use-Intersection-observer';
+import {fetchNftMeta} from "../../../services/fetch-nft-meta";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -65,16 +66,16 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   useEffect(() => {
     setIsChecked(checked || false);
     if (isVisible && !meta?.image) {
-      nft.meta().then(res => {
-        if (res?.image) {
-          preloadImage(res?.image);
+      fetchNftMeta(nft).then((response) => {
+        if (response?.image) {
+          preloadImage(response?.image);
         } else {
           setImageIsReady(true);
         }
-        setMeta(res);
+        setMeta(response);
       });
     }
-  }, [checked, isVisible, meta?.image]);
+  }, [checked, isVisible, nft, meta?.image]);
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites = inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
