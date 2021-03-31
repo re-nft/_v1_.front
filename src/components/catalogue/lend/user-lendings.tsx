@@ -28,12 +28,13 @@ const UserLendings: React.FC = () => {
     currentPageNumber, 
     currentPage, 
     onSetPage, 
+    onResetPage,
     onChangePage
   } = useContext(PageContext);
   const { getUserLending } = useContext(GraphContext);
   const { instance: renft } = useContext(RentNftContext);
   const { setHash } = useContext(TransactionStateContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleStopLend = useCallback(async (nfts: Nft[]) => {
       if (!renft) return;     
@@ -63,7 +64,10 @@ const UserLendings: React.FC = () => {
         setIsLoading(false);
     });
     
-    return getUserLendingRequest.cancel;
+    return () => {
+      onResetPage();
+      return getUserLendingRequest.cancel();
+    };
   }, []);
 
   if (isLoading) {
@@ -103,7 +107,7 @@ const UserLendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar 
-          title={`Stop Batch ${countOfCheckedItems} Lends`} 
+          title={`Batch process ${countOfCheckedItems} items`} 
           actionTitle="Stop Lending" 
           onClick={handleBatchStopnLend} 
           onCancel={onReset}

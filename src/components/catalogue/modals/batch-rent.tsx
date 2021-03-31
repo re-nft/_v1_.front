@@ -65,7 +65,6 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                     variant="outlined"
                     type="number"
                     name={item.tokenId}
-                    value={duration[item.tokenId]}
                     onChange={handleChange}
                   />
                   <div className="nft__meta_row">

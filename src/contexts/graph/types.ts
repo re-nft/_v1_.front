@@ -75,6 +75,7 @@ export type Renting = {
 export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
+  lending: LendingRaw;
 };
 
 export type NftRaw = {

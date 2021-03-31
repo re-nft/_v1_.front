@@ -25,16 +25,16 @@
 
     &__meta {
         color: #000;
-        padding: 0 10px;
     
         &_row {
             display: flex;
             box-sizing: border-box;
             align-items: baseline;
+            padding: 0 10px;
         }
 
         &_value {
-            max-width: 100px;
+            max-width: 105px;
             overflow: hidden;
             text-overflow: ellipsis;
             color: #000;
@@ -201,6 +201,11 @@
         padding: 5px 12px;
         box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492, 2px 2px 0 #33b492, 1px 1px 0 #33b492;
         
+        &.small {
+            font-size: 20px;
+            padding: 2px 6px;
+        }
+
         &.disabled {
             background: #cacaca;
             box-shadow: 5px 5px 0 #bdbdbd, 4px 4px 0 #bdbdbd, 3px 3px 0 #bdbdbd, 2px 2px 0 #bdbdbd, 1px 1px 0 #bdbdbd;

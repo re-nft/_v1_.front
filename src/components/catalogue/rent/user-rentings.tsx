@@ -30,11 +30,12 @@ const UserRentings: React.FC = () => {
     currentPageNumber, 
     currentPage, 
     onSetPage, 
+    onResetPage,
     onChangePage
   } = useContext(PageContext);
   const { getUserRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleCloseModal = useCallback(() => setModalOpen(false), [setModalOpen]);
   const handleBatchStopRent = useCallback(() => setModalOpen(true), [setModalOpen]);
@@ -52,12 +53,15 @@ const UserRentings: React.FC = () => {
     const getUserRentingRequest = createCancellablePromise(getUserRenting());
 
     getUserRentingRequest.promise.then((userRenting: Renting[] | undefined) => {
-        onChangePage(userRenting || []);
         onSetItems(userRenting || []);
+        onChangePage(userRenting || []);
         setIsLoading(false);
     });
 
-    return getUserRentingRequest.cancel;
+    return () => {
+      onResetPage();
+      return getUserRentingRequest.cancel();
+    };
   }, []);
 
   if (isLoading) {
@@ -113,7 +117,7 @@ const UserRentings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar 
-          title={`Batch ${countOfCheckedItems} stop rents`} 
+          title={`Batch process ${countOfCheckedItems} items`} 
           actionTitle="Stop Rents All" 
           onCancel={onReset} 
           onClick={handleBatchStopRent} 

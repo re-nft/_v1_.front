@@ -38,6 +38,7 @@ const AvailableToRent: React.FC = () => {
     currentPageNumber, 
     currentPage, 
     onSetPage, 
+    onResetPage,
     onChangePage
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
@@ -47,11 +48,12 @@ const AvailableToRent: React.FC = () => {
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
   const { getUsersLending } = useContext(GraphContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
     onReset();
+    handleRefresh();
   }, []);
 
   const handleBatchModalOpen = useCallback((nft: Lending) => {
@@ -86,6 +88,15 @@ const AvailableToRent: React.FC = () => {
     [renft, currentAddress, signer, resolver, myERC20]
   );
 
+  const handleRefresh = () => {
+    setIsLoading(true);
+    getUsersLending().then((items: Lending[] | undefined) => {
+      onChangePage(items || []);
+      onSetItems(items || []);
+      setIsLoading(false);
+    });
+  };
+
   const handleBatchRent = useCallback(() => {
     setOpenBatchModel(true);
   }, [setOpenBatchModel]);
@@ -101,7 +112,10 @@ const AvailableToRent: React.FC = () => {
         setIsLoading(false);
     });
     
-    return getUsersLendingRequest.cancel;
+    return () => {
+      onResetPage();
+      return getUsersLendingRequest.cancel();
+    };
   }, []);
 
   if (isLoading) {
@@ -162,7 +176,7 @@ const AvailableToRent: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar 
-          title={`Batch ${countOfCheckedItems} rents`} 
+          title={`Batch process ${countOfCheckedItems} items`} 
           actionTitle="Rents All" 
           onCancel={onReset} 
           onClick={handleBatchRent} 

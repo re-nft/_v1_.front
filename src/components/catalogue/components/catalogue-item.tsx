@@ -24,7 +24,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
   const isVisible = entry && entry.isIntersecting;
-
+  
   const [currentAddress] = useContext(CurrentAddressContext);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();

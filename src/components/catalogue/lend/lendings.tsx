@@ -27,15 +27,17 @@ const Lendings: React.FC = () => {
     currentPageNumber, 
     currentPage, 
     onSetPage, 
+    onResetPage,
     onChangePage
   } = useContext(PageContext);
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
   const handleClose = useCallback(() => {
     setModalOpen(false);
     onReset();
+    handleRefresh();
   }, [setModalOpen]);
   
   const handleStartLend = useCallback(async (nft: Nft) => {
@@ -49,6 +51,15 @@ const Lendings: React.FC = () => {
     setModalOpen(true);
   }, [setModalOpen]);
 
+  const handleRefresh = () => {
+    setIsLoading(true);
+    getUserNfts().then((items: Nft[] | undefined) => {
+      onChangePage(items || []);
+      onSetItems(items || []);
+      setIsLoading(false);
+    });
+  };
+
   useEffect(() => {
     setIsLoading(true);    
     
@@ -60,7 +71,10 @@ const Lendings: React.FC = () => {
         setIsLoading(false);
     });
   
-    return getUserNftsRequest.cancel;
+    return () => {
+      onResetPage();
+      return getUserNftsRequest.cancel();
+    };
   }, []);
 
   if (isLoading) {
@@ -101,7 +115,7 @@ const Lendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar 
-          title={`Batch lend ${countOfCheckedItems} items`} 
+          title={`Batch process ${countOfCheckedItems} items`} 
           actionTitle="Lend all" 
           onCancel={onReset} 
           onClick={handleBatchModalOpen} 

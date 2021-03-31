@@ -24,7 +24,7 @@ export const useFetchNftDev = (
 
   const fetchNftDev = useCallback(async () => {
     if (!myERC1155 || !myERC721 || !renft || !signer) return [];
-
+    
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const usersNfts: Omit<NftToken, "tokenURI">[] = [];
@@ -53,8 +53,9 @@ export const useFetchNftDev = (
         }).then(async (dat) => await dat.json())
       );
     }
-
+  
     const _meta = await Promise.all(toFetch);
+
     const usersDevNfts: Nft[] = [];
     for (let i = 0; i < _meta.length; i++) {
       usersDevNfts.push(

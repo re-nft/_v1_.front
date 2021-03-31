@@ -200,13 +200,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserLendingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { lending?: { id: LendingId }[] };
+      user?: { lending?: { tokenId: LendingId, nftAddress: string }[] };
     } = await timeItAsync(
       `Pulled My Renft Lending Nfts`,
       async () => await request(subgraphURI, query)
     );
 
-    return response.user?.lending?.map(({ id }) => id) ?? [];
+    return response.user?.lending?.map(({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`) ?? [];
   };
 
   const fetchUserRenting = async (): Promise<string[] | undefined> => {
@@ -214,13 +214,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserRentingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { renting?: { id: RentingId }[] };
+      user?: { renting?: { id: RentingId, lending: { id: LendingId, nftAddress: string } }[] };
     } = await timeItAsync(
       `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)
-    );
-
-    return response.user?.renting?.map(({ id }) => id) ?? [];
+    );  
+    return response.user?.renting?.map(({lending}) => `${lending.nftAddress}::${lending.id}`) ?? [];
   };
 
   /**
@@ -251,10 +250,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[l.id] = new Lending(address, tokenId, signer, l);
+        _allRenftsLending[id] = new Lending(address, tokenId, signer, l);
       });
       renting?.forEach((r) => {
-        _allRenftsRenting[r.id] = new Renting(address, tokenId, signer, r);
+        _allRenftsRenting[id] = new Renting(address, tokenId, signer, r);
       });
     });
 
@@ -272,9 +271,14 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // AVAILABLE TO RENT
   const getUsersLending = async (): Promise<Lending[] | undefined> => {
-    const renftAll = await fetchRenftsAll();
+    const renftAll = await fetchRenftsAll(); 
     if (renftAll) {
-      return Object.values(renftAll.lending);
+      const userRenting = await fetchUserRenting();
+      return Object.values(renftAll.lending)
+        .filter((item: Lending) => {
+          const id = `${item.address}::${item.id}`;
+          return !userRenting?.includes(id);
+        });
     }
 
     return undefined;
@@ -296,9 +300,7 @@ export const GraphProvider: React.FC = ({ children }) => {
   const getUserRenting = async (): Promise<Renting[] | undefined> => {
     const renftAll = await fetchRenftsAll();
     if (renftAll) {
-      const userRenting = await fetchUserRenting();
-      const { renting } = renftAll;
-      return userRenting?.map((id: string) => renting[id]) || [];
+      return Object.values(renftAll.renting) || [];
     }
 
     return undefined;

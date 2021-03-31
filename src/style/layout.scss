@@ -51,30 +51,6 @@
     }
 }
 
-.copy {
-    flex-grow: 1;
-}
-
-.soc {
-    display: flex;
-}
-
-.discord {
-    background: url(./img/discord.png);
-    width: 48px;
-    height: 48px;
-    display: block;
-    background-size: 48px 48px;
-}
-
-.twitter {
-    background: url(./img/twitter.png);
-    width: 48px;
-    height: 48px;
-    display: block;
-    background-size: 48px 48px;
-}
-
 .main {
     position: relative;
     padding: 0 80px;
@@ -148,7 +124,7 @@
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    padding: 16px;
+    padding: 16px 0;
     min-height: 250px;
 
     &__navigation {
@@ -156,6 +132,7 @@
         display: flex;
         flex-direction: row;
         box-sizing: border-box;
+        padding: 0 24px;
     }
 
     &__items {
@@ -165,42 +142,6 @@
         padding-top: 48px;
         justify-content: center;
         overflow: hidden;
-    }
-}
-
-.switch {
-    display: flex;
-    align-items: center;
-
-    &__title {
-        font-size: 22px;
-        color: #fff;
-        padding-right: 16px;
-    }
-}
-
-.toggle {
-    position: relative;
-    width: 80px;
-    height: 40px;
-    background: #000;
-
-    &__pin {
-        position: absolute;
-        cursor: pointer;
-        top: -2px;
-        left: -2px;
-        width: 36px;
-        height: 36px;
-        transition: all 250ms;
-        background: #36cba5;
-        box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c, 1px 1px 0 #299b7c;
-    }
-
-    &__active {
-        .toggle__pin {
-            left: 38px;
-        }
     }
 }
 
@@ -256,161 +197,6 @@
     align-items: center;
 }
 
-.leaderboard-leader {
-    margin: 0 auto;
-    display: flex;
-    color: #fff;
-    font-size: 24px;
-    justify-content: center;
-    margin: 24px 0 60px;
-
-    &-item {
-        width: 220px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        margin-top: 90px;
-
-        &.first {
-            margin-top: 0;
-
-            .result {
-                position: relative;
-                top: 0;
-                left: 0;
-            }
-        }
-    }
-
-    .img {
-        width: 84px;
-        height: 84px;
-        background: #fff;
-        border-radius: 84px;
-        box-shadow: 4px 4px 0 #000;
-        margin-bottom: 8px;
-    }
-
-    .name {
-        width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1;
-    }
-
-    .stat {
-        width: 150px;
-        color: #fff;
-        font-size: 19px;
-        
-        .nft__meta_row {
-            line-height: 1;
-        }
-        
-        .nft__meta_dot {
-            border-color: #fff;
-        }
-        
-        .nft__meta_value {
-            color: #fff;
-        }
-    }
-
-    .result {
-        position: absolute;
-        color: #F19C38;
-        font-size: 60px;
-        position: absolute;
-        font-weight: bold;
-        text-shadow: 4px 4px 0 #000;
-        display: flex;
-        align-items: center;
-        line-height: 1;
-        top: 40px;
-       left: 140px;
-
-        div:first-child {
-            top: 3px;
-            position: relative;
-        }
-    }
-}
-
-.leaderboard-list {
-    width: 420px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.leaderboard-list-item {
-    color: #fff;
-    font-size: 22px;
-    border-bottom: 2px solid #fff;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
-
-    &:last-child {
-        border-bottom: 0;
-    }
-}
-
-.dashboard-list-view {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    margin-top: -64px;
-
-    h2.lending {
-        font-size: 55px;
-        text-transform: uppercase;
-        font-weight: bold;
-        color: #F4B050;
-        text-shadow: 3px 3px 0 #000;
-    }
-
-    h2.renting {
-        font-size: 55px;
-        text-transform: uppercase;
-        font-weight: bold;
-        color: #BD99EE;
-        text-shadow: 3px 3px 0 #000;
-    }
-
-    .list {
-        width: 100%;
-        font-size: 19px;
-        color: #fff;
-        line-height: 1;
-        
-        td.column {
-            padding: 16px 0;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        th {
-            border-bottom: 2px solid #fff;            
-            white-space: nowrap;
-            padding-bottom: 4px;
-        }
-
-        tr:hover td {
-            background: rgba(255,255,255, .25);
-        }
-        
-        th.action-column {
-            min-width: 200px;
-        }
-    }
-
-    .dashboard-section {
-        width: 100%;
-        text-align: left;
-    }
-}
-
 .pagination {
     display: flex;
     align-items: center;
@@ -425,4 +211,10 @@
             font-size: 28px;
         }
     }
+}
+
+.modal-dialog-title {
+    font-size: 24px;
+    text-align: center;
+    margin: 24px 0;
 }

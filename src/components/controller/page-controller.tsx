@@ -1,3 +1,4 @@
+import { lightGreen } from "@material-ui/core/colors";
 import React, { createContext } from "react";
 import { Nft } from "../../contexts/graph/classes";
 
@@ -23,6 +24,7 @@ import { Nft } from "../../contexts/graph/classes";
     totalPages: number;
     onSetPage(pageNumber: number): void;
     onChangePage(items: Nft[]): void;
+    onResetPage(): void;
   };
 
   const defaultPageContext = {
@@ -32,6 +34,7 @@ import { Nft } from "../../contexts/graph/classes";
     // Avoid @typescript-eslint/no-empty-function
     onSetPage: () => true,
     onChangePage: () => true,
+    onResetPage: () => true,
   };
 
 export const PageContext = createContext<PageContextType>(defaultPageContext);
@@ -44,7 +47,7 @@ class PageProvider extends React.Component<Props, State> {
     handleReset = () => this.setState(defaultSate);
 
     onChangePage = (pageItems: Nft[]) => {
-        const totalItems = pageItems.length -1 || 0;
+        const totalItems = pageItems.length || 0;
         const totalPages = Math.ceil(totalItems / PAGE_SIZE);
         this.setState({pageItems, totalPages}, () => this.onSetPage(1));
     };
@@ -63,11 +66,12 @@ class PageProvider extends React.Component<Props, State> {
         const endIndex = Math.min(startIndex + PAGE_SIZE - 1, totalItems - 1); 
 
         const currentPage = items.slice(startIndex, endIndex + 1);
-
-        this.setState({
-            currentPageNumber,
-            currentPage
-        });
+        
+        if (items.length < PAGE_SIZE - 1) {
+          this.setState({currentPageNumber,currentPage: items});
+        } else {
+          this.setState({currentPageNumber,currentPage});
+        }
     };
 
     componentWillUnmount () {
@@ -81,6 +85,7 @@ class PageProvider extends React.Component<Props, State> {
             currentPageNumber,
             totalPages,
             onSetPage: this.onSetPage,
+            onResetPage: this.handleReset,
             onChangePage: this.onChangePage,
         };
 

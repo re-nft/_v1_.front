@@ -50,6 +50,11 @@ export const queryAllRenft = (): string => {
         renterAddress
         rentDuration
         rentedAt
+        lending {
+          id
+          nftAddress
+          tokenId
+        }
       }
     }
   }`;
@@ -85,6 +90,8 @@ export const queryUserLendingRenft = (user: string): string => {
     user(id: "${user.toLowerCase()}") {
       lending {
         id
+        nftAddress
+        tokenId
       }
     }
   }`;
@@ -95,6 +102,11 @@ export const queryUserRentingRenft = (user: string): string => {
     user(id: "${user.toLowerCase()}") {
       renting {
         id
+        lending {
+          id
+          nftAddress
+          tokenId
+        }
       }
     }
   }`;

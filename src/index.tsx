@@ -23,16 +23,14 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Symfoni>
-      <GraphProvider>
-        <TransactionStateProvider>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-        </TransactionStateProvider>
-      </GraphProvider>
-    </Symfoni>
-  </React.StrictMode>,
+  <Symfoni>
+    <GraphProvider>
+      <TransactionStateProvider>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </TransactionStateProvider>
+    </GraphProvider>
+  </Symfoni>,
   document.getElementById("root")
 );

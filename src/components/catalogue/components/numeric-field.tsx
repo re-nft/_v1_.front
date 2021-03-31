@@ -10,7 +10,7 @@ const NumericField: React.FC<NumericFieldProps> = ({ text, value, unit }) => (
   <div className="nft__meta_row">
     <div className="nft__meta_title">{text}</div>
     <div className="nft__meta_dot"></div>
-    <div className="nft__meta_value">{Number(value).toFixed(2)} {unit}</div>
+    <div className="nft__meta_value">{Number(value).toFixed(4)} {unit}</div>
   </div>
 );
 

@@ -66,6 +66,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   return (
     <Modal open={open} handleClose={onClose}>
       <div className="modal-dialog-section">
+        <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
           {!isApproved && (
             <ActionButton<Renting> title="Approve All" nft={nft} onClick={handleApproveAll}/>

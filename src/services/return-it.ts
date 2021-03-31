@@ -8,7 +8,7 @@ export default async function returnIt(
 ): Promise<ContractTransaction> {
   const addresses = nfts.map(item => item.address);
   const tokenIds = nfts.map(item => item.tokenId);
-  const lendingIds = nfts.map(item => item.renting.id);
+  const lendingIds = nfts.map(item => item.renting.lendingId);
 
   const result = await renft.returnIt(addresses, tokenIds, lendingIds);
   return result;

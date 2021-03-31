@@ -87,20 +87,6 @@ enum DashboardSpecificity {
   MINIATURE_VIEW,
 }
 
-const LendingTableHead: React.FC = () => (
-  <thead>
-    <th style={{ width: '5%' }}>Name</th>
-    <th style={{ width: '30%' }}>NFT Address</th>
-    <th style={{ width: '5%' }}>TokenId</th>
-    <th style={{ width: '10%' }}>ERC20 Payment</th>
-    <th style={{ width: '7%' }}>Duration</th>
-    <th style={{ width: '7%' }}>% Complete</th>
-    <th style={{ width: '10%' }}>Collateral Paid</th>
-    <th style={{ width: '6%' }}>Rent Paid</th>
-    <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
-  </thead>
-);
-
 export const Dashboard: React.FC = () => {
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(RentNftContext);
@@ -182,7 +168,7 @@ export const Dashboard: React.FC = () => {
       </div>
     )
   }
-  console.log(lendingItems);
+
   return (
     <PageLayout
       title={specificity.valueOf() === 0 ? "LIST VIEW" : "MINIATURE VIEW"}
@@ -195,7 +181,19 @@ export const Dashboard: React.FC = () => {
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
               <table className="list">
-                <LendingTableHead />
+                <thead>
+                  <tr>
+                    <th style={{ width: '5%' }}>Name</th>
+                    <th style={{ width: '30%' }}>NFT Address</th>
+                    <th style={{ width: '5%' }}>TokenId</th>
+                    <th style={{ width: '10%' }}>ERC20 Payment</th>
+                    <th style={{ width: '7%' }}>Duration</th>
+                    <th style={{ width: '7%' }}>% Complete</th>
+                    <th style={{ width: '10%' }}>Collateral Paid</th>
+                    <th style={{ width: '6%' }}>Rent Paid</th>
+                    <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
+                  </tr>
+                </thead>
                 <tbody>
                 {lendingItems.map((lend: Lending) => {
                   const lending = lend.lending;
@@ -211,8 +209,8 @@ export const Dashboard: React.FC = () => {
                        <td className="column">{lending.dailyRentPrice}</td> 
                        <td className="action-column">
                          {_claim(lend) 
-                          ? <span className="nft__button" onClick={() => handleClaim(lend)}>💰</span> 
-                          : <span className="nft__button" onClick={() => handleStopLend(lend)}>Stop lend</span>
+                          ? <span className="nft__button small" onClick={() => handleClaim(lend)}>💰</span> 
+                          : <span className="nft__button small" onClick={() => handleStopLend(lend)}>Stop lend</span>
                         }
                        </td>
                     </tr>
