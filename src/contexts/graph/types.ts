@@ -70,6 +70,7 @@ export type Renting = {
   rentDuration: number;
   rentedAt: number;
   lendingId: string;
+  lending: Lending;
 };
 
 export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {

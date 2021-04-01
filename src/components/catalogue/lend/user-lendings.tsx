@@ -41,6 +41,7 @@ const UserLendings: React.FC = () => {
       const tx = await stopLend(renft, nfts);
       await setHash(tx.hash);
       onReset();
+      handleReset();
     },
     [renft, setHash]
   );
@@ -52,6 +53,14 @@ const UserLendings: React.FC = () => {
   const handleBatchStopnLend = useCallback(async () => {
     handleStopLend(checkedItems);
   }, [handleStopLend, checkedItems]);
+
+  const handleReset = () => {
+    getUserLending().then((userLnding: Lending[] | undefined) => {
+      onChangePage(userLnding || []);
+      onSetItems(userLnding || []);
+      setIsLoading(false);
+    });
+  };
 
   useEffect(() => {
     setIsLoading(true);

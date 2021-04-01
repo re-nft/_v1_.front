@@ -40,11 +40,16 @@
         }
 
         tr:hover td {
+            cursor: pointer;
             background: rgba(255,255,255, .25);
         }
         
         th.action-column {
             min-width: 200px;
+        }
+
+        td.action-column {
+            text-align: center;
         }
     }
 

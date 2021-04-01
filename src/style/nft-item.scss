@@ -207,6 +207,7 @@
         }
 
         &.disabled {
+            cursor: default;
             background: #cacaca;
             box-shadow: 5px 5px 0 #bdbdbd, 4px 4px 0 #bdbdbd, 3px 3px 0 #bdbdbd, 2px 2px 0 #bdbdbd, 1px 1px 0 #bdbdbd;
             
@@ -231,6 +232,11 @@
             box-shadow: 5px 5px 0 #8349be, 4px 4px 0 #8349be, 3px 3px 0 #8349be, 2px 2px 0 #8349be, 1px 1px 0 #8349be;
         }
         
+        &.red {
+            background: #f14c4c;
+            box-shadow: 5px 5px 0 #d82020, 4px 4px 0 #d82020, 3px 3px 0 #d82020, 2px 2px 0 #d82020, 1px 1px 0 #d82020;
+        }
+
         &:before {
             content: '';
             display: block;

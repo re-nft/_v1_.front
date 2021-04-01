@@ -1,13 +1,5 @@
-import { providers, Signer, ethers } from "ethers";
 import { NftToken} from "../contexts/graph/types";
-import { Lending, Nft, Renting } from "../contexts/graph/classes";
-
-const ABI = [
-    // ERC-721
-    "function tokenURI(uint256 _tokenId) external view returns (string)",
-    // ERC-1155
-    "function uri(uint256 _id) external view returns (string)",
-  ]
+import { Nft } from "../contexts/graph/classes";
 
 const isIpfsUrl = (url: string) => {
     return /^(\/ipfs|ipfs:\/)\/Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(url) || url.startsWith('ipfs://ipfs/');
@@ -45,7 +37,7 @@ const loadMetaFromIpfs = async (url: string): Promise<NftToken['meta']> => {
 };
 
 export const fetchNftMeta = async (nft: Nft): Promise<NftToken['meta']> => {   
-    const {tokenId, _mediaURI, _tokenURI} = nft;
+    const {_mediaURI, _tokenURI} = nft;
     if (_mediaURI) return { image: _mediaURI };
 
     if (_tokenURI) {

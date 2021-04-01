@@ -7,7 +7,7 @@ import { PaymentToken } from "./types";
 const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
-  `${s.substr(0, 5)}...${s.substr(s.length - 5, 5)}`;
+  `${s.substr(0, 7)}...${s.substr(s.length - 7, 7)}`;
 
 export const THROWS = (): void => {
   throw new Error("must be implemented");

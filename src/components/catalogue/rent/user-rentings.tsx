@@ -37,8 +37,16 @@ const UserRentings: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const handleCloseModal = useCallback(() => setModalOpen(false), [setModalOpen]);
-  const handleBatchStopRent = useCallback(() => setModalOpen(true), [setModalOpen]);
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    handleRefrash();
+  }, [setModalOpen]);
+  
+  const handleBatchStopRent = useCallback(() => {
+    setModalOpen(true);
+    handleRefrash();
+  }, [setModalOpen]);
+
   const handleOpenModal = useCallback(
     async (nft: Nft) => {
       onSetCheckedItem(nft);
@@ -46,6 +54,14 @@ const UserRentings: React.FC = () => {
     },
     [setModalOpen]
   );
+
+  const handleRefrash = () => {
+    getUserRenting().then((userRenting: Renting[] | undefined) => {
+      onSetItems(userRenting || []);
+      onChangePage(userRenting || []);
+      setIsLoading(false);
+    });
+  };
 
   useEffect(() => {
     setIsLoading(true);

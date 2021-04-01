@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Link,
   NavLink,
 } from "react-router-dom";
 import Layout from "./layout";
@@ -12,7 +13,10 @@ import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
 import Leaderboard from '../pages/leaderboard';
+import Profile from '../pages/profile';
 import { TransactionNotifier } from "../ui/transaction-notifier";
+import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
+import { short } from "../../utils";
 
 const ROUTES = [
   {
@@ -42,9 +46,20 @@ const ROUTES = [
 ];
 
 const App: React.FC = () => {  
+  const [currentAddress] = useContext(CurrentAddressContext);
   return (
     <Layout>
       <Router>
+      <div className="content-wrapper mb-l">
+            <div className="header">
+              <div className="header__logo"></div>
+              <div className="header__user">
+                <Link className="" to="/profile">
+                  {short(currentAddress)}
+                </Link>
+              </div>
+            </div>
+          </div>
         <div className="content-wrapper mb-l">
           <div className="menu">
             {ROUTES.map((route) => (
@@ -83,6 +98,9 @@ const App: React.FC = () => {
             </Route>
             <Route exact path="/faq">
               <Faq />
+            </Route>
+            <Route exact path="/profile">
+              <Profile />
             </Route>
           </Switch>
         </div>

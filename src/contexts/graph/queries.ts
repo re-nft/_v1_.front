@@ -54,6 +54,12 @@ export const queryAllRenft = (): string => {
           id
           nftAddress
           tokenId
+          lenderAddress
+          maxRentDuration
+          dailyRentPrice
+          nftPrice
+          paymentToken
+          collateralClaimed
         }
       }
     }
@@ -92,6 +98,9 @@ export const queryUserLendingRenft = (user: string): string => {
         id
         nftAddress
         tokenId
+        dailyRentPrice
+        nftPrice
+        paymentToken
       }
     }
   }`;
@@ -106,6 +115,9 @@ export const queryUserRentingRenft = (user: string): string => {
           id
           nftAddress
           tokenId
+          dailyRentPrice
+          nftPrice
+          paymentToken
         }
       }
     }

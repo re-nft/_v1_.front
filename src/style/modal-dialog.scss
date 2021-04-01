@@ -13,13 +13,17 @@
     }
 
     .nft__meta_value {
-        max-width: 300px;
+        max-width: 320px;
     }
 
     &-for {
         font-size: 20px;
         display: flex;
         align-items: baseline;
+        position: sticky;
+        background: #eee6f6;
+        top: 0;
+        z-index: 2;
 
         .dot {
             flex-grow: 1;

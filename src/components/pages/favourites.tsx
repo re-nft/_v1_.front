@@ -21,7 +21,6 @@ export const MyFavorites: React.FC = () => {
 
     dataRequest.promise.then(([nfts, userData]: [nfts: Nft[] | undefined, userData: UserData | undefined]) => {
       if (userData && nfts) {
-        console.log(nfts);
         const allFavoeites = Object.keys(userData?.favorites ?? {});
         const items = allFavoeites.map((key: string) => {
           const [address, tokenId] = key.split('::');
@@ -29,10 +28,7 @@ export const MyFavorites: React.FC = () => {
           return nft;
         }).filter(Boolean);
         // @ts-ignore
-        setNftItems(items);
-        setIsLoading(false);
-      } else {
-        setNftItems([]);
+        setNftItems(items || []);
         setIsLoading(false);
       }
     });

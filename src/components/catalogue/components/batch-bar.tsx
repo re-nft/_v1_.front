@@ -12,7 +12,7 @@ const BatchBar: React.FC<BatchBarProps> = ({title, actionTitle, onClick, onCance
         <div className="batch__inner">
             <div className="column" style={{ flexGrow: 1, fontSize: '20px', color: '#fff' }}>{title}</div>
             <div className="column">
-                <span className="nft__button" onClick={onCancel}>Cancel</span>
+                <span className="nft__button red" onClick={onCancel}>Cancel</span>
                 <span style={{ width: '24px', display: 'inline-flex' }}/>
                 <span className="nft__button" onClick={onClick}>
                     {actionTitle}

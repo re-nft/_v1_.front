@@ -1,88 +1,22 @@
-// const Dashboard: React.FC = () => {
-//   const usersLending: Lending[] = [];
-//   const usersRenting: Renting[] = [];
-
-//   return (
-//     <Box
-//       style={{ display: "flex", flexDirection: "column", padding: "1.5rem 0" }}
-//     >
-//       <Box style={{ padding: "1rem" }}>
-//         <h2>Lending</h2>
-//         <Table>
-//           <TableHead tableType={TableType.LEND} />
-//           <tbody>
-//             {usersLending.length > 0 &&
-//               usersLending.map((l) => {
-//                 return (
-//                   <TableRow
-//                     key={`${l.address}::${l.tokenId}::${l.lending.id}`}
-//                     address={l.address}
-//                     tokenId={String(l.tokenId)}
-//                     id={String(l.lending.id)}
-//                     dailyPrice={`${
-//                        PaymentToken[l.lending.paymentToken ?? 0]
-//                     } ${String(l.lending.dailyRentPrice)}`}
-//                     collateral={`${
-//                        PaymentToken[l.lending.paymentToken ?? 0]
-//                     } ${String(l.lending.nftPrice)}`}
-//                     maxDuration={String(l.lending.maxRentDuration)}
-//                     claim={<ClaimButton lending={l} />}
-//                     // todo
-//                     // greenHighlight={Boolean(l.renting)}
-//                   />
-//                 );
-//               })}
-//           </tbody>
-//         </Table>
-//       </Box>
-//       <Box style={{ padding: "1rem" }}>
-//         <h2>Renting</h2>
-//         <Table>
-//           <TableHead tableType={TableType.BORROW} />
-//           <tbody>
-//             {usersRenting.length > 0 &&
-//               usersRenting.map((r) => (
-//                 <TableRow
-//                   key={`${r.address}::${r.tokenId}::${r.renting.id}`}
-//                   address={r.address}
-//                   tokenId={String(r.tokenId)}
-//                   id={String(r.renting.id)}
-//                   // dailyPrice={`${
-//                   //   PaymentToken[r.renting.paymentToken ?? 0]
-//                   // } ${String(r.lending.dailyRentPrice)}`}
-//                   // collateral={`${
-//                   //   PaymentToken[r.lending.paymentToken ?? 0]
-//                   // } ${String(r.lending.nftPrice)}`}
-//                   dailyPrice={"0"}
-//                   collateral={"0"}
-//                   maxDuration={String(
-//                     returnBy(
-//                       r.renting.rentedAt ?? 0,
-//                       r.renting.rentDuration ?? 0
-//                     )
-//                   )}
-//                 />
-//               ))}
-//           </tbody>
-//         </Table>
-//       </Box>
-//     </Box>
-
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
 import PageLayout from "../layout/page-layout";
 import GraphContext from "../../contexts/graph/index";
 import { Lending, Nft, Renting } from "../../contexts/graph/classes";
 import createCancellablePromise from '../../contexts/create-cancellable-promise';
+import { TransactionStateContext } from "../../contexts/TransactionState";
 import CatalogueLoader from "../catalogue/components/catalogue-loader";
 import { PaymentToken } from "../../types";
+import stopLend from "../../services/stop-lending";
+import claimCollateral from "../../services/claim-collateral";
 import { RentNftContext } from "../../hardhat/SymfoniContext";
+import { short } from "../../utils";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
 };
 
-enum DashboardSpecificity {
+enum DashboardViewType {
   LIST_VIEW,
   MINIATURE_VIEW,
 }
@@ -93,35 +27,37 @@ export const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lendingItems, setLendingItems] = useState<Lending[]>([]);
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);
-  const [specificity, setSpecificiy] = useState<DashboardSpecificity>(
-    DashboardSpecificity.LIST_VIEW
-  );
+  const { setHash } = useContext(TransactionStateContext);
+  const _now = moment();
+  const [viewType, setViewType] = useState<DashboardViewType>(DashboardViewType.LIST_VIEW);
   
-  const handleClaim = useCallback(async (lending: Lending) => {
-    if (!renft) return;
-
-    await renft
-      .claimCollateral(
-        [lending.address],
-        [lending.tokenId],
-        // @ts-ignore
-        [lending.lending?.[-1]]
-      )
-      .catch(() => false);
-  }, [renft]);
+  const handleClaimCollateral = useCallback(async (lending: Lending) => {
+    if (!renft) return;     
+    const nft = lending as Nft;
+    const tx = await claimCollateral(renft, [nft]);
+    await setHash(tx.hash);
+    handleRefresh();
+  }, [renft, setHash]);
 
   const handleStopLend = useCallback(async (lending: Lending) => {
-    if (!renft) return;
+    if (!renft) return;     
+    const nft = lending as Nft;
+    const tx = await stopLend(renft, [nft]);
+    await setHash(tx.hash);
+    handleRefresh();
+  }, [renft, setHash]);
 
-    await renft.stopLending(
-      [lending.address],
-      [lending.tokenId],
-      // @ts-ignore
-      [lending.lending?.[-1]]
-    );
-  }, [renft]);
-
-  const _now = moment();
+  const handleRefresh = () => {
+    Promise.all([
+      getUserLending(),
+      getUserRenting()
+    ]).then(([userLnding, userRenting]) => {
+      setLendingItems(userLnding || []);
+      setRentingItems(userRenting || []);
+      setIsLoading(false);
+    });
+  };
+  
   const _returnBy = (lending: Lending) => returnBy(
     // @ts-ignore
     lending.renting?.rentedAt,
@@ -130,11 +66,11 @@ export const Dashboard: React.FC = () => {
   );
   const _claim = (lending: Lending) => _now.isAfter(_returnBy(lending));
   
-  const switchSpecificity = useCallback(() => {
-    setSpecificiy((specificity) =>
-      specificity === DashboardSpecificity.LIST_VIEW
-        ? DashboardSpecificity.MINIATURE_VIEW
-        : DashboardSpecificity.LIST_VIEW
+  const switchView = useCallback(() => {
+    setViewType((specificity) =>
+      specificity === DashboardViewType.LIST_VIEW
+        ? DashboardViewType.MINIATURE_VIEW
+        : DashboardViewType.LIST_VIEW
     );
   }, []);
 
@@ -168,14 +104,14 @@ export const Dashboard: React.FC = () => {
       </div>
     )
   }
-
+  console.log(rentingItems);
   return (
     <PageLayout
-      title={specificity.valueOf() === 0 ? "LIST VIEW" : "MINIATURE VIEW"}
-      toggleValue={specificity === DashboardSpecificity.LIST_VIEW}
-      onSwitch={switchSpecificity}
+      title={viewType.valueOf() === 0 ? "LIST VIEW" : "MINIATURE VIEW"}
+      toggleValue={viewType === DashboardViewType.LIST_VIEW}
+      onSwitch={switchView}
     >
-      {specificity === DashboardSpecificity.LIST_VIEW && (
+      {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && !isLoading && (
             <div className="dashboard-section">
@@ -183,14 +119,14 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: '5%' }}>Name</th>
-                    <th style={{ width: '30%' }}>NFT Address</th>
-                    <th style={{ width: '5%' }}>TokenId</th>
+                    <th style={{ width: '15%' }}>Name</th>
+                    <th style={{ width: '15%' }}>NFT Address</th>
+                    <th style={{ width: '7%' }}>TokenId</th>
                     <th style={{ width: '10%' }}>ERC20 Payment</th>
                     <th style={{ width: '7%' }}>Duration</th>
-                    <th style={{ width: '7%' }}>% Complete</th>
-                    <th style={{ width: '10%' }}>Collateral Paid</th>
-                    <th style={{ width: '6%' }}>Rent Paid</th>
+                    <th style={{ width: '8%' }}>% Complete</th>
+                    <th style={{ width: '11%' }}>Collateral Paid</th>
+                    <th style={{ width: '7%' }}>Rent Paid</th>
                     <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
                   </tr>
                 </thead>
@@ -199,19 +135,21 @@ export const Dashboard: React.FC = () => {
                   const lending = lend.lending;
                   return (
                     <tr key={`${lend.address}::${lend.tokenId}::${lending.id}`}>
-                       <td className="column">-//-</td> 
-                       <td className="column">{lending.nftAddress}</td> 
+                       <td className="column">n/a</td> 
+                       <td className="column">{short(lending.nftAddress)}</td> 
                        <td className="column">{lend.tokenId}</td> 
                        <td className="column">{PaymentToken[lending.paymentToken ?? 0]}</td> 
                        <td className="column">{lending.maxRentDuration}</td> 
                        <td className="column">-//-</td> 
-                       <td className="column">{lending.collateralClaimed}</td> 
+                       <td className="column">{lending.nftPrice}</td> 
                        <td className="column">{lending.dailyRentPrice}</td> 
                        <td className="action-column">
-                         {_claim(lend) 
-                          ? <span className="nft__button small" onClick={() => handleClaim(lend)}>💰</span> 
-                          : <span className="nft__button small" onClick={() => handleStopLend(lend)}>Stop lend</span>
-                        }
+                        {_claim(lend)  && (
+                          <span className="nft__button small" onClick={() => handleClaimCollateral(lend)}>💰</span> 
+                        )}
+                        {!_claim(lend)  && (
+                          <span className="nft__button small" onClick={() => handleStopLend(lend)}>Stop lend</span>
+                        )}
                        </td>
                     </tr>
                   )
@@ -223,11 +161,48 @@ export const Dashboard: React.FC = () => {
           {rentingItems.length !== 0 && !isLoading && (
             <div className="dashboard-section">
               <h2 className="renting">Renting</h2>
+              <table className="list">
+                <thead>
+                  <tr>
+                    <th style={{ width: '15%' }}>Name</th>
+                    <th style={{ width: '15%' }}>NFT Address</th>
+                    <th style={{ width: '7%' }}>TokenId</th>
+                    <th style={{ width: '10%' }}>ERC20 Payment</th>
+                    <th style={{ width: '7%' }}>Duration</th>
+                    <th style={{ width: '8%' }}>% Complete</th>
+                    <th style={{ width: '11%' }}>Rented At</th>
+                    <th style={{ width: '7%' }}>Rent Paid</th>
+                    <th style={{ width: '20%' }} className="action-column">&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {rentingItems.map((rent: Renting) => {
+                  const renting = rent.renting;
+                  return (
+                    <tr key={`${rent.address}::${rent.tokenId}::${rent.id}`}>
+                       <td className="column">n/a</td> 
+                       <td className="column">{short(renting.renterAddress)}</td> 
+                       <td className="column">{rent.tokenId}</td> 
+                       <td className="column">{PaymentToken[renting.lending.paymentToken ?? 0]}</td> 
+                       <td className="column">{renting.rentDuration}</td> 
+                       <td className="column">-//-</td> 
+                       <td className="column">
+                        {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
+                      </td> 
+                       <td className="column">{renting.lending.dailyRentPrice}</td> 
+                       <td className="action-column">
+                          <span className="nft__button small">Return It</span> 
+                       </td>
+                    </tr>
+                  )
+                })}
+                </tbody>
+              </table>
             </div> 
           )}
         </div>
       )}
-      {specificity === DashboardSpecificity.MINIATURE_VIEW && <div>miniature</div>}
+      {viewType === DashboardViewType.MINIATURE_VIEW && <div>miniature</div>}
     </PageLayout>
   );
 };

@@ -1,0 +1,49 @@
+.content__row.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 24px;
+    color: #fff;
+    text-align: center;
+
+    .profile-body {
+        width: 400px;
+        padding: 32px 0;
+        margin: 42px 0;
+        box-shadow: 4px 4px 0 #000;
+    }
+
+    .form__field {
+        display: flex;
+        flex-direction: column;
+        margin: 0 24px 16px 24px;
+
+        label {
+            margin-bottom: 12px;
+        }
+
+        input {
+            font-size: 20px;
+            padding: 12px;
+            box-shadow: -4px -4px 0 #000;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 80px;
+            font-size: 20px;
+            box-shadow: -4px -4px 0 #000;
+            outline: none;
+        }
+    }
+
+    .avatar {
+        width: 128px;
+        height: 128px;
+        background: #F19C38;
+        margin: 30px auto 20px;
+        border-radius: 128px;
+        border: 4px solid #fff;
+        box-shadow: 5px 5px 0 #000;
+    }
+}

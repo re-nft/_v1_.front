@@ -34,6 +34,7 @@ import {
   UserData,
   CalculatedUserVote,
   UsersVote,
+  LendingRaw,
 } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
@@ -214,7 +215,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserRentingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { renting?: { id: RentingId, lending: { id: LendingId, nftAddress: string } }[] };
+      user?: { renting?: { id: RentingId, lending: LendingRaw }[] };
     } = await timeItAsync(
       `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)

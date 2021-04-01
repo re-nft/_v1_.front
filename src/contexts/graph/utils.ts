@@ -25,6 +25,8 @@ export const parseRenting = (renting: RentingRaw): Renting => {
     renterAddress: ethers.utils.getAddress(renting.renterAddress),
     rentDuration: Number(renting.rentDuration),
     rentedAt: Number(renting.rentedAt),
+    // @ts-ignore
     lendingId: renting.lending.id,
+    lending: renting.lending
   };
 };
