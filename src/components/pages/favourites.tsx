@@ -1,16 +1,41 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import GraphContext from "../../contexts/graph";
 import { UserData } from "../../contexts/graph/types";
+import {CurrentAddressContext} from "../../hardhat/SymfoniContext";
 import CatalogueLoader from "../catalogue/components/catalogue-loader";
 import { Nft } from "../../contexts/graph/classes";
 import createCancellablePromise from '../../contexts/create-cancellable-promise';
+import {addOrRemoveUserFavorite} from '../../services/firebase';
 import CatalogueItem from "../catalogue/components/catalogue-item";
+import {calculateMyFavorites} from '../../services/calculate-my-faforites';
 
 export const MyFavorites: React.FC = () => {
+  const [currentAddress] = useContext(CurrentAddressContext);
   const {getUserData, getUserNfts} = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   
+  const onRemoveFromFavorites = useCallback((nft: Nft) => {
+    setIsLoading(true);
+    addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then((resp: boolean) => {
+      refreshState();
+    });
+  }, []);
+
+  const refreshState = () => {
+    Promise.all([
+      getUserNfts(),
+      getUserData(),
+    ]).then(([nfts, userData]: [nfts: Nft[] | undefined, userData: UserData | undefined]) => {
+      if (userData && nfts) {
+        const items = calculateMyFavorites(userData, nfts);
+        // @ts-ignore
+        setNftItems(items || []);
+        setIsLoading(false);
+      }
+    });
+  };
+
   useEffect(() => {
     setIsLoading(true);
     
@@ -21,12 +46,7 @@ export const MyFavorites: React.FC = () => {
 
     dataRequest.promise.then(([nfts, userData]: [nfts: Nft[] | undefined, userData: UserData | undefined]) => {
       if (userData && nfts) {
-        const allFavoeites = Object.keys(userData?.favorites ?? {});
-        const items = allFavoeites.map((key: string) => {
-          const [address, tokenId] = key.split('::');
-          const nft = nfts.find((nft: Nft) => nft.address === address && nft.tokenId === tokenId);
-          return nft;
-        }).filter(Boolean);
+        const items = calculateMyFavorites(userData, nfts);
         // @ts-ignore
         setNftItems(items || []);
         setIsLoading(false);
@@ -53,7 +73,14 @@ export const MyFavorites: React.FC = () => {
         <CatalogueItem 
           key={`${nft.address}::${nft.tokenId}`} 
           nft={nft}
-        />
+          isAlreadyFavourited
+        >
+          <div className="nft__control">
+            <button className="nft__button" onClick={() => onRemoveFromFavorites(nft)}>
+                Remove
+            </button>
+          </div>
+        </CatalogueItem>
       ))}
 		</div>
 	</div>

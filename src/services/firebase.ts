@@ -66,6 +66,7 @@ export const getUserDataOrCrateNew = async (currentAddress: string): Promise<Use
 };
 
 export const addOrRemoveUserFavorite = async (currentAddress: string, nftAddress: Address, tokenId: string): Promise<boolean> => {
+    console.log(currentAddress, nftAddress, tokenId);
     const id = nftId(nftAddress, tokenId);
     const userRef = database.ref('users/' + currentAddress + '/favorites/' + id);
     return new Promise((resolve, reject) => {

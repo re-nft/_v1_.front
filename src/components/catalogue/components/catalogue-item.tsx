@@ -12,6 +12,7 @@ import {fetchNftMeta} from "../../../services/fetch-nft-meta";
 export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
+  isAlreadyFavourited?: boolean,
   // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
   onCheckboxChange?: (name: string, checked: boolean) => void;
 };
@@ -19,6 +20,7 @@ export type CatalogueItemProps = {
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
+  isAlreadyFavourited,
   onCheckboxChange,
   children,
 }) => {
@@ -83,7 +85,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const { name, image, description } = meta || {};  
   
   return (
-    <div ref={ref} className="nft" key={nft.tokenId} data-item-id={nft.tokenId}>
+    <div ref={ref} className={`nft ${isChecked ? 'checked' : ''}`} key={nft.tokenId} data-item-id={nft.tokenId}>
       {!imageIsReady && (
         <div className="skeleton">
           <div className="skeleton-item control"></div>
@@ -97,7 +99,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {imageIsReady && (
         <>
           <div className="nft__overlay">
-            <div className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} onClick={addOrRemoveFavorite}></div>
+            {!isAlreadyFavourited && (
+              <div 
+                className={`nft__favourites ${addedToFavorites ? 'nft__favourites-on' : ''}`} 
+                onClick={addOrRemoveFavorite}
+              />
+            )}
             <div className="nft__vote nft__vote-plus" onClick={() => handleVote(1)}>
               <span className="icon-plus"/>
               +{nftVote?.upvote || '?'}

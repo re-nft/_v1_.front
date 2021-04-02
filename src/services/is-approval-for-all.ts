@@ -13,6 +13,5 @@ export default async function isApprovalForAll(
         const contract = nft.contract();
         return contract.isApprovedForAll(currentAddress, renft.address);
     }));
-
     return result.every((isApproved) => isApproved);
 }

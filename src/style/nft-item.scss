@@ -2,13 +2,25 @@
     position: relative;
     width: 250px;
     display: flex;
-    margin: 0 24px 40px;
+    margin: 0 28px 40px;
     color: #000;
     font-size: 21px;
     flex-direction: column;
     background: #fff;
     z-index: 1;
     border: 5px solid #000;
+    transition: all 250ms;
+    top: 0;
+
+    &.checked,
+    &:hover {
+        box-shadow: 8px 8px 0 #000;
+        top: -5px;
+    }
+
+    &__name {
+        padding: 0 8px;
+    }
 
     &__image {
         width: 100%;
@@ -198,6 +210,7 @@
         font-size: 28px;
         text-transform: uppercase;
         outline: none;
+        transition: all 250ms;
         padding: 5px 12px;
         box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492, 2px 2px 0 #33b492, 1px 1px 0 #33b492;
         
