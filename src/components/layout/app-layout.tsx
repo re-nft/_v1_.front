@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -12,54 +12,64 @@ import Lend from "../pages/lend";
 import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
-import Leaderboard from '../pages/leaderboard';
-import Profile from '../pages/profile';
+import Leaderboard from "../pages/leaderboard";
+import Profile from "../pages/profile";
 import { TransactionNotifier } from "../ui/transaction-notifier";
 import { CurrentAddressContext } from "../../hardhat/SymfoniContext";
+import GraphContext from "../../contexts/graph";
 import { short } from "../../utils";
 
 const ROUTES = [
   {
     path: "/",
-    name: "Rent NFT"
+    name: "Rent NFT",
   },
   {
     path: "/lend",
-    name: "Lend NFT"
+    name: "Lend NFT",
   },
   {
     path: "/dashboard",
-    name: "My Dashboard"
+    name: "My Dashboard",
   },
   {
     path: "/favourites",
-    name: "My Favourites"
+    name: "My Favourites",
   },
   {
     path: "/leaderboard",
-    name: "Leaderboard"
+    name: "Leaderboard",
   },
   {
     path: "/faq",
-    name: "FAQ"
+    name: "FAQ",
   },
 ];
 
-const App: React.FC = () => {  
+const App: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
+  const { userData } = useContext(GraphContext);
+  const [username, setUsername] = useState<string>();
+
+  useEffect(() => {
+    if (userData?.name !== "") {
+      setUsername(userData?.name);
+    }
+  }, [userData]);
+
   return (
     <Layout>
       <Router>
-      <div className="content-wrapper mb-l">
-            <div className="header">
-              <div className="header__logo"></div>
-              <div className="header__user">
-                <Link className="" to="/profile">
-                  {short(currentAddress)}
-                </Link>
-              </div>
+        <div className="content-wrapper mb-l">
+          <div className="header">
+            <div className="header__logo"></div>
+            <div className="header__user">
+              <Link className="" to="/profile">
+                {username || short(currentAddress)}
+              </Link>
             </div>
           </div>
+        </div>
         <div className="content-wrapper mb-l">
           <div className="menu">
             {ROUTES.map((route) => (
@@ -85,16 +95,16 @@ const App: React.FC = () => {
               <Rent />
             </Route>
             <Route exact path="/lend">
-              <Lend/>
+              <Lend />
             </Route>
             <Route exact path="/dashboard">
               <Dashboard />
             </Route>
             <Route exact path="/favourites">
-              <MyFavorites/>
+              <MyFavorites />
             </Route>
             <Route exact path="/leaderboard">
-              <Leaderboard/>
+              <Leaderboard />
             </Route>
             <Route exact path="/faq">
               <Faq />
@@ -109,14 +119,14 @@ const App: React.FC = () => {
       <div className="content-wrapper footer-content">
         <div className="copy">2021 ReNFT</div>
         <div className="soc">
-          <a 
+          <a
             href="https://discord.gg/ka2u9n5sWs"
             target="_blank"
             rel="noreferrer"
           >
             <span className="discord"></span>
           </a>
-          <a 
+          <a
             href="https://twitter.com/renftlabs"
             target="_blank"
             rel="noreferrer"

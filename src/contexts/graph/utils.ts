@@ -15,7 +15,7 @@ export const parseLending = (lending: LendingRaw): Lending => {
     nftPrice: unpackPrice(lending.nftPrice, DP18),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
-    rentingId: lending.rentingId ?? undefined,
+    renting: lending.renting ?? undefined,
   };
 };
 
@@ -27,6 +27,6 @@ export const parseRenting = (renting: RentingRaw): Renting => {
     rentedAt: Number(renting.rentedAt),
     // @ts-ignore
     lendingId: renting.lending.id,
-    lending: renting.lending
+    lending: renting.lending,
   };
 };

@@ -44,6 +44,10 @@ export const queryAllRenft = (): string => {
         nftPrice
         paymentToken
         collateralClaimed
+        renting {
+          id
+          renterAddress
+        }
       }
       renting {
         id

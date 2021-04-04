@@ -23,8 +23,12 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const [address, tokenId] = e.target.name.split("::");
       const value = e.target.value || "0";
-      const lendingItem = nft.find(x => x.tokenId === tokenId && x.address === address);
-      const nftPrice = (lendingItem?.lending.nftPrice || 0) + (lendingItem?.lending.dailyRentPrice || 0);
+      const lendingItem = nft.find(
+        (x) => x.tokenId === tokenId && x.address === address
+      );
+      const nftPrice =
+        (lendingItem?.lending.nftPrice || 0) +
+        (lendingItem?.lending.dailyRentPrice || 0);
       setDuration({
         ...duration,
         [tokenId]: value,
@@ -32,7 +36,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       setTotalRent({
         ...totalRent,
         [tokenId]: Number(nftPrice) * Number(value),
-      })
+      });
     },
     [duration, setDuration, totalRent, setTotalRent, nft]
   );
@@ -46,63 +50,74 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     },
     [nft, duration, handleClose, onSubmit]
   );
-  const isValid = nft.length === Object.values(duration).length;  
+  const isValid = nft.length === Object.values(duration).length;
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-          {nft.map((item: Lending) => {
-            return (
-              <div className="modal-dialog-section" key={`${item.address}::${item.tokenId}`}>
-                <div className="modal-dialog-for">
-                  <div className="label">Token Id</div>
-                  <div className="dot"></div>
-                  <div className="label">{item.tokenId}</div>
+        {nft.map((item: Lending) => {
+          return (
+            <div
+              className="modal-dialog-section"
+              key={`${item.address}::${item.tokenId}`}
+            >
+              <div className="modal-dialog-for">
+                <div className="label">Token Id</div>
+                <div className="dot"></div>
+                <div className="label">{item.tokenId}</div>
+              </div>
+              <div className="modal-dialog-fields">
+                <CssTextField
+                  required
+                  label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
+                  id={`${item.tokenId}::duration`}
+                  variant="outlined"
+                  type="number"
+                  name={`${item.address}::${item.tokenId}`}
+                  onChange={handleChange}
+                />
+                <div className="nft__meta_row">
+                  <div className="nft__meta_title">Daily rent price</div>
+                  <div className="nft__meta_dot"></div>
+                  <div className="nft__meta_value">
+                    {item.lending.dailyRentPrice}{" "}
+                    {PaymentToken[item.lending.paymentToken]}
+                  </div>
                 </div>
-                <div className="modal-dialog-fields">
-                  <CssTextField
-                    required
-                    label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
-                    id={`${item.tokenId}::duration`}
-                    variant="outlined"
-                    type="number"
-                    name={`${item.address}::${item.tokenId}`}
-                    onChange={handleChange}
-                  />
-                  <div className="nft__meta_row">
-                    <div className="nft__meta_title">Daily rent price</div>
-                    <div className="nft__meta_dot"></div>
-                    <div className="nft__meta_value">{item.lending.dailyRentPrice} {PaymentToken[item.lending.paymentToken]}</div>
+                <div className="nft__meta_row">
+                  <div className="nft__meta_title">Collateral</div>
+                  <div className="nft__meta_dot"></div>
+                  <div className="nft__meta_value">
+                    {item.lending.nftPrice}{" "}
+                    {PaymentToken[item.lending.paymentToken]}
                   </div>
-                  <div className="nft__meta_row">
-                    <div className="nft__meta_title">Collateral</div>
-                    <div className="nft__meta_dot"></div>
-                    <div className="nft__meta_value">{item.lending.nftPrice} {PaymentToken[item.lending.paymentToken]}</div>
+                </div>
+                <div className="nft__meta_row">
+                  <div className="nft__meta_title">
+                    <b>Rent</b>
                   </div>
-                  <div className="nft__meta_row">
-                    <div className="nft__meta_title"><b>Rent</b></div>
-                    <div className="nft__meta_dot"></div>
-                    <div className="nft__meta_value">
-                      {item.lending.dailyRentPrice}
-                      {` x ${
-                        !duration[item.tokenId] ? "?" : duration[item.tokenId]
-                      } days + ${item.lending.nftPrice} = ${
-                        totalRent[item.tokenId]
-                          ? totalRent[item.tokenId].toFixed(4)
-                          : "? "
-                      }`}
-                       {PaymentToken[item.lending.paymentToken]}
-                    </div>
+                  <div className="nft__meta_dot"></div>
+                  <div className="nft__meta_value">
+                    {item.lending.dailyRentPrice}
+                    {` x ${
+                      !duration[item.tokenId] ? "?" : duration[item.tokenId]
+                    } days + ${item.lending.nftPrice} = ${
+                      totalRent[item.tokenId]
+                        ? totalRent[item.tokenId].toFixed(4)
+                        : "? "
+                    }`}
+                    {` ${PaymentToken[item.lending.paymentToken]}`}
                   </div>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
         <div className="modal-dialog-button">
-          <button 
-            type="submit" 
-            className={`nft__button ${!isValid && 'disabled'}`}
+          <button
+            type="submit"
+            className={`nft__button ${!isValid && "disabled"}`}
           >
-              {nft.length > 1 ? 'Rent all' : 'Rent'}
+            {nft.length > 1 ? "Rent all" : "Rent"}
           </button>
         </div>
       </form>

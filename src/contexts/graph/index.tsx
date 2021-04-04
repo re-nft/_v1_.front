@@ -85,10 +85,10 @@ type GraphContextType = {
   getUsersLending(): Promise<Lending[] | undefined>;
   getUserRenting(): Promise<Renting[] | undefined>;
   getUserData(): Promise<UserData | undefined>;
+  updateGlobalUserData(): Promise<void>;
 };
 
 const defaultUserData = {
-  name: "",
   favorites: {},
 };
 
@@ -101,6 +101,7 @@ const DefaultGraphContext: GraphContextType = {
   getUsersLending: () => Promise.resolve([]),
   getUserRenting: () => Promise.resolve([]),
   getUserData: () => Promise.resolve(defaultUserData),
+  updateGlobalUserData: () => Promise.resolve(),
 };
 
 enum FetchType {
@@ -186,7 +187,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
     const _usersNfts = usersNfts721
       .concat(usersNfts1155)
-      .map((nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta, tokenURI: nft.tokenURI }));
+      .map(
+        (nft) =>
+          new Nft(nft.address, nft.tokenId, signer, {
+            meta: nft.meta,
+            tokenURI: nft.tokenURI,
+          })
+      );
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
@@ -201,13 +208,17 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserLendingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { lending?: { tokenId: LendingId, nftAddress: string }[] };
+      user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
     } = await timeItAsync(
       `Pulled My Renft Lending Nfts`,
       async () => await request(subgraphURI, query)
     );
 
-    return response.user?.lending?.map(({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`) ?? [];
+    return (
+      response.user?.lending?.map(
+        ({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`
+      ) ?? []
+    );
   };
 
   const fetchUserRenting = async (): Promise<string[] | undefined> => {
@@ -215,12 +226,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryUserRentingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { renting?: { id: RentingId, lending: LendingRaw }[] };
+      user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
     } = await timeItAsync(
       `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)
-    );  
-    return response.user?.renting?.map(({lending}) => `${lending.nftAddress}::${lending.id}`) ?? [];
+    );
+    return (
+      response.user?.renting?.map(
+        ({ lending }) => `${lending.nftAddress}::${lending.id}`
+      ) ?? []
+    );
   };
 
   /**
@@ -272,14 +287,13 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // AVAILABLE TO RENT
   const getUsersLending = async (): Promise<Lending[] | undefined> => {
-    const renftAll = await fetchRenftsAll(); 
+    const renftAll = await fetchRenftsAll();
     if (renftAll) {
       const userRenting = await fetchUserRenting();
-      return Object.values(renftAll.lending)
-        .filter((item: Lending) => {
-          const id = `${item.address}::${item.id}`;
-          return !userRenting?.includes(id);
-        });
+      return Object.values(renftAll.lending).filter((item: Lending) => {
+        const id = `${item.address}::${item.id}`;
+        return !userRenting?.includes(id);
+      });
     }
 
     return undefined;
@@ -314,6 +328,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     }
     return undefined;
   }, [currentAddress]);
+
+  const updateGlobalUserData = useCallback(() => {
+    return getUserData().then((userData: UserData | undefined) => {
+      if (userData) {
+        setUserData(userData);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (currentAddress) {
@@ -351,6 +373,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         getUsersLending,
         getUserRenting,
         getUserData,
+        updateGlobalUserData,
       }}
     >
       {children}

@@ -1,61 +1,61 @@
 .dashboard-list-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: -64px;
+
+  h2.lending {
+    font-size: 55px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #f4b050;
+    text-shadow: 3px 3px 0 #000;
+  }
+
+  h2.renting {
+    font-size: 55px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #bd99ee;
+    text-shadow: 3px 3px 0 #000;
+  }
+
+  .list {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    margin-top: -64px;
+    font-size: 19px;
+    color: #fff;
+    line-height: 1;
 
-    h2.lending {
-        font-size: 55px;
-        text-transform: uppercase;
-        font-weight: bold;
-        color: #F4B050;
-        text-shadow: 3px 3px 0 #000;
+    td.column {
+      padding: 16px 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
-    h2.renting {
-        font-size: 55px;
-        text-transform: uppercase;
-        font-weight: bold;
-        color: #BD99EE;
-        text-shadow: 3px 3px 0 #000;
+    th {
+      border-bottom: 2px solid #fff;
+      white-space: nowrap;
+      padding-bottom: 4px;
     }
 
-    .list {
-        width: 100%;
-        font-size: 19px;
-        color: #fff;
-        line-height: 1;
-        
-        td.column {
-            padding: 16px 0;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        th {
-            border-bottom: 2px solid #fff;            
-            white-space: nowrap;
-            padding-bottom: 4px;
-        }
-
-        tr:hover td {
-            cursor: pointer;
-            background: rgba(255,255,255, .25);
-        }
-        
-        th.action-column {
-            min-width: 200px;
-        }
-
-        td.action-column {
-            text-align: center;
-        }
+    tr:hover td {
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.25);
     }
 
-    .dashboard-section {
-        width: 100%;
-        text-align: left;
-        padding: 0 24px;
+    th.action-column {
+      min-width: 200px;
     }
+
+    td.action-column {
+      text-align: center;
+    }
+  }
+
+  .dashboard-section {
+    width: 100%;
+    text-align: left;
+    padding: 0 24px;
+  }
 }

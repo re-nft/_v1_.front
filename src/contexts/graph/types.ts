@@ -51,7 +51,7 @@ export type Lending = {
   nftPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
-  rentingId?: string;
+  renting?: Renting;
 };
 
 export type LendingRaw = Omit<
@@ -88,7 +88,8 @@ export type NftRaw = {
 };
 
 export type UserData = {
-  name: string;
+  name?: string;
+  bio?: string;
   favorites?: Record<string, boolean>;
 };
 
@@ -99,8 +100,8 @@ export type UsersVote = {
     [key: string]: {
       upvote?: number;
       downvote?: number;
-    } 
-  }
+    };
+  };
 };
 
 export type CalculatedUserVote = {
