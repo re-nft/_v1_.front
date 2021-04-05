@@ -38,14 +38,14 @@ const Lendings: React.FC = () => {
     setModalOpen(false);
     onReset();
     handleRefresh();
-  }, [setModalOpen]);
+  }, [setModalOpen, onReset]);
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {
       onSetCheckedItem(nft);
       setModalOpen(true);
     },
-    [setModalOpen]
+    [setModalOpen, onSetCheckedItem]
   );
 
   const handleBatchModalOpen = useCallback(() => {
@@ -76,6 +76,7 @@ const Lendings: React.FC = () => {
       onResetPage();
       return getUserNftsRequest.cancel();
     };
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {

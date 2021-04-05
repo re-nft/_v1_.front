@@ -41,14 +41,14 @@ class BatchProvider extends React.Component<Props, State> {
     items: [],
   };
 
-  handleReset = () => {
+  handleReset = (): void => {
     this.setState({
       checkedMap: {},
       checkedItems: [],
     });
   };
 
-  handleSetCheckedItem = (item: Nft) => {
+  handleSetCheckedItem = (item: Nft): void => {
     this.setState({ checkedItems: [item] });
   };
 
@@ -56,7 +56,7 @@ class BatchProvider extends React.Component<Props, State> {
     this.setState({ items });
   };
 
-  handleCheckboxChange = (name: string, checked: boolean) => {
+  handleCheckboxChange = (name: string, checked: boolean): void => {
     const { checkedItems, checkedMap, items } = this.state;
 
     const [address, tokenId] = name.split("::");
@@ -84,7 +84,7 @@ class BatchProvider extends React.Component<Props, State> {
     }
   };
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     // When component will unmount we should reset controller state
     this.handleReset();
   }

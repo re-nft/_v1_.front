@@ -44,15 +44,15 @@ const PAGE_SIZE = 20;
 class PageProvider extends React.Component<Props, State> {
   state: State = defaultSate;
 
-  handleReset = () => this.setState(defaultSate);
+  handleReset = (): void => this.setState(defaultSate);
 
-  onChangePage = (pageItems: Nft[]) => {
+  onChangePage = (pageItems: Nft[]): void => {
     const totalItems = pageItems.length || 0;
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
     this.setState({ pageItems, totalPages }, () => this.onSetPage(1));
   };
 
-  onSetPage = (pageNumber: number) => {
+  onSetPage = (pageNumber: number): void => {
     const { totalPages, pageItems } = this.state;
     const items = pageItems.slice(0);
 
@@ -74,7 +74,7 @@ class PageProvider extends React.Component<Props, State> {
     }
   };
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.handleReset();
   }
 

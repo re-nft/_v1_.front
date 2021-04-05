@@ -60,6 +60,9 @@ export const MyFavorites: React.FC = () => {
         }
       }
     );
+
+    return dataRequest.cancel;
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {

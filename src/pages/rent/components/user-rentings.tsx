@@ -84,6 +84,7 @@ const UserRentings: React.FC = () => {
       onResetPage();
       return getUserRentingRequest.cancel();
     };
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {

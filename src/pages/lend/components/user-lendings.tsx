@@ -78,6 +78,7 @@ const UserLendings: React.FC = () => {
       onResetPage();
       return getUserLendingRequest.cancel();
     };
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {

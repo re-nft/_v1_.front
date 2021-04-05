@@ -100,6 +100,7 @@ export const Dashboard: React.FC = () => {
     });
 
     return getUserLendingRequest.cancel;
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {

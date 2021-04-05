@@ -54,13 +54,16 @@ const AvailableToRent: React.FC = () => {
     setOpenBatchModel(false);
     onReset();
     handleRefresh();
-  }, []);
+  }, [onReset, setOpenBatchModel]);
 
-  const handleBatchModalOpen = useCallback((nft: Lending) => {
-    // @ts-ignore
-    onSetCheckedItem(nft);
-    setOpenBatchModel(true);
-  }, []);
+  const handleBatchModalOpen = useCallback(
+    (nft: Lending) => {
+      // @ts-ignore
+      onSetCheckedItem(nft);
+      setOpenBatchModel(true);
+    },
+    [onSetCheckedItem, setOpenBatchModel]
+  );
 
   const handleRent = useCallback(
     async (nft: Lending[], { rentDuration }: { rentDuration: string[] }) => {
@@ -118,6 +121,7 @@ const AvailableToRent: React.FC = () => {
       onResetPage();
       return getUsersLendingRequest.cancel();
     };
+    /* eslint-disable-next-line */
   }, []);
 
   if (isLoading) {
