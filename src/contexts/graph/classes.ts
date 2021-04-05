@@ -13,7 +13,7 @@ import { urlFromIPFS } from "../../utils";
 import { ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
-import {getFromIPFS} from '../../contexts/graph/ipfs';
+import { getFromIPFS } from "../../contexts/graph/ipfs";
 
 type NftOptions = {
   tokenURI?: string;
@@ -59,7 +59,6 @@ class Nft {
     try {
       _contract = ERC721__factory.connect(this.address, this.signer);
       this.isERC721 = true;
-      // console.log("instantiated erc721", _contract);
     } catch {
       _contract = ERC1155__factory.connect(this.address, this.signer);
     }
@@ -72,12 +71,14 @@ class Nft {
     if (!this._contract) this.contract();
     try {
       if (this.isERC721) {
-        return await this.contract().tokenURI(ethers.BigNumber.from(this.tokenId));
+        return await this.contract().tokenURI(
+          ethers.BigNumber.from(this.tokenId)
+        );
       } else {
         return await this.contract().uri();
       }
-    } catch(err) {
-      console.warn(' loadTokenURI ', err);
+    } catch (err) {
+      console.warn(" loadTokenURI ", err);
     }
   };
 }
