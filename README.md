@@ -2,6 +2,7 @@
 
 Welcome to ReNFT's humble abode, where magix happens!
 
+
 ## Table of Contents
 
 - [Rent NFT](#rent-nft)
