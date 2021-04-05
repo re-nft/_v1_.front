@@ -36,6 +36,14 @@ const UserLendings: React.FC = () => {
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const handleReset = useCallback(() => {
+    getUserLending().then((userLnding: Lending[] | undefined) => {
+      onChangePage(userLnding || []);
+      onSetItems(userLnding || []);
+      setIsLoading(false);
+    });
+  }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
+
   const handleStopLend = useCallback(
     async (nfts: Nft[]) => {
       if (!renft) return;
@@ -54,14 +62,6 @@ const UserLendings: React.FC = () => {
   const handleBatchStopnLend = useCallback(async () => {
     handleStopLend(checkedItems);
   }, [handleStopLend, checkedItems]);
-
-  const handleReset = () => {
-    getUserLending().then((userLnding: Lending[] | undefined) => {
-      onChangePage(userLnding || []);
-      onSetItems(userLnding || []);
-      setIsLoading(false);
-    });
-  };
 
   useEffect(() => {
     setIsLoading(true);

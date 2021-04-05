@@ -35,7 +35,7 @@ export const Dashboard: React.FC = () => {
     DashboardViewType.LIST_VIEW
   );
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     Promise.all([getUserLending(), getUserRenting()]).then(
       ([userLnding, userRenting]) => {
         setLendingItems(userLnding || []);
@@ -43,7 +43,13 @@ export const Dashboard: React.FC = () => {
         setIsLoading(false);
       }
     );
-  };
+  }, [
+    getUserLending,
+    getUserRenting,
+    setLendingItems,
+    setRentingItems,
+    setIsLoading,
+  ]);
 
   const handleClaimCollateral = useCallback(
     async (lending: Lending) => {

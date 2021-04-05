@@ -70,7 +70,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       setHash(tx.hash);
       onClose();
     },
-    [nft, renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
+    [renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
   );
 
   const handleApproveAll = useCallback(async () => {

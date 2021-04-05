@@ -12,7 +12,7 @@ class ActionButton<T extends Nft> extends React.Component<
 > {
   onClickHandler = (): void => this.props.onClick(this.props.nft);
 
-  render() {
+  render(): JSX.Element {
     const { title } = this.props;
     return (
       <div className="nft__control">

@@ -52,7 +52,7 @@ class BatchProvider extends React.Component<Props, State> {
     this.setState({ checkedItems: [item] });
   };
 
-  handleSetItems = (items: Nft[]) => {
+  handleSetItems = (items: Nft[]): void => {
     this.setState({ items });
   };
 

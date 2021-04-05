@@ -50,11 +50,20 @@ const AvailableToRent: React.FC = () => {
   const { getUsersLending } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    getUsersLending().then((items: Lending[] | undefined) => {
+      onChangePage(items || []);
+      onSetItems(items || []);
+      setIsLoading(false);
+    });
+  }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
+
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
     onReset();
     handleRefresh();
-  }, [onReset, setOpenBatchModel]);
+  }, [onReset, setOpenBatchModel, handleRefresh]);
 
   const handleBatchModalOpen = useCallback(
     (nft: Lending) => {
@@ -90,15 +99,6 @@ const AvailableToRent: React.FC = () => {
     },
     [renft, currentAddress, signer, resolver, myERC20]
   );
-
-  const handleRefresh = () => {
-    setIsLoading(true);
-    getUsersLending().then((items: Lending[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    });
-  };
 
   const handleBatchRent = useCallback(() => {
     setOpenBatchModel(true);

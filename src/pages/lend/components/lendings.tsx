@@ -34,11 +34,20 @@ const Lendings: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const handleRefresh = useCallback(() => {
+    setIsLoading(true);
+    getUserNfts().then((items: Nft[] | undefined) => {
+      onChangePage(items || []);
+      onSetItems(items || []);
+      setIsLoading(false);
+    });
+  }, [setIsLoading, getUserNfts, onChangePage, onSetItems, setIsLoading]);
+
   const handleClose = useCallback(() => {
     setModalOpen(false);
     onReset();
     handleRefresh();
-  }, [setModalOpen, onReset]);
+  }, [setModalOpen, onReset, handleRefresh]);
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {
@@ -51,15 +60,6 @@ const Lendings: React.FC = () => {
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
-
-  const handleRefresh = () => {
-    setIsLoading(true);
-    getUserNfts().then((items: Nft[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    });
-  };
 
   useEffect(() => {
     setIsLoading(true);

@@ -46,7 +46,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     if (status === 1) {
       setIsApproved(true);
     }
-  }, [currentAddress, renft, provider, setHash, setIsApproved, nft]);
+  }, [currentAddress, renft, provider, setHash, setIsApproved, nfts]);
 
   useEffect(() => {
     if (!renft || !currentAddress) return;

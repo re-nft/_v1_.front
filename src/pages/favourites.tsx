@@ -15,7 +15,7 @@ export const MyFavorites: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
 
-  const refreshState = () => {
+  const refreshState = useCallback(() => {
     Promise.all([getUserNfts(), getUserData()]).then(
       ([nfts, userData]: [
         nfts: Nft[] | undefined,
@@ -29,7 +29,7 @@ export const MyFavorites: React.FC = () => {
         }
       }
     );
-  };
+  }, [getUserNfts, getUserData, setNftItems, setIsLoading]);
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
@@ -40,7 +40,7 @@ export const MyFavorites: React.FC = () => {
         }
       );
     },
-    [setIsLoading, refreshState]
+    [setIsLoading, refreshState, currentAddress]
   );
 
   useEffect(() => {
