@@ -78,7 +78,7 @@ class PageProvider extends React.Component<Props, State> {
     this.handleReset();
   }
 
-  render() {
+  render(): JSX.Element {
     const { currentPage, currentPageNumber, totalPages } = this.state;
     const contextValues: PageContextType = {
       currentPage,

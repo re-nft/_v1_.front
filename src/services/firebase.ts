@@ -29,7 +29,7 @@ firebase.initializeApp(config);
 
 const database = firebase.database();
 
-export const nftId = (nftAddress: Address, tokenId: string) => {
+export const nftId = (nftAddress: Address, tokenId: string): string => {
   return `${nftAddress}::${tokenId}`;
 };
 

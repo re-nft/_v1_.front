@@ -89,7 +89,7 @@ class BatchProvider extends React.Component<Props, State> {
     this.handleReset();
   }
 
-  render() {
+  render(): JSX.Element {
     const { checkedItems, checkedMap } = this.state;
     const contextValues: BatchContextType = {
       checkedItems,

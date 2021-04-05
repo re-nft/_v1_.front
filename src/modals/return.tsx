@@ -35,7 +35,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     if (isSuccess) {
       onClose();
     }
-  }, [renft, setHash, nfts]);
+  }, [renft, setHash, nfts, nft, onClose]);
 
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || !provider) return;
@@ -57,7 +57,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
       .catch((e) => {
         console.warn(e);
       });
-  }, [nfts, currentAddress, setIsApproved]);
+  }, [nfts, currentAddress, setIsApproved, renft]);
 
   return (
     <Modal open={open} handleClose={onClose}>

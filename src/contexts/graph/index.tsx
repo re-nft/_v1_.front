@@ -335,7 +335,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         setUserData(userData);
       }
     });
-  }, []);
+  }, [getUserData]);
 
   useEffect(() => {
     if (currentAddress) {

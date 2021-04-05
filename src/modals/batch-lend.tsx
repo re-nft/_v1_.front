@@ -40,6 +40,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const [isApproved, setIsApproved] = useState<boolean>();
   const [nft] = nfts;
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
+
   const handleLend = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -69,7 +70,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       setHash(tx.hash);
       onClose();
     },
-    [nft, renft, setHash, onClose, isActive, lendOneInputs, pmtToken]
+    [nft, renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
   );
 
   const handleApproveAll = useCallback(async () => {
@@ -81,7 +82,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     if (status === 1) {
       setIsApproved(true);
     }
-  }, [currentAddress, renft, isActive, setHash, provider, setIsApproved]);
+  }, [currentAddress, renft, isActive, setHash, provider, setIsApproved, nfts]);
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {
@@ -124,7 +125,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       .catch((e) => {
         console.warn(e);
       });
-  }, [nfts, currentAddress, setIsApproved]);
+  }, [nfts, currentAddress, setIsApproved, renft]);
 
   return (
     <Modal open={open} handleClose={onClose}>

@@ -35,6 +35,16 @@ export const Dashboard: React.FC = () => {
     DashboardViewType.LIST_VIEW
   );
 
+  const handleRefresh = () => {
+    Promise.all([getUserLending(), getUserRenting()]).then(
+      ([userLnding, userRenting]) => {
+        setLendingItems(userLnding || []);
+        setRentingItems(userRenting || []);
+        setIsLoading(false);
+      }
+    );
+  };
+
   const handleClaimCollateral = useCallback(
     async (lending: Lending) => {
       if (!renft) return;
@@ -43,7 +53,7 @@ export const Dashboard: React.FC = () => {
       await setHash(tx.hash);
       handleRefresh();
     },
-    [renft, setHash]
+    [renft, setHash, handleRefresh]
   );
 
   const handleStopLend = useCallback(
@@ -54,18 +64,8 @@ export const Dashboard: React.FC = () => {
       await setHash(tx.hash);
       handleRefresh();
     },
-    [renft, setHash]
+    [renft, setHash, handleRefresh]
   );
-
-  const handleRefresh = () => {
-    Promise.all([getUserLending(), getUserRenting()]).then(
-      ([userLnding, userRenting]) => {
-        setLendingItems(userLnding || []);
-        setRentingItems(userRenting || []);
-        setIsLoading(false);
-      }
-    );
-  };
 
   const _returnBy = (lending: Lending) =>
     returnBy(
@@ -83,8 +83,6 @@ export const Dashboard: React.FC = () => {
         : DashboardViewType.LIST_VIEW
     );
   }, []);
-
-  //lenderAddress
 
   useEffect(() => {
     setIsLoading(true);
