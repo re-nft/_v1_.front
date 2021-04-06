@@ -15,15 +15,15 @@ import { Faucet__factory } from "./typechain/factories/Faucet__factory";
 import MyERC1155Deployment from "./deployments/localhost/MyERC1155.json";
 import { MyERC1155 } from "./typechain/MyERC1155";
 import { MyERC1155__factory } from "./typechain/factories/MyERC1155__factory";
+import MyERC20Deployment from "./deployments/localhost/MyERC20.json";
+import { MyERC20 } from "./typechain/MyERC20";
+import { MyERC20__factory } from "./typechain/factories/MyERC20__factory";
 import UtilsDeployment from "./deployments/localhost/Utils.json";
 import { Utils } from "./typechain/Utils";
 import { Utils__factory } from "./typechain/factories/Utils__factory";
 import MyERC721Deployment from "./deployments/localhost/MyERC721.json";
 import { MyERC721 } from "./typechain/MyERC721";
 import { MyERC721__factory } from "./typechain/factories/MyERC721__factory";
-import MyERC20Deployment from "./deployments/localhost/MyERC20.json";
-import { MyERC20 } from "./typechain/MyERC20";
-import { MyERC20__factory } from "./typechain/factories/MyERC20__factory";
 import { ERC1155 } from "./typechain/ERC1155";
 import { ERC1155__factory } from "./typechain/factories/ERC1155__factory";
 import { ERC20 } from "./typechain/ERC20";
@@ -74,11 +74,11 @@ export const FaucetContext = React.createContext<SymfoniFaucet>(emptyContract);
 export const MyERC1155Context = React.createContext<SymfoniMyERC1155>(
   emptyContract
 );
-export const UtilsContext = React.createContext<SymfoniUtils>(emptyContract);
-export const MyERC721Context = React.createContext<SymfoniMyERC721>(
+export const MyERC20Context = React.createContext<SymfoniMyERC20>(
   emptyContract
 );
-export const MyERC20Context = React.createContext<SymfoniMyERC20>(
+export const UtilsContext = React.createContext<SymfoniUtils>(emptyContract);
+export const MyERC721Context = React.createContext<SymfoniMyERC721>(
   emptyContract
 );
 export const ERC1155Context = React.createContext<SymfoniERC1155>(
@@ -124,6 +124,11 @@ export interface SymfoniMyERC1155 {
   factory?: MyERC1155__factory;
 }
 
+export interface SymfoniMyERC20 {
+  instance?: MyERC20;
+  factory?: MyERC20__factory;
+}
+
 export interface SymfoniUtils {
   instance?: Utils;
   factory?: Utils__factory;
@@ -132,11 +137,6 @@ export interface SymfoniUtils {
 export interface SymfoniMyERC721 {
   instance?: MyERC721;
   factory?: MyERC721__factory;
-}
-
-export interface SymfoniMyERC20 {
-  instance?: MyERC20;
-  factory?: MyERC20__factory;
 }
 
 export interface SymfoniERC1155 {
@@ -184,9 +184,9 @@ export const Symfoni: React.FC<SymfoniProps> = ({
   const [Resolver, setResolver] = useState<SymfoniResolver>(emptyContract);
   const [Faucet, setFaucet] = useState<SymfoniFaucet>(emptyContract);
   const [MyERC1155, setMyERC1155] = useState<SymfoniMyERC1155>(emptyContract);
+  const [MyERC20, setMyERC20] = useState<SymfoniMyERC20>(emptyContract);
   const [Utils, setUtils] = useState<SymfoniUtils>(emptyContract);
   const [MyERC721, setMyERC721] = useState<SymfoniMyERC721>(emptyContract);
-  const [MyERC20, setMyERC20] = useState<SymfoniMyERC20>(emptyContract);
   const [ERC1155, setERC1155] = useState<SymfoniERC1155>(emptyContract);
   const [ERC20, setERC20] = useState<SymfoniERC20>(emptyContract);
   const [ERC721, setERC721] = useState<SymfoniERC721>(emptyContract);
@@ -288,9 +288,9 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         setResolver(getResolver(_provider, _signer));
         setFaucet(getFaucet(_provider, _signer));
         setMyERC1155(getMyERC1155(_provider, _signer));
+        setMyERC20(getMyERC20(_provider, _signer));
         setUtils(getUtils(_provider, _signer));
         setMyERC721(getMyERC721(_provider, _signer));
-        setMyERC20(getMyERC20(_provider, _signer));
         setERC1155(getERC1155(_provider, _signer));
         setERC20(getERC20(_provider, _signer));
         setERC721(getERC721(_provider, _signer));
@@ -378,6 +378,17 @@ export const Symfoni: React.FC<SymfoniProps> = ({
     };
     return contract;
   };
+  const getMyERC20 = (_provider: providers.Provider, _signer?: Signer) => {
+    const contractAddress = MyERC20Deployment.receipt.contractAddress;
+    const instance = _signer
+      ? MyERC20__factory.connect(contractAddress, _signer)
+      : MyERC20__factory.connect(contractAddress, _provider);
+    const contract: SymfoniMyERC20 = {
+      instance: instance,
+      factory: _signer ? new MyERC20__factory(_signer) : undefined,
+    };
+    return contract;
+  };
   const getUtils = (_provider: providers.Provider, _signer?: Signer) => {
     const contractAddress = UtilsDeployment.receipt.contractAddress;
     const instance = _signer
@@ -397,17 +408,6 @@ export const Symfoni: React.FC<SymfoniProps> = ({
     const contract: SymfoniMyERC721 = {
       instance: instance,
       factory: _signer ? new MyERC721__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getMyERC20 = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = MyERC20Deployment.receipt.contractAddress;
-    const instance = _signer
-      ? MyERC20__factory.connect(contractAddress, _signer)
-      : MyERC20__factory.connect(contractAddress, _provider);
-    const contract: SymfoniMyERC20 = {
-      instance: instance,
-      factory: _signer ? new MyERC20__factory(_signer) : undefined,
     };
     return contract;
   };
@@ -480,9 +480,9 @@ export const Symfoni: React.FC<SymfoniProps> = ({
               <ResolverContext.Provider value={Resolver}>
                 <FaucetContext.Provider value={Faucet}>
                   <MyERC1155Context.Provider value={MyERC1155}>
-                    <UtilsContext.Provider value={Utils}>
-                      <MyERC721Context.Provider value={MyERC721}>
-                        <MyERC20Context.Provider value={MyERC20}>
+                    <MyERC20Context.Provider value={MyERC20}>
+                      <UtilsContext.Provider value={Utils}>
+                        <MyERC721Context.Provider value={MyERC721}>
                           <ERC1155Context.Provider value={ERC1155}>
                             <ERC20Context.Provider value={ERC20}>
                               <ERC721Context.Provider value={ERC721}>
@@ -506,9 +506,9 @@ export const Symfoni: React.FC<SymfoniProps> = ({
                               </ERC721Context.Provider>
                             </ERC20Context.Provider>
                           </ERC1155Context.Provider>
-                        </MyERC20Context.Provider>
-                      </MyERC721Context.Provider>
-                    </UtilsContext.Provider>
+                        </MyERC721Context.Provider>
+                      </UtilsContext.Provider>
+                    </MyERC20Context.Provider>
                   </MyERC1155Context.Provider>
                 </FaucetContext.Provider>
               </ResolverContext.Provider>

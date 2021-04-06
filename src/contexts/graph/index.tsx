@@ -290,10 +290,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     const renftAll = await fetchRenftsAll();
     if (renftAll) {
       const userRenting = await fetchUserRenting();
-      return Object.values(renftAll.lending).filter((item: Lending) => {
-        const id = `${item.address}::${item.id}`;
-        return !userRenting?.includes(id);
-      });
+      return Object.values(renftAll.lending)
+        .filter((item: Lending) => {
+          const id = `${item.address}::${item.id}`;
+          return !userRenting?.includes(id);
+        })
+        .filter(
+          (item: Lending) => item.lending.lenderAddress !== currentAddress
+        );
     }
 
     return undefined;

@@ -13,6 +13,7 @@ import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import LendingFields from "../../../components/lending-fields";
 
 const UserLendings: React.FC = () => {
   const {
@@ -52,7 +53,7 @@ const UserLendings: React.FC = () => {
       onReset();
       handleReset();
     },
-    [renft, setHash]
+    [renft, setHash, handleReset]
   );
 
   const handleClickNft = useCallback(async (nft: Nft) => {
@@ -88,17 +89,18 @@ const UserLendings: React.FC = () => {
   if (!isLoading && currentPage.length === 0) {
     return <div className="center">You dont have any lend anything yet</div>;
   }
-
+  console.log(currentPage);
   return (
     <>
       <ItemWrapper>
-        {currentPage.map((nft) => (
+        {((currentPage as any) as Lending[]).map((nft: Lending) => (
           <CatalogueItem
             key={`${nft.address}::${nft.tokenId}`}
             checked={checkedMap[nft.tokenId] || false}
             nft={nft}
             onCheckboxChange={onCheckboxChange}
           >
+            <LendingFields nft={nft} />
             <ActionButton<Nft>
               nft={nft}
               title="Stop Lending"

@@ -7,7 +7,6 @@ import {
   // todo: remove for prod
   MyERC20Context,
 } from "../../../hardhat/SymfoniContext";
-import NumericField from "../../../components/numeric-field";
 import { PaymentToken } from "../../../types";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -15,13 +14,15 @@ import BatchRentModal from "../../../modals/batch-rent";
 import ActionButton from "../../../components/action-button";
 import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
+import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
-import { Lending } from "../../../contexts/graph/classes";
+import { Lending, Nft } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import LendingFields from "../../../components/lending-fields";
 
 const AvailableToRent: React.FC = () => {
   const {
@@ -49,6 +50,7 @@ const AvailableToRent: React.FC = () => {
   const { instance: myERC20 } = useContext(MyERC20Context);
   const { getUsersLending } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isActive, setHash } = useContext(TransactionStateContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -82,12 +84,13 @@ const AvailableToRent: React.FC = () => {
         !renft ||
         !signer ||
         !resolver ||
-        !myERC20
+        !myERC20 ||
+        isActive
       )
         return;
 
       const pmtToken = PaymentToken.DAI;
-      await startRent(
+      const tx = await startRent(
         renft,
         nft,
         resolver,
@@ -96,8 +99,11 @@ const AvailableToRent: React.FC = () => {
         rentDuration,
         pmtToken
       );
+      // @ts-ignore
+      setHash(tx.hash);
+      handleBatchModalClose();
     },
-    [renft, currentAddress, signer, resolver, myERC20]
+    [renft, currentAddress, signer, resolver, myERC20, isActive, setHash]
   );
 
   const handleBatchRent = useCallback(() => {
@@ -148,21 +154,7 @@ const AvailableToRent: React.FC = () => {
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
           >
-            <NumericField
-              text="Daily price"
-              value={String(nft.lending.dailyRentPrice)}
-              unit={PaymentToken[nft.lending.paymentToken]}
-            />
-            <NumericField
-              text="Max duration"
-              value={String(nft.lending.maxRentDuration)}
-              unit="days"
-            />
-            <NumericField
-              text="Collateral"
-              value={String(nft.lending.nftPrice)}
-              unit={PaymentToken[nft.lending.paymentToken]}
-            />
+            <LendingFields nft={nft} />
             <ActionButton<Lending>
               onClick={handleBatchModalOpen}
               nft={nft}

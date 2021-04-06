@@ -3,6 +3,7 @@ import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "../types";
+import { getLendingPriceByCurreny } from "../utils";
 
 type BatchRentModalProps = {
   open: boolean;
@@ -46,7 +47,6 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       e.preventDefault();
       const rentDuration = Object.values(duration);
       onSubmit(nft, { rentDuration });
-      handleClose();
     },
     [nft, duration, handleClose, onSubmit]
   );
@@ -55,6 +55,16 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         {nft.map((item: Lending) => {
+          const token = item.lending.paymentToken;
+          const paymentToken = PaymentToken[token];
+          const dailyRentPrice = getLendingPriceByCurreny(
+            item.lending.dailyRentPrice,
+            token
+          );
+          const nftPrice = getLendingPriceByCurreny(
+            item.lending.nftPrice,
+            token
+          );
           return (
             <div
               className="modal-dialog-section"
@@ -79,16 +89,14 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                   <div className="nft__meta_title">Daily rent price</div>
                   <div className="nft__meta_dot"></div>
                   <div className="nft__meta_value">
-                    {item.lending.dailyRentPrice}{" "}
-                    {PaymentToken[item.lending.paymentToken]}
+                    {dailyRentPrice} {paymentToken}
                   </div>
                 </div>
                 <div className="nft__meta_row">
                   <div className="nft__meta_title">Collateral</div>
                   <div className="nft__meta_dot"></div>
                   <div className="nft__meta_value">
-                    {item.lending.nftPrice}{" "}
-                    {PaymentToken[item.lending.paymentToken]}
+                    {nftPrice} {paymentToken}
                   </div>
                 </div>
                 <div className="nft__meta_row">
@@ -97,15 +105,18 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                   </div>
                   <div className="nft__meta_dot"></div>
                   <div className="nft__meta_value">
-                    {item.lending.dailyRentPrice}
+                    {dailyRentPrice}
                     {` x ${
                       !duration[item.tokenId] ? "?" : duration[item.tokenId]
-                    } days + ${item.lending.nftPrice} = ${
+                    } days + ${nftPrice} = ${
                       totalRent[item.tokenId]
-                        ? totalRent[item.tokenId].toFixed(4)
+                        ? getLendingPriceByCurreny(
+                            totalRent[item.tokenId],
+                            token
+                          )
                         : "? "
                     }`}
-                    {` ${PaymentToken[item.lending.paymentToken]}`}
+                    {` ${paymentToken}`}
                   </div>
                 </div>
               </div>

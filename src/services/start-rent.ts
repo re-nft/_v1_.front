@@ -1,6 +1,5 @@
 import { RentNft } from "../hardhat/typechain/RentNft";
-import { Signer } from "ethers";
-import { ethers } from "ethers";
+import { Signer, ContractTransaction, ethers } from "ethers";
 import { PaymentToken } from "../types";
 import { Nft, Lending } from "../contexts/graph/classes";
 import { Resolver } from "../hardhat/typechain/Resolver";
@@ -15,7 +14,7 @@ export default async function startRent(
   signer: Signer,
   rentDurations: string[],
   pmtToken: PaymentToken
-): Promise<void> {
+): Promise<ContractTransaction | undefined> {
   const amountPayable = nft.reduce((sum, item, index) => {
     const dailyRentPrice = item.lending.dailyRentPrice;
     const collateral = item.lending.nftPrice;
@@ -30,33 +29,33 @@ export default async function startRent(
   const durations = rentDurations.map((x) => Number(x));
 
   if (isETHPayment) {
-    await renft.rent(addresses, tokenIds, lendingIds, durations, {
+    return await renft.rent(addresses, tokenIds, lendingIds, durations, {
       value: amountPayable,
     });
-  } else {
-    const erc20Address = await resolver.getPaymentToken(pmtToken);
-
-    if (!erc20Address) {
-      console.warn("could not fetch address for payment token");
-      return;
-    }
-    const erc20 = getERC20(erc20Address, signer);
-
-    if (!erc20) {
-      console.warn("could not fetch erc20 contract");
-      return;
-    }
-
-    const allowance = await erc20.allowance(currentAddress, renft.address);
-
-    const notEnough = ethers.utils
-      .parseEther(String(amountPayable))
-      .gt(allowance);
-
-    if (notEnough) {
-      await erc20.approve(renft.address, MAX_UINT256);
-    }
-
-    await renft.rent(addresses, tokenIds, lendingIds, durations);
   }
+
+  const erc20Address = await resolver.getPaymentToken(pmtToken);
+
+  if (!erc20Address) {
+    console.warn("could not fetch address for payment token");
+    return undefined;
+  }
+  const erc20 = getERC20(erc20Address, signer);
+
+  if (!erc20) {
+    console.warn("could not fetch erc20 contract");
+    return undefined;
+  }
+
+  const allowance = await erc20.allowance(currentAddress, renft.address);
+
+  const notEnough = ethers.utils
+    .parseEther(String(amountPayable))
+    .gt(allowance);
+
+  if (notEnough) {
+    await erc20.approve(renft.address, MAX_UINT256);
+  }
+
+  return await renft.rent(addresses, tokenIds, lendingIds, durations);
 }

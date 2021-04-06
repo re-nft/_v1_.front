@@ -11,6 +11,7 @@ import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
 import { RentNftContext } from "../hardhat/SymfoniContext";
+import { getLendingPriceByCurreny } from "../utils";
 import { short } from "../utils";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
@@ -161,8 +162,18 @@ export const Dashboard: React.FC = () => {
                         </td>
                         <td className="column">{lending.maxRentDuration}</td>
                         <td className="column">-//-</td>
-                        <td className="column">{lending.nftPrice}</td>
-                        <td className="column">{lending.dailyRentPrice}</td>
+                        <td className="column">
+                          {getLendingPriceByCurreny(
+                            lending.nftPrice,
+                            lending.paymentToken
+                          )}
+                        </td>
+                        <td className="column">
+                          {getLendingPriceByCurreny(
+                            lending.dailyRentPrice,
+                            lending.paymentToken
+                          )}
+                        </td>
                         <td className="action-column">
                           {_claim(lend) && (
                             <span

@@ -167,6 +167,18 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
+export const getLendingPriceByCurreny = (
+  price: number,
+  token: PaymentToken
+): string => {
+  switch (token) {
+    case PaymentToken.DAI:
+      return String(parseInt(String(price * 10000), 10));
+    default:
+      return String(price);
+  }
+};
+
 // ! must be the same as in packages/contracts/src/Resolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
@@ -221,7 +233,8 @@ export const getContract = async (
   return { contract, isERC721 };
 };
 
-export const urlFromIPFS = (uri: string): boolean => (uri || '').startsWith('/ipfs/') || (uri || '').startsWith('ipfs://ipfs');
+export const urlFromIPFS = (uri: string): boolean =>
+  (uri || "").startsWith("/ipfs/") || (uri || "").startsWith("ipfs://ipfs");
 
 export const toDataURLFromBlob = (
   blob: Blob
