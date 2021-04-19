@@ -1,12 +1,20 @@
 import { RentNft } from "../hardhat/typechain/RentNft";
 import { ContractTransaction } from "ethers";
-import {Nft} from '../contexts/graph/classes';
+import { Nft } from "../contexts/graph/classes";
 
-export default async function setApprovalForAll(renft: RentNft, nfts: Nft[]): Promise<ContractTransaction[]> {
-    const result = await Promise.all(nfts.map(nft => {
-        const contract = nft.contract();
-        return contract.setApprovalForAll(renft.address, true);
-    }));
+export default async function setApprovalForAll(
+  renft: RentNft,
+  nfts: Nft[]
+): Promise<ContractTransaction[]> {
+  const distinctItems = nfts.filter(
+    (item, index, all) =>
+      all.findIndex((nft) => nft.address === item.address) === index
+  );
 
-    return result;
+  return await Promise.all(
+    distinctItems.map((nft) => {
+      const contract = nft.contract();
+      return contract.setApprovalForAll(renft.address, true);
+    })
+  );
 }

@@ -14,7 +14,7 @@ const minimalSelectStyles = () => ({
     paddingLeft: 24,
     paddingTop: 14,
     paddingBottom: 15,
-    border: '3px solid #996fc8',
+    border: "3px solid #996fc8",
     "&:focus": {
       borderRadius: 4,
       background: "#eee6f6",

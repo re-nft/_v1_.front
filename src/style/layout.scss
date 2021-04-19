@@ -29,15 +29,6 @@
     border-bottom: 2px solid #fff;
 }
 
-.no-cats {
-    font-size: 24px;
-    color: #fff;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
 .content-wrapper.footer-content {
     line-height: 1;
     padding: 24px 0;
@@ -46,28 +37,18 @@
     align-items: center;
 }
 
-.copy {
-    flex-grow: 1;
-}
+.text-content {
+    padding: 32px;
+    font-size: 24px;
+    color: #fff;
 
-.soc {
-    display: flex;
-}
+    .bolder {
+        text-transform: uppercase;
+    }
 
-.discord {
-    background: url(./img/discord.png);
-    width: 64px;
-    height: 64px;
-    display: block;
-    background-size: 64px 64px;
-}
-
-.twitter {
-    background: url(./img/twitter.png);
-    width: 64px;
-    height: 64px;
-    display: block;
-    background-size: 64px 64px;
+    p {
+        margin-bottom: 16px;
+    }
 }
 
 .main {
@@ -88,7 +69,7 @@
 
 .content-wrapper {
     position: relative;
-    max-width: 1200px;
+    max-width: 1320px;
     width: 100%;
     margin: 0 auto;
     display: flex;
@@ -143,7 +124,7 @@
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    padding: 16px;
+    padding: 16px 0;
     min-height: 250px;
 
     &__navigation {
@@ -151,6 +132,7 @@
         display: flex;
         flex-direction: row;
         box-sizing: border-box;
+        padding: 0 24px;
     }
 
     &__items {
@@ -163,249 +145,76 @@
     }
 }
 
-.switch {
+.header {
+    width: 100%;
     display: flex;
+    flex-direction: row;
     align-items: center;
-
-    &__title {
-        font-size: 22px;
-        color: #fff;
-        padding-right: 16px;
+  
+    &__user {
+      background: #fdfff9;
+      color: #9c65cd;
+      border: 4px solid #000;
+      text-align: center;
+      font-size: 18px;
+      padding: 8px 18px;
+      line-height: 1;
+      box-shadow: 6px 6px 0 #000;
     }
-}
-
-.toggle {
-    position: relative;
-    width: 80px;
-    height: 40px;
-    background: #000;
-
-    &__pin {
-        position: absolute;
-        cursor: pointer;
-        top: -2px;
-        left: -2px;
-        width: 36px;
-        height: 36px;
-        transition: all 250ms;
-        background: #36cba5;
-        box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c, 1px 1px 0 #299b7c;
+  
+    &__logo {
+      background-image: url(./img/logo.jpg);
+      background-size: auto 90px;
+      background-repeat: no-repeat;
+      height: 90px;
+      width: 290px;
+      flex-grow: 1;
     }
+  }
 
-    &__active {
-        .toggle__pin {
-            left: 38px;
-        }
-    }
-}
-
-.nft {
-    position: relative;
-    //width: 300px;
-    width: 200px;
-    display: flex;
-    margin: 0 32px 48px;
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
     color: #fff;
-    font-size: 21px;
-    flex-direction: column;
-    z-index: 1;
-
-    &:hover {
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 104%;
-            height: 104%;
-            box-shadow: 5px 15px 0 #000;
-        }
-    }
-
-    &__image {
-        width: 100%;
-        // height: 370px;
-        height: 140px;
-        display: flex;
-        justify-content: center;
-        background: #fff;
-        box-shadow: 5px 5px 0 #000;
-        overflow: hidden;
-        margin-bottom: 12px;
-
-        img {
-            height: auto;
-        }
-    }
-
-    &__meta {
-    
-        &_row {
-            display: flex;
-            box-sizing: border-box;
-            align-items: baseline;
-        }
-
-        &_value {
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            a {
-                color: #fff;
-                text-decoration: none;
-            }
-        }
-
-        &_dot {
-            flex-grow: 1;
-            border-bottom: 2px dotted #fff;
-            margin: 0 8px;
-        }
-        
-    }
-
-    &__control {
-        text-align: center;
-        padding-top: 12px;
-    }
-
-    .no-img {
-        color: #000;
-        font-size: 40px;
-        line-height: 370px;
-        transform: rotate(45deg);
-    }
-
-    &__vote_buttons {
-        flex-grow: 1;
-        padding-top: 12px;
-    }
-
-    &__button_vote {
-        position: relative;
-        border: none;
-        cursor: pointer;
-        transition: all 250ms;
-        color: #fff;
-        font-family: 'VT323';
-        line-height: 1;
-        font-size: 28px;
-        text-transform: uppercase;
-        outline: none;
-        padding: 5px 12px;
-
-        &-plus {
-            background: #30cea4;
-            box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492, 2px 2px 0 #33b492, 1px 1px 0 #33b492;
-        }
-
-        &-minus {
-            background: #d8401b;
-            box-shadow: 5px 5px 0 #b43333, 4px 4px 0 #b43333, 3px 3px 0 #b43333, 2px 2px 0 #b43333, 1px 1px 0 #b43333;
-        }
-
-        &:hover {
-            background: #fc9706;
-            box-shadow: 5px 5px 0 #f58901, 4px 4px 0 #f58901, 3px 3px 0 #f58901, 2px 2px 0 #f58901, 1px 1px 0 #f58901;
-        }
-
-        &:active {
-            background: #9867cb;
-            box-shadow: 5px 5px 0 #8349be, 4px 4px 0 #8349be, 3px 3px 0 #8349be, 2px 2px 0 #8349be, 1px 1px 0 #8349be;
-        }
-        
-        &:before {
-            content: '';
-            display: block;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            box-shadow: 10px 10px #000, 0px 10px #000, 10px 0px #000;
-        }
-    }
-
-    &__checkbox {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
-    &__button {
-        position: relative;
-        background: #30cea4;
-        border: none;
-        cursor: pointer;
-        transition: all 250ms;
-        color: #fff;
-        font-family: 'VT323';
-        line-height: 1;
-        font-size: 28px;
-        text-transform: uppercase;
-        outline: none;
-        padding: 5px 12px;
-        box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492, 2px 2px 0 #33b492, 1px 1px 0 #33b492;
-        
-        &:hover {
-            background: #fc9706;
-            box-shadow: 5px 5px 0 #f58901, 4px 4px 0 #f58901, 3px 3px 0 #f58901, 2px 2px 0 #f58901, 1px 1px 0 #f58901;
-        }
-
-        &:active {
-            background: #9867cb;
-            box-shadow: 5px 5px 0 #8349be, 4px 4px 0 #8349be, 3px 3px 0 #8349be, 2px 2px 0 #8349be, 1px 1px 0 #8349be;
-        }
-        
-        &:before {
-            content: '';
-            display: block;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            box-shadow: 10px 10px #000, 0px 10px #000, 10px 0px #000;
-        }
-    }
+    transform: translate(-50%, -50%);
+    font-size: 25px;
 }
 
-.button-groupe {
+.batch {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #9a65ca;
+    border-top: 8px solid #000;
+    width: 100%;
+    padding: 32px;
+    z-index: 9;
+}
+
+.batch__inner {
     display: flex;
     align-items: center;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 32px;
 
+    li {
+        margin: 0 8px;
 
-.checkbox {
-    position: relative;
-    width: 44px;
-    height: 44px;
-    background: #000;
-    cursor: pointer;
-    border: 8px solid #36cba5;
-    box-sizing: border-box;
-    transition: all 250ms;
-    box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c, 1px 1px 0 #299b7c;
-
-    &:hover {
-        background: #fc9706;
-    }
-
-    &.checked {
-        &:after {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            width: 28px;
-            height: 28px;
-            background: #fc9706;
-            z-index: 4;
-            box-shadow: 4px 4px 0 #f58901, 3px 3px 0 #f58901, 2px 2px 0 #f58901, 1px 1px 0 #f58901;
+        &.page-count {
+            color: #fff;
+            font-size: 28px;
         }
     }
+}
+
+.modal-dialog-title {
+    font-size: 24px;
+    text-align: center;
+    margin: 24px 0;
 }

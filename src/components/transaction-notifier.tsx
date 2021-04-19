@@ -15,23 +15,22 @@ export const TransactionNotifier: React.FC = () => {
 
   return (
     <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
-      <div
-        className="notifier">
-          {txnState === TransactionStateEnum.PENDING && <Loader />}
-          {txnState === TransactionStateEnum.FAILED && (
-            <div className="notifier-failed"></div>
-          )}
-          {txnState === TransactionStateEnum.SUCCESS && (
-            <div className="notifier-success"></div>
-          )}
-          <a
-            style={{ color: "#fff", fontSize: "24px" }}
-            href={`https://etherscan.io/tx/${hash}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {TransactionStateEnum[txnState]}
-          </a>
+      <div className="notifier">
+        {txnState === TransactionStateEnum.PENDING && <Loader />}
+        {txnState === TransactionStateEnum.FAILED && (
+          <div className="notifier-failed"></div>
+        )}
+        {txnState === TransactionStateEnum.SUCCESS && (
+          <div className="notifier-success"></div>
+        )}
+        <a
+          style={{ color: "#fff", fontSize: "24px" }}
+          href={`https://etherscan.io/tx/${hash}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {TransactionStateEnum[txnState]}
+        </a>
       </div>
     </Slide>
   );

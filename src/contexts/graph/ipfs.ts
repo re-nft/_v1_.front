@@ -10,8 +10,10 @@ export const ipfs = ipfsAPI({
 
 export const getFromIPFS = async (hashToGet: string) => {
   for await (const file of ipfs.get(hashToGet)) {
+    // @ts-ignore
     if (!file.content) continue;
     const content = new BufferList();
+    // @ts-ignore
     for await (const chunk of file.content) {
       content.append(chunk);
     }

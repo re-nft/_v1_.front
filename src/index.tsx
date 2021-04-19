@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-import App from "./App";
+import App from "./components/app-layout";
 import { GraphProvider } from "./contexts/graph/index";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
@@ -23,16 +23,14 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Symfoni>
-      <GraphProvider>
-        <TransactionStateProvider>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-        </TransactionStateProvider>
-      </GraphProvider>
-    </Symfoni>
-  </React.StrictMode>,
+  <Symfoni>
+    <GraphProvider>
+      <TransactionStateProvider>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </TransactionStateProvider>
+    </GraphProvider>
+  </Symfoni>,
   document.getElementById("root")
 );

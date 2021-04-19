@@ -1,0 +1,23 @@
+.copy {
+    flex-grow: 1;
+}
+
+.soc {
+    display: flex;
+}
+
+.discord {
+    background: url(./img/discord.png);
+    width: 48px;
+    height: 48px;
+    display: block;
+    background-size: 48px 48px;
+}
+
+.twitter {
+    background: url(./img/twitter.png);
+    width: 48px;
+    height: 48px;
+    display: block;
+    background-size: 48px 48px;
+}

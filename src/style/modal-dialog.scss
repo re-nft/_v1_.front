@@ -2,12 +2,28 @@
     background: rgb(238, 230, 246);
     border: 3px solid rgb(153, 111, 200);
     padding: 24px;
-    min-width: 400px;
+    min-width: 450px;
+
+    .nft__meta_row {
+        font-size: 21px;
+    }
+
+    .nft__meta_dot {
+        border-bottom: 2px dotted #000;
+    }
+
+    .nft__meta_value {
+        max-width: 320px;
+    }
 
     &-for {
         font-size: 20px;
         display: flex;
         align-items: baseline;
+        position: sticky;
+        background: #eee6f6;
+        top: 0;
+        z-index: 2;
 
         .dot {
             flex-grow: 1;
@@ -31,5 +47,6 @@
         bottom: 0;
         padding: 0 0 24px;
         z-index: 9;
+        text-align: center;
     }
 }

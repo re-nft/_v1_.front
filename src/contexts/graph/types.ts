@@ -5,9 +5,9 @@ export type NftToken = {
   tokenId: TokenId;
   tokenURI?: string;
   meta?: {
-    name: string;
-    image: string;
-    // * and more in fact
+    name?: string;
+    image?: string;
+    description?: string;
   };
 };
 
@@ -51,7 +51,7 @@ export type Lending = {
   nftPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
-  rentingId?: string;
+  renting?: Renting;
 };
 
 export type LendingRaw = Omit<
@@ -70,11 +70,13 @@ export type Renting = {
   rentDuration: number;
   rentedAt: number;
   lendingId: string;
+  lending: Lending;
 };
 
 export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
+  lending: LendingRaw;
 };
 
 export type NftRaw = {
@@ -83,4 +85,28 @@ export type NftRaw = {
     lending?: LendingRaw[];
     renting?: RentingRaw[];
   }[];
+};
+
+export type UserData = {
+  name?: string;
+  bio?: string;
+  favorites?: Record<string, boolean>;
+};
+
+export type UsersVote = {
+  // nftAddress}::tokenId
+  [key: string]: {
+    // userAddress: [-1, 1]
+    [key: string]: {
+      upvote?: number;
+      downvote?: number;
+    };
+  };
+};
+
+export type CalculatedUserVote = {
+  [key: string]: {
+    upvote: number;
+    downvote: number;
+  };
 };

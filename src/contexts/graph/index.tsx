@@ -3,31 +3,39 @@ import React, {
   useContext,
   useState,
   useCallback,
-  useMemo,
   useEffect,
 } from "react";
 import { request } from "graphql-request";
-
 import {
   CurrentAddressContext,
   RentNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
-// import { usePoller } from "../../hooks/usePoller";
-import {
-  RENFT_SUBGRAPH_ID_SEPARATOR,
-} from "../../consts";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";
 import { timeItAsync } from "../../utils";
-
+import createCancellablePromise from "../create-cancellable-promise";
 import {
   queryAllRenft,
   queryUserLendingRenft,
   queryUserRentingRenft,
   queryMyERC721s,
   queryMyERC1155s,
-  queryMyMoonCats
 } from "./queries";
-import { NftRaw, ERC1155s, ERC721s, NftToken } from "./types";
+import {
+  getUserDataOrCrateNew,
+  getAllUsersVote,
+} from "../../services/firebase";
+import { calculateVoteByUsers } from "../../services/vote";
+import {
+  NftRaw,
+  ERC1155s,
+  ERC721s,
+  NftToken,
+  UserData,
+  CalculatedUserVote,
+  UsersVote,
+  LendingRaw,
+} from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 
@@ -56,7 +64,6 @@ const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
-const ENDPOINT_MOONCAT_PROD = "https://api.thegraph.com/subgraphs/name/rentft/moon-cat-rescue";
 
 type RenftsLending = {
   [key: string]: Lending;
@@ -70,21 +77,31 @@ type LendingId = string;
 type RentingId = LendingId;
 
 type GraphContextType = {
-  renftsLending: RenftsLending;
-  renftsRenting: RenftsRenting;
-  usersNfts: Nft[];
-  usersLending: Lending[];
-  usersRenting: Renting[];
-  usersMoonCats: { id: string; inMyWallet: boolean }[];
+  userData: UserData;
+  usersVote: UsersVote;
+  calculatedUsersVote: CalculatedUserVote;
+  getUserNfts(): Promise<Nft[] | undefined>;
+  getUserLending(): Promise<Lending[] | undefined>;
+  getUsersLending(): Promise<Lending[] | undefined>;
+  getUserRenting(): Promise<Renting[] | undefined>;
+  getUserData(): Promise<UserData | undefined>;
+  updateGlobalUserData(): Promise<void>;
+};
+
+const defaultUserData = {
+  favorites: {},
 };
 
 const DefaultGraphContext: GraphContextType = {
-  renftsLending: {},
-  renftsRenting: {},
-  usersNfts: [],
-  usersLending: [],
-  usersRenting: [],
-  usersMoonCats: [],
+  userData: defaultUserData,
+  usersVote: {},
+  calculatedUsersVote: {},
+  getUserNfts: () => Promise.resolve([]),
+  getUserLending: () => Promise.resolve([]),
+  getUsersLending: () => Promise.resolve([]),
+  getUserRenting: () => Promise.resolve([]),
+  getUserData: () => Promise.resolve(defaultUserData),
+  updateGlobalUserData: () => Promise.resolve(),
 };
 
 enum FetchType {
@@ -98,19 +115,14 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
   const { instance: renft } = useContext(RentNftContext);
-
-  const [renftsLending, setRenftsLending] = useState<RenftsLending>(
-    DefaultGraphContext["renftsLending"]
-  );
-  const [renftsRenting, setRenftsRenting] = useState<RenftsRenting>(
-    DefaultGraphContext["renftsRenting"]
-  );
-  const [usersNfts, setUsersNfts] = useState<Nft[]>(
-    DefaultGraphContext["usersNfts"]
-  );
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
-  const [usersMoonCats, setUsersMoonCats] = useState<{ id: string, inMyWallet: boolean }[]>([]);
+  const [userData, setUserData] = useState<UserData>(defaultUserData);
+  const [
+    calculatedUsersVote,
+    setCalculatedUsersVote,
+  ] = useState<CalculatedUserVote>({});
+  const [usersVote, setUsersVote] = useState<UsersVote>({});
 
   /**
    * Only for dev purposes
@@ -169,19 +181,18 @@ export const GraphProvider: React.FC = ({ children }) => {
     [currentAddress, renft?.address, signer]
   );
 
-  /**
-   * Sets the usersNfts state to an array of all the users Nft types
-   * @returns Promise<void>
-   */
-  const fetchUsersNfts = async () => {
-    if (!signer) return;
+  const fetchUsersNfts = async (): Promise<Nft[] | undefined> => {
+    if (!signer) return undefined;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-
     const _usersNfts = usersNfts721
       .concat(usersNfts1155)
       .map(
-        (nft) => new Nft(nft.address, nft.tokenId, signer, { meta: nft.meta })
+        (nft) =>
+          new Nft(nft.address, nft.tokenId, signer, {
+            meta: nft.meta,
+            tokenURI: nft.tokenURI,
+          })
       );
 
     let _nfts: Nft[] = _usersNfts;
@@ -189,68 +200,58 @@ export const GraphProvider: React.FC = ({ children }) => {
       _nfts = (await fetchNftDev()).concat(_nfts);
     }
 
-    setUsersNfts(_nfts);
+    return _nfts;
   };
 
-  /**
-   * Sets the _userLending to whatever the user is lending (ids)
-   * @returns Promise<void>
-   */
-  const fetchUserLending = async () => {
+  const fetchUserLending = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserLendingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { lending?: { id: LendingId }[] };
+      user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
     } = await timeItAsync(
       `Pulled My Renft Lending Nfts`,
       async () => await request(subgraphURI, query)
     );
-    const lendingsIds = response.user?.lending?.map(({ id }) => id) ?? [];
-    _setUsersLending(lendingsIds);
+
+    return (
+      response.user?.lending?.map(
+        ({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`
+      ) ?? []
+    );
   };
 
-  const fetchMyMoonCats = async () => {
-      if (!currentAddress) return;
-      const query = queryMyMoonCats(currentAddress);
-      const subgraphURI = ENDPOINT_MOONCAT_PROD;
-      const response: {
-        moonRescuers: { cats?: {id: string, inMyWallet: boolean}[] }[]
-      } = await timeItAsync(
-        `Pulled My Moon Cat Nfts`,
-        async () => await request(subgraphURI, query)
-      );
-      const [first] = response.moonRescuers;
-      if (first) {
-        setUsersMoonCats(first?.cats ?? []);
-      }
-    };
-
-  /**
-   * Sets the _usersRenting state to whatever the user is renting (ids)
-   * @returns Promise<void>
-   */
-  const fetchUserRenting = async () => {
+  const fetchUserRenting = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserRentingRenft(currentAddress);
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: {
-      user?: { renting?: { id: RentingId }[] };
+      user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
     } = await timeItAsync(
       `Pulled My Renft Renting Nfts`,
       async () => await request(subgraphURI, query)
     );
-    const rentingsIds = response.user?.renting?.map(({ id }) => id) ?? [];
-    _setUsersRenting(rentingsIds);
+    return (
+      response.user?.renting?.map(
+        ({ lending }) => `${lending.nftAddress}::${lending.id}`
+      ) ?? []
+    );
   };
 
   /**
    * Sets the renftsLending and renftsRenting state. These are mappings from
    * lending id, renting id respectively to Lending, Renting instances,
    * respectively. These are all the NFTs on reNFT platform
-   * @returns Promise<void>
    */
-  const fetchRenftsAll = async () => {
+  type ReturnReNftAll = {
+    lending: {
+      [key: string]: Lending;
+    };
+    renting: {
+      [key: string]: Renting;
+    };
+  };
+  const fetchRenftsAll = async (): Promise<ReturnReNftAll | undefined> => {
     if (!signer) return;
     const query = queryAllRenft();
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
@@ -265,58 +266,118 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[l.id] = new Lending(address, tokenId, signer, l);
+        _allRenftsLending[id] = new Lending(address, tokenId, signer, l);
       });
       renting?.forEach((r) => {
-        _allRenftsRenting[r.id] = new Renting(address, tokenId, signer, r);
+        _allRenftsRenting[id] = new Renting(address, tokenId, signer, r);
       });
     });
 
-    setRenftsLending(_allRenftsLending);
-    setRenftsRenting(_allRenftsRenting);
+    return { lending: _allRenftsLending, renting: _allRenftsRenting };
   };
 
-  /**
-   * Convenvience function that maps from lending id to instance, and returns
-   * the set of all the Lending instances of the user.
-   */
-  const getUsersLending = useMemo(() => {
-    if (Object.keys(renftsLending).length === 0) return [];
-    return _usersLending.map((l) => renftsLending[l]);
-  }, [_usersLending, renftsLending]);
+  // PUBLIC API
 
-  /**
-   * Convenvience function that maps from renting id to instance, and returns
-   * the set of all the Renting instances of the user.
-   */
-  const getUsersRenting = useMemo(() => {
-    if (Object.keys(renftsRenting).length === 0) return [];
-    return _usersRenting.map((r) => renftsRenting[r]);
-  }, [_usersRenting, renftsRenting]);
+  // AVAILABLE TO LEND
+  const getUserNfts = async (): Promise<Nft[] | undefined> => {
+    const allNfts = await fetchUsersNfts();
+
+    return allNfts;
+  };
+
+  // AVAILABLE TO RENT
+  const getUsersLending = async (): Promise<Lending[] | undefined> => {
+    const renftAll = await fetchRenftsAll();
+    if (renftAll) {
+      const userRenting = await fetchUserRenting();
+      return Object.values(renftAll.lending)
+        .filter((item: Lending) => {
+          const id = `${item.address}::${item.id}`;
+          return !userRenting?.includes(id);
+        })
+        .filter(
+          (item: Lending) => item.lending.lenderAddress !== currentAddress
+        );
+    }
+
+    return undefined;
+  };
+
+  // LENDING
+  const getUserLending = async (): Promise<Lending[] | undefined> => {
+    const renftAll = await fetchRenftsAll();
+    if (renftAll) {
+      const userLending = await fetchUserLending();
+      const { lending } = renftAll;
+      return userLending?.map((id: string) => lending[id]) || [];
+    }
+
+    return undefined;
+  };
+
+  // RENTING
+  const getUserRenting = async (): Promise<Renting[] | undefined> => {
+    const renftAll = await fetchRenftsAll();
+    if (renftAll) {
+      return Object.values(renftAll.renting) || [];
+    }
+
+    return undefined;
+  };
+
+  const getUserData = useCallback(async (): Promise<UserData | undefined> => {
+    if (currentAddress) {
+      const userData = await getUserDataOrCrateNew(currentAddress);
+      return userData;
+    }
+    return undefined;
+  }, [currentAddress]);
+
+  const updateGlobalUserData = useCallback(() => {
+    return getUserData().then((userData: UserData | undefined) => {
+      if (userData) {
+        setUserData(userData);
+      }
+    });
+  }, [getUserData]);
 
   useEffect(() => {
-    fetchMyMoonCats();
-    // fetchRenftsAll();
-    // fetchUserLending();
-    // fetchUserRenting();
-    // fetchUsersNfts();
-    /* eslint-disable-next-line */
-  }, []);
+    if (currentAddress) {
+      const getUserDataRequest = createCancellablePromise(
+        Promise.all([getAllUsersVote(), getUserData()])
+      );
 
-  // usePoller(fetchRenftsAll, 8 * SECOND_IN_MILLISECONDS);
-  // usePoller(fetchUserLending, 10 * SECOND_IN_MILLISECONDS);
-  // usePoller(fetchUserRenting, 10 * SECOND_IN_MILLISECONDS);
-  // usePoller(fetchUsersNfts, 10 * SECOND_IN_MILLISECONDS);
+      getUserDataRequest.promise.then(
+        ([usersVote, userData]: [UsersVote, UserData | undefined]) => {
+          if (usersVote && Object.keys(usersVote).length !== 0) {
+            const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
+              usersVote
+            );
+
+            setCalculatedUsersVote(calculatedUsersVote);
+            setUsersVote(usersVote);
+          }
+          if (userData) {
+            setUserData(userData);
+          }
+        }
+      );
+      return getUserDataRequest.cancel;
+    }
+  }, [currentAddress, getUserData]);
 
   return (
     <GraphContext.Provider
       value={{
-        usersMoonCats,
-        renftsLending,
-        renftsRenting,
-        usersNfts,
-        usersLending: getUsersLending,
-        usersRenting: getUsersRenting,
+        userData,
+        usersVote,
+        calculatedUsersVote,
+        getUserNfts,
+        getUserLending,
+        getUsersLending,
+        getUserRenting,
+        getUserData,
+        updateGlobalUserData,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ import { PaymentToken } from "./types";
 const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
-  `${s.substr(0, 5)}...${s.substr(s.length - 5, 5)}`;
+  `${s.substr(0, 7)}...${s.substr(s.length - 7, 7)}`;
 
 export const THROWS = (): void => {
   throw new Error("must be implemented");
@@ -167,6 +167,18 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
+export const getLendingPriceByCurreny = (
+  price: number,
+  token: PaymentToken
+): string => {
+  switch (token) {
+    case PaymentToken.DAI:
+      return String(parseInt(String(price * 10000), 10));
+    default:
+      return String(price);
+  }
+};
+
 // ! must be the same as in packages/contracts/src/Resolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
@@ -220,3 +232,24 @@ export const getContract = async (
   }
   return { contract, isERC721 };
 };
+
+export const urlFromIPFS = (uri: string): boolean =>
+  (uri || "").startsWith("/ipfs/") || (uri || "").startsWith("ipfs://ipfs");
+
+export const toDataURLFromBlob = (
+  blob: Blob
+): Promise<string | ArrayBuffer | null> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+export const toDataURLFromURL = (
+  url: string
+): Promise<string | ArrayBuffer | null> =>
+  fetch(url)
+    .then((response) => response.blob())
+    .then((blob) => toDataURLFromBlob(blob));
