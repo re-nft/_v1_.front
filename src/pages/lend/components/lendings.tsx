@@ -42,7 +42,7 @@ const Lendings: React.FC = () => {
       onChangePage(items || []);
       onSetItems(items || []);
       setIsLoading(false);
-    });
+    }).catch(() => { console.warn('could not fetch user nfts') });
   }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
   const handleClose = useCallback(() => {
@@ -72,7 +72,7 @@ const Lendings: React.FC = () => {
       onChangePage(items || []);
       onSetItems(items || []);
       setIsLoading(false);
-    });
+    }).catch(() => { console.warn('could not get user nfts request') });
 
     return () => {
       onResetPage();
@@ -121,7 +121,7 @@ const Lendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Lend all"
           onCancel={onReset}
           onClick={handleBatchModalOpen}

@@ -45,7 +45,7 @@ export const Dashboard: React.FC = () => {
         setRentingItems(userRenting || []);
         setIsLoading(false);
       }
-    );
+    ).catch(() => { console.warn('could not handle refresh') });
   }, [
     getUserLending,
     getUserRenting,
@@ -106,7 +106,7 @@ export const Dashboard: React.FC = () => {
       setLendingItems(userLnding || []);
       setRentingItems(userRenting || []);
       setIsLoading(false);
-    });
+    }).catch(() => { console.warn('could not get user lending request') });
 
     return getUserLendingRequest.cancel;
     /* eslint-disable-next-line */

@@ -50,7 +50,7 @@ const UserRentings: React.FC = () => {
       onSetItems(userRenting || []);
       onChangePage(userRenting || []);
       setIsLoading(false);
-    });
+    }).catch(() => {console.warn('could not handle refresh')});
   }, [onSetItems, onChangePage, setIsLoading, getUserRenting]);
 
   const handleCloseModal = useCallback(() => {
@@ -80,7 +80,7 @@ const UserRentings: React.FC = () => {
       onSetItems(userRenting || []);
       onChangePage(userRenting || []);
       setIsLoading(false);
-    });
+    }).catch(() => {console.warn('could not get user renting request')});
 
     return () => {
       onResetPage();
@@ -144,7 +144,7 @@ const UserRentings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Stop Rents All"
           onCancel={onReset}
           onClick={handleBatchStopRent}

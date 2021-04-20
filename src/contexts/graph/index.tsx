@@ -335,7 +335,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (userData) {
         setUserData(userData);
       }
-    });
+    }).catch(() => { console.warn('could not update global user data') });
   }, [getUserData]);
 
   useEffect(() => {
@@ -358,7 +358,9 @@ export const GraphProvider: React.FC = ({ children }) => {
             setUserData(userData);
           }
         }
-      );
+      ).catch(() => {
+        console.warn('could not fulfill userDataRequest');
+      });
       return getUserDataRequest.cancel;
     }
   }, [currentAddress, getUserData]);

@@ -50,10 +50,14 @@ export const useFetchNftDev = (
       toFetch.push(
         fetch(metaURI, {
           headers: [["Content-Type", "text/plain"]],
-        }).then(async (dat) => await dat.json())
+        })
+          .then(async (dat) => await dat.json())
+          .catch(() => { console.warn('could not fetch metaURI') })
       );
     }
   
+    // TODO: fix all the ts-ignores
+
     const _meta = await Promise.all(toFetch);
 
     const usersDevNfts: Nft[] = [];

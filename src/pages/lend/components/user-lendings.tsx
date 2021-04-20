@@ -44,7 +44,7 @@ const UserLendings: React.FC = () => {
       onChangePage(userLnding || []);
       onSetItems(userLnding || []);
       setIsLoading(false);
-    });
+    }).catch(() => {console.warn('could not handle reset')});
   }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
 
   const handleStopLend = useCallback(
@@ -55,12 +55,12 @@ const UserLendings: React.FC = () => {
       onReset();
       handleReset();
     },
-    [renft, setHash, handleReset]
+    [renft, setHash, handleReset, onReset]
   );
 
   const handleClickNft = useCallback(async (nft: Nft) => {
     handleStopLend([nft]);
-  }, []);
+  }, [handleStopLend]);
 
   const handleBatchStopnLend = useCallback(async () => {
     handleStopLend(checkedItems);
@@ -75,7 +75,7 @@ const UserLendings: React.FC = () => {
       onChangePage(userLnding || []);
       onSetItems(userLnding || []);
       setIsLoading(false);
-    });
+    }).catch(() => {console.warn('could not get user lending request')});
 
     return () => {
       onResetPage();
@@ -121,7 +121,7 @@ const UserLendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Stop Lending"
           onClick={handleBatchStopnLend}
           onCancel={onReset}

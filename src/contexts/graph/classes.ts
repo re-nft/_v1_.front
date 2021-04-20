@@ -33,8 +33,18 @@ class Nft {
     this.signer = signer;
     this.isERC721 = false;
 
+    console.log("options", options);
+
     this._meta = options?.meta;
+    
+    if (!options?.tokenURI) {
+      const _contract = this.contract();
+      _contract.tokenURI(this.tokenId).then((d: any) => {
+        console.log('fetched tokenURI', d);
+      }).catch(() => { console.warn('could not fetch tokenURI') })
+    }
     this._tokenURI = options?.tokenURI ?? "";
+    
     this._mediaURI = options?.mediaURI ?? "";
   }
 

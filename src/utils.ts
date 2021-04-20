@@ -252,4 +252,5 @@ export const toDataURLFromURL = (
 ): Promise<string | ArrayBuffer | null> =>
   fetch(url)
     .then((response) => response.blob())
-    .then((blob) => toDataURLFromBlob(blob));
+    .then((blob) => toDataURLFromBlob(blob))
+    .catch(() => { console.warn('could not get dataURL'); return ''; });

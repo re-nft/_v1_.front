@@ -60,7 +60,7 @@ const AvailableToRent: React.FC = () => {
       onChangePage(items || []);
       onSetItems(items || []);
       setIsLoading(false);
-    });
+    }).catch(() => {console.warn('could not get user lending')});
   }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
 
   const handleBatchModalClose = useCallback(() => {
@@ -123,7 +123,7 @@ const AvailableToRent: React.FC = () => {
         onSetItems(usersLnding || []);
         setIsLoading(false);
       }
-    );
+    ).catch(() => {console.warn('could not get user lending request')});
 
     return () => {
       onResetPage();
@@ -174,7 +174,7 @@ const AvailableToRent: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Rents All"
           onCancel={onReset}
           onClick={handleBatchRent}

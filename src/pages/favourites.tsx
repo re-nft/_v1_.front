@@ -30,17 +30,17 @@ export const MyFavorites: React.FC = () => {
           setIsLoading(false);
         }
       }
-    );
+    ).catch(() => { console.warn('could not refresh state') });
   }, [getUserNfts, getUserData, setNftItems, setIsLoading]);
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
       setIsLoading(true);
       addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then(
-        (resp: boolean) => {
+        () => {
           refreshState();
         }
-      );
+      ).catch(() => { console.warn('could not add or remove user favourite') });
     },
     [setIsLoading, refreshState, currentAddress]
   );
@@ -51,6 +51,8 @@ export const MyFavorites: React.FC = () => {
     const dataRequest = createCancellablePromise(
       Promise.all([getUserNfts(), getUserData()])
     );
+
+    // TODO: remove all the ts-ignores
 
     dataRequest.promise.then(
       ([nfts, userData]: [
@@ -64,7 +66,7 @@ export const MyFavorites: React.FC = () => {
           setIsLoading(false);
         }
       }
-    );
+    ).catch(() => { console.warn('could not perform data request') });
 
     return dataRequest.cancel;
     /* eslint-disable-next-line */

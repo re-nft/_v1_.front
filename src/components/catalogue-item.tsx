@@ -67,7 +67,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       (resp: boolean) => {
         setInFavorites(resp);
       }
-    );
+    ).catch(() => { console.warn('could not change userFavorite'); });
   }, [nft, currentAddress]);
 
   const handleVote = useCallback(
@@ -80,9 +80,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             // @ts-ignore
             const currentAddressVote = voteData?.[id] ?? {};
             setCurrentVote(currentAddressVote);
-          });
+          }).catch(() => { console.warn('could not getNftVote') });
         }
-      );
+      ).catch(() => { console.warn('could not handle vote'); });
     },
     [nft, currentAddress]
   );
@@ -97,7 +97,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           setImageIsReady(true);
         }
         setMeta(response);
-      });
+      }).catch(() => console.warn('could not fetch nft meta'));
     }
   }, [checked, isVisible, nft, meta?.image]);
 

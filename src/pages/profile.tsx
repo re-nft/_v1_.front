@@ -22,10 +22,11 @@ const Profile: React.FC = () => {
         updateUserData(currentAddress, username, bio).then(() => {
           updateGlobalUserData();
           setIsLoading(false);
-        });
+        }).catch(() => { console.warn('could not update user data') });
       }
     },
-    [username, bio]
+    // TODO: check if need to add currentAddress below
+    [username, bio, updateUserData]
   );
 
   const handleChangeFormField = useCallback(
@@ -53,7 +54,7 @@ const Profile: React.FC = () => {
       }
 
       setIsLoading(false);
-    });
+    }).catch(() => { console.warn('could not perform data request!') });
 
     return dataRequest.cancel;
     /* eslint-disable-next-line */
