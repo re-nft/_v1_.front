@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { ProviderContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "../types";
 import CssTextField from "../components/css-text-field";
@@ -86,7 +88,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {
-      const [id, name] = target.split("::");
+      const [id, name] = target.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       setLendOneInputs({
         ...lendOneInputs,
         [id]: {
@@ -134,7 +136,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
           return (
             <div
               className="modal-dialog-section"
-              key={`${nftItem.address}::${nftItem.tokenId}`}
+              key={`${nftItem.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nftItem.tokenId}`}
             >
               <div className="modal-dialog-for">
                 <div className="label">Token Id</div>
@@ -145,35 +147,35 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
                 <CssTextField
                   required
                   label="Max lend duration"
-                  id={`${nftItem.tokenId}::maxDuration`}
+                  id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}maxDuration`}
                   variant="outlined"
                   value={lendOneInputs[nftItem.tokenId]?.maxDuration ?? ""}
                   type="number"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  name={`${nftItem.tokenId}::maxDuration`}
+                  name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}maxDuration`}
                 />
                 <CssTextField
                   required
                   label="Borrow Price"
-                  id={`${nftItem.tokenId}::borrowPrice`}
+                  id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}borrowPrice`}
                   variant="outlined"
                   value={lendOneInputs[nftItem.tokenId]?.borrowPrice ?? ""}
                   type="number"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  name={`${nftItem.tokenId}::borrowPrice`}
+                  name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}borrowPrice`}
                 />
                 <CssTextField
                   required
                   label="Collateral"
-                  id={`${nftItem.tokenId}::nftPrice`}
+                  id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}nftPrice`}
                   variant="outlined"
                   value={lendOneInputs[nftItem.tokenId]?.nftPrice ?? ""}
                   type="number"
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  name={`${nftItem.tokenId}::nftPrice`}
+                  name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}nftPrice`}
                 />
                 <MinimalSelect
                   // @ts-ignore
@@ -206,5 +208,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     </Modal>
   );
 };
+
+// TODO: fix all the ts-ignores
 
 export default BatchLendModal;

@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -41,7 +43,7 @@ const Lendings: React.FC = () => {
       onSetItems(items || []);
       setIsLoading(false);
     });
-  }, [setIsLoading, getUserNfts, onChangePage, onSetItems, setIsLoading]);
+  }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -99,7 +101,7 @@ const Lendings: React.FC = () => {
       <ItemWrapper>
         {currentPage.map((nft) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}

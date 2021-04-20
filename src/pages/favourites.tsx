@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
+
 import GraphContext from "../contexts/graph";
 import { UserData } from "../contexts/graph/types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
@@ -8,6 +9,7 @@ import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import { calculateMyFavorites } from "../services/calculate-my-faforites";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -81,7 +83,7 @@ export const MyFavorites: React.FC = () => {
       <div className="content__row content__items">
         {nftItems.map((nft) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             nft={nft}
             isAlreadyFavourited
           >

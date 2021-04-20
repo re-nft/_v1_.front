@@ -2,9 +2,9 @@ import React, {
   useCallback,
   useState,
   useEffect,
-  useContext,
-  useMemo,
+  useContext
 } from "react";
+
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../../components/numeric-field";
@@ -20,6 +20,8 @@ import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
+
 
 const UserRentings: React.FC = () => {
   const {
@@ -95,6 +97,8 @@ const UserRentings: React.FC = () => {
     return <div className="center">You dont have any lend anything yet</div>;
   }
 
+  // TODO: remove all the anys
+
   return (
     <>
       {modalOpen && (
@@ -106,7 +110,7 @@ const UserRentings: React.FC = () => {
       )}
       <ItemWrapper>
         {currentPage.map((nft: Nft) => {
-          const id = `${nft.address}::${nft.tokenId}`;
+          const id = `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`;
           return (
             <CatalogueItem
               key={id}

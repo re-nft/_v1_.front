@@ -1,4 +1,6 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import { RentNftContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -93,9 +95,12 @@ const UserLendings: React.FC = () => {
   return (
     <>
       <ItemWrapper>
+        {
+          // TODO: where did any come from here. punish it
+        }
         {((currentPage as any) as Lending[]).map((nft: Lending) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             checked={checkedMap[nft.tokenId] || false}
             nft={nft}
             onCheckboxChange={onCheckboxChange}

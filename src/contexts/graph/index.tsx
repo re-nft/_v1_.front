@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import { request } from "graphql-request";
+
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -53,6 +54,8 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
+// TODO: environment variables
+
 // renft localhost and prod subgraph for pulling NFTs related to reNFT
 const ENDPOINT_RENFT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
@@ -64,14 +67,6 @@ const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
-
-type RenftsLending = {
-  [key: string]: Lending;
-};
-
-type RenftsRenting = {
-  [key: string]: Renting;
-};
 
 type LendingId = string;
 type RentingId = LendingId;
@@ -150,7 +145,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
 
       const response: ERC721s | ERC1155s = await timeItAsync(
-        `Pulled My Prod ${FetchType[fetchType]} NFTs`,
+        `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
 
@@ -158,20 +153,22 @@ export const GraphProvider: React.FC = ({ children }) => {
       switch (fetchType) {
         case FetchType.ERC721:
           tokens = (response as ERC721s).tokens.map((token) => {
+            console.log('token', token);
             // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
             const [address, tokenId] = token.id.split("_");
-            return { address, tokenId, tokenURI: token.tokenURI };
+            return { address, tokenURI: token.tokenURI, tokenId  };
           });
           break;
         case FetchType.ERC1155:
           tokens = (response as ERC1155s).account.balances.map(({ token }) => ({
             address: token.registry.contractAddress,
-            tokenId: token.tokenId,
             tokenURI: token.tokenURI,
+            tokenId: token.tokenId,
           }));
           break;
       }
 
+      console.log('tokens', tokens);
       // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
       // TODO: nothing has changed
       return tokens;
@@ -210,13 +207,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
     } = await timeItAsync(
-      `Pulled My Renft Lending Nfts`,
+      'Pulled My Renft Lending Nfts',
       async () => await request(subgraphURI, query)
     );
 
     return (
       response.user?.lending?.map(
-        ({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`
+        ({ tokenId, nftAddress }) => `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`
       ) ?? []
     );
   };
@@ -228,12 +225,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
     } = await timeItAsync(
-      `Pulled My Renft Renting Nfts`,
+      'Pulled My Renft Renting Nfts',
       async () => await request(subgraphURI, query)
     );
     return (
       response.user?.renting?.map(
-        ({ lending }) => `${lending.nftAddress}::${lending.id}`
+        ({ lending }) => `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`
       ) ?? []
     );
   };
@@ -256,7 +253,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryAllRenft();
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: NftRaw = await timeItAsync(
-      `Pulled All Renft Nfts`,
+      'Pulled All Renft Nfts',
       async () => await request(subgraphURI, query)
     );
 
@@ -292,7 +289,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const userRenting = await fetchUserRenting();
       return Object.values(renftAll.lending)
         .filter((item: Lending) => {
-          const id = `${item.address}::${item.id}`;
+          const id = `${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.id}`;
           return !userRenting?.includes(id);
         })
         .filter(

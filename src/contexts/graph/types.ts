@@ -94,7 +94,7 @@ export type UserData = {
 };
 
 export type UsersVote = {
-  // nftAddress}::tokenId
+  // ${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}tokenId
   [key: string]: {
     // userAddress: [-1, 1]
     [key: string]: {

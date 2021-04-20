@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import PageLayout from "../components/page-layout";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
@@ -73,6 +75,8 @@ export const Dashboard: React.FC = () => {
     },
     [renft, setHash, handleRefresh]
   );
+
+  // todo: get rid of all of the ts-ignores
 
   const _returnBy = (lending: Lending) =>
     returnBy(
@@ -152,7 +156,7 @@ export const Dashboard: React.FC = () => {
                     const lending = lend.lending;
                     return (
                       <tr
-                        key={`${lend.address}::${lend.tokenId}::${lending.id}`}
+                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`}
                       >
                         <td className="column">n/a</td>
                         <td className="column">{short(lending.nftAddress)}</td>
@@ -222,7 +226,7 @@ export const Dashboard: React.FC = () => {
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     return (
-                      <tr key={`${rent.address}::${rent.tokenId}::${rent.id}`}>
+                      <tr key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.id}`}>
                         <td className="column">n/a</td>
                         <td className="column">
                           {short(renting.renterAddress)}

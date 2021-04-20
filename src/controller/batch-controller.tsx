@@ -1,5 +1,7 @@
 import React, { createContext } from "react";
+
 import { Nft } from "../contexts/graph/classes";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 /* eslint-disable-next-line */
 type Props = {};
@@ -59,7 +61,7 @@ class BatchProvider extends React.Component<Props, State> {
   handleCheckboxChange = (name: string, checked: boolean): void => {
     const { checkedItems, checkedMap, items } = this.state;
 
-    const [address, tokenId] = name.split("::");
+    const [address, tokenId] = name.split(RENFT_SUBGRAPH_ID_SEPARATOR);
     const sources = checkedItems.slice(0);
     const item = items.find(
       (nft) => nft.address === address && nft.tokenId === tokenId

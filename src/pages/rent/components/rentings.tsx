@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
+
 import {
   CurrentAddressContext,
   RentNftContext,
@@ -16,13 +17,14 @@ import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Lending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
 const AvailableToRent: React.FC = () => {
   const {
@@ -138,6 +140,8 @@ const AvailableToRent: React.FC = () => {
     return <div className="center">You dont have any lend anything yet</div>;
   }
 
+  // TODO: so many anys it hurts
+
   return (
     <>
       <BatchRentModal
@@ -149,7 +153,7 @@ const AvailableToRent: React.FC = () => {
       <ItemWrapper>
         {((currentPage as any) as Lending[]).map((nft: Lending) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.lending.id}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}

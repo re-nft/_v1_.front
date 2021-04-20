@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { Nft } from "../contexts/graph/classes";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
@@ -50,7 +52,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
     onCheckboxChange &&
-      onCheckboxChange(`${nft.address}::${nft.tokenId}`, !isChecked);
+      onCheckboxChange(`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`, !isChecked);
   }, [nft, isChecked, onCheckboxChange]);
 
   const preloadImage = (imgSrc: string) => {
