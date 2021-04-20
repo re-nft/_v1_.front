@@ -93,12 +93,11 @@ class Lending extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
-    isERC721: boolean,
     signer: ethers.Signer,
     lendingRaw: LendingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, isERC721, signer, options);
+    super(nftAddress, tokenId, lendingRaw.isERC721, signer, options);
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
@@ -111,12 +110,11 @@ class Renting extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
-    isERC721: boolean,
     signer: ethers.Signer,
     rentingRaw: RentingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, isERC721, signer, options);
+    super(nftAddress, tokenId, rentingRaw.isERC721, signer, options);
 
     this.renting = parseRenting(rentingRaw);
     this.id = rentingRaw.id;

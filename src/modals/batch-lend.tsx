@@ -8,7 +8,7 @@ import Modal from "./modal";
 import MinimalSelect from "../components/select";
 import {
   CurrentAddressContext,
-  RentNftContext,
+  ReNftContext,
 } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
@@ -34,7 +34,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNftContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});

@@ -63,6 +63,7 @@ export type LendingRaw = Omit<
   dailyRentPrice: string;
   nftPrice: string;
   paymentToken: string;
+  isERC721: boolean;
 };
 
 export type Renting = {
@@ -78,6 +79,7 @@ export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
   lending: LendingRaw;
+  isERC721: boolean;
 };
 
 export type NftRaw = {

@@ -19,57 +19,33 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ResolverInterface extends ethers.utils.Interface {
   functions: {
     "getPaymentToken(uint8)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "renounceOwnership()": FunctionFragment;
     "setPaymentToken(uint8,address)": FunctionFragment;
-    "transferOwnership(address)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "getPaymentToken",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "setPaymentToken",
     values: [BigNumberish, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [string]
   ): string;
 
   decodeFunctionResult(
     functionFragment: "getPaymentToken",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "setPaymentToken",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
 
-  events: {
-    "OwnershipTransferred(address,address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  events: {};
 }
 
 export class Resolver extends Contract {
@@ -77,11 +53,39 @@ export class Resolver extends Contract {
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  listeners<T, G>(
+    eventFilter?: TypedEventFilter<T, G>
+  ): Array<TypedListener<T, G>>;
+  off<T, G>(
+    eventFilter: TypedEventFilter<T, G>,
+    listener: TypedListener<T, G>
+  ): this;
+  on<T, G>(
+    eventFilter: TypedEventFilter<T, G>,
+    listener: TypedListener<T, G>
+  ): this;
+  once<T, G>(
+    eventFilter: TypedEventFilter<T, G>,
+    listener: TypedListener<T, G>
+  ): this;
+  removeListener<T, G>(
+    eventFilter: TypedEventFilter<T, G>,
+    listener: TypedListener<T, G>
+  ): this;
+  removeAllListeners<T, G>(eventFilter: TypedEventFilter<T, G>): this;
+
+  queryFilter<T, G>(
+    event: TypedEventFilter<T, G>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<T & G>>>;
 
   interface: ResolverInterface;
 
@@ -96,14 +100,6 @@ export class Resolver extends Contract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
-    "owner()"(overrides?: CallOverrides): Promise<[string]>;
-
-    renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "renounceOwnership()"(overrides?: Overrides): Promise<ContractTransaction>;
-
     setPaymentToken(
       _pt: BigNumberish,
       _v: string,
@@ -113,16 +109,6 @@ export class Resolver extends Contract {
     "setPaymentToken(uint8,address)"(
       _pt: BigNumberish,
       _v: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "transferOwnership(address)"(
-      newOwner: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
@@ -137,14 +123,6 @@ export class Resolver extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  "owner()"(overrides?: CallOverrides): Promise<string>;
-
-  renounceOwnership(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "renounceOwnership()"(overrides?: Overrides): Promise<ContractTransaction>;
-
   setPaymentToken(
     _pt: BigNumberish,
     _v: string,
@@ -154,16 +132,6 @@ export class Resolver extends Contract {
   "setPaymentToken(uint8,address)"(
     _pt: BigNumberish,
     _v: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  transferOwnership(
-    newOwner: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "transferOwnership(address)"(
-    newOwner: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -178,14 +146,6 @@ export class Resolver extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    "owner()"(overrides?: CallOverrides): Promise<string>;
-
-    renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    "renounceOwnership()"(overrides?: CallOverrides): Promise<void>;
-
     setPaymentToken(
       _pt: BigNumberish,
       _v: string,
@@ -197,24 +157,9 @@ export class Resolver extends Contract {
       _v: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "transferOwnership(address)"(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
-  filters: {
-    OwnershipTransferred(
-      previousOwner: string | null,
-      newOwner: string | null
-    ): EventFilter;
-  };
+  filters: {};
 
   estimateGas: {
     getPaymentToken(
@@ -227,14 +172,6 @@ export class Resolver extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    renounceOwnership(overrides?: Overrides): Promise<BigNumber>;
-
-    "renounceOwnership()"(overrides?: Overrides): Promise<BigNumber>;
-
     setPaymentToken(
       _pt: BigNumberish,
       _v: string,
@@ -244,16 +181,6 @@ export class Resolver extends Contract {
     "setPaymentToken(uint8,address)"(
       _pt: BigNumberish,
       _v: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "transferOwnership(address)"(
-      newOwner: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
   };
@@ -269,14 +196,6 @@ export class Resolver extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    renounceOwnership(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "renounceOwnership()"(overrides?: Overrides): Promise<PopulatedTransaction>;
-
     setPaymentToken(
       _pt: BigNumberish,
       _v: string,
@@ -286,16 +205,6 @@ export class Resolver extends Contract {
     "setPaymentToken(uint8,address)"(
       _pt: BigNumberish,
       _v: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "transferOwnership(address)"(
-      newOwner: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

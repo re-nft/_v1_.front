@@ -9,7 +9,7 @@ import { request } from "graphql-request";
 
 import {
   CurrentAddressContext,
-  RentNftContext,
+  ReNftContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";
@@ -109,7 +109,7 @@ const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNftContext);
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);

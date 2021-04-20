@@ -12,7 +12,7 @@ import { PaymentToken } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
-import { RentNftContext } from "../hardhat/SymfoniContext";
+import { ReNftContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny } from "../utils";
 import { short } from "../utils";
 
@@ -28,7 +28,7 @@ enum DashboardViewType {
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNftContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lendingItems, setLendingItems] = useState<Lending[]>([]);
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);

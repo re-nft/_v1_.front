@@ -2,7 +2,7 @@ import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
   CurrentAddressContext,
-  RentNftContext,
+  ReNftContext,
   SignerContext,
   ResolverContext,
   // todo: remove for prod
@@ -46,7 +46,7 @@ const AvailableToRent: React.FC = () => {
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNftContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);

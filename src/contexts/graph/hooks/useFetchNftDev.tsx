@@ -6,7 +6,7 @@ import {
   MyERC721Context,
   MyERC1155Context,
   CurrentAddressContext,
-  RentNftContext,
+  ReNftContext,
 } from "../../../hardhat/SymfoniContext";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
@@ -17,7 +17,7 @@ export const useFetchNftDev = (
   signer?: ethers.Signer
 ): (() => Promise<Nft[]>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const renft = useContext(RentNftContext);
+  const renft = useContext(ReNftContext);
 
   const { instance: myERC721 } = useContext(MyERC721Context);
   const { instance: myERC1155 } = useContext(MyERC1155Context);
@@ -62,9 +62,10 @@ export const useFetchNftDev = (
     const _meta = await Promise.all(toFetch);
 
     const usersDevNfts: Nft[] = [];
+    const isERC721 = true;
     for (let i = 0; i < _meta.length; i++) {
       usersDevNfts.push(
-        new Nft(myERC721.address, tokenIds[i], signer, {
+        new Nft(myERC721.address, tokenIds[i], isERC721, signer, {
           // @ts-ignore
           mediaURI: _meta[i]?.["image"] ?? "",
           // @ts-ignore
@@ -78,7 +79,7 @@ export const useFetchNftDev = (
       const tokenURI = await myERC1155.uri(myNfts1155[i]);
       // {"external_url":"https://www.bondly.finance/","image":"https://api.bccg.digital/images/ARCA.png","name":"Arca (Thriller)","description":"Arca is an ex-spy.  She's part cybernetic and has incredible strength and agility. Prefers bladed weapons for stealthy quick kills.  ","attributes":[{"trait_type":"ARC","value":"Arca"},{"trait_type":"T","value":"Thriller"},{"trait_type":"1S","value":"First Edition"},{"trait_type":"Villain","value":"Villain"}]}
       usersDevNfts.push(
-        new Nft(myERC1155.address, myNfts1155[i].toString(), signer, {
+        new Nft(myERC1155.address, myNfts1155[i].toString(), !isERC721, signer, {
           tokenURI: tokenURI,
         })
       );

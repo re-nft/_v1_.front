@@ -21,25 +21,34 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface FaucetInterface extends ethers.utils.Interface {
+interface IResolverInterface extends ethers.utils.Interface {
   functions: {
-    "requestToken(address)": FunctionFragment;
+    "getPaymentToken(uint8)": FunctionFragment;
+    "setPaymentToken(uint8,address)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "requestToken",
-    values: [string]
+    functionFragment: "getPaymentToken",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPaymentToken",
+    values: [BigNumberish, string]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "requestToken",
+    functionFragment: "getPaymentToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPaymentToken",
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class Faucet extends Contract {
+export class IResolver extends Contract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -78,35 +87,74 @@ export class Faucet extends Contract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<T & G>>>;
 
-  interface: FaucetInterface;
+  interface: IResolverInterface;
 
   functions: {
-    requestToken(
-      _token: string,
+    getPaymentToken(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    "getPaymentToken(uint8)"(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    setPaymentToken(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "requestToken(address)"(
-      _token: string,
+    "setPaymentToken(uint8,address)"(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
   };
 
-  requestToken(
-    _token: string,
+  getPaymentToken(
+    _pt: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "getPaymentToken(uint8)"(
+    _pt: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  setPaymentToken(
+    _pt: BigNumberish,
+    _v: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "requestToken(address)"(
-    _token: string,
+  "setPaymentToken(uint8,address)"(
+    _pt: BigNumberish,
+    _v: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    requestToken(_token: string, overrides?: CallOverrides): Promise<void>;
+    getPaymentToken(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    "requestToken(address)"(
-      _token: string,
+    "getPaymentToken(uint8)"(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    setPaymentToken(
+      _pt: BigNumberish,
+      _v: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "setPaymentToken(uint8,address)"(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -114,22 +162,49 @@ export class Faucet extends Contract {
   filters: {};
 
   estimateGas: {
-    requestToken(_token: string, overrides?: Overrides): Promise<BigNumber>;
+    getPaymentToken(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "requestToken(address)"(
-      _token: string,
+    "getPaymentToken(uint8)"(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    setPaymentToken(
+      _pt: BigNumberish,
+      _v: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "setPaymentToken(uint8,address)"(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    requestToken(
-      _token: string,
+    getPaymentToken(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getPaymentToken(uint8)"(
+      _pt: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setPaymentToken(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "requestToken(address)"(
-      _token: string,
+    "setPaymentToken(uint8,address)"(
+      _pt: BigNumberish,
+      _v: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

@@ -1,7 +1,7 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
-import { RentNftContext } from "../../../hardhat/SymfoniContext";
+import { ReNftContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft } from "../../../contexts/graph/classes";
@@ -35,7 +35,7 @@ const UserLendings: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const { getUserLending } = useContext(GraphContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNftContext);
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
