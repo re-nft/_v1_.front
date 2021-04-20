@@ -3,6 +3,7 @@ import { Address, PaymentToken, TokenId } from "../../types";
 export type NftToken = {
   address: Address;
   tokenId: TokenId;
+  isERC721: boolean;
   tokenURI?: string;
   meta?: {
     name?: string;

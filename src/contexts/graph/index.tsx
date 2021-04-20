@@ -156,7 +156,7 @@ export const GraphProvider: React.FC = ({ children }) => {
             console.log('token', token);
             // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
             const [address, tokenId] = token.id.split("_");
-            return { address, tokenURI: token.tokenURI, tokenId  };
+            return { address, tokenURI: token.tokenURI, tokenId, isERC721: true  };
           });
           break;
         case FetchType.ERC1155:
@@ -164,6 +164,7 @@ export const GraphProvider: React.FC = ({ children }) => {
             address: token.registry.contractAddress,
             tokenURI: token.tokenURI,
             tokenId: token.tokenId,
+            isERC721: false
           }));
           break;
       }
@@ -186,10 +187,11 @@ export const GraphProvider: React.FC = ({ children }) => {
       .concat(usersNfts1155)
       .map(
         (nft) =>
-          new Nft(nft.address, nft.tokenId, signer, {
+        ( new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
             meta: nft.meta,
             tokenURI: nft.tokenURI,
           })
+        )
       );
 
     let _nfts: Nft[] = _usersNfts;

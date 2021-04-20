@@ -45,6 +45,7 @@ export const useFetchNftDev = (
       usersNfts.push({
         address: myERC721.address,
         tokenId: tokenId.toString(),
+        isERC721: true
       });
       tokenIds.push(tokenId.toString());
       toFetch.push(
