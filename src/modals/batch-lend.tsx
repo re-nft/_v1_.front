@@ -121,8 +121,8 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       .then((isApproved) => {
         setIsApproved(isApproved);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
+        console.warn("batch lend issue with is approval for all");
       });
   }, [nfts, currentAddress, setIsApproved, renft]);
 

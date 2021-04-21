@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useContext
-} from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
@@ -21,7 +16,6 @@ import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
-
 
 const UserRentings: React.FC = () => {
   const {
@@ -46,11 +40,15 @@ const UserRentings: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleRefrash = useCallback(() => {
-    getUserRenting().then((userRenting: Renting[] | undefined) => {
-      onSetItems(userRenting || []);
-      onChangePage(userRenting || []);
-      setIsLoading(false);
-    }).catch(() => {console.warn('could not handle refresh')});
+    getUserRenting()
+      .then((userRenting: Renting[] | undefined) => {
+        onSetItems(userRenting || []);
+        onChangePage(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not handle refresh");
+      });
   }, [onSetItems, onChangePage, setIsLoading, getUserRenting]);
 
   const handleCloseModal = useCallback(() => {
@@ -76,11 +74,15 @@ const UserRentings: React.FC = () => {
 
     const getUserRentingRequest = createCancellablePromise(getUserRenting());
 
-    getUserRentingRequest.promise.then((userRenting: Renting[] | undefined) => {
-      onSetItems(userRenting || []);
-      onChangePage(userRenting || []);
-      setIsLoading(false);
-    }).catch(() => {console.warn('could not get user renting request')});
+    getUserRentingRequest.promise
+      .then((userRenting: Renting[] | undefined) => {
+        onSetItems(userRenting || []);
+        onChangePage(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user renting request");
+      });
 
     return () => {
       onResetPage();

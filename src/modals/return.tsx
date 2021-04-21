@@ -54,8 +54,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
       .then((isApproved) => {
         setIsApproved(isApproved);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
+        console.warn("return modal issue with fetch is approval for all");
       });
   }, [nfts, currentAddress, setIsApproved, renft]);
 

@@ -253,4 +253,7 @@ export const toDataURLFromURL = (
   fetch(url)
     .then((response) => response.blob())
     .then((blob) => toDataURLFromBlob(blob))
-    .catch(() => { console.warn('could not get dataURL'); return ''; });
+    .catch(() => {
+      console.warn("could not get dataURL");
+      return "";
+    });

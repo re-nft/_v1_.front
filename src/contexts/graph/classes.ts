@@ -38,8 +38,11 @@ class Nft {
 
     if (!options?.tokenURI) {
       const _contract = this.contract();
-      _contract
-        .tokenURI(this.tokenId)
+      /* eslint-disable-next-line */
+      const uriSelector = _contract.hasOwnProperty("tokenURI")
+        ? _contract.tokenURI
+        : _contract.uri;
+      uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;
         })

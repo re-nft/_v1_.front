@@ -18,29 +18,35 @@ export const MyFavorites: React.FC = () => {
   const [nftItems, setNftItems] = useState<Nft[]>([]);
 
   const refreshState = useCallback(() => {
-    Promise.all([getUserNfts(), getUserData()]).then(
-      ([nfts, userData]: [
-        nfts: Nft[] | undefined,
-        userData: UserData | undefined
-      ]) => {
-        if (userData && nfts) {
-          const items = calculateMyFavorites(userData, nfts);
-          // @ts-ignore
-          setNftItems(items || []);
-          setIsLoading(false);
+    Promise.all([getUserNfts(), getUserData()])
+      .then(
+        ([nfts, userData]: [
+          nfts: Nft[] | undefined,
+          userData: UserData | undefined
+        ]) => {
+          if (userData && nfts) {
+            const items = calculateMyFavorites(userData, nfts);
+            // @ts-ignore
+            setNftItems(items || []);
+            setIsLoading(false);
+          }
         }
-      }
-    ).catch(() => { console.warn('could not refresh state') });
+      )
+      .catch(() => {
+        console.warn("could not refresh state");
+      });
   }, [getUserNfts, getUserData, setNftItems, setIsLoading]);
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
       setIsLoading(true);
-      addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then(
-        () => {
+      addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
+        .then(() => {
           refreshState();
-        }
-      ).catch(() => { console.warn('could not add or remove user favourite') });
+        })
+        .catch(() => {
+          console.warn("could not add or remove user favourite");
+        });
     },
     [setIsLoading, refreshState, currentAddress]
   );
@@ -54,19 +60,23 @@ export const MyFavorites: React.FC = () => {
 
     // TODO: remove all the ts-ignores
 
-    dataRequest.promise.then(
-      ([nfts, userData]: [
-        nfts: Nft[] | undefined,
-        userData: UserData | undefined
-      ]) => {
-        if (userData && nfts) {
-          const items = calculateMyFavorites(userData, nfts);
-          // @ts-ignore
-          setNftItems(items || []);
-          setIsLoading(false);
+    dataRequest.promise
+      .then(
+        ([nfts, userData]: [
+          nfts: Nft[] | undefined,
+          userData: UserData | undefined
+        ]) => {
+          if (userData && nfts) {
+            const items = calculateMyFavorites(userData, nfts);
+            // @ts-ignore
+            setNftItems(items || []);
+            setIsLoading(false);
+          }
         }
-      }
-    ).catch(() => { console.warn('could not perform data request') });
+      )
+      .catch(() => {
+        console.warn("could not perform data request");
+      });
 
     return dataRequest.cancel;
     /* eslint-disable-next-line */

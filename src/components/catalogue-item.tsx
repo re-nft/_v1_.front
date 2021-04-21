@@ -52,7 +52,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
     onCheckboxChange &&
-      onCheckboxChange(`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`, !isChecked);
+      onCheckboxChange(
+        `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`,
+        !isChecked
+      );
   }, [nft, isChecked, onCheckboxChange]);
 
   const preloadImage = (imgSrc: string) => {
@@ -63,26 +66,37 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   };
 
   const addOrRemoveFavorite = useCallback(() => {
-    addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then(
-      (resp: boolean) => {
+    addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
+      .then((resp: boolean) => {
         setInFavorites(resp);
-      }
-    ).catch(() => { console.warn('could not change userFavorite'); });
+      })
+      .catch(() => {
+        console.warn("could not change userFavorite");
+      });
   }, [nft, currentAddress]);
 
   const handleVote = useCallback(
     (vote: number) => {
-      upvoteOrDownvote(currentAddress, nft.address, nft.tokenId, vote).then(
-        () => {
-          getNftVote(nft.address, nft.tokenId).then((resp: UsersVote) => {
-            const id = nftId(nft.address, nft.tokenId);
-            const voteData: CalculatedUserVote = calculateVoteByUser(resp, id);
-            // @ts-ignore
-            const currentAddressVote = voteData?.[id] ?? {};
-            setCurrentVote(currentAddressVote);
-          }).catch(() => { console.warn('could not getNftVote') });
-        }
-      ).catch(() => { console.warn('could not handle vote'); });
+      upvoteOrDownvote(currentAddress, nft.address, nft.tokenId, vote)
+        .then(() => {
+          getNftVote(nft.address, nft.tokenId)
+            .then((resp: UsersVote) => {
+              const id = nftId(nft.address, nft.tokenId);
+              const voteData: CalculatedUserVote = calculateVoteByUser(
+                resp,
+                id
+              );
+              // @ts-ignore
+              const currentAddressVote = voteData?.[id] ?? {};
+              setCurrentVote(currentAddressVote);
+            })
+            .catch(() => {
+              console.warn("could not getNftVote");
+            });
+        })
+        .catch(() => {
+          console.warn("could not handle vote");
+        });
     },
     [nft, currentAddress]
   );
@@ -90,14 +104,16 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   useEffect(() => {
     setIsChecked(checked || false);
     if (isVisible && !meta?.image) {
-      fetchNftMeta(nft).then((response) => {
-        if (response?.image) {
-          preloadImage(response?.image);
-        } else {
-          setImageIsReady(true);
-        }
-        setMeta(response);
-      }).catch(() => console.warn('could not fetch nft meta'));
+      fetchNftMeta(nft)
+        .then((response) => {
+          if (response?.image) {
+            preloadImage(response?.image);
+          } else {
+            setImageIsReady(true);
+          }
+          setMeta(response);
+        })
+        .catch(() => console.warn("could not fetch nft meta"));
     }
   }, [checked, isVisible, nft, meta?.image]);
 

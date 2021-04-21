@@ -38,11 +38,15 @@ const Lendings: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUserNfts().then((items: Nft[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    }).catch(() => { console.warn('could not fetch user nfts') });
+    getUserNfts()
+      .then((items: Nft[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not fetch user nfts");
+      });
   }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
   const handleClose = useCallback(() => {
@@ -68,11 +72,15 @@ const Lendings: React.FC = () => {
 
     const getUserNftsRequest = createCancellablePromise(getUserNfts());
 
-    getUserNftsRequest.promise.then((items: Nft[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    }).catch(() => { console.warn('could not get user nfts request') });
+    getUserNftsRequest.promise
+      .then((items: Nft[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user nfts request");
+      });
 
     return () => {
       onResetPage();

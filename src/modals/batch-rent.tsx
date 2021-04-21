@@ -25,7 +25,9 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const [address, tokenId] = e.target.name.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+      const [address, tokenId] = e.target.name.split(
+        RENFT_SUBGRAPH_ID_SEPARATOR
+      );
       const value = e.target.value || "0";
       const lendingItem = nft.find(
         (x) => x.tokenId === tokenId && x.address === address
