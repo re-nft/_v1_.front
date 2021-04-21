@@ -9,13 +9,11 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
   Contract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
@@ -129,6 +127,29 @@ export class MyERC721 extends Contract {
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
   listeners(eventName?: string): Array<Listener>;
   off(eventName: string, listener: Listener): this;
   on(eventName: string, listener: Listener): this;
@@ -136,32 +157,11 @@ export class MyERC721 extends Contract {
   removeListener(eventName: string, listener: Listener): this;
   removeAllListeners(eventName?: string): this;
 
-  listeners<T, G>(
-    eventFilter?: TypedEventFilter<T, G>
-  ): Array<TypedListener<T, G>>;
-  off<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  on<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  once<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  removeListener<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  removeAllListeners<T, G>(eventFilter: TypedEventFilter<T, G>): this;
-
-  queryFilter<T, G>(
-    event: TypedEventFilter<T, G>,
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TypedEvent<T & G>>>;
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: MyERC721Interface;
 
@@ -169,18 +169,22 @@ export class MyERC721 extends Contract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "approve(address,uint256)"(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    award(overrides?: Overrides): Promise<ContractTransaction>;
+    award(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "award()"(overrides?: Overrides): Promise<ContractTransaction>;
+    "award()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -229,7 +233,7 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -237,19 +241,19 @@ export class MyERC721 extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "setApprovalForAll(address,bool)"(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     supportsInterface(
@@ -280,32 +284,36 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   approve(
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "approve(address,uint256)"(
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  award(overrides?: Overrides): Promise<ContractTransaction>;
+  award(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  "award()"(overrides?: Overrides): Promise<ContractTransaction>;
+  "award()"(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -351,7 +359,7 @@ export class MyERC721 extends Contract {
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256,bytes)"(
@@ -359,19 +367,19 @@ export class MyERC721 extends Contract {
     to: string,
     tokenId: BigNumberish,
     _data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setApprovalForAll(
     operator: string,
     approved: boolean,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "setApprovalForAll(address,bool)"(
     operator: string,
     approved: boolean,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   supportsInterface(
@@ -399,14 +407,14 @@ export class MyERC721 extends Contract {
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transferFrom(address,address,uint256)"(
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -574,18 +582,22 @@ export class MyERC721 extends Contract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "approve(address,uint256)"(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    award(overrides?: Overrides): Promise<BigNumber>;
+    award(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
-    "award()"(overrides?: Overrides): Promise<BigNumber>;
+    "award()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -634,7 +646,7 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -642,19 +654,19 @@ export class MyERC721 extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "setApprovalForAll(address,bool)"(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     supportsInterface(
@@ -685,14 +697,14 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "transferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -700,18 +712,22 @@ export class MyERC721 extends Contract {
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "approve(address,uint256)"(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    award(overrides?: Overrides): Promise<PopulatedTransaction>;
+    award(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
-    "award()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    "award()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     balanceOf(
       owner: string,
@@ -763,7 +779,7 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -771,19 +787,19 @@ export class MyERC721 extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "setApprovalForAll(address,bool)"(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(
@@ -814,14 +830,14 @@ export class MyERC721 extends Contract {
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

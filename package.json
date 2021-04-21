@@ -30,7 +30,6 @@
     "hardhat": "^2.0.10",
     "husky": "4",
     "identicon.js": "^2.3.3",
-    "ipfs-core": "^0.5.2",
     "ipfs-http-client": "^45.0.0",
     "moment": "^2.29.1",
     "postcss": "^8.2.6",

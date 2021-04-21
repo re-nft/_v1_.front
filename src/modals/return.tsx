@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import Modal from "./modal";
 import { Renting } from "../contexts/graph/classes";
-import { ReNftContext } from "../hardhat/SymfoniContext";
+import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import { ProviderContext } from "../hardhat/SymfoniContext";
@@ -23,7 +23,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 }) => {
   const [isApproved, setIsApproved] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { instance: renft } = useContext(ReNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [provider] = useContext(ProviderContext);
   const [nft] = nfts;

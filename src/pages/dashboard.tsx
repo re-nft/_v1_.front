@@ -12,7 +12,7 @@ import { PaymentToken } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
-import { ReNftContext } from "../hardhat/SymfoniContext";
+import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny } from "../utils";
 import { short } from "../utils";
 
@@ -28,7 +28,7 @@ enum DashboardViewType {
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
-  const { instance: renft } = useContext(ReNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lendingItems, setLendingItems] = useState<Lending[]>([]);
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);
@@ -39,13 +39,15 @@ export const Dashboard: React.FC = () => {
   );
 
   const handleRefresh = useCallback(() => {
-    Promise.all([getUserLending(), getUserRenting()]).then(
-      ([userLnding, userRenting]) => {
+    Promise.all([getUserLending(), getUserRenting()])
+      .then(([userLnding, userRenting]) => {
         setLendingItems(userLnding || []);
         setRentingItems(userRenting || []);
         setIsLoading(false);
-      }
-    ).catch(() => { console.warn('could not handle refresh') });
+      })
+      .catch(() => {
+        console.warn("could not handle refresh");
+      });
   }, [
     getUserLending,
     getUserRenting,
@@ -102,11 +104,15 @@ export const Dashboard: React.FC = () => {
       Promise.all([getUserLending(), getUserRenting()])
     );
 
-    getUserLendingRequest.promise.then(([userLnding, userRenting]) => {
-      setLendingItems(userLnding || []);
-      setRentingItems(userRenting || []);
-      setIsLoading(false);
-    }).catch(() => { console.warn('could not get user lending request') });
+    getUserLendingRequest.promise
+      .then(([userLnding, userRenting]) => {
+        setLendingItems(userLnding || []);
+        setRentingItems(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return getUserLendingRequest.cancel;
     /* eslint-disable-next-line */
@@ -226,7 +232,9 @@ export const Dashboard: React.FC = () => {
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     return (
-                      <tr key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.id}`}>
+                      <tr
+                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.id}`}
+                      >
                         <td className="column">n/a</td>
                         <td className="column">
                           {short(renting.renterAddress)}

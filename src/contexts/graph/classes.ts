@@ -35,13 +35,17 @@ class Nft {
     this.isERC721 = isERC721;
 
     this._meta = options?.meta;
-    
+
     if (!options?.tokenURI) {
       const _contract = this.contract();
-      _contract.tokenURI(this.tokenId).then((d: any) => {
-        console.log('fetched tokenURI', d);
-        this._tokenURI = d;
-      }).catch(() => { console.warn('could not fetch tokenURI') })
+      _contract
+        .tokenURI(this.tokenId)
+        .then((d: any) => {
+          this._tokenURI = d;
+        })
+        .catch(() => {
+          console.warn("could not fetch tokenURI");
+        });
     }
 
     this._tokenURI = options?.tokenURI ?? "";
@@ -64,9 +68,12 @@ class Nft {
    */
   contract = (): ERC721 | ERC1155 => {
     if (this._contract) return this._contract;
-  
+
     const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
-    const _contract: ERC721 | ERC1155 = instantiator.connect(this.address, this.signer);
+    const _contract: ERC721 | ERC1155 = instantiator.connect(
+      this.address,
+      this.signer
+    );
     this._contract = _contract;
     return _contract;
   };
@@ -74,7 +81,7 @@ class Nft {
   loadTokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
     if (!this._contract) this.contract();
-  
+
     try {
       if (this.isERC721) {
         return await this.contract().tokenURI(

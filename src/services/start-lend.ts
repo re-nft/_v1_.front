@@ -1,11 +1,11 @@
-import { RentNft } from "../hardhat/typechain/RentNft";
+import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { BigNumber, ContractTransaction } from "ethers";
 import { PaymentToken } from "../types";
 import { Nft } from "../contexts/graph/classes";
 import { decimalToPaddedHexString } from "../utils";
 
 export default async function startLend(
-  renft: RentNft,
+  renft: ReNFT,
   nfts: Nft[],
   maxDurations: string[],
   borrowPrices: string[],

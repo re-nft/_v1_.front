@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer } from "ethers";
+import { Signer, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import { Contract, ContractFactory, Overrides } from "@ethersproject/contracts";
 
 import type { Resolver } from "../Resolver";
 
@@ -13,12 +12,15 @@ export class Resolver__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(_admin: string, overrides?: Overrides): Promise<Resolver> {
+  deploy(
+    _admin: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Resolver> {
     return super.deploy(_admin, overrides || {}) as Promise<Resolver>;
   }
   getDeployTransaction(
     _admin: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(_admin, overrides || {});
   }

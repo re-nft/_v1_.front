@@ -6,10 +6,7 @@ import { PaymentToken } from "../types";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import MinimalSelect from "../components/select";
-import {
-  CurrentAddressContext,
-  ReNftContext,
-} from "../hardhat/SymfoniContext";
+import { CurrentAddressContext, ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
 import startLend from "../services/start-lend";
@@ -34,7 +31,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { instance: renft } = useContext(ReNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});

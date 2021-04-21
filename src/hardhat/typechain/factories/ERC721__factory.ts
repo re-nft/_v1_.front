@@ -2,9 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer } from "ethers";
+import { Signer, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import { Contract, ContractFactory, Overrides } from "@ethersproject/contracts";
 
 import type { ERC721 } from "../ERC721";
 
@@ -16,14 +15,14 @@ export class ERC721__factory extends ContractFactory {
   deploy(
     name_: string,
     symbol_: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ERC721> {
     return super.deploy(name_, symbol_, overrides || {}) as Promise<ERC721>;
   }
   getDeployTransaction(
     name_: string,
     symbol_: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(name_, symbol_, overrides || {});
   }

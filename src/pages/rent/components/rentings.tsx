@@ -2,7 +2,7 @@ import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
   CurrentAddressContext,
-  ReNftContext,
+  ReNFTContext,
   SignerContext,
   ResolverContext,
   // todo: remove for prod
@@ -46,7 +46,7 @@ const AvailableToRent: React.FC = () => {
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { instance: renft } = useContext(ReNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
@@ -56,11 +56,15 @@ const AvailableToRent: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUsersLending().then((items: Lending[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    }).catch(() => {console.warn('could not get user lending')});
+    getUsersLending()
+      .then((items: Lending[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending");
+      });
   }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
 
   const handleBatchModalClose = useCallback(() => {
@@ -117,13 +121,15 @@ const AvailableToRent: React.FC = () => {
 
     const getUsersLendingRequest = createCancellablePromise(getUsersLending());
 
-    getUsersLendingRequest.promise.then(
-      (usersLnding: Lending[] | undefined) => {
+    getUsersLendingRequest.promise
+      .then((usersLnding: Lending[] | undefined) => {
         onChangePage(usersLnding || []);
         onSetItems(usersLnding || []);
         setIsLoading(false);
-      }
-    ).catch(() => {console.warn('could not get user lending request')});
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return () => {
       onResetPage();

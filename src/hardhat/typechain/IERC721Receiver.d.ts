@@ -9,13 +9,11 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
   Contract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
@@ -44,6 +42,29 @@ export class IERC721Receiver extends Contract {
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
   listeners(eventName?: string): Array<Listener>;
   off(eventName: string, listener: Listener): this;
   on(eventName: string, listener: Listener): this;
@@ -51,32 +72,11 @@ export class IERC721Receiver extends Contract {
   removeListener(eventName: string, listener: Listener): this;
   removeAllListeners(eventName?: string): this;
 
-  listeners<T, G>(
-    eventFilter?: TypedEventFilter<T, G>
-  ): Array<TypedListener<T, G>>;
-  off<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  on<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  once<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  removeListener<T, G>(
-    eventFilter: TypedEventFilter<T, G>,
-    listener: TypedListener<T, G>
-  ): this;
-  removeAllListeners<T, G>(eventFilter: TypedEventFilter<T, G>): this;
-
-  queryFilter<T, G>(
-    event: TypedEventFilter<T, G>,
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TypedEvent<T & G>>>;
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: IERC721ReceiverInterface;
 
@@ -86,7 +86,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "onERC721Received(address,address,uint256,bytes)"(
@@ -94,7 +94,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -103,7 +103,7 @@ export class IERC721Receiver extends Contract {
     from: string,
     tokenId: BigNumberish,
     data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "onERC721Received(address,address,uint256,bytes)"(
@@ -111,7 +111,7 @@ export class IERC721Receiver extends Contract {
     from: string,
     tokenId: BigNumberish,
     data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -140,7 +140,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "onERC721Received(address,address,uint256,bytes)"(
@@ -148,7 +148,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -158,7 +158,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "onERC721Received(address,address,uint256,bytes)"(
@@ -166,7 +166,7 @@ export class IERC721Receiver extends Contract {
       from: string,
       tokenId: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

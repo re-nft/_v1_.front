@@ -1,7 +1,7 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
-import { ReNftContext } from "../../../hardhat/SymfoniContext";
+import { ReNFTContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft } from "../../../contexts/graph/classes";
@@ -35,16 +35,20 @@ const UserLendings: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const { getUserLending } = useContext(GraphContext);
-  const { instance: renft } = useContext(ReNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleReset = useCallback(() => {
-    getUserLending().then((userLnding: Lending[] | undefined) => {
-      onChangePage(userLnding || []);
-      onSetItems(userLnding || []);
-      setIsLoading(false);
-    }).catch(() => {console.warn('could not handle reset')});
+    getUserLending()
+      .then((userLnding: Lending[] | undefined) => {
+        onChangePage(userLnding || []);
+        onSetItems(userLnding || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not handle reset");
+      });
   }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
 
   const handleStopLend = useCallback(
@@ -58,9 +62,12 @@ const UserLendings: React.FC = () => {
     [renft, setHash, handleReset, onReset]
   );
 
-  const handleClickNft = useCallback(async (nft: Nft) => {
-    handleStopLend([nft]);
-  }, [handleStopLend]);
+  const handleClickNft = useCallback(
+    async (nft: Nft) => {
+      handleStopLend([nft]);
+    },
+    [handleStopLend]
+  );
 
   const handleBatchStopnLend = useCallback(async () => {
     handleStopLend(checkedItems);
@@ -71,11 +78,15 @@ const UserLendings: React.FC = () => {
 
     const getUserLendingRequest = createCancellablePromise(getUserLending());
 
-    getUserLendingRequest.promise.then((userLnding: Lending[] | undefined) => {
-      onChangePage(userLnding || []);
-      onSetItems(userLnding || []);
-      setIsLoading(false);
-    }).catch(() => {console.warn('could not get user lending request')});
+    getUserLendingRequest.promise
+      .then((userLnding: Lending[] | undefined) => {
+        onChangePage(userLnding || []);
+        onSetItems(userLnding || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return () => {
       onResetPage();
@@ -91,7 +102,7 @@ const UserLendings: React.FC = () => {
   if (!isLoading && currentPage.length === 0) {
     return <div className="center">You dont have any lend anything yet</div>;
   }
-  console.log(currentPage);
+
   return (
     <>
       <ItemWrapper>
