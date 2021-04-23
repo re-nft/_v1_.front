@@ -10,7 +10,6 @@ import {
 } from "../../../hardhat/SymfoniContext";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
-import { AvoidsCORSHeaders } from "../../../consts";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -50,11 +49,7 @@ export const useFetchNftDev = (
       });
       tokenIds.push(tokenId.toString());
       toFetch.push(
-        fetch(metaURI, {
-          headers: AvoidsCORSHeaders,
-          mode: "cors",
-          method: "GET",
-        })
+        fetch(`${metaURI}`)
           .then(async (dat) => await dat.json())
           .catch(() => {
             console.warn("could not fetch metaURI");

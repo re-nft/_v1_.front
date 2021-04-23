@@ -4,8 +4,6 @@ import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 
-import { AvoidsCORSHeaders } from "./consts";
-
 const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
@@ -249,11 +247,7 @@ export const toDataURLFromBlob = (
 export const toDataURLFromURL = (
   url: string
 ): Promise<string | ArrayBuffer | null> =>
-  fetch(url, {
-    headers: AvoidsCORSHeaders,
-    mode: "cors",
-    method: "GET",
-  })
+  fetch(`${url}`)
     .then((response) => response.blob())
     .then((blob) => toDataURLFromBlob(blob))
     .catch(() => {

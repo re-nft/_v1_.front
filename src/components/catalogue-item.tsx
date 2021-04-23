@@ -14,7 +14,7 @@ import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
-import { fetchNftMeta } from "../services/fetch-nft-meta";
+import { fetchNFTMeta } from "../services/fetch-nft-meta";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -104,7 +104,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   useEffect(() => {
     setIsChecked(checked || false);
     if (isVisible && !meta?.image) {
-      fetchNftMeta(nft)
+      fetchNFTMeta(nft)
         .then((response) => {
           if (response?.image) {
             preloadImage(response?.image);

@@ -9,4 +9,6 @@ export const MAX_UINT256 =
 
 export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 
-export const AvoidsCORSHeaders = [["Content-Type", "text/plain"]];
+// TODO: in prod, change this URI for security and save in env variables
+export const CORS_PROXY =
+  "https://us-central1-renft-front-cors-proxy.cloudfunctions.net/cors?url=";
