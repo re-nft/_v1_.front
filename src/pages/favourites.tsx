@@ -8,7 +8,7 @@ import { Nft } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { calculateMyFavorites } from "../services/calculate-my-faforites";
+import { calculateMyFavorites } from "../services/calculate-my-favorites";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 export const MyFavorites: React.FC = () => {

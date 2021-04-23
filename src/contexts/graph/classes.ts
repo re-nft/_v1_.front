@@ -9,11 +9,9 @@ import {
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
-// import { urlFromIPFS } from "../../utils";
 import { ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
-// import { getFromIPFS } from "../../contexts/graph/ipfs";
 
 type NftOptions = {
   tokenURI?: string;

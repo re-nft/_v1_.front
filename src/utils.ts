@@ -4,6 +4,8 @@ import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 
+import { AvoidsCORSHeaders } from "./consts";
+
 const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
@@ -233,9 +235,6 @@ export const getContract = async (
   return { contract, isERC721 };
 };
 
-export const urlFromIPFS = (uri: string): boolean =>
-  (uri || "").startsWith("/ipfs/") || (uri || "").startsWith("ipfs://ipfs");
-
 export const toDataURLFromBlob = (
   blob: Blob
 ): Promise<string | ArrayBuffer | null> => {
@@ -250,7 +249,11 @@ export const toDataURLFromBlob = (
 export const toDataURLFromURL = (
   url: string
 ): Promise<string | ArrayBuffer | null> =>
-  fetch(url)
+  fetch(url, {
+    headers: AvoidsCORSHeaders,
+    mode: "cors",
+    method: "GET",
+  })
     .then((response) => response.blob())
     .then((blob) => toDataURLFromBlob(blob))
     .catch(() => {

@@ -8,3 +8,5 @@ export const MAX_UINT256 =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
 export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
+
+export const AvoidsCORSHeaders = [["Content-Type", "text/plain"]];
