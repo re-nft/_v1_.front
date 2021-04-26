@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
+
 import GraphContext from "../contexts/graph";
 import { UserData } from "../contexts/graph/types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
@@ -7,7 +8,8 @@ import { Nft } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { calculateMyFavorites } from "../services/calculate-my-faforites";
+import { calculateMyFavorites } from "../services/calculate-my-favorites";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
@@ -16,29 +18,35 @@ export const MyFavorites: React.FC = () => {
   const [nftItems, setNftItems] = useState<Nft[]>([]);
 
   const refreshState = useCallback(() => {
-    Promise.all([getUserNfts(), getUserData()]).then(
-      ([nfts, userData]: [
-        nfts: Nft[] | undefined,
-        userData: UserData | undefined
-      ]) => {
-        if (userData && nfts) {
-          const items = calculateMyFavorites(userData, nfts);
-          // @ts-ignore
-          setNftItems(items || []);
-          setIsLoading(false);
+    Promise.all([getUserNfts(), getUserData()])
+      .then(
+        ([nfts, userData]: [
+          nfts: Nft[] | undefined,
+          userData: UserData | undefined
+        ]) => {
+          if (userData && nfts) {
+            const items = calculateMyFavorites(userData, nfts);
+            // @ts-ignore
+            setNftItems(items || []);
+            setIsLoading(false);
+          }
         }
-      }
-    );
+      )
+      .catch(() => {
+        console.warn("could not refresh state");
+      });
   }, [getUserNfts, getUserData, setNftItems, setIsLoading]);
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
       setIsLoading(true);
-      addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId).then(
-        (resp: boolean) => {
+      addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
+        .then(() => {
           refreshState();
-        }
-      );
+        })
+        .catch(() => {
+          console.warn("could not add or remove user favourite");
+        });
     },
     [setIsLoading, refreshState, currentAddress]
   );
@@ -50,19 +58,25 @@ export const MyFavorites: React.FC = () => {
       Promise.all([getUserNfts(), getUserData()])
     );
 
-    dataRequest.promise.then(
-      ([nfts, userData]: [
-        nfts: Nft[] | undefined,
-        userData: UserData | undefined
-      ]) => {
-        if (userData && nfts) {
-          const items = calculateMyFavorites(userData, nfts);
-          // @ts-ignore
-          setNftItems(items || []);
-          setIsLoading(false);
+    // TODO: remove all the ts-ignores
+
+    dataRequest.promise
+      .then(
+        ([nfts, userData]: [
+          nfts: Nft[] | undefined,
+          userData: UserData | undefined
+        ]) => {
+          if (userData && nfts) {
+            const items = calculateMyFavorites(userData, nfts);
+            // @ts-ignore
+            setNftItems(items || []);
+            setIsLoading(false);
+          }
         }
-      }
-    );
+      )
+      .catch(() => {
+        console.warn("could not perform data request");
+      });
 
     return dataRequest.cancel;
     /* eslint-disable-next-line */
@@ -81,7 +95,7 @@ export const MyFavorites: React.FC = () => {
       <div className="content__row content__items">
         {nftItems.map((nft) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             nft={nft}
             isAlreadyFavourited
           >

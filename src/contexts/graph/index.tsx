@@ -6,9 +6,10 @@ import React, {
   useEffect,
 } from "react";
 import { request } from "graphql-request";
+
 import {
   CurrentAddressContext,
-  RentNftContext,
+  ReNFTContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";
@@ -53,25 +54,19 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
+// TODO: environment variables
+
 // renft localhost and prod subgraph for pulling NFTs related to reNFT
 const ENDPOINT_RENFT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 const ENDPOINT_RENFT_DEV =
-  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
+  "http://localhost:8000/subgraphs/name/nazariyv/reNFT";
 
 // non-reNFT prod subgraphs for pulling your NFT balances
 const ENDPOINT_EIP721_PROD =
   "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
 const ENDPOINT_EIP1155_PROD =
   "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
-
-type RenftsLending = {
-  [key: string]: Lending;
-};
-
-type RenftsRenting = {
-  [key: string]: Renting;
-};
 
 type LendingId = string;
 type RentingId = LendingId;
@@ -114,7 +109,7 @@ const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 export const GraphProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const [signer] = useContext(SignerContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
@@ -150,7 +145,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       }
 
       const response: ERC721s | ERC1155s = await timeItAsync(
-        `Pulled My Prod ${FetchType[fetchType]} NFTs`,
+        `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
 
@@ -160,14 +155,20 @@ export const GraphProvider: React.FC = ({ children }) => {
           tokens = (response as ERC721s).tokens.map((token) => {
             // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
             const [address, tokenId] = token.id.split("_");
-            return { address, tokenId, tokenURI: token.tokenURI };
+            return {
+              address,
+              tokenURI: token.tokenURI,
+              tokenId,
+              isERC721: true,
+            };
           });
           break;
         case FetchType.ERC1155:
           tokens = (response as ERC1155s).account.balances.map(({ token }) => ({
             address: token.registry.contractAddress,
-            tokenId: token.tokenId,
             tokenURI: token.tokenURI,
+            tokenId: token.tokenId,
+            isERC721: false,
           }));
           break;
       }
@@ -185,15 +186,12 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return undefined;
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-    const _usersNfts = usersNfts721
-      .concat(usersNfts1155)
-      .map(
-        (nft) =>
-          new Nft(nft.address, nft.tokenId, signer, {
-            meta: nft.meta,
-            tokenURI: nft.tokenURI,
-          })
-      );
+    const _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
+      return new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
+        meta: nft.meta,
+        tokenURI: nft.tokenURI,
+      });
+    });
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
@@ -210,13 +208,14 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
     } = await timeItAsync(
-      `Pulled My Renft Lending Nfts`,
+      "Pulled My Renft Lending Nfts",
       async () => await request(subgraphURI, query)
     );
 
     return (
       response.user?.lending?.map(
-        ({ tokenId, nftAddress }) => `${nftAddress}::${tokenId}`
+        ({ tokenId, nftAddress }) =>
+          `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`
       ) ?? []
     );
   };
@@ -228,12 +227,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     const response: {
       user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
     } = await timeItAsync(
-      `Pulled My Renft Renting Nfts`,
+      "Pulled My Renft Renting Nfts",
       async () => await request(subgraphURI, query)
     );
     return (
       response.user?.renting?.map(
-        ({ lending }) => `${lending.nftAddress}::${lending.id}`
+        ({ lending }) =>
+          `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`
       ) ?? []
     );
   };
@@ -256,7 +256,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     const query = queryAllRenft();
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: NftRaw = await timeItAsync(
-      `Pulled All Renft Nfts`,
+      "Pulled All Renft Nfts",
       async () => await request(subgraphURI, query)
     );
 
@@ -292,7 +292,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const userRenting = await fetchUserRenting();
       return Object.values(renftAll.lending)
         .filter((item: Lending) => {
-          const id = `${item.address}::${item.id}`;
+          const id = `${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.id}`;
           return !userRenting?.includes(id);
         })
         .filter(
@@ -334,11 +334,15 @@ export const GraphProvider: React.FC = ({ children }) => {
   }, [currentAddress]);
 
   const updateGlobalUserData = useCallback(() => {
-    return getUserData().then((userData: UserData | undefined) => {
-      if (userData) {
-        setUserData(userData);
-      }
-    });
+    return getUserData()
+      .then((userData: UserData | undefined) => {
+        if (userData) {
+          setUserData(userData);
+        }
+      })
+      .catch(() => {
+        console.warn("could not update global user data");
+      });
   }, [getUserData]);
 
   useEffect(() => {
@@ -347,8 +351,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         Promise.all([getAllUsersVote(), getUserData()])
       );
 
-      getUserDataRequest.promise.then(
-        ([usersVote, userData]: [UsersVote, UserData | undefined]) => {
+      getUserDataRequest.promise
+        .then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
           if (usersVote && Object.keys(usersVote).length !== 0) {
             const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
               usersVote
@@ -360,8 +364,10 @@ export const GraphProvider: React.FC = ({ children }) => {
           if (userData) {
             setUserData(userData);
           }
-        }
-      );
+        })
+        .catch(() => {
+          console.warn("could not fulfill userDataRequest");
+        });
       return getUserDataRequest.cancel;
     }
   }, [currentAddress, getUserData]);

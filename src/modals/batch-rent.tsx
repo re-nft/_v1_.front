@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import { Lending } from "../contexts/graph/classes";
@@ -20,9 +22,12 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
 }) => {
   const [duration, setDuration] = useState<Record<string, string>>({});
   const [totalRent, setTotalRent] = useState<Record<string, number>>({});
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const [address, tokenId] = e.target.name.split("::");
+      const [address, tokenId] = e.target.name.split(
+        RENFT_SUBGRAPH_ID_SEPARATOR
+      );
       const value = e.target.value || "0";
       const lendingItem = nft.find(
         (x) => x.tokenId === tokenId && x.address === address
@@ -48,9 +53,11 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       const rentDuration = Object.values(duration);
       onSubmit(nft, { rentDuration });
     },
-    [nft, duration, handleClose, onSubmit]
+    [nft, duration, onSubmit]
   );
+
   const isValid = nft.length === Object.values(duration).length;
+
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
@@ -68,7 +75,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           return (
             <div
               className="modal-dialog-section"
-              key={`${item.address}::${item.tokenId}`}
+              key={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}`}
             >
               <div className="modal-dialog-for">
                 <div className="label">Token Id</div>
@@ -79,10 +86,10 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                 <CssTextField
                   required
                   label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
-                  id={`${item.tokenId}::duration`}
+                  id={`${item.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}duration`}
                   variant="outlined"
                   type="number"
-                  name={`${item.address}::${item.tokenId}`}
+                  name={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}`}
                   onChange={handleChange}
                 />
                 <div className="nft__meta_row">

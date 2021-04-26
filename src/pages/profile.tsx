@@ -19,13 +19,18 @@ const Profile: React.FC = () => {
       e.preventDefault();
       if (username !== "" || bio !== "") {
         setIsLoading(true);
-        updateUserData(currentAddress, username, bio).then(() => {
-          updateGlobalUserData();
-          setIsLoading(false);
-        });
+        updateUserData(currentAddress, username, bio)
+          .then(() => {
+            updateGlobalUserData();
+            setIsLoading(false);
+          })
+          .catch(() => {
+            console.warn("could not update user data");
+          });
       }
     },
-    [username, bio]
+    // TODO: check if need to add currentAddress below
+    [username, bio, updateUserData]
   );
 
   const handleChangeFormField = useCallback(
@@ -45,15 +50,19 @@ const Profile: React.FC = () => {
 
     const dataRequest = createCancellablePromise(getUserData());
 
-    dataRequest.promise.then((userData: UserData | undefined) => {
-      if (userData) {
-        setUserData(userData);
-        setUsername(userData?.name || "");
-        setBio(userData?.bio || "");
-      }
+    dataRequest.promise
+      .then((userData: UserData | undefined) => {
+        if (userData) {
+          setUserData(userData);
+          setUsername(userData?.name || "");
+          setBio(userData?.bio || "");
+        }
 
-      setIsLoading(false);
-    });
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not perform data request!");
+      });
 
     return dataRequest.cancel;
     /* eslint-disable-next-line */

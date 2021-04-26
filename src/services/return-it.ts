@@ -1,9 +1,9 @@
-import { RentNft } from "../hardhat/typechain/RentNft";
+import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { ContractTransaction } from "ethers";
 import { Lending, Renting } from "../contexts/graph/classes";
 
 export default async function returnIt(
-  renft: RentNft,
+  renft: ReNFT,
   nfts: Renting[]
 ): Promise<ContractTransaction> {
   const addresses = nfts.map((item) => item.address);

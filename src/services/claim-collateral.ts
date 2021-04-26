@@ -1,9 +1,9 @@
-import { RentNft } from "../hardhat/typechain/RentNft";
+import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { BigNumber, ContractTransaction } from "ethers";
 import { Lending, Nft } from "../contexts/graph/classes";
 
 export default async function claimCollateral(
-  renft: RentNft,
+  renft: ReNFT,
   nfts: Nft[]
 ): Promise<ContractTransaction> {
   const address = nfts.map((item) => item.address);

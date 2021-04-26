@@ -6,7 +6,7 @@ import {
   MyERC721Context,
   MyERC1155Context,
   CurrentAddressContext,
-  RentNftContext,
+  ReNFTContext,
 } from "../../../hardhat/SymfoniContext";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
@@ -17,14 +17,14 @@ export const useFetchNftDev = (
   signer?: ethers.Signer
 ): (() => Promise<Nft[]>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
-  const renft = useContext(RentNftContext);
+  const renft = useContext(ReNFTContext);
 
   const { instance: myERC721 } = useContext(MyERC721Context);
   const { instance: myERC1155 } = useContext(MyERC1155Context);
 
   const fetchNftDev = useCallback(async () => {
     if (!myERC1155 || !myERC721 || !renft || !signer) return [];
-    
+
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const usersNfts: Omit<NftToken, "tokenURI">[] = [];
@@ -45,21 +45,27 @@ export const useFetchNftDev = (
       usersNfts.push({
         address: myERC721.address,
         tokenId: tokenId.toString(),
+        isERC721: true,
       });
       tokenIds.push(tokenId.toString());
       toFetch.push(
-        fetch(metaURI, {
-          headers: [["Content-Type", "text/plain"]],
-        }).then(async (dat) => await dat.json())
+        fetch(`${metaURI}`)
+          .then(async (dat) => await dat.json())
+          .catch(() => {
+            console.warn("could not fetch metaURI");
+          })
       );
     }
-  
+
+    // TODO: fix all the ts-ignores
+
     const _meta = await Promise.all(toFetch);
 
     const usersDevNfts: Nft[] = [];
+    const isERC721 = true;
     for (let i = 0; i < _meta.length; i++) {
       usersDevNfts.push(
-        new Nft(myERC721.address, tokenIds[i], signer, {
+        new Nft(myERC721.address, tokenIds[i], isERC721, signer, {
           // @ts-ignore
           mediaURI: _meta[i]?.["image"] ?? "",
           // @ts-ignore
@@ -71,11 +77,16 @@ export const useFetchNftDev = (
     for (let i = 0; i < myNfts1155.length; i++) {
       if (!myNfts1155[i].gt(BigNumZero)) continue;
       const tokenURI = await myERC1155.uri(myNfts1155[i]);
-      // {"external_url":"https://www.bondly.finance/","image":"https://api.bccg.digital/images/ARCA.png","name":"Arca (Thriller)","description":"Arca is an ex-spy.  She's part cybernetic and has incredible strength and agility. Prefers bladed weapons for stealthy quick kills.  ","attributes":[{"trait_type":"ARC","value":"Arca"},{"trait_type":"T","value":"Thriller"},{"trait_type":"1S","value":"First Edition"},{"trait_type":"Villain","value":"Villain"}]}
       usersDevNfts.push(
-        new Nft(myERC1155.address, myNfts1155[i].toString(), signer, {
-          tokenURI: tokenURI,
-        })
+        new Nft(
+          myERC1155.address,
+          myNfts1155[i].toString(),
+          !isERC721,
+          signer,
+          {
+            tokenURI: tokenURI,
+          }
+        )
       );
     }
 

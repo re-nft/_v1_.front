@@ -9,11 +9,9 @@ import {
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
-import { urlFromIPFS } from "../../utils";
 import { ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
-import { getFromIPFS } from "../../contexts/graph/ipfs";
 
 type NftOptions = {
   tokenURI?: string;
@@ -25,15 +23,32 @@ class Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
+    isERC721: boolean,
     signer: ethers.Signer,
     options?: NftOptions
   ) {
     this.address = nftAddress;
     this.tokenId = tokenId;
     this.signer = signer;
-    this.isERC721 = false;
+    this.isERC721 = isERC721;
 
     this._meta = options?.meta;
+
+    if (!options?.tokenURI) {
+      const _contract = this.contract();
+      /* eslint-disable-next-line */
+      const uriSelector = _contract.hasOwnProperty("tokenURI")
+        ? _contract.tokenURI
+        : _contract.uri;
+      uriSelector(this.tokenId)
+        .then((d: any) => {
+          this._tokenURI = d;
+        })
+        .catch(() => {
+          console.warn("could not fetch tokenURI");
+        });
+    }
+
     this._tokenURI = options?.tokenURI ?? "";
     this._mediaURI = options?.mediaURI ?? "";
   }
@@ -54,14 +69,12 @@ class Nft {
    */
   contract = (): ERC721 | ERC1155 => {
     if (this._contract) return this._contract;
-    let _contract: ERC721 | ERC1155;
-    // TODO not exactly sure if this will work
-    try {
-      _contract = ERC721__factory.connect(this.address, this.signer);
-      this.isERC721 = true;
-    } catch {
-      _contract = ERC1155__factory.connect(this.address, this.signer);
-    }
+
+    const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
+    const _contract: ERC721 | ERC1155 = instantiator.connect(
+      this.address,
+      this.signer
+    );
     this._contract = _contract;
     return _contract;
   };
@@ -69,6 +82,7 @@ class Nft {
   loadTokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
     if (!this._contract) this.contract();
+
     try {
       if (this.isERC721) {
         return await this.contract().tokenURI(
@@ -78,7 +92,7 @@ class Nft {
         return await this.contract().uri();
       }
     } catch (err) {
-      console.warn(" loadTokenURI ", err);
+      console.warn("loadTokenURI error");
     }
   };
 }
@@ -91,7 +105,7 @@ class Lending extends Nft {
     lendingRaw: LendingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, signer, options);
+    super(nftAddress, tokenId, lendingRaw.isERC721, signer, options);
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
@@ -108,7 +122,7 @@ class Renting extends Nft {
     rentingRaw: RentingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, signer, options);
+    super(nftAddress, tokenId, rentingRaw.isERC721, signer, options);
 
     this.renting = parseRenting(rentingRaw);
     this.id = rentingRaw.id;

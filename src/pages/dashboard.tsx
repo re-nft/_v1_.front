@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import PageLayout from "../components/page-layout";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
@@ -10,7 +12,7 @@ import { PaymentToken } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
-import { RentNftContext } from "../hardhat/SymfoniContext";
+import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny } from "../utils";
 import { short } from "../utils";
 
@@ -26,7 +28,7 @@ enum DashboardViewType {
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lendingItems, setLendingItems] = useState<Lending[]>([]);
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);
@@ -37,13 +39,15 @@ export const Dashboard: React.FC = () => {
   );
 
   const handleRefresh = useCallback(() => {
-    Promise.all([getUserLending(), getUserRenting()]).then(
-      ([userLnding, userRenting]) => {
+    Promise.all([getUserLending(), getUserRenting()])
+      .then(([userLnding, userRenting]) => {
         setLendingItems(userLnding || []);
         setRentingItems(userRenting || []);
         setIsLoading(false);
-      }
-    );
+      })
+      .catch(() => {
+        console.warn("could not handle refresh");
+      });
   }, [
     getUserLending,
     getUserRenting,
@@ -74,6 +78,8 @@ export const Dashboard: React.FC = () => {
     [renft, setHash, handleRefresh]
   );
 
+  // todo: get rid of all of the ts-ignores
+
   const _returnBy = (lending: Lending) =>
     returnBy(
       // @ts-ignore
@@ -98,11 +104,15 @@ export const Dashboard: React.FC = () => {
       Promise.all([getUserLending(), getUserRenting()])
     );
 
-    getUserLendingRequest.promise.then(([userLnding, userRenting]) => {
-      setLendingItems(userLnding || []);
-      setRentingItems(userRenting || []);
-      setIsLoading(false);
-    });
+    getUserLendingRequest.promise
+      .then(([userLnding, userRenting]) => {
+        setLendingItems(userLnding || []);
+        setRentingItems(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return getUserLendingRequest.cancel;
     /* eslint-disable-next-line */
@@ -152,7 +162,7 @@ export const Dashboard: React.FC = () => {
                     const lending = lend.lending;
                     return (
                       <tr
-                        key={`${lend.address}::${lend.tokenId}::${lending.id}`}
+                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`}
                       >
                         <td className="column">n/a</td>
                         <td className="column">{short(lending.nftAddress)}</td>
@@ -222,7 +232,9 @@ export const Dashboard: React.FC = () => {
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     return (
-                      <tr key={`${rent.address}::${rent.tokenId}::${rent.id}`}>
+                      <tr
+                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.id}`}
+                      >
                         <td className="column">n/a</td>
                         <td className="column">
                           {short(renting.renterAddress)}

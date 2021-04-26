@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
+
 import {
   CurrentAddressContext,
-  RentNftContext,
+  ReNFTContext,
   SignerContext,
   ResolverContext,
   // todo: remove for prod
@@ -16,13 +17,14 @@ import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Lending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
 const AvailableToRent: React.FC = () => {
   const {
@@ -44,7 +46,7 @@ const AvailableToRent: React.FC = () => {
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { instance: myERC20 } = useContext(MyERC20Context);
@@ -54,11 +56,15 @@ const AvailableToRent: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUsersLending().then((items: Lending[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    });
+    getUsersLending()
+      .then((items: Lending[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending");
+      });
   }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
 
   const handleBatchModalClose = useCallback(() => {
@@ -115,13 +121,15 @@ const AvailableToRent: React.FC = () => {
 
     const getUsersLendingRequest = createCancellablePromise(getUsersLending());
 
-    getUsersLendingRequest.promise.then(
-      (usersLnding: Lending[] | undefined) => {
+    getUsersLendingRequest.promise
+      .then((usersLnding: Lending[] | undefined) => {
         onChangePage(usersLnding || []);
         onSetItems(usersLnding || []);
         setIsLoading(false);
-      }
-    );
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return () => {
       onResetPage();
@@ -138,6 +146,8 @@ const AvailableToRent: React.FC = () => {
     return <div className="center">You dont have any lend anything yet</div>;
   }
 
+  // TODO: so many anys it hurts
+
   return (
     <>
       <BatchRentModal
@@ -149,7 +159,7 @@ const AvailableToRent: React.FC = () => {
       <ItemWrapper>
         {((currentPage as any) as Lending[]).map((nft: Lending) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}::${nft.lending.id}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.lending.id}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
@@ -170,7 +180,7 @@ const AvailableToRent: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Rents All"
           onCancel={onReset}
           onClick={handleBatchRent}

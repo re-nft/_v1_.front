@@ -1,7 +1,7 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from "react";
 
 const DEFAULT_ROOT = null;
-const DEFAULT_ROOT_MARGIN = '0px';
+const DEFAULT_ROOT_MARGIN = "0px";
 const DEFAULT_THRESHOLD = [0];
 
 export type IntersectionObserverHookRefCallbackNode = Element | null;
@@ -15,7 +15,11 @@ export type IntersectionObserverHookResult = [
   { entry: IntersectionObserverEntry | undefined }
 ];
 
-const useIntersectionObserver = ({root = DEFAULT_ROOT, rootMargin = DEFAULT_ROOT_MARGIN, threshold = DEFAULT_THRESHOLD}: IntersectionObserverInit = {}): IntersectionObserverHookResult => {
+const useIntersectionObserver = ({
+  root = DEFAULT_ROOT,
+  rootMargin = DEFAULT_ROOT_MARGIN,
+  threshold = DEFAULT_THRESHOLD,
+}: IntersectionObserverInit = {}): IntersectionObserverHookResult => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [entry, setEntry] = useState<IntersectionObserverEntry>();
 
@@ -54,6 +58,6 @@ const useIntersectionObserver = ({root = DEFAULT_ROOT, rootMargin = DEFAULT_ROOT
   );
 
   return [refCallback, { entry }];
-}
+};
 
 export default useIntersectionObserver;

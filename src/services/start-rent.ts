@@ -1,4 +1,4 @@
-import { RentNft } from "../hardhat/typechain/RentNft";
+import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { Signer, ContractTransaction, ethers } from "ethers";
 import { PaymentToken } from "../types";
 import { Nft, Lending } from "../contexts/graph/classes";
@@ -7,7 +7,7 @@ import { getERC20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 
 export default async function startRent(
-  renft: RentNft,
+  renft: ReNFT,
   nft: Lending[],
   resolver: Resolver,
   currentAddress: string,

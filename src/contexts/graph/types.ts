@@ -3,6 +3,7 @@ import { Address, PaymentToken, TokenId } from "../../types";
 export type NftToken = {
   address: Address;
   tokenId: TokenId;
+  isERC721: boolean;
   tokenURI?: string;
   meta?: {
     name?: string;
@@ -62,6 +63,7 @@ export type LendingRaw = Omit<
   dailyRentPrice: string;
   nftPrice: string;
   paymentToken: string;
+  isERC721: boolean;
 };
 
 export type Renting = {
@@ -77,6 +79,7 @@ export type RentingRaw = Omit<Renting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
   lending: LendingRaw;
+  isERC721: boolean;
 };
 
 export type NftRaw = {
@@ -94,7 +97,7 @@ export type UserData = {
 };
 
 export type UsersVote = {
-  // nftAddress}::tokenId
+  // ${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}tokenId
   [key: string]: {
     // userAddress: [-1, 1]
     [key: string]: {

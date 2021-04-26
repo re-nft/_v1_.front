@@ -1,7 +1,9 @@
 import firebase from "firebase/app";
 import "firebase/database";
+
 import { Address } from "../types";
 import { UserData, UsersVote } from "../contexts/graph/types";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 // TODO: move this to .env ang getting values via process.env[key]
 const config = {
@@ -30,7 +32,7 @@ firebase.initializeApp(config);
 const database = firebase.database();
 
 export const nftId = (nftAddress: Address, tokenId: string): string => {
-  return `${nftAddress}::${tokenId}`;
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`;
 };
 
 // Defaul user data

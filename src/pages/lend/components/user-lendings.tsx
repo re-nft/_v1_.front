@@ -1,5 +1,7 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
-import { RentNftContext } from "../../../hardhat/SymfoniContext";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
+import { ReNFTContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft } from "../../../contexts/graph/classes";
@@ -33,16 +35,20 @@ const UserLendings: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const { getUserLending } = useContext(GraphContext);
-  const { instance: renft } = useContext(RentNftContext);
+  const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleReset = useCallback(() => {
-    getUserLending().then((userLnding: Lending[] | undefined) => {
-      onChangePage(userLnding || []);
-      onSetItems(userLnding || []);
-      setIsLoading(false);
-    });
+    getUserLending()
+      .then((userLnding: Lending[] | undefined) => {
+        onChangePage(userLnding || []);
+        onSetItems(userLnding || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not handle reset");
+      });
   }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
 
   const handleStopLend = useCallback(
@@ -53,12 +59,15 @@ const UserLendings: React.FC = () => {
       onReset();
       handleReset();
     },
-    [renft, setHash, handleReset]
+    [renft, setHash, handleReset, onReset]
   );
 
-  const handleClickNft = useCallback(async (nft: Nft) => {
-    handleStopLend([nft]);
-  }, []);
+  const handleClickNft = useCallback(
+    async (nft: Nft) => {
+      handleStopLend([nft]);
+    },
+    [handleStopLend]
+  );
 
   const handleBatchStopnLend = useCallback(async () => {
     handleStopLend(checkedItems);
@@ -69,11 +78,15 @@ const UserLendings: React.FC = () => {
 
     const getUserLendingRequest = createCancellablePromise(getUserLending());
 
-    getUserLendingRequest.promise.then((userLnding: Lending[] | undefined) => {
-      onChangePage(userLnding || []);
-      onSetItems(userLnding || []);
-      setIsLoading(false);
-    });
+    getUserLendingRequest.promise
+      .then((userLnding: Lending[] | undefined) => {
+        onChangePage(userLnding || []);
+        onSetItems(userLnding || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user lending request");
+      });
 
     return () => {
       onResetPage();
@@ -89,13 +102,16 @@ const UserLendings: React.FC = () => {
   if (!isLoading && currentPage.length === 0) {
     return <div className="center">You dont have any lend anything yet</div>;
   }
-  console.log(currentPage);
+
   return (
     <>
       <ItemWrapper>
+        {
+          // TODO: where did any come from here. punish it
+        }
         {((currentPage as any) as Lending[]).map((nft: Lending) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             checked={checkedMap[nft.tokenId] || false}
             nft={nft}
             onCheckboxChange={onCheckboxChange}
@@ -116,7 +132,7 @@ const UserLendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Stop Lending"
           onClick={handleBatchStopnLend}
           onCancel={onReset}

@@ -1,10 +1,5 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useContext,
-  useMemo,
-} from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
+
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
 import NumericField from "../../../components/numeric-field";
@@ -20,6 +15,7 @@ import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
 const UserRentings: React.FC = () => {
   const {
@@ -44,11 +40,15 @@ const UserRentings: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleRefrash = useCallback(() => {
-    getUserRenting().then((userRenting: Renting[] | undefined) => {
-      onSetItems(userRenting || []);
-      onChangePage(userRenting || []);
-      setIsLoading(false);
-    });
+    getUserRenting()
+      .then((userRenting: Renting[] | undefined) => {
+        onSetItems(userRenting || []);
+        onChangePage(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not handle refresh");
+      });
   }, [onSetItems, onChangePage, setIsLoading, getUserRenting]);
 
   const handleCloseModal = useCallback(() => {
@@ -74,11 +74,15 @@ const UserRentings: React.FC = () => {
 
     const getUserRentingRequest = createCancellablePromise(getUserRenting());
 
-    getUserRentingRequest.promise.then((userRenting: Renting[] | undefined) => {
-      onSetItems(userRenting || []);
-      onChangePage(userRenting || []);
-      setIsLoading(false);
-    });
+    getUserRentingRequest.promise
+      .then((userRenting: Renting[] | undefined) => {
+        onSetItems(userRenting || []);
+        onChangePage(userRenting || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user renting request");
+      });
 
     return () => {
       onResetPage();
@@ -95,6 +99,8 @@ const UserRentings: React.FC = () => {
     return <div className="center">You dont have any lend anything yet</div>;
   }
 
+  // TODO: remove all the anys
+
   return (
     <>
       {modalOpen && (
@@ -106,7 +112,7 @@ const UserRentings: React.FC = () => {
       )}
       <ItemWrapper>
         {currentPage.map((nft: Nft) => {
-          const id = `${nft.address}::${nft.tokenId}`;
+          const id = `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`;
           return (
             <CatalogueItem
               key={id}
@@ -140,7 +146,7 @@ const UserRentings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Stop Rents All"
           onCancel={onReset}
           onClick={handleBatchStopRent}

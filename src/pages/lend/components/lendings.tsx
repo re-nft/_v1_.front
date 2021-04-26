@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
+
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -36,12 +38,16 @@ const Lendings: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUserNfts().then((items: Nft[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    });
-  }, [setIsLoading, getUserNfts, onChangePage, onSetItems, setIsLoading]);
+    getUserNfts()
+      .then((items: Nft[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not fetch user nfts");
+      });
+  }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -66,11 +72,15 @@ const Lendings: React.FC = () => {
 
     const getUserNftsRequest = createCancellablePromise(getUserNfts());
 
-    getUserNftsRequest.promise.then((items: Nft[] | undefined) => {
-      onChangePage(items || []);
-      onSetItems(items || []);
-      setIsLoading(false);
-    });
+    getUserNftsRequest.promise
+      .then((items: Nft[] | undefined) => {
+        onChangePage(items || []);
+        onSetItems(items || []);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        console.warn("could not get user nfts request");
+      });
 
     return () => {
       onResetPage();
@@ -99,7 +109,7 @@ const Lendings: React.FC = () => {
       <ItemWrapper>
         {currentPage.map((nft) => (
           <CatalogueItem
-            key={`${nft.address}::${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
@@ -119,7 +129,7 @@ const Lendings: React.FC = () => {
       />
       {countOfCheckedItems > 1 && (
         <BatchBar
-          title={`Batch process ${countOfCheckedItems} items`}
+          title={`Selected ${countOfCheckedItems} items`}
           actionTitle="Lend all"
           onCancel={onReset}
           onClick={handleBatchModalOpen}

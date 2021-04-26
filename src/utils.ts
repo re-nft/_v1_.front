@@ -233,9 +233,6 @@ export const getContract = async (
   return { contract, isERC721 };
 };
 
-export const urlFromIPFS = (uri: string): boolean =>
-  (uri || "").startsWith("/ipfs/") || (uri || "").startsWith("ipfs://ipfs");
-
 export const toDataURLFromBlob = (
   blob: Blob
 ): Promise<string | ArrayBuffer | null> => {
@@ -250,6 +247,10 @@ export const toDataURLFromBlob = (
 export const toDataURLFromURL = (
   url: string
 ): Promise<string | ArrayBuffer | null> =>
-  fetch(url)
+  fetch(`${url}`)
     .then((response) => response.blob())
-    .then((blob) => toDataURLFromBlob(blob));
+    .then((blob) => toDataURLFromBlob(blob))
+    .catch(() => {
+      console.warn("could not get dataURL");
+      return "";
+    });
