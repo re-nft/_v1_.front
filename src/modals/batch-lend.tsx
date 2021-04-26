@@ -129,11 +129,11 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   return (
     <Modal open={open} handleClose={onClose}>
       <form noValidate autoComplete="off" onSubmit={handleLend}>
-        {nfts.map((nftItem: Nft) => {
+        {nfts.map((nftItem: Nft, ix: number) => {
           return (
             <div
               className="modal-dialog-section"
-              key={`${nftItem.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nftItem.tokenId}`}
+              key={`${nftItem.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nftItem.tokenId}${ix}`}
             >
               <div className="modal-dialog-for">
                 <div className="label">Token Id</div>

@@ -18,7 +18,6 @@ export const useFetchNftDev = (
 ): (() => Promise<Nft[]>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(ReNFTContext);
-
   const { instance: myERC721 } = useContext(MyERC721Context);
   const { instance: myERC1155 } = useContext(MyERC1155Context);
 
@@ -33,7 +32,6 @@ export const useFetchNftDev = (
     const numNfts721 = await myERC721
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
-
     const myNfts1155 = await myERC1155
       .balanceOfBatch(Array(erc1155Ids.length).fill(currentAddress), erc1155Ids)
       .catch(() => []);
@@ -58,7 +56,6 @@ export const useFetchNftDev = (
     }
 
     // TODO: fix all the ts-ignores
-
     const _meta = await Promise.all(toFetch);
 
     const usersDevNfts: Nft[] = [];
@@ -75,19 +72,20 @@ export const useFetchNftDev = (
     }
 
     for (let i = 0; i < myNfts1155.length; i++) {
-      if (!myNfts1155[i].gt(BigNumZero)) continue;
-      const tokenURI = await myERC1155.uri(myNfts1155[i]);
-      usersDevNfts.push(
-        new Nft(
-          myERC1155.address,
-          myNfts1155[i].toString(),
-          !isERC721,
-          signer,
-          {
-            tokenURI: tokenURI,
-          }
-        )
-      );
+      const tokenURI = await myERC1155.uri(erc1155Ids[i]);
+      if (myNfts1155[i].toNumber() > 0) {
+        usersDevNfts.push(
+          new Nft(
+            myERC1155.address,
+            erc1155Ids[i].toString(),
+            !isERC721,
+            signer,
+            {
+              tokenURI: tokenURI,
+            }
+          )
+        );
+      }
     }
 
     return usersDevNfts;

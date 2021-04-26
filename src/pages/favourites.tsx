@@ -93,9 +93,9 @@ export const MyFavorites: React.FC = () => {
   return (
     <div className="content">
       <div className="content__row content__items">
-        {nftItems.map((nft) => (
+        {nftItems.map((nft, ix) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             nft={nft}
             isAlreadyFavourited
           >

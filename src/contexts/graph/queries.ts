@@ -30,6 +30,44 @@ export const queryMyERC1155s = (user: string): string => {
   }`;
 };
 
+export const queryAllLendingRenft = `
+  {
+    lendings {
+      id
+      nftAddress
+      tokenId
+      lenderAddress
+      maxRentDuration
+      dailyRentPrice
+      nftPrice
+      paymentToken
+      collateralClaimed
+    }
+  }
+`;
+
+export const queryAllRentingRenft = `
+  {
+    rentings {
+      id
+      renterAddress
+      rentDuration
+      rentedAt
+      lending {
+        id
+        nftAddress
+        tokenId
+        lenderAddress
+        maxRentDuration
+        dailyRentPrice
+        nftPrice
+        paymentToken
+        collateralClaimed
+      }
+    }
+  }
+`;
+
 export const queryAllRenft = (): string => {
   return `{
     nfts {
@@ -85,6 +123,9 @@ export const queryUserRenft = (user: string): string => {
       }
       renting {
         id
+        renterAddress
+        rentDuration
+        rentedAt
         lending {
           id
           nftAddress
@@ -97,7 +138,7 @@ export const queryUserRenft = (user: string): string => {
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
-    user(id: "${user.toLowerCase()}") {
+    users(where: {id: "${user.toLowerCase()}"}) {
       lending {
         id
         nftAddress
@@ -105,6 +146,8 @@ export const queryUserLendingRenft = (user: string): string => {
         dailyRentPrice
         nftPrice
         paymentToken
+        lenderAddress
+        maxRentDuration
       }
     }
   }`;
@@ -112,8 +155,11 @@ export const queryUserLendingRenft = (user: string): string => {
 
 export const queryUserRentingRenft = (user: string): string => {
   return `{
-    user(id: "${user.toLowerCase()}") {
+    user(where: {id: "${user.toLowerCase()}"}) {
       renting {
+        renterAddress
+        rentDuration
+        rentedAt
         id
         lending {
           id
@@ -122,6 +168,7 @@ export const queryUserRentingRenft = (user: string): string => {
           dailyRentPrice
           nftPrice
           paymentToken
+          lenderAddress
         }
       }
     }

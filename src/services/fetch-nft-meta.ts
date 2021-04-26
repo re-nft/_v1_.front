@@ -35,7 +35,10 @@ const removeWeirdBaseURLEnd = (url: string) => {
  * @returns
  */
 const isSandbox = (url: string) =>
-  /^(https:\/\/api.sandbox.game\/lands)/.test(url);
+  url.startsWith("https://api.sandbox.game/lands");
+
+const isFirebase = (url: string) =>
+  url.startsWith("https://us-central1-renft-nfts-meta");
 
 const buildStaticIPFS_URL = (matched: string[]) => {
   const [, cid, path = ""] = matched;
@@ -108,7 +111,7 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
   try {
     // ! people will tell us: my X NFT is not showing. We will check, and it
     // ! will probably because we aren't proxying the request for meta here
-    const isProxyable = isSandbox(tokenURI);
+    const isProxyable = isSandbox(tokenURI) || isFirebase(tokenURI);
     const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();

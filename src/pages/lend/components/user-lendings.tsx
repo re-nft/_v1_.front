@@ -85,7 +85,7 @@ const UserLendings: React.FC = () => {
         setIsLoading(false);
       })
       .catch(() => {
-        console.warn("could not get user lending request");
+        console.warn("could not get userLending request");
       });
 
     return () => {
@@ -109,9 +109,9 @@ const UserLendings: React.FC = () => {
         {
           // TODO: where did any come from here. punish it
         }
-        {((currentPage as any) as Lending[]).map((nft: Lending) => (
+        {((currentPage as any) as Lending[]).map((nft: Lending, ix: number) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             checked={checkedMap[nft.tokenId] || false}
             nft={nft}
             onCheckboxChange={onCheckboxChange}

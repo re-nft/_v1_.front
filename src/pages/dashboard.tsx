@@ -40,8 +40,8 @@ export const Dashboard: React.FC = () => {
 
   const handleRefresh = useCallback(() => {
     Promise.all([getUserLending(), getUserRenting()])
-      .then(([userLnding, userRenting]) => {
-        setLendingItems(userLnding || []);
+      .then(([userLending, userRenting]) => {
+        setLendingItems(userLending || []);
         setRentingItems(userRenting || []);
         setIsLoading(false);
       })
@@ -105,12 +105,13 @@ export const Dashboard: React.FC = () => {
     );
 
     getUserLendingRequest.promise
-      .then(([userLnding, userRenting]) => {
-        setLendingItems(userLnding || []);
+      .then(([userLending, userRenting]) => {
+        setLendingItems(userLending || []);
         setRentingItems(userRenting || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get user lending request");
       });
 
@@ -124,9 +125,7 @@ export const Dashboard: React.FC = () => {
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center">
-        You dont have any lending and renting anything yet
-      </div>
+      <div className="center">You aren&apos;t lending or renting anything</div>
     );
   }
 
@@ -158,11 +157,11 @@ export const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {lendingItems.map((lend: Lending) => {
+                  {lendingItems.map((lend: Lending, ix: number) => {
                     const lending = lend.lending;
                     return (
                       <tr
-                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`}
+                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
                       >
                         <td className="column">n/a</td>
                         <td className="column">{short(lending.nftAddress)}</td>
@@ -229,11 +228,11 @@ export const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {rentingItems.map((rent: Renting) => {
+                  {rentingItems.map((rent: Renting, ix: number) => {
                     const renting = rent.renting;
                     return (
                       <tr
-                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.id}`}
+                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
                       >
                         <td className="column">n/a</td>
                         <td className="column">

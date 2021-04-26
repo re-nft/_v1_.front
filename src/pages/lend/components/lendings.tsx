@@ -78,7 +78,8 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e: any) => {
+        console.warn(e);
         console.warn("could not get user nfts request");
       });
 
@@ -107,9 +108,9 @@ const Lendings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft) => (
+        {currentPage.map((nft, ix) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}

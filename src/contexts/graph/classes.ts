@@ -9,7 +9,7 @@ import {
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
 
@@ -22,13 +22,13 @@ type NftOptions = {
 class Nft {
   constructor(
     nftAddress: Address,
-    tokenId: string,
+    tokenId: string | BigNumber,
     isERC721: boolean,
     signer: ethers.Signer,
     options?: NftOptions
   ) {
     this.address = nftAddress;
-    this.tokenId = tokenId;
+    this.tokenId = tokenId.toString();
     this.signer = signer;
     this.isERC721 = isERC721;
 
@@ -40,11 +40,18 @@ class Nft {
       const uriSelector = _contract.hasOwnProperty("tokenURI")
         ? _contract.tokenURI
         : _contract.uri;
+      if (
+        this.address.toLowerCase() ===
+        "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"
+      ) {
+        console.log("fetching local dev", this.tokenId);
+      }
       uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;
         })
-        .catch(() => {
+        .catch((e: any) => {
+          console.warn(e);
           console.warn("could not fetch tokenURI");
         });
     }

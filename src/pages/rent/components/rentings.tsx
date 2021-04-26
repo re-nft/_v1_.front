@@ -128,7 +128,7 @@ const AvailableToRent: React.FC = () => {
         setIsLoading(false);
       })
       .catch(() => {
-        console.warn("could not get user lending request");
+        console.warn("could not get usersLending request");
       });
 
     return () => {
@@ -157,9 +157,9 @@ const AvailableToRent: React.FC = () => {
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
-        {((currentPage as any) as Lending[]).map((nft: Lending) => (
+        {((currentPage as any) as Lending[]).map((nft: Lending, ix: number) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.lending.id}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
