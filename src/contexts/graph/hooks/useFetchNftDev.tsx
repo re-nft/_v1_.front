@@ -32,27 +32,22 @@ export const useFetchNftDev = (
     const numNfts721 = await myERC721
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
+
     const myNfts1155 = await myERC1155
       .balanceOfBatch(Array(erc1155Ids.length).fill(currentAddress), erc1155Ids)
       .catch(() => []);
 
-    for (let i = 0; i < numNfts721.toNumber(); i++) {
+    for (let i = 0; i < numNfts721.toNumber() - 1; i++) {
       const tokenId = await myERC721.tokenOfOwnerByIndex(currentAddress, i);
-      const metaURI = await myERC721.tokenURI(tokenId);
-
+      const metaURI = await myERC721.tokenURI(tokenId.toString());
       usersNfts.push({
         address: myERC721.address,
         tokenId: tokenId.toString(),
         isERC721: true,
       });
       tokenIds.push(tokenId.toString());
-      toFetch.push(
-        fetch(`${metaURI}`)
-          .then(async (dat) => await dat.json())
-          .catch(() => {
-            console.warn("could not fetch metaURI");
-          })
-      );
+      const fetched = fetch(metaURI).then(async (d) => await d.json());
+      toFetch.push(fetched);
     }
 
     // TODO: fix all the ts-ignores

@@ -40,6 +40,9 @@ const isSandbox = (url: string) =>
 const isFirebase = (url: string) =>
   url.startsWith("https://us-central1-renft-nfts-meta");
 
+const isBCCG = (url: string) =>
+  url.startsWith("https://api.bccg.digital/api/bccg/");
+
 const buildStaticIPFS_URL = (matched: string[]) => {
   const [, cid, path = ""] = matched;
   return `${IPFSGateway}${cid}${path}`;
@@ -111,7 +114,8 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
   try {
     // ! people will tell us: my X NFT is not showing. We will check, and it
     // ! will probably because we aren't proxying the request for meta here
-    const isProxyable = isSandbox(tokenURI) || isFirebase(tokenURI);
+    const isProxyable =
+      isSandbox(tokenURI) || isFirebase(tokenURI) || isBCCG(tokenURI);
     const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();

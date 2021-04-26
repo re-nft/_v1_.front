@@ -28,6 +28,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
           </div>
         </div>
       )}
+      {!title && <div style={{ height: "4em" }} />}
       <PageProvider>
         <BatchProvider>{children}</BatchProvider>
       </PageProvider>

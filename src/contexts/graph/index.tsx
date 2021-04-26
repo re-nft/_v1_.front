@@ -289,6 +289,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // AVAILABLE TO LEND
   const getUserNfts = async (): Promise<Nft[] | undefined> => {
+    console.log("fetching user NFts");
     const allNfts = await fetchUsersNfts();
     return allNfts;
   };
