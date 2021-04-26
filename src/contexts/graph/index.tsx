@@ -185,25 +185,24 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchUsersNfts = async (): Promise<Nft[] | undefined> => {
     if (!signer) return undefined;
+    let _usersNfts: Nft[] = [];
 
-    const usersNfts721 = await fetchUserProd(FetchType.ERC721);
-    console.log("usersNfts721", usersNfts721);
-    const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-    console.log("usersNfts1155", usersNfts1155);
-
-    const _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
-      return new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
-        meta: nft.meta,
-        tokenURI: nft.tokenURI,
+    // TODO: comment this out to test prod NFT rendering in dev env
+    if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+      const usersNfts721 = await fetchUserProd(FetchType.ERC721);
+      const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
+      _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
+        return new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
+          meta: nft.meta,
+          tokenURI: nft.tokenURI,
+        });
       });
-    });
+    }
 
     let _nfts: Nft[] = _usersNfts;
-    console.log("!IS_PROD", !IS_PROD);
     if (!IS_PROD) {
-      console.log("fetching DEV NFTS");
+      console.log("fetching dev nfts");
       const devNfts = await fetchNftDev();
-      console.log("devNfts", devNfts);
       _nfts = devNfts.concat(_nfts);
     }
 

@@ -78,8 +78,7 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch((e: any) => {
-        console.warn(e);
+      .catch(() => {
         console.warn("could not get user nfts request");
       });
 
@@ -95,7 +94,7 @@ const Lendings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You dont have any NFTs</div>;
+    return <div className="center">You don&apos;t have any NFTs to lend</div>;
   }
 
   return (

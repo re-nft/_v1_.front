@@ -130,11 +130,7 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <PageLayout
-      title={viewType.valueOf() === 0 ? "LIST VIEW" : "MINIATURE VIEW"}
-      toggleValue={viewType === DashboardViewType.LIST_VIEW}
-      onSwitch={switchView}
-    >
+    <PageLayout>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && !isLoading && (
