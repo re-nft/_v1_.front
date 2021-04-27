@@ -66,7 +66,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         pmtTokens
       );
 
-      setHash(tx.hash);
+      if (tx) {
+        setHash(tx.hash);
+      }
       onClose();
     },
     [renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
