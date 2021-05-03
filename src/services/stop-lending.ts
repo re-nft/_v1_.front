@@ -11,5 +11,7 @@ export default async function stopLend(
   const lendingIds: BigNumber[] = ((nfts as any[]) as Lending[]).map(
     (item: Lending) => BigNumber.from(item.id)
   );
-  return await renft.stopLending(address, tokenIds, lendingIds);
+  // TODO: will fail
+  const amounts = [1];
+  return await renft.stopLending(address, tokenIds, amounts, lendingIds);
 }
