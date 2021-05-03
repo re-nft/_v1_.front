@@ -28,10 +28,21 @@ export default async function startRent(
   const lendingIds = nft.map((x) => x.lending.id);
   const durations = rentDurations.map((x) => Number(x));
 
+  // TODO: will fail
+  const amounts = [1];
+
   if (isETHPayment) {
-    return await renft.rent(addresses, tokenIds, lendingIds, durations, {
-      value: amountPayable,
-    });
+    return await renft.rent(
+      addresses,
+      tokenIds,
+      amounts,
+      amounts,
+      lendingIds,
+      durations,
+      {
+        value: amountPayable,
+      }
+    );
   }
 
   const erc20Address = await resolver.getPaymentToken(pmtToken);
@@ -57,5 +68,14 @@ export default async function startRent(
     await erc20.approve(renft.address, MAX_UINT256);
   }
 
-  return await renft.rent(addresses, tokenIds, lendingIds, durations);
+  // TODO: will fail
+
+  return await renft.rent(
+    addresses,
+    tokenIds,
+    amounts,
+    amounts,
+    lendingIds,
+    durations
+  );
 }

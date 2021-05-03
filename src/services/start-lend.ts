@@ -35,9 +35,13 @@ export default async function startLend(
     return;
   }
 
+  // TODO: will fail
+  const amounts = [1];
+
   return await renft.lend(
     addresses,
     tokenIds,
+    amounts,
     maxRentDurations,
     dailyRentPrices,
     collaterals,

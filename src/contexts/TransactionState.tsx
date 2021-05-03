@@ -1,4 +1,5 @@
 import React, { createContext, useState, useCallback, useContext } from "react";
+// TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 import { ProviderContext } from "../hardhat/SymfoniContext";
