@@ -115,10 +115,8 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
-  const [
-    calculatedUsersVote,
-    setCalculatedUsersVote,
-  ] = useState<CalculatedUserVote>({});
+  const [calculatedUsersVote, setCalculatedUsersVote] =
+    useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
   /**
    * Only for dev purposes
@@ -187,8 +185,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return undefined;
     let _usersNfts: Nft[] = [];
 
-    console.log(process.env.REACT_APP_ENVIRONMENT);
-
     // ! comment this out to test prod NFT rendering in dev env
     if (process.env.REACT_APP_ENVIRONMENT !== "development") {
       const usersNfts721 = await fetchUserProd(FetchType.ERC721);
@@ -203,9 +199,7 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
-      console.log("fetching dev nfts");
       const devNfts = await fetchNftDev();
-      console.log("fetched dev nfts");
       _nfts = devNfts.concat(_nfts);
     }
 
@@ -329,7 +323,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     );
     if (!response?.users[0]) return undefined;
     const lendings = Object.values(response.users[0].lending).map((lending) => {
-      console.log("lending", lending);
       return new Lending(lending.nftAddress, lending.tokenId, signer, lending);
     });
     return lendings;
@@ -373,9 +366,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       getUserDataRequest.promise
         .then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
           if (usersVote && Object.keys(usersVote).length !== 0) {
-            const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
-              usersVote
-            );
+            const calculatedUsersVote: CalculatedUserVote =
+              calculateVoteByUsers(usersVote);
 
             setCalculatedUsersVote(calculatedUsersVote);
             setUsersVote(usersVote);
