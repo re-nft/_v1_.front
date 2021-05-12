@@ -187,7 +187,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return undefined;
     let _usersNfts: Nft[] = [];
 
-    // TODO: comment this out to test prod NFT rendering in dev env
+    console.log(process.env.REACT_APP_ENVIRONMENT);
+
+    // ! comment this out to test prod NFT rendering in dev env
     if (process.env.REACT_APP_ENVIRONMENT !== "development") {
       const usersNfts721 = await fetchUserProd(FetchType.ERC721);
       const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
@@ -203,6 +205,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!IS_PROD) {
       console.log("fetching dev nfts");
       const devNfts = await fetchNftDev();
+      console.log("fetched dev nfts");
       _nfts = devNfts.concat(_nfts);
     }
 
@@ -289,7 +292,6 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // AVAILABLE TO LEND
   const getUserNfts = async (): Promise<Nft[] | undefined> => {
-    console.log("fetching user NFts");
     const allNfts = await fetchUsersNfts();
     return allNfts;
   };

@@ -51,8 +51,6 @@ const App: React.FC = () => {
   const { userData } = useContext(GraphContext);
   const [username, setUsername] = useState<string>();
 
-  console.log("REACT_APP_ENVIRONMENT", process.env.REACT_APP_ENVIRONMENT);
-
   useEffect(() => {
     if (userData?.name !== "") {
       setUsername(userData?.name);

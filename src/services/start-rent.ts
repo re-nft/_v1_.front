@@ -1,7 +1,7 @@
 import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { Signer, ContractTransaction, ethers } from "ethers";
 import { PaymentToken } from "../types";
-import { Nft, Lending } from "../contexts/graph/classes";
+import { Lending } from "../contexts/graph/classes";
 import { Resolver } from "../hardhat/typechain/Resolver";
 import { getERC20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
@@ -22,7 +22,7 @@ export default async function startRent(
     return sum;
   }, 0);
 
-  const isETHPayment = pmtToken === PaymentToken.ETH;
+  const isETHPayment = pmtToken === PaymentToken.WETH;
   const addresses = nft.map((x) => x.address);
   const tokenIds = nft.map((x) => x.tokenId);
   const lendingIds = nft.map((x) => x.lending.id);
@@ -36,12 +36,8 @@ export default async function startRent(
       addresses,
       tokenIds,
       amounts,
-      amounts,
       lendingIds,
-      durations,
-      {
-        value: amountPayable,
-      }
+      durations
     );
   }
 
@@ -70,12 +66,5 @@ export default async function startRent(
 
   // TODO: will fail
 
-  return await renft.rent(
-    addresses,
-    tokenIds,
-    amounts,
-    amounts,
-    lendingIds,
-    durations
-  );
+  return await renft.rent(addresses, tokenIds, amounts, lendingIds, durations);
 }

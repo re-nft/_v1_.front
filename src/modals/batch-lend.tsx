@@ -47,6 +47,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       if (!renft || isActive) return;
 
       const lendOneInputsValues = Object.values(lendOneInputs);
+      const lendAmountsValues = lendOneInputsValues.map(
+        (item) => item["lendAmount"]
+      );
       const maxDurationsValues = lendOneInputsValues.map(
         (item) => item["maxDuration"]
       );
@@ -60,6 +63,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       const tx = await startLend(
         renft,
         nfts,
+        lendAmountsValues,
         maxDurationsValues,
         borrowPriceValues,
         nftPriceValues,
@@ -143,6 +147,18 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
                 <div className="label">{nftItem.tokenId}</div>
               </div>
               <div className="modal-dialog-fields">
+                {/* lendAmount for 721 is ignored */}
+                <CssTextField
+                  required
+                  label="Amount"
+                  id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
+                  variant="outlined"
+                  value={lendOneInputs[nftItem.tokenId]?.lendAmount ?? ""}
+                  type="number"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
+                />
                 <CssTextField
                   required
                   label="Max lend duration"

@@ -2,11 +2,12 @@ import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { BigNumber, ContractTransaction } from "ethers";
 import { PaymentToken } from "../types";
 import { Nft } from "../contexts/graph/classes";
-import { decimalToPaddedHexString } from "../utils";
+import { packPrice } from "../utils";
 
 export default async function startLend(
   renft: ReNFT,
   nfts: Nft[],
+  lendAmounts: string[],
   maxDurations: string[],
   dailyPrices: string[],
   nftPrices: string[],
@@ -14,29 +15,27 @@ export default async function startLend(
 ): Promise<ContractTransaction | undefined> {
   const addresses: string[] = [];
   const tokenIds: string[] = [];
+  const amounts: string[] = [];
   const maxRentDurations: BigNumber[] = [];
   const dailyRentPrices: string[] = [];
   const collaterals: string[] = [];
   const pmtTokens: string[] = [];
 
+  // todo: packPrice no validation whatsoever
   try {
     for (let i = 0; i < maxDurations.length; i++) {
       addresses.push(nfts[i].address);
       tokenIds.push(nfts[i].tokenId);
+      amounts.push(lendAmounts[i]);
       maxRentDurations.push(BigNumber.from(maxDurations[i]));
-      dailyRentPrices.push(
-        decimalToPaddedHexString(Number(dailyPrices[i]), 32)
-      );
-      collaterals.push(decimalToPaddedHexString(Number(nftPrices[i]), 32));
+      dailyRentPrices.push(packPrice(Number(dailyPrices[i])));
+      collaterals.push(packPrice(Number(nftPrices[i])));
       pmtTokens.push(tokens[i].toString());
     }
   } catch (e) {
     console.warn("varying length inputs. you must have missed a token");
     return;
   }
-
-  // TODO: will fail
-  const amounts = [1];
 
   return await renft.lend(
     addresses,
