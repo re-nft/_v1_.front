@@ -146,6 +146,7 @@ export const Dashboard: React.FC = () => {
                     <th style={{ width: "11%" }}>Collateral</th>
                     <th style={{ width: "7%" }}>Rent</th>
                     <th style={{ width: "7%" }}>Duration</th>
+                    <th style={{ width: "7%" }}>Batch Select</th>
                     <th style={{ width: "20%" }} className="action-column">
                       &nbsp;
                     </th>
@@ -178,6 +179,12 @@ export const Dashboard: React.FC = () => {
                         </td>
                         <td className="column">
                           {lending.maxRentDuration} days
+                        </td>
+                        <td className="action-column">
+                          <div
+                            className="checkbox"
+                            style={{ margin: "auto", marginTop: "1em" }}
+                          />
                         </td>
                         <td className="action-column">
                           {_claim(lend) && (
