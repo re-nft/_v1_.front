@@ -46,19 +46,21 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
       if (!renft || isActive) return;
 
+      const lendAmountsValues: string[] = [];
+      const maxDurationsValues: string[] = [];
+      const borrowPriceValues: string[] = [];
+      const nftPriceValues: string[] = [];
+
       const lendOneInputsValues = Object.values(lendOneInputs);
-      const lendAmountsValues = lendOneInputsValues.map(
-        (item) => item["lendAmount"]
-      );
-      const maxDurationsValues = lendOneInputsValues.map(
-        (item) => item["maxDuration"]
-      );
-      const borrowPriceValues = lendOneInputsValues.map(
-        (item) => item["borrowPrice"]
-      );
-      const nftPriceValues = lendOneInputsValues.map(
-        (item) => item["nftPrice"]
-      );
+
+      for (let i = 0; i < lendOneInputsValues.length; i++) {
+        const item = lendOneInputsValues[i];
+        lendAmountsValues.push(item["lendAmount"]);
+        maxDurationsValues.push(item["maxDuration"]);
+        borrowPriceValues.push(item["borrowPrice"]);
+        nftPriceValues.push(item["nftPrice"]);
+      }
+
       const pmtTokens = Object.values(pmtToken);
       const tx = await startLend(
         renft,
@@ -70,20 +72,25 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         pmtTokens
       );
 
-      if (tx) {
-        setHash(tx.hash);
-      }
+      if (tx) setHash(tx.hash);
       onClose();
     },
-    [renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
+    [renft, isActive, lendOneInputs, pmtToken, nfts, setHash, onClose]
   );
 
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || isActive || !provider) return;
-    const [tx] = await setApprovalForAll(renft, nfts);
+    const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
+      console.log("issue approving all in batch lend");
+      return [undefined];
+    });
+    if (!tx) return;
     setHash(tx.hash);
-    const receipt = await provider.getTransactionReceipt(tx.hash);
-    const status = receipt.status ?? 0;
+    const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
+      console.log("issue pulling txn receipt in batch lend");
+      return undefined;
+    });
+    const status = receipt?.status ?? 0;
     if (status === 1) {
       setIsApproved(true);
     }

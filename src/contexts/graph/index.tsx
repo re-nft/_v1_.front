@@ -190,7 +190,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       const usersNfts721 = await fetchUserProd(FetchType.ERC721);
       const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
       _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
-        return new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
+        return new Nft(nft.address, nft.tokenId, "-1", nft.isERC721, signer, {
           meta: nft.meta,
           tokenURI: nft.tokenURI,
         });
@@ -272,10 +272,10 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[id] = new Lending(address, tokenId, signer, l);
+        _allRenftsLending[id] = new Lending(address, tokenId, "-1", signer, l);
       });
       renting?.forEach((r) => {
-        _allRenftsRenting[id] = new Renting(address, tokenId, signer, r);
+        _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
       });
     });
 
@@ -304,7 +304,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
         continue;
       lendingsReNFT.push(
-        new Lending(lending.nftAddress, lending.tokenId, signer, lending)
+        new Lending(lending.nftAddress, lending.tokenId, "-1", signer, lending)
       );
     }
     return lendingsReNFT;
@@ -323,7 +323,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     );
     if (!response?.users[0]) return undefined;
     const lendings = Object.values(response.users[0].lending).map((lending) => {
-      return new Lending(lending.nftAddress, lending.tokenId, signer, lending);
+      return new Lending(
+        lending.nftAddress,
+        lending.tokenId,
+        "-1",
+        signer,
+        lending
+      );
     });
     return lendings;
   };

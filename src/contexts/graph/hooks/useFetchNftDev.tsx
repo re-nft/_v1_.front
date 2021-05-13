@@ -37,18 +37,27 @@ export const useFetchNftDev = (
       .catch(() => []);
 
     for (let i = 0; i < num721s.toNumber(); i++) {
-      const tokenId = await e721.tokenOfOwnerByIndex(currentAddress, String(i));
-      const metaURI = await e721.tokenURI(tokenId.toString());
+      try {
+        const tokenId = await e721.tokenOfOwnerByIndex(
+          currentAddress,
+          String(i)
+        );
+        const metaURI = await e721.tokenURI(tokenId.toString());
 
-      usersNfts.push({
-        address: e721.address,
-        tokenId: tokenId.toString(),
-        isERC721: true,
-      });
+        usersNfts.push({
+          address: e721.address,
+          tokenId: tokenId.toString(),
+          isERC721: true,
+        });
 
-      tokenIds.push(tokenId.toString());
-      const fetched = fetch(metaURI).then(async (d) => await d.json());
-      toFetch.push(fetched);
+        tokenIds.push(tokenId.toString());
+        const fetched = fetch(metaURI).then(async (d) => await d.json());
+        toFetch.push(fetched);
+      } catch (e) {
+        console.debug(
+          "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
+        );
+      }
     }
 
     // TODO: fix all the ts-ignores
@@ -58,7 +67,7 @@ export const useFetchNftDev = (
     const isERC721 = true;
     for (let i = 0; i < _meta.length; i++) {
       usersDevNfts.push(
-        new Nft(e721.address, tokenIds[i], isERC721, signer, {
+        new Nft(e721.address, tokenIds[i], "1", isERC721, signer, {
           // @ts-ignore
           mediaURI: _meta[i]?.["image"] ?? "",
           // @ts-ignore
@@ -68,13 +77,27 @@ export const useFetchNftDev = (
     }
 
     for (let i = 0; i < num1155s.length; i++) {
-      const tokenURI = await e1155.uri(erc1155Ids[i]);
+      const tokenURI = await e1155.uri(erc1155Ids[i]).catch(() => {
+        console.log("could not fetch user dev 1155 tokenURI");
+        return "";
+      });
+      const amountBalance = await e1155.balanceOf(
+        currentAddress,
+        erc1155Ids[i]
+      );
 
       if (num1155s[i].toNumber() > 0) {
         usersDevNfts.push(
-          new Nft(e1155.address, erc1155Ids[i].toString(), !isERC721, signer, {
-            tokenURI: `${tokenURI}${i + 10}`,
-          })
+          new Nft(
+            e1155.address,
+            erc1155Ids[i].toString(),
+            amountBalance,
+            !isERC721,
+            signer,
+            {
+              tokenURI: `${tokenURI}${i + 10}`,
+            }
+          )
         );
       }
     }

@@ -44,8 +44,9 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         console.warn("could not fetch user nfts");
+        console.warn(e);
       });
   }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
