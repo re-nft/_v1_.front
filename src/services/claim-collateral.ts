@@ -11,5 +11,7 @@ export default async function claimCollateral(
   const lendingIds: BigNumber[] = ((nfts as any[]) as Lending[]).map(
     (item: Lending) => BigNumber.from(item.id)
   );
-  return await renft.claimCollateral(address, tokenIds, lendingIds);
+  // TODO: will fail
+  const amounts = [1];
+  return await renft.claimCollateral(address, tokenIds, amounts, lendingIds);
 }

@@ -2,7 +2,7 @@ import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
 import { CORS_PROXY } from "../consts";
 
-const IPFSGateway = "http://dweb.link/ipfs/";
+const IPFSGateway = "https://dweb.link/ipfs/";
 
 /**
  * Matches IPFS CIDv0 (all start with Qm)
@@ -35,7 +35,13 @@ const removeWeirdBaseURLEnd = (url: string) => {
  * @returns
  */
 const isSandbox = (url: string) =>
-  /^(https:\/\/api.sandbox.game\/lands)/.test(url);
+  url.startsWith("https://api.sandbox.game/lands");
+
+const isFirebase = (url: string) =>
+  url.startsWith("https://us-central1-renft-nfts-meta");
+
+const isBCCG = (url: string) =>
+  url.startsWith("https://api.bccg.digital/api/bccg/");
 
 const buildStaticIPFS_URL = (matched: string[]) => {
   const [, cid, path = ""] = matched;
@@ -108,7 +114,8 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
   try {
     // ! people will tell us: my X NFT is not showing. We will check, and it
     // ! will probably because we aren't proxying the request for meta here
-    const isProxyable = isSandbox(tokenURI);
+    const isProxyable =
+      isSandbox(tokenURI) || isFirebase(tokenURI) || isBCCG(tokenURI);
     const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();

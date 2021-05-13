@@ -1,9 +1,8 @@
 // non-reNFT's subgraph, with this query we pull all of user's
 // ERC721 tokens (will work only in prod)
 export const queryMyERC721s = (user: string): string => {
-  // todo: change id to ${user.toLowerCase()}
   return `{
-    tokens(where: {owner: "0x465dca9995d6c2a81a9be80fbced5a770dee3dae"}) {
+    tokens(where: {owner: "${user.toLowerCase()}"}) {
       id
 		  tokenURI
     }
@@ -13,9 +12,8 @@ export const queryMyERC721s = (user: string): string => {
 // non-reNFT's subgraph, with this query we pull all of user's
 // ERC1155 tokens (will work only in prod)
 export const queryMyERC1155s = (user: string): string => {
-  // todo: change id to ${user.toLowerCase()}
   return `{
-    account(id: "0x465dca9995d6c2a81a9be80fbced5a770dee3dae") {
+    account(id: "${user.toLowerCase()}") {
       balances(where: {value_gt: 0}) {
         token {
           tokenURI: URI
@@ -30,6 +28,48 @@ export const queryMyERC1155s = (user: string): string => {
   }`;
 };
 
+export const queryAllLendingRenft = `
+  {
+    lendings {
+      id
+      nftAddress
+      tokenId
+      lentAmount
+      lenderAddress
+      maxRentDuration
+      dailyRentPrice
+      nftPrice
+      paymentToken
+      collateralClaimed
+      isERC721
+    }
+  }
+`;
+
+export const queryAllRentingRenft = `
+  {
+    rentings {
+      id
+      renterAddress
+      rentDuration
+      rentedAt
+      lending {
+        id
+        nftAddress
+        tokenId
+        lentAmount
+        lenderAddress
+        maxRentDuration
+        dailyRentPrice
+        nftPrice
+        paymentToken
+        collateralClaimed
+        isERC721
+      }
+    }
+  }
+`;
+
 export const queryAllRenft = (): string => {
   return `{
     nfts {
@@ -38,12 +78,14 @@ export const queryAllRenft = (): string => {
         id
         nftAddress
         tokenId
+        lentAmount
         lenderAddress
         maxRentDuration
         dailyRentPrice
         nftPrice
         paymentToken
         collateralClaimed
+        isERC721
         renting {
           id
           renterAddress
@@ -58,12 +100,14 @@ export const queryAllRenft = (): string => {
           id
           nftAddress
           tokenId
+          lentAmount
           lenderAddress
           maxRentDuration
           dailyRentPrice
           nftPrice
           paymentToken
           collateralClaimed
+          isERC721
         }
       }
     }
@@ -79,16 +123,23 @@ export const queryUserRenft = (user: string): string => {
         id
         nftAddress
         tokenId
+        lentAmount
+        isERC721
         renting {
           id
         }
       }
       renting {
         id
+        renterAddress
+        rentDuration
+        rentedAt
         lending {
           id
           nftAddress
           tokenId
+          lentAmount
+          isERC721
         }
       }
     }
@@ -97,14 +148,18 @@ export const queryUserRenft = (user: string): string => {
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
-    user(id: "${user.toLowerCase()}") {
+    users(where: {id: "${user.toLowerCase()}"}) {
       lending {
         id
         nftAddress
         tokenId
+        lentAmount
         dailyRentPrice
         nftPrice
         paymentToken
+        lenderAddress
+        maxRentDuration
+        isERC721
       }
     }
   }`;
@@ -112,16 +167,23 @@ export const queryUserLendingRenft = (user: string): string => {
 
 export const queryUserRentingRenft = (user: string): string => {
   return `{
-    user(id: "${user.toLowerCase()}") {
+    user(where: {id: "${user.toLowerCase()}"}) {
       renting {
+        renterAddress
+        rentDuration
+        rentedAt
         id
         lending {
           id
           nftAddress
           tokenId
+          lentAmount
           dailyRentPrice
           nftPrice
           paymentToken
+          lenderAddress
+          maxRentDuration
+          isERC721
         }
       }
     }

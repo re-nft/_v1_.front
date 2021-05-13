@@ -9,5 +9,7 @@ export default async function returnIt(
   const addresses = nfts.map((item) => item.address);
   const tokenIds = nfts.map((item) => item.tokenId);
   const lendingIds = nfts.map((item) => item.renting.lendingId);
-  return await renft.returnIt(addresses, tokenIds, lendingIds);
+  // TODO: will fail
+  const amounts = [1];
+  return await renft.returnIt(addresses, tokenIds, amounts, lendingIds);
 }

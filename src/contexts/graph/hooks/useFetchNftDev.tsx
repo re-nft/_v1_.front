@@ -3,8 +3,8 @@ import { useContext, useCallback } from "react";
 import { BigNumber, ethers } from "ethers";
 
 import {
-  MyERC721Context,
-  MyERC1155Context,
+  E721Context,
+  E1155Context,
   CurrentAddressContext,
   ReNFTContext,
 } from "../../../hardhat/SymfoniContext";
@@ -18,54 +18,56 @@ export const useFetchNftDev = (
 ): (() => Promise<Nft[]>) => {
   const [currentAddress] = useContext(CurrentAddressContext);
   const renft = useContext(ReNFTContext);
-
-  const { instance: myERC721 } = useContext(MyERC721Context);
-  const { instance: myERC1155 } = useContext(MyERC1155Context);
+  const { instance: e721 } = useContext(E721Context);
+  const { instance: e1155 } = useContext(E1155Context);
 
   const fetchNftDev = useCallback(async () => {
-    if (!myERC1155 || !myERC721 || !renft || !signer) return [];
+    if (!e1155 || !e721 || !renft || !signer) return [];
 
     const toFetch: Promise<Response>[] = [];
     const tokenIds: string[] = [];
     const usersNfts: Omit<NftToken, "tokenURI">[] = [];
     const erc1155Ids = [1000, 1001, 1002, 1003, 1004];
 
-    const numNfts721 = await myERC721
+    const num721s = await e721
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
-
-    const myNfts1155 = await myERC1155
+    const num1155s = await e1155
       .balanceOfBatch(Array(erc1155Ids.length).fill(currentAddress), erc1155Ids)
       .catch(() => []);
 
-    for (let i = 0; i < numNfts721.toNumber(); i++) {
-      const tokenId = await myERC721.tokenOfOwnerByIndex(currentAddress, i);
-      const metaURI = await myERC721.tokenURI(tokenId);
+    for (let i = 0; i < num721s.toNumber(); i++) {
+      try {
+        const tokenId = await e721.tokenOfOwnerByIndex(
+          currentAddress,
+          String(i)
+        );
+        const metaURI = await e721.tokenURI(tokenId.toString());
 
-      usersNfts.push({
-        address: myERC721.address,
-        tokenId: tokenId.toString(),
-        isERC721: true,
-      });
-      tokenIds.push(tokenId.toString());
-      toFetch.push(
-        fetch(`${metaURI}`)
-          .then(async (dat) => await dat.json())
-          .catch(() => {
-            console.warn("could not fetch metaURI");
-          })
-      );
+        usersNfts.push({
+          address: e721.address,
+          tokenId: tokenId.toString(),
+          isERC721: true,
+        });
+
+        tokenIds.push(tokenId.toString());
+        const fetched = fetch(metaURI).then(async (d) => await d.json());
+        toFetch.push(fetched);
+      } catch (e) {
+        console.debug(
+          "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
+        );
+      }
     }
 
     // TODO: fix all the ts-ignores
-
     const _meta = await Promise.all(toFetch);
 
     const usersDevNfts: Nft[] = [];
     const isERC721 = true;
     for (let i = 0; i < _meta.length; i++) {
       usersDevNfts.push(
-        new Nft(myERC721.address, tokenIds[i], isERC721, signer, {
+        new Nft(e721.address, tokenIds[i], "1", isERC721, signer, {
           // @ts-ignore
           mediaURI: _meta[i]?.["image"] ?? "",
           // @ts-ignore
@@ -74,24 +76,34 @@ export const useFetchNftDev = (
       );
     }
 
-    for (let i = 0; i < myNfts1155.length; i++) {
-      if (!myNfts1155[i].gt(BigNumZero)) continue;
-      const tokenURI = await myERC1155.uri(myNfts1155[i]);
-      usersDevNfts.push(
-        new Nft(
-          myERC1155.address,
-          myNfts1155[i].toString(),
-          !isERC721,
-          signer,
-          {
-            tokenURI: tokenURI,
-          }
-        )
+    for (let i = 0; i < num1155s.length; i++) {
+      const tokenURI = await e1155.uri(erc1155Ids[i]).catch(() => {
+        console.log("could not fetch user dev 1155 tokenURI");
+        return "";
+      });
+      const amountBalance = await e1155.balanceOf(
+        currentAddress,
+        erc1155Ids[i]
       );
+
+      if (num1155s[i].toNumber() > 0) {
+        usersDevNfts.push(
+          new Nft(
+            e1155.address,
+            erc1155Ids[i].toString(),
+            amountBalance,
+            !isERC721,
+            signer,
+            {
+              tokenURI: `${tokenURI}${i + 10}`,
+            }
+          )
+        );
+      }
     }
 
     return usersDevNfts;
-  }, [renft, currentAddress, myERC721, myERC1155, signer]);
+  }, [renft, currentAddress, e721, e1155, signer]);
 
   return fetchNftDev;
 };

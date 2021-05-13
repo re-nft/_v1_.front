@@ -7,7 +7,7 @@ export type URI = string;
 // ! this must be the same as in packages/contracts/Resolver.sol
 export enum PaymentToken {
   SENTINEL, // 0
-  ETH, // 1
+  WETH, // 1
   DAI, // 2
   USDC, // 3
   USDT, // 4

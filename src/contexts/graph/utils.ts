@@ -9,6 +9,7 @@ export const parseLending = (lending: LendingRaw): Lending => {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
     tokenId: lending.tokenId,
+    amount: lending.lentAmount,
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice, DP18),

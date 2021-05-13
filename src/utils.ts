@@ -185,7 +185,7 @@ export const parsePaymentToken = (tkn: string): PaymentToken => {
     case "0":
       return PaymentToken.SENTINEL;
     case "1":
-      return PaymentToken.ETH;
+      return PaymentToken.WETH;
     case "2":
       return PaymentToken.DAI;
     case "3":

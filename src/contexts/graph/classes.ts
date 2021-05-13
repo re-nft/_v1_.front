@@ -9,7 +9,7 @@ import {
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
 
@@ -22,13 +22,15 @@ type NftOptions = {
 class Nft {
   constructor(
     nftAddress: Address,
-    tokenId: string,
+    tokenId: string | BigNumber,
+    amount: string | BigNumber,
     isERC721: boolean,
     signer: ethers.Signer,
     options?: NftOptions
   ) {
     this.address = nftAddress;
-    this.tokenId = tokenId;
+    this.tokenId = tokenId.toString();
+    this.amount = amount.toString();
     this.signer = signer;
     this.isERC721 = isERC721;
 
@@ -37,15 +39,19 @@ class Nft {
     if (!options?.tokenURI) {
       const _contract = this.contract();
       /* eslint-disable-next-line */
-      const uriSelector = _contract.hasOwnProperty("tokenURI")
-        ? _contract.tokenURI
-        : _contract.uri;
+      const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
+
       uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;
         })
         .catch(() => {
-          console.warn("could not fetch tokenURI");
+          console.warn(
+            "could not fetch tokenURI",
+            this.address,
+            "tokenID",
+            this.tokenId
+          );
         });
     }
 
@@ -55,6 +61,7 @@ class Nft {
 
   address: Address;
   tokenId: string;
+  amount: string;
   signer: ethers.Signer;
   isERC721: boolean;
   _meta: NftToken["meta"] | undefined;
@@ -101,11 +108,12 @@ class Lending extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
+    amount: string,
     signer: ethers.Signer,
     lendingRaw: LendingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, lendingRaw.isERC721, signer, options);
+    super(nftAddress, tokenId, amount, lendingRaw.isERC721, signer, options);
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
@@ -118,11 +126,12 @@ class Renting extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
+    amount: string,
     signer: ethers.Signer,
     rentingRaw: RentingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, rentingRaw.isERC721, signer, options);
+    super(nftAddress, tokenId, amount, rentingRaw.isERC721, signer, options);
 
     this.renting = parseRenting(rentingRaw);
     this.id = rentingRaw.id;

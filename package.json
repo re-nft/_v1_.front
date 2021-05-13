@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.1.1",
-    "@ethersproject/abstract-provider": "^5.1.0",
     "@ethersproject/bytes": "^5.1.0",
     "@ethersproject/providers": "^5.1.2",
     "@typescript-eslint/eslint-plugin": "^4.15.1",

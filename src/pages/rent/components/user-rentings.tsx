@@ -111,8 +111,8 @@ const UserRentings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft: Nft) => {
-          const id = `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`;
+        {currentPage.map((nft: Nft, ix: number) => {
+          const id = `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`;
           return (
             <CatalogueItem
               key={id}

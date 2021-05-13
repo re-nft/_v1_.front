@@ -19,6 +19,8 @@ import {
   queryAllRenft,
   queryUserLendingRenft,
   queryUserRentingRenft,
+  queryAllLendingRenft,
+  queryAllRentingRenft,
   queryMyERC721s,
   queryMyERC1155s,
 } from "./queries";
@@ -50,7 +52,6 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
  * Luis: https://github.com/microchipgnu
  * Solidity God: wighawag
  */
-
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
@@ -60,7 +61,7 @@ const IS_PROD =
 const ENDPOINT_RENFT_PROD =
   "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
 const ENDPOINT_RENFT_DEV =
-  "http://localhost:8000/subgraphs/name/nazariyv/reNFT";
+  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
 
 // non-reNFT prod subgraphs for pulling your NFT balances
 const ENDPOINT_EIP721_PROD =
@@ -113,12 +114,9 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
-  const [
-    calculatedUsersVote,
-    setCalculatedUsersVote,
-  ] = useState<CalculatedUserVote>({});
+  const [calculatedUsersVote, setCalculatedUsersVote] =
+    useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
-
   /**
    * Only for dev purposes
    */
@@ -132,6 +130,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     async (fetchType: FetchType) => {
       let query = "";
       let subgraphURI = "";
+
+      console.log("currentAddress", currentAddress);
 
       switch (fetchType) {
         case FetchType.ERC721:
@@ -148,6 +148,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
+
+      console.log(response);
 
       let tokens: NftToken[] = [];
       switch (fetchType) {
@@ -184,18 +186,25 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   const fetchUsersNfts = async (): Promise<Nft[] | undefined> => {
     if (!signer) return undefined;
+    let _usersNfts: Nft[] = [];
+
+    // // ! comment this out to test prod NFT rendering in dev env
+    // if (process.env.REACT_APP_ENVIRONMENT !== "development") {
     const usersNfts721 = await fetchUserProd(FetchType.ERC721);
     const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-    const _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
-      return new Nft(nft.address, nft.tokenId, nft.isERC721, signer, {
+    // ! lentAmount = "0"
+    _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
+      return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
         meta: nft.meta,
         tokenURI: nft.tokenURI,
       });
     });
+    // }
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
-      _nfts = (await fetchNftDev()).concat(_nfts);
+      const devNfts = await fetchNftDev();
+      _nfts = devNfts.concat(_nfts);
     }
 
     return _nfts;
@@ -255,6 +264,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return;
     const query = queryAllRenft();
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+
     const response: NftRaw = await timeItAsync(
       "Pulled All Renft Nfts",
       async () => await request(subgraphURI, query)
@@ -266,10 +276,16 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[id] = new Lending(address, tokenId, signer, l);
+        _allRenftsLending[id] = new Lending(
+          address,
+          tokenId,
+          l.lentAmount,
+          signer,
+          l
+        );
       });
       renting?.forEach((r) => {
-        _allRenftsRenting[id] = new Renting(address, tokenId, signer, r);
+        _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
       });
     });
 
@@ -281,38 +297,64 @@ export const GraphProvider: React.FC = ({ children }) => {
   // AVAILABLE TO LEND
   const getUserNfts = async (): Promise<Nft[] | undefined> => {
     const allNfts = await fetchUsersNfts();
-
     return allNfts;
   };
 
-  // AVAILABLE TO RENT
-  const getUsersLending = async (): Promise<Lending[] | undefined> => {
-    const renftAll = await fetchRenftsAll();
-    if (renftAll) {
-      const userRenting = await fetchUserRenting();
-      return Object.values(renftAll.lending)
-        .filter((item: Lending) => {
-          const id = `${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.id}`;
-          return !userRenting?.includes(id);
-        })
-        .filter(
-          (item: Lending) => item.lending.lenderAddress !== currentAddress
-        );
-    }
+  // ALL AVAILABLE TO RENT (filter out the ones that I am lending)
+  const getAlllending = async (): Promise<Lending[] | undefined> => {
+    if (!signer) return undefined;
 
-    return undefined;
+    const _currentAddress = currentAddress ? currentAddress : "";
+    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
+      "Pulled All ReNFT Lendings",
+      async () => await request(subgraphURI, queryAllLendingRenft)
+    );
+
+    const lendingsReNFT = [];
+
+    for (const lending of Object.values(response?.data?.lendings)) {
+      if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
+        continue;
+      lendingsReNFT.push(
+        new Lending(
+          lending.nftAddress,
+          lending.tokenId,
+          lending.lentAmount,
+          signer,
+          lending
+        )
+      );
+    }
+    return lendingsReNFT;
   };
+
+  // TODO: inefficient to be fecthingRenftsAll in both user lending and user renting?
 
   // LENDING
   const getUserLending = async (): Promise<Lending[] | undefined> => {
-    const renftAll = await fetchRenftsAll();
-    if (renftAll) {
-      const userLending = await fetchUserLending();
-      const { lending } = renftAll;
-      return userLending?.map((id: string) => lending[id]) || [];
-    }
+    if (!signer) return undefined;
 
-    return undefined;
+    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const response: { users: { lending: LendingRaw[] }[] } = await timeItAsync(
+      "Pulled Users ReNFT Lendings",
+      async () =>
+        await request(subgraphURI, queryUserLendingRenft(currentAddress))
+    );
+
+    if (!response?.users[0]) return undefined;
+
+    const lendings = Object.values(response.users[0].lending).map((lending) => {
+      return new Lending(
+        lending.nftAddress,
+        lending.tokenId,
+        lending.lentAmount,
+        signer,
+        lending
+      );
+    });
+
+    return lendings;
   };
 
   // RENTING
@@ -321,7 +363,6 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (renftAll) {
       return Object.values(renftAll.renting) || [];
     }
-
     return undefined;
   };
 
@@ -354,9 +395,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       getUserDataRequest.promise
         .then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
           if (usersVote && Object.keys(usersVote).length !== 0) {
-            const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
-              usersVote
-            );
+            const calculatedUsersVote: CalculatedUserVote =
+              calculateVoteByUsers(usersVote);
 
             setCalculatedUsersVote(calculatedUsersVote);
             setUsersVote(usersVote);
@@ -380,7 +420,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         calculatedUsersVote,
         getUserNfts,
         getUserLending,
-        getUsersLending,
+        getUsersLending: getAlllending,
         getUserRenting,
         getUserData,
         updateGlobalUserData,

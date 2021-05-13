@@ -46,38 +46,51 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
       if (!renft || isActive) return;
 
+      const lendAmountsValues: string[] = [];
+      const maxDurationsValues: string[] = [];
+      const borrowPriceValues: string[] = [];
+      const nftPriceValues: string[] = [];
+
       const lendOneInputsValues = Object.values(lendOneInputs);
-      const maxDurationsValues = lendOneInputsValues.map(
-        (item) => item["maxDuration"]
-      );
-      const borrowPriceValues = lendOneInputsValues.map(
-        (item) => item["borrowPrice"]
-      );
-      const nftPriceValues = lendOneInputsValues.map(
-        (item) => item["nftPrice"]
-      );
+
+      for (let i = 0; i < lendOneInputsValues.length; i++) {
+        const item = lendOneInputsValues[i];
+        lendAmountsValues.push(item["lendAmount"]);
+        maxDurationsValues.push(item["maxDuration"]);
+        borrowPriceValues.push(item["borrowPrice"]);
+        nftPriceValues.push(item["nftPrice"]);
+      }
+
       const pmtTokens = Object.values(pmtToken);
       const tx = await startLend(
         renft,
         nfts,
+        lendAmountsValues,
         maxDurationsValues,
         borrowPriceValues,
         nftPriceValues,
         pmtTokens
       );
 
-      setHash(tx.hash);
+      if (tx) setHash(tx.hash);
       onClose();
     },
-    [renft, setHash, onClose, isActive, lendOneInputs, pmtToken, nfts]
+    [renft, isActive, lendOneInputs, pmtToken, nfts, setHash, onClose]
   );
 
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || isActive || !provider) return;
-    const [tx] = await setApprovalForAll(renft, nfts);
+    const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
+      console.log("issue approving all in batch lend");
+      return [undefined];
+    });
+    if (!tx) return;
     setHash(tx.hash);
-    const receipt = await provider.getTransactionReceipt(tx.hash);
-    const status = receipt.status ?? 0;
+    const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
+      console.log("issue pulling txn receipt in batch lend");
+      return undefined;
+    });
+    const status = receipt?.status ?? 0;
     if (status === 1) {
       setIsApproved(true);
     }
@@ -129,11 +142,11 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   return (
     <Modal open={open} handleClose={onClose}>
       <form noValidate autoComplete="off" onSubmit={handleLend}>
-        {nfts.map((nftItem: Nft) => {
+        {nfts.map((nftItem: Nft, ix: number) => {
           return (
             <div
               className="modal-dialog-section"
-              key={`${nftItem.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nftItem.tokenId}`}
+              key={`${nftItem.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nftItem.tokenId}${ix}`}
             >
               <div className="modal-dialog-for">
                 <div className="label">Token Id</div>
@@ -141,6 +154,18 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
                 <div className="label">{nftItem.tokenId}</div>
               </div>
               <div className="modal-dialog-fields">
+                {/* lendAmount for 721 is ignored */}
+                <CssTextField
+                  required
+                  label="Amount"
+                  id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
+                  variant="outlined"
+                  value={lendOneInputs[nftItem.tokenId]?.lendAmount ?? ""}
+                  type="number"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
+                />
                 <CssTextField
                   required
                   label="Max lend duration"

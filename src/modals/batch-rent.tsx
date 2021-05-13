@@ -61,7 +61,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
-        {nft.map((item: Lending) => {
+        {nft.map((item: Lending, ix: number) => {
           const token = item.lending.paymentToken;
           const paymentToken = PaymentToken[token];
           const dailyRentPrice = getLendingPriceByCurreny(
@@ -75,7 +75,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           return (
             <div
               className="modal-dialog-section"
-              key={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}`}
+              key={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}${ix}`}
             >
               <div className="modal-dialog-for">
                 <div className="label">Token Id</div>

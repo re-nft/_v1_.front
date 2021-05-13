@@ -44,8 +44,9 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         console.warn("could not fetch user nfts");
+        console.warn(e);
       });
   }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
 
@@ -78,7 +79,8 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get user nfts request");
       });
 
@@ -94,7 +96,7 @@ const Lendings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You dont have any NFTs</div>;
+    return <div className="center">You don&apos;t have any NFTs to lend</div>;
   }
 
   return (
@@ -107,9 +109,9 @@ const Lendings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft) => (
+        {currentPage.map((nft, ix) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`}
+            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             nft={nft}
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
