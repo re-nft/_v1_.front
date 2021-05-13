@@ -2,7 +2,7 @@ import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
 import { CORS_PROXY } from "../consts";
 
-const IPFSGateway = "http://dweb.link/ipfs/";
+const IPFSGateway = "https://dweb.link/ipfs/";
 
 /**
  * Matches IPFS CIDv0 (all start with Qm)
