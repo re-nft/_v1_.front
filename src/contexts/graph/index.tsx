@@ -131,6 +131,8 @@ export const GraphProvider: React.FC = ({ children }) => {
       let query = "";
       let subgraphURI = "";
 
+      console.log("currentAddress", currentAddress);
+
       switch (fetchType) {
         case FetchType.ERC721:
           query = queryMyERC721s(currentAddress);
@@ -146,6 +148,8 @@ export const GraphProvider: React.FC = ({ children }) => {
         `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
+
+      console.log(response);
 
       let tokens: NftToken[] = [];
       switch (fetchType) {
@@ -184,18 +188,18 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!signer) return undefined;
     let _usersNfts: Nft[] = [];
 
-    // ! comment this out to test prod NFT rendering in dev env
-    if (process.env.REACT_APP_ENVIRONMENT !== "development") {
-      const usersNfts721 = await fetchUserProd(FetchType.ERC721);
-      const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
-      // ! lentAmount = "0"
-      _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
-        return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
-          meta: nft.meta,
-          tokenURI: nft.tokenURI,
-        });
+    // // ! comment this out to test prod NFT rendering in dev env
+    // if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+    const usersNfts721 = await fetchUserProd(FetchType.ERC721);
+    const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
+    // ! lentAmount = "0"
+    _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
+      return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
+        meta: nft.meta,
+        tokenURI: nft.tokenURI,
       });
-    }
+    });
+    // }
 
     let _nfts: Nft[] = _usersNfts;
     if (!IS_PROD) {
