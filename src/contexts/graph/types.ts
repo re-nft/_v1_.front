@@ -46,6 +46,7 @@ export type Lending = {
   id: string;
   nftAddress: Address;
   tokenId: TokenId;
+  amount: string;
   lenderAddress: Address;
   maxRentDuration: number;
   dailyRentPrice: number;
@@ -64,6 +65,7 @@ export type LendingRaw = Omit<
   nftPrice: string;
   paymentToken: string;
   isERC721: boolean;
+  lentAmount: string;
 };
 
 export type Renting = {

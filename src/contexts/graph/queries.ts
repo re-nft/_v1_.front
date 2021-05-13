@@ -36,12 +36,14 @@ export const queryAllLendingRenft = `
       id
       nftAddress
       tokenId
+      lentAmount
       lenderAddress
       maxRentDuration
       dailyRentPrice
       nftPrice
       paymentToken
       collateralClaimed
+      isERC721
     }
   }
 `;
@@ -57,12 +59,14 @@ export const queryAllRentingRenft = `
         id
         nftAddress
         tokenId
+        lentAmount
         lenderAddress
         maxRentDuration
         dailyRentPrice
         nftPrice
         paymentToken
         collateralClaimed
+        isERC721
       }
     }
   }
@@ -76,12 +80,14 @@ export const queryAllRenft = (): string => {
         id
         nftAddress
         tokenId
+        lentAmount
         lenderAddress
         maxRentDuration
         dailyRentPrice
         nftPrice
         paymentToken
         collateralClaimed
+        isERC721
         renting {
           id
           renterAddress
@@ -96,12 +102,14 @@ export const queryAllRenft = (): string => {
           id
           nftAddress
           tokenId
+          lentAmount
           lenderAddress
           maxRentDuration
           dailyRentPrice
           nftPrice
           paymentToken
           collateralClaimed
+          isERC721
         }
       }
     }
@@ -117,6 +125,8 @@ export const queryUserRenft = (user: string): string => {
         id
         nftAddress
         tokenId
+        lentAmount
+        isERC721
         renting {
           id
         }
@@ -130,6 +140,8 @@ export const queryUserRenft = (user: string): string => {
           id
           nftAddress
           tokenId
+          lentAmount
+          isERC721
         }
       }
     }
@@ -143,11 +155,13 @@ export const queryUserLendingRenft = (user: string): string => {
         id
         nftAddress
         tokenId
+        lentAmount
         dailyRentPrice
         nftPrice
         paymentToken
         lenderAddress
         maxRentDuration
+        isERC721
       }
     }
   }`;
@@ -165,10 +179,13 @@ export const queryUserRentingRenft = (user: string): string => {
           id
           nftAddress
           tokenId
+          lentAmount
           dailyRentPrice
           nftPrice
           paymentToken
           lenderAddress
+          maxRentDuration
+          isERC721
         }
       }
     }

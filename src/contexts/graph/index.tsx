@@ -52,7 +52,6 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
  * Luis: https://github.com/microchipgnu
  * Solidity God: wighawag
  */
-
 const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
@@ -189,8 +188,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (process.env.REACT_APP_ENVIRONMENT !== "development") {
       const usersNfts721 = await fetchUserProd(FetchType.ERC721);
       const usersNfts1155 = await fetchUserProd(FetchType.ERC1155);
+      // ! lentAmount = "0"
       _usersNfts = usersNfts721.concat(usersNfts1155).map((nft) => {
-        return new Nft(nft.address, nft.tokenId, "-1", nft.isERC721, signer, {
+        return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
           meta: nft.meta,
           tokenURI: nft.tokenURI,
         });
@@ -272,7 +272,13 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[id] = new Lending(address, tokenId, "-1", signer, l);
+        _allRenftsLending[id] = new Lending(
+          address,
+          tokenId,
+          l.lentAmount,
+          signer,
+          l
+        );
       });
       renting?.forEach((r) => {
         _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
@@ -293,18 +299,27 @@ export const GraphProvider: React.FC = ({ children }) => {
   // ALL AVAILABLE TO RENT (filter out the ones that I am lending)
   const getAlllending = async (): Promise<Lending[] | undefined> => {
     if (!signer) return undefined;
+
     const _currentAddress = currentAddress ? currentAddress : "";
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
       "Pulled All ReNFT Lendings",
       async () => await request(subgraphURI, queryAllLendingRenft)
     );
+
     const lendingsReNFT = [];
+
     for (const lending of Object.values(response?.data?.lendings)) {
       if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
         continue;
       lendingsReNFT.push(
-        new Lending(lending.nftAddress, lending.tokenId, "-1", signer, lending)
+        new Lending(
+          lending.nftAddress,
+          lending.tokenId,
+          lending.lentAmount,
+          signer,
+          lending
+        )
       );
     }
     return lendingsReNFT;
@@ -315,22 +330,26 @@ export const GraphProvider: React.FC = ({ children }) => {
   // LENDING
   const getUserLending = async (): Promise<Lending[] | undefined> => {
     if (!signer) return undefined;
+
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
     const response: { users: { lending: LendingRaw[] }[] } = await timeItAsync(
       "Pulled Users ReNFT Lendings",
       async () =>
         await request(subgraphURI, queryUserLendingRenft(currentAddress))
     );
+
     if (!response?.users[0]) return undefined;
+
     const lendings = Object.values(response.users[0].lending).map((lending) => {
       return new Lending(
         lending.nftAddress,
         lending.tokenId,
-        "-1",
+        lending.lentAmount,
         signer,
         lending
       );
     });
+
     return lendings;
   };
 

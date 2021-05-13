@@ -34,7 +34,7 @@ export const Dashboard: React.FC = () => {
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();
-  const [viewType, setViewType] = useState<DashboardViewType>(
+  const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
 
@@ -89,13 +89,13 @@ export const Dashboard: React.FC = () => {
     );
   const _claim = (lending: Lending) => _now.isAfter(_returnBy(lending));
 
-  const switchView = useCallback(() => {
-    setViewType((specificity) =>
-      specificity === DashboardViewType.LIST_VIEW
-        ? DashboardViewType.MINIATURE_VIEW
-        : DashboardViewType.LIST_VIEW
-    );
-  }, []);
+  // const switchView = useCallback(() => {
+  //   setViewType((specificity) =>
+  //     specificity === DashboardViewType.LIST_VIEW
+  //       ? DashboardViewType.MINIATURE_VIEW
+  //       : DashboardViewType.LIST_VIEW
+  //   );
+  // }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -139,14 +139,13 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>Name</th>
                     <th style={{ width: "15%" }}>NFT Address</th>
                     <th style={{ width: "7%" }}>TokenId</th>
-                    <th style={{ width: "10%" }}>ERC20 Payment</th>
+                    <th style={{ width: "7%" }}>Amount</th>
+                    <th style={{ width: "10%" }}>Pmt in</th>
+                    <th style={{ width: "11%" }}>Collateral</th>
+                    <th style={{ width: "7%" }}>Rent</th>
                     <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "8%" }}>% Complete</th>
-                    <th style={{ width: "11%" }}>Collateral Paid</th>
-                    <th style={{ width: "7%" }}>Rent Paid</th>
                     <th style={{ width: "20%" }} className="action-column">
                       &nbsp;
                     </th>
@@ -159,14 +158,12 @@ export const Dashboard: React.FC = () => {
                       <tr
                         key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
                       >
-                        <td className="column">n/a</td>
                         <td className="column">{short(lending.nftAddress)}</td>
                         <td className="column">{lend.tokenId}</td>
+                        <td className="column">{lend.amount}</td>
                         <td className="column">
                           {PaymentToken[lending.paymentToken ?? 0]}
                         </td>
-                        <td className="column">{lending.maxRentDuration}</td>
-                        <td className="column">-//-</td>
                         <td className="column">
                           {getLendingPriceByCurreny(
                             lending.nftPrice,
@@ -178,6 +175,9 @@ export const Dashboard: React.FC = () => {
                             lending.dailyRentPrice,
                             lending.paymentToken
                           )}
+                        </td>
+                        <td className="column">
+                          {lending.maxRentDuration} days
                         </td>
                         <td className="action-column">
                           {_claim(lend) && (
@@ -210,14 +210,13 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>Name</th>
                     <th style={{ width: "15%" }}>NFT Address</th>
                     <th style={{ width: "7%" }}>TokenId</th>
-                    <th style={{ width: "10%" }}>ERC20 Payment</th>
+                    <th style={{ width: "7%" }}>Amount</th>
+                    <th style={{ width: "10%" }}>Pmt in</th>
                     <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "8%" }}>% Complete</th>
                     <th style={{ width: "11%" }}>Rented At</th>
-                    <th style={{ width: "7%" }}>Rent Paid</th>
+                    <th style={{ width: "7%" }}>Rent</th>
                     <th style={{ width: "20%" }} className="action-column">
                       &nbsp;
                     </th>
@@ -230,16 +229,15 @@ export const Dashboard: React.FC = () => {
                       <tr
                         key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
                       >
-                        <td className="column">n/a</td>
                         <td className="column">
                           {short(renting.renterAddress)}
                         </td>
                         <td className="column">{rent.tokenId}</td>
+                        <td className="column">{renting.lending.amount}</td>
                         <td className="column">
                           {PaymentToken[renting.lending.paymentToken ?? 0]}
                         </td>
-                        <td className="column">{renting.rentDuration}</td>
-                        <td className="column">-//-</td>
+                        <td className="column">{renting.rentDuration} days</td>
                         <td className="column">
                           {moment(Number(renting.rentedAt) * 1000).format(
                             "MM/D/YY hh:mm"

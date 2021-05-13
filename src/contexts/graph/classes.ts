@@ -39,23 +39,19 @@ class Nft {
     if (!options?.tokenURI) {
       const _contract = this.contract();
       /* eslint-disable-next-line */
-      const uriSelector = _contract.hasOwnProperty("tokenURI")
-        ? _contract.tokenURI
-        : _contract.uri;
+      const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
 
       uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;
         })
         .catch(() => {
-          if (process.env.REACT_APP_ENVIRONMENT !== "development") {
-            console.warn(
-              "could not fetch tokenURI",
-              this.address,
-              "tokenID",
-              this.tokenId
-            );
-          }
+          console.warn(
+            "could not fetch tokenURI",
+            this.address,
+            "tokenID",
+            this.tokenId
+          );
         });
     }
 
