@@ -8,7 +8,7 @@ export default async function stopLend(
 ): Promise<ContractTransaction> {
   const address = nfts.map((item) => item.address);
   const tokenIds = nfts.map((item) => item.tokenId);
-  const lendingIds: BigNumber[] = ((nfts as any[]) as Lending[]).map(
+  const lendingIds: BigNumber[] = (nfts as any[] as Lending[]).map(
     (item: Lending) => BigNumber.from(item.id)
   );
   // TODO: will fail

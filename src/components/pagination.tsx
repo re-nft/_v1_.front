@@ -12,18 +12,18 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
 }) => {
   const onSetFirstPage = useCallback(() => onSetPage(1), [onSetPage]);
-  const onSetLastPage = useCallback(() => onSetPage(totalPages), [
-    totalPages,
-    onSetPage,
-  ]);
-  const onSetNextPage = useCallback(() => onSetPage(currentPageNumber + 1), [
-    currentPageNumber,
-    onSetPage,
-  ]);
-  const onSetPrevPage = useCallback(() => onSetPage(currentPageNumber - 1), [
-    currentPageNumber,
-    onSetPage,
-  ]);
+  const onSetLastPage = useCallback(
+    () => onSetPage(totalPages),
+    [totalPages, onSetPage]
+  );
+  const onSetNextPage = useCallback(
+    () => onSetPage(currentPageNumber + 1),
+    [currentPageNumber, onSetPage]
+  );
+  const onSetPrevPage = useCallback(
+    () => onSetPage(currentPageNumber - 1),
+    [currentPageNumber, onSetPage]
+  );
 
   return (
     <ul className="pagination">

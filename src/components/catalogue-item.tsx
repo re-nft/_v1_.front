@@ -38,15 +38,17 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
-  const [currentVote, setCurrentVote] = useState<{
-    downvote?: number;
-    upvote?: number;
-  }>();
-  const [meta, setMeta] = useState<{
-    name?: string;
-    image?: string;
-    description?: string;
-  }>();
+  const [currentVote, setCurrentVote] =
+    useState<{
+      downvote?: number;
+      upvote?: number;
+    }>();
+  const [meta, setMeta] =
+    useState<{
+      name?: string;
+      image?: string;
+      description?: string;
+    }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
 
   const onCheckboxClick = useCallback(() => {

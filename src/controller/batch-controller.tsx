@@ -32,9 +32,8 @@ const defaultBatchContext = {
   onSetCheckedItem: () => true,
 };
 
-export const BatchContext = createContext<BatchContextType>(
-  defaultBatchContext
-);
+export const BatchContext =
+  createContext<BatchContextType>(defaultBatchContext);
 
 class BatchProvider extends React.Component<Props, State> {
   state: State = {
