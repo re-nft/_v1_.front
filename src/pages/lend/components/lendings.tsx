@@ -113,6 +113,7 @@ const Lendings: React.FC = () => {
           <CatalogueItem
             key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             nft={nft}
+            // TODO: this isn't a correct id. Should be nftAddress::tokenId::lendingId (if lending id exists, 0 otherwise)
             checked={checkedMap[nft.tokenId] || false}
             onCheckboxChange={onCheckboxChange}
           >

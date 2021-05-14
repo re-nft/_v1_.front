@@ -172,7 +172,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 <div
                   onClick={onCheckboxClick}
                   className={`checkbox ${isChecked ? "checked" : ""}`}
-                ></div>
+                />
               </div>
             )}
           </div>
