@@ -13,6 +13,8 @@ import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { queryCache } from "react-query";
+import { fetchNFTMeta } from "../../../services/fetch-nft-meta";
 
 const Lendings: React.FC = () => {
   const {
@@ -90,6 +92,27 @@ const Lendings: React.FC = () => {
     };
     /* eslint-disable-next-line */
   }, []);
+
+  useEffect(() => {
+    if (currentPage) {
+      currentPage.map((nft, ix) => {
+        queryCache.prefetchQuery(
+          ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
+          () => {
+            //:eniko TODO use API_KEY
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve(ix);
+              }, ix * 1200);
+            }).then(() => fetchNFTMeta(nft));
+          },
+          {
+            cacheTime: Infinity,
+          }
+        );
+      });
+    }
+  }, [currentPage]);
 
   if (isLoading) {
     return <CatalogueLoader />;

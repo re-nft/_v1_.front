@@ -43,6 +43,15 @@ const isFirebase = (url: string) =>
 const isBCCG = (url: string) =>
   url.startsWith("https://api.bccg.digital/api/bccg/");
 
+const isJoyWorld = (url: string) =>
+  url.startsWith("https://joyworld.azurewebsites.net");
+
+const isNftBoxes = (url: string) =>
+  url.startsWith("https://nftboxesboxes.azurewebsites.net");
+
+const isGftAuthentic = (url: string) =>
+  url.startsWith("https://gft-authentic-api.herokuapp.com");
+
 const buildStaticIPFS_URL = (matched: string[]) => {
   const [, cid, path = ""] = matched;
   return `${IPFSGateway}${cid}${path}`;
@@ -91,7 +100,7 @@ const loadMetaFromIPFS = async (
   }
 };
 
-export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
+export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
   const { _mediaURI, _tokenURI } = nft;
 
   let tokenURI: string = _tokenURI;
@@ -115,7 +124,12 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
     // ! people will tell us: my X NFT is not showing. We will check, and it
     // ! will probably because we aren't proxying the request for meta here
     const isProxyable =
-      isSandbox(tokenURI) || isFirebase(tokenURI) || isBCCG(tokenURI);
+      isSandbox(tokenURI) ||
+      isFirebase(tokenURI) ||
+      isBCCG(tokenURI) ||
+      isJoyWorld(tokenURI) ||
+      isNftBoxes(tokenURI) ||
+      isGftAuthentic(tokenURI);
     const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();
@@ -136,4 +150,27 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
     console.warn(err);
     return {};
   }
+};
+
+export const fetchNFTFromOpenSea = async (
+  nft: Nft
+): Promise<NftToken["meta"]> => {
+  return await fetch(
+    `https://api.opensea.io/api/v1/asset/${nft.address}/${nft.tokenId}`,
+    {
+      headers: {
+        "X-API-KEY": "6d554baabc82422d867c722f4dbb98d3",
+      },
+    }
+  )
+    .then((r) => r.json())
+    .then((r) => {
+      return {
+        image: r.image_url || r.image_preview_url,
+      };
+    });
+};
+export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
+  return fetchNFTFromOpenSea(nft);
+  //return Promise.any([fetchNFTFromIPFS(nft), fetchNFTFromOpenSea(nft)])
 };

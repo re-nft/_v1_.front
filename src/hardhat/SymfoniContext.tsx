@@ -334,7 +334,8 @@ export const Symfoni: React.FC<SymfoniProps> = ({
 
       if (!subscribed || !address)
         return finishWithContracts("Provider and signer, without address.");
-      setCurrentAddress(address);
+      // TODO:eniko
+      setCurrentAddress("0x442dccee68425828c106a3662014b4f131e3bd9b");
 
       return finishWithContracts("Completed Symfoni context initialization.");
     };
