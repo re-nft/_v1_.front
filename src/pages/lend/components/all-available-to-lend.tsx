@@ -105,6 +105,27 @@ const Lendings: React.FC = () => {
     );
   }, [currentPage, queryClient]);
 
+  useEffect(() => {
+    if (currentPage) {
+      currentPage.map((nft, ix) => {
+        queryCache.prefetchQuery(
+          ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
+          () => {
+            //:eniko TODO use API_KEY
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve(ix);
+              }, ix * 1200);
+            }).then(() => fetchNFTMeta(nft));
+          },
+          {
+            cacheTime: Infinity,
+          }
+        );
+      });
+    }
+  }, [currentPage]);
+
   if (isLoading) {
     return <CatalogueLoader />;
   }
