@@ -16,6 +16,7 @@ import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { fetchNFTMeta } from "../services/fetch-nft-meta";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -60,13 +61,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     );
   }, [nft, isChecked, onCheckboxChange]);
 
-  const preloadImage = (imgSrc: string) => {
-    const img = new Image();
-    img.onload = () => setImageIsReady(true);
-    img.onerror = () => setImageIsReady(true);
-    img.src = imgSrc;
-  };
-
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
       .then((resp: boolean) => {
@@ -108,11 +102,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     if (isVisible && !meta?.image) {
       fetchNFTMeta(nft)
         .then((response) => {
-          if (response?.image) {
-            preloadImage(response?.image);
-          } else {
-            setImageIsReady(true);
-          }
+          setImageIsReady(true);
           setMeta(response);
         })
         .catch(() => console.warn("could not fetch nft meta"));
@@ -176,7 +166,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__image">
             {image ? (
-              <img loading="lazy" src={image} />
+              <LazyLoadImage alt={description} src={image} />
             ) : (
               <div className="no-img">NO IMG</div>
             )}

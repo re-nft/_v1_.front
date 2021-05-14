@@ -161,14 +161,16 @@ export const GraphProvider: React.FC = ({ children }) => {
             };
           });
           break;
-        case FetchType.ERC1155:
-          tokens = (response as ERC1155s).account.balances.map(({ token }) => ({
-            address: token.registry.contractAddress,
-            tokenURI: token.tokenURI,
-            tokenId: token.tokenId,
-            isERC721: false,
-          }));
+        case FetchType.ERC1155: {
+          tokens =
+            (response as ERC1155s).account?.balances?.map(({ token }) => ({
+              address: token.registry.contractAddress,
+              tokenURI: token.tokenURI,
+              tokenId: token.tokenId,
+              isERC721: false,
+            })) || [];
           break;
+        }
       }
 
       // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
