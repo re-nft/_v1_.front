@@ -6,6 +6,7 @@ import PageLayout from "../components/page-layout";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { BatchContext } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
@@ -13,8 +14,8 @@ import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
-import { getLendingPriceByCurreny } from "../utils";
-import { short } from "../utils";
+import { getLendingPriceByCurreny, short } from "../utils";
+import BatchBar from "../components/batch-bar";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -25,13 +26,28 @@ enum DashboardViewType {
   MINIATURE_VIEW,
 }
 
+// TODO: this code is not DRY
+// TODO: lendings has this batch architecture too
+// TODO: it would be good to abstract batching
+// TODO: and pass components as children to the abstracted
+// TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
+  const {
+    checkedItems,
+    checkedMap,
+    countOfCheckedItems,
+    onReset,
+    onCheckboxChange,
+    onSetCheckedItem,
+    onSetItems,
+  } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lendingItems, setLendingItems] = useState<Lending[]>([]);
   const [rentingItems, setRentingItems] = useState<Renting[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();
   const [viewType, _] = useState<DashboardViewType>(
@@ -59,8 +75,13 @@ export const Dashboard: React.FC = () => {
   const handleClaimCollateral = useCallback(
     async (lending: Lending) => {
       if (!renft) return;
-      const nft = lending as Nft;
-      const tx = await claimCollateral(renft, [nft]);
+      const tx = await claimCollateral(renft, [
+        {
+          address: lending.address,
+          tokenId: lending.tokenId,
+          lendingId: lending.id,
+        },
+      ]);
       await setHash(tx.hash);
       handleRefresh();
     },
@@ -89,13 +110,20 @@ export const Dashboard: React.FC = () => {
     );
   const _claim = (lending: Lending) => _now.isAfter(_returnBy(lending));
 
-  // const switchView = useCallback(() => {
-  //   setViewType((specificity) =>
-  //     specificity === DashboardViewType.LIST_VIEW
-  //       ? DashboardViewType.MINIATURE_VIEW
-  //       : DashboardViewType.LIST_VIEW
-  //   );
-  // }, []);
+  const handleBatchModalOpen = useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
+
+  const onCheckboxClick = useCallback(
+    (lending: Lending) => {
+      console.log("checkedItems", checkedItems);
+      onCheckboxChange(
+        `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`,
+        checkedMap[lending.id] == null ? true : !checkedMap[lending.id]
+      );
+    },
+    [onCheckboxChange, checkedMap, checkedItems]
+  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -130,7 +158,7 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <div>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && !isLoading && (
@@ -181,8 +209,14 @@ export const Dashboard: React.FC = () => {
                           {lending.maxRentDuration} days
                         </td>
                         <td className="action-column">
+                          {/* // ! absolute weirdness if you remove as any. It thinks that lending is LendingT O_O */}
                           <div
-                            className="checkbox"
+                            onClick={() =>
+                              onCheckboxClick(lending as any as Lending)
+                            }
+                            className={`checkbox ${
+                              checkedMap[lending.id] ? "checked" : ""
+                            }`}
                             style={{ margin: "auto", marginTop: "1em" }}
                           />
                         </td>
@@ -269,7 +303,15 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
       {viewType === DashboardViewType.MINIATURE_VIEW && <div>miniature</div>}
-    </PageLayout>
+      {countOfCheckedItems > 1 && (
+        <BatchBar
+          title={`Selected ${countOfCheckedItems} items`}
+          actionTitle="Lend all"
+          onCancel={onReset}
+          onClick={handleBatchModalOpen}
+        />
+      )}
+    </div>
   );
 };
 

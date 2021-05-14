@@ -4,8 +4,8 @@ import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import {
   LendingRaw,
   RentingRaw,
-  Lending as LendingType,
-  Renting as RentingType,
+  LendingT as LendingType,
+  RentingT as RentingType,
   NftToken,
 } from "./types";
 import { parseLending, parseRenting } from "./utils";
@@ -29,6 +29,7 @@ class Nft {
     options?: NftOptions
   ) {
     this.address = nftAddress;
+    this.nftAddress = nftAddress;
     this.tokenId = tokenId.toString();
     this.amount = amount.toString();
     this.signer = signer;
@@ -59,6 +60,7 @@ class Nft {
     this._mediaURI = options?.mediaURI ?? "";
   }
 
+  nftAddress: Address;
   address: Address;
   tokenId: string;
   amount: string;

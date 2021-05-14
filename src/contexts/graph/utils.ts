@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
 
-import { Lending, Renting, LendingRaw, RentingRaw } from "./types";
+import { LendingT, RentingT, LendingRaw, RentingRaw } from "./types";
 import { DP18 } from "../../consts";
 import { unpackPrice, parsePaymentToken } from "../../utils";
 
-export const parseLending = (lending: LendingRaw): Lending => {
+export const parseLending = (lending: LendingRaw): LendingT => {
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
@@ -20,7 +20,7 @@ export const parseLending = (lending: LendingRaw): Lending => {
   };
 };
 
-export const parseRenting = (renting: RentingRaw): Renting => {
+export const parseRenting = (renting: RentingRaw): RentingT => {
   return {
     id: renting.id,
     renterAddress: ethers.utils.getAddress(renting.renterAddress),

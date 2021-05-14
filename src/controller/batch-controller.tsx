@@ -76,6 +76,7 @@ class BatchProvider extends React.Component<Props, State> {
       },
     });
 
+    // ? how about when item is undefined and sourceIndex === -1?
     if (sourceIndex === -1 && item) {
       sources.push(item);
       this.setState({ checkedItems: sources });
