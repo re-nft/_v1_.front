@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
 import CatalogueItem from "../../../components/catalogue-item";

@@ -17,6 +17,7 @@ import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { fetchNFTMeta } from "../services/fetch-nft-meta";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useQuery } from "react-query";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -50,6 +51,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       description?: string;
     }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
+
+  const queryInfo = useQuery(
+    ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
+    () => fetchNFTMeta(nft),
+    { cacheTime: Infinity, enabled: false }
+  );
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -99,15 +106,16 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   useEffect(() => {
     setIsChecked(checked || false);
-    if (isVisible && !meta?.image) {
-      fetchNFTMeta(nft)
-        .then((response) => {
-          setImageIsReady(true);
-          setMeta(response);
-        })
-        .catch(() => console.warn("could not fetch nft meta"));
-    }
   }, [checked, isVisible, nft, meta?.image]);
+  useEffect(() => {
+    if (!queryInfo.isLoading) {
+      if (queryInfo.data?.image) {
+        setImageIsReady(true);
+        console.log(queryInfo.data);
+        setMeta(queryInfo.data);
+      }
+    }
+  }, [queryInfo]);
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites =
