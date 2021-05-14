@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
+import { ReactQueryDevtools } from "react-query-devtools";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ ReactDOM.render(
         </ThemeProvider>
       </TransactionStateProvider>
     </GraphProvider>
+    <ReactQueryDevtools />
   </Symfoni>,
   document.getElementById("root")
 );

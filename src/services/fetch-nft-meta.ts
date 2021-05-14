@@ -100,8 +100,8 @@ const loadMetaFromIPFS = async (
   }
 };
 
-export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
-  const { _mediaURI } = nft;
+export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
+  const { _mediaURI, _tokenURI } = nft;
 
   let tokenURI = await nft.loadTokenURI();
   if (!tokenURI) return {};
@@ -149,4 +149,27 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
     console.warn("error fetching nft meta");
     return {};
   }
+};
+
+export const fetchNFTFromOpenSea = async (
+  nft: Nft
+): Promise<NftToken["meta"]> => {
+  return await fetch(
+    `https://api.opensea.io/api/v1/asset/${nft.address}/${nft.tokenId}`,
+    {
+      headers: {
+        "X-API-KEY": "6d554baabc82422d867c722f4dbb98d3",
+      },
+    }
+  )
+    .then((r) => r.json())
+    .then((r) => {
+      return {
+        image: r.image_url || r.image_preview_url,
+      };
+    });
+};
+export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
+  return fetchNFTFromOpenSea(nft);
+  //return Promise.any([fetchNFTFromIPFS(nft), fetchNFTFromOpenSea(nft)])
 };
