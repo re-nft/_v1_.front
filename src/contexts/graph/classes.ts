@@ -37,7 +37,7 @@ class Nft {
       const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
 
       uriSelector(this.tokenId)
-        .then((d: any) => {
+        .then((d: string) => {
           this._tokenURI = d;
         })
         .catch(() => {
@@ -114,7 +114,7 @@ class Lending extends Nft {
     super(
       lendingRaw.nftAddress,
       lendingRaw.tokenId,
-      lendingRaw.amount,
+      lendingRaw.lentAmount,
       lendingRaw.isERC721,
       signer,
       options
@@ -126,6 +126,11 @@ class Lending extends Nft {
   lending: ILending;
   id: string;
 }
+
+// typeguard for Renting class
+export const isRenting = (x: any): x is Renting => {
+  return "renting" in x;
+};
 
 class Renting extends Nft {
   constructor(

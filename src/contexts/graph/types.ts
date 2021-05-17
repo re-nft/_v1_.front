@@ -58,7 +58,7 @@ export interface ILending {
 
 export type LendingRaw = Omit<
   ILending,
-  "maxRentDuration" | "dailyRentPrice" | "nftPrice" | "paymentToken"
+  "maxRentDuration" | "dailyRentPrice" | "nftPrice" | "paymentToken" | "amount"
 > & {
   maxRentDuration: string;
   dailyRentPrice: string;

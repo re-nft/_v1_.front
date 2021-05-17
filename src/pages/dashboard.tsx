@@ -31,8 +31,13 @@ enum DashboardViewType {
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
-  const { checkedMap, countOfCheckedItems, onReset, onCheckboxChange } =
-    useContext(BatchContext);
+  const {
+    checkedMap,
+    countOfCheckedItems,
+    onReset,
+    onCheckboxChange,
+    onSetItems,
+  } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
@@ -49,8 +54,13 @@ export const Dashboard: React.FC = () => {
   const handleRefresh = useCallback(() => {
     Promise.all([getUserLending(), getUserRenting()])
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
+        const _userLending = userLending || [];
+        const _userRenting = userRenting || [];
+
+        setLendingItems(_userLending);
+        setRentingItems(_userRenting);
+
+        onSetItems([..._userLending, ..._userRenting]);
         setIsLoading(false);
       })
       .catch(() => {
@@ -59,6 +69,7 @@ export const Dashboard: React.FC = () => {
   }, [
     getUserLending,
     getUserRenting,
+    onSetItems,
     setLendingItems,
     setRentingItems,
     setIsLoading,
@@ -131,12 +142,19 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
+        const _userLending = userLending || [];
+        const _userRenting = userRenting || [];
+
+        console.log(_userLending);
+        console.log(_userRenting);
+
+        setLendingItems(_userLending);
+        setRentingItems(_userRenting);
+
+        onSetItems([..._userLending, ..._userRenting]);
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
         console.warn("could not get user lending request");
       });
 
@@ -144,9 +162,7 @@ export const Dashboard: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
+  if (isLoading) return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (

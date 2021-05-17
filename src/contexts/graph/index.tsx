@@ -206,6 +206,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     return _nfts;
   };
 
+  // TODO: these should be used instead of fetching all!
   const fetchUserLending = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserLendingRenft(currentAddress);
@@ -225,6 +226,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     );
   };
 
+  // TODO: these should be used instead of fetching all!
   const fetchUserRenting = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserRentingRenft(currentAddress);
@@ -327,9 +329,9 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     if (!response?.users[0]) return undefined;
 
-    const lendings = Object.values(response.users[0].lending).map((lending) => {
-      return new Lending(lending, signer);
-    });
+    const lendings = Object.values(response.users[0].lending).map(
+      (lending) => new Lending(lending, signer)
+    );
 
     return lendings;
   };

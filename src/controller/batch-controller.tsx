@@ -1,131 +1,115 @@
-import React, { createContext } from "react";
+import React, { createContext, useState, useEffect, useMemo } from "react";
 
-import { Nft, Lending, isLending } from "../contexts/graph/classes";
+import {
+  Lending,
+  Renting,
+  isLending,
+  isRenting,
+} from "../contexts/graph/classes";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
+import { THROWS } from "../utils";
 
-/* eslint-disable-next-line */
-type Props = {};
-type State = {
-  checkedItems: Nft[];
-  checkedMap: Record<string, boolean>;
-  items: Nft[];
+// nftAddress::tokenId::{lendingId,0}
+type UniqueID = string;
+
+export const getUniqueID = (
+  nftAddress: string,
+  tokenId: string,
+  lendingId?: string
+): UniqueID => {
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
+    lendingId ?? 0
+  }`;
 };
 
 export type BatchContextType = {
-  checkedItems: Nft[];
-  // this is a typeguard of the above
+  // needs to be a hashmap because we need to check the presence in O(1) time
+  // lendingId is the one unique id. However, you can check the nfts that are
+  // not yet lent, in which case the id can't be lending id. It is then
+  // nftAddress::tokenId::0 <- 0 in the end is the sentinel placeholder
+  // if there is a lending id, then the id becomes
+  // nftAddress::tokenId:lendingId
+  checkedItems: Record<UniqueID, Lending | Renting>;
+  // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
   checkedLendingItems: Lending[];
-  checkedMap: Record<string, boolean>;
-  countOfCheckedItems: number;
-  onReset(): void;
-  onSetItems(items: Nft[]): void;
-  onCheckboxChange(name: string, checked: boolean): void;
-  onSetCheckedItem(items: Nft): void;
+  checkedRentingItems: Renting[];
+
+  handleReset(): void;
+  onCheckboxChange(item: Lending | Renting): void;
 };
 
 const defaultBatchContext = {
-  checkedItems: [],
+  checkedItems: {},
   checkedLendingItems: [],
-  checkedMap: {},
-  countOfCheckedItems: 0,
-  // Avoid @typescript-eslint/no-empty-function
-  onReset: () => true,
-  onSetItems: () => true,
-  onCheckboxChange: () => true,
-  onSetCheckedItem: () => true,
+  checkedRentingItems: [],
+  // functions
+  handleReset: THROWS,
+  onCheckboxChange: THROWS,
 };
 
 export const BatchContext =
   createContext<BatchContextType>(defaultBatchContext);
 
-class BatchProvider extends React.Component<Props, State> {
-  state: State = {
-    checkedItems: [],
-    checkedMap: {},
-    items: [],
-  };
+export const BatchProvider: React.FC = ({ children }) => {
+  const [checkedItems, setCheckedItems] = useState<
+    BatchContextType["checkedItems"]
+  >(defaultBatchContext.checkedItems);
 
-  handleReset = (): void => {
-    this.setState({
-      checkedMap: {},
-      checkedItems: [],
-    });
-  };
+  const handleReset = () => setCheckedItems(defaultBatchContext.checkedItems);
 
-  handleSetCheckedItem = (item: Nft): void => {
-    this.setState({ checkedItems: [item] });
-  };
+  const onCheckboxChange = (item: Lending | Renting) => {
+    let lendingID = "0";
+    if (isLending(item)) lendingID = item.lending.id;
+    else if (isRenting(item)) lendingID = item.renting.lendingId;
 
-  handleSetItems = (items: Nft[]): void => {
-    this.setState({ items });
-  };
+    const uniqueID = getUniqueID(item.address, item.tokenId, lendingID);
 
-  handleCheckboxChange = (name: string, checked: boolean): void => {
-    const { checkedItems, checkedMap, items } = this.state;
-
-    const [address, tokenId] = name.split(RENFT_SUBGRAPH_ID_SEPARATOR);
-    const sources = checkedItems.slice(0);
-    const item = items.find(
-      (nft) => nft.address === address && nft.tokenId === tokenId
-    );
-    const sourceIndex = checkedItems.findIndex(
-      (nft) => nft.address === address && nft.tokenId === tokenId
-    );
-
-    this.setState({
-      checkedMap: {
-        ...checkedMap,
-        [tokenId]: checked,
-      },
-    });
-
-    // ? how about when item is undefined and sourceIndex === -1?
-    if (sourceIndex === -1 && item) {
-      sources.push(item);
-      this.setState({ checkedItems: sources });
-    } else {
-      sources.splice(sourceIndex, 1);
-      this.setState({ checkedItems: sources });
-    }
-  };
-
-  checkedLendingItems = (): Lending[] => {
-    const _checkedLendingItems: Lending[] = [];
-
-    // ? is this the correct way to pull from the state
-    for (const _checkedItem of this.state.checkedItems) {
-      if (isLending(_checkedItem)) {
-        _checkedLendingItems.push(_checkedItem);
+    setCheckedItems((prev) => {
+      // if contained in prev, remove
+      if (uniqueID in prev) {
+        const state = { ...prev };
+        delete state[uniqueID];
+        return state;
+        // if not, add
+      } else {
+        return { ...prev, [uniqueID]: item };
       }
-    }
-
-    return _checkedLendingItems;
+    });
   };
 
-  componentWillUnmount(): void {
-    // When component will unmount we should reset controller state
-    this.handleReset();
-  }
+  const checkedLendingItems = useMemo((): Lending[] => {
+    const lendingItems: Lending[] = [];
+    for (const item of Object.values(checkedItems)) {
+      if (isLending(item)) lendingItems.push(item);
+    }
+    return lendingItems;
+  }, [checkedItems]);
 
-  render(): JSX.Element {
-    const { checkedItems, checkedMap } = this.state;
-    const contextValues: BatchContextType = {
-      checkedItems,
-      checkedLendingItems: this.checkedLendingItems(),
-      checkedMap,
-      countOfCheckedItems: checkedItems.length,
-      onReset: this.handleReset,
-      onSetItems: this.handleSetItems,
-      onCheckboxChange: this.handleCheckboxChange,
-      onSetCheckedItem: this.handleSetCheckedItem,
-    };
+  const checkedRentingItems = useMemo((): Renting[] => {
+    const rentingItems: Renting[] = [];
+    for (const checkedItem of Object.values(checkedItems)) {
+      if (isRenting(checkedItem)) rentingItems.push(checkedItem);
+    }
+    return rentingItems;
+  }, [checkedItems]);
 
-    return (
-      <BatchContext.Provider value={contextValues}>
-        {this.props.children}
-      </BatchContext.Provider>
-    );
-  }
-}
+  useEffect(() => {
+    return handleReset();
+  }, []);
+
+  return (
+    <BatchContext.Provider
+      value={{
+        checkedItems,
+        checkedLendingItems,
+        checkedRentingItems,
+        handleReset,
+        onCheckboxChange,
+      }}
+    >
+      {children}
+    </BatchContext.Provider>
+  );
+};
 
 export default BatchProvider;
