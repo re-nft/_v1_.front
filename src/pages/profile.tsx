@@ -1,14 +1,14 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 import GraphContext from "../contexts/graph";
 import { UserData } from "../contexts/graph/types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const Profile: React.FC = () => {
   const { getUserData, updateGlobalUserData } = useContext(GraphContext);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -7,7 +7,7 @@ import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import CommonInfo from "./common-info";
 import MinimalSelect from "../components/select";
-import { CurrentAddressContext, ReNFTContext } from "../hardhat/SymfoniContext";
+import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
 import startLend from "../services/start-lend";
@@ -15,6 +15,7 @@ import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
 import ActionButton from "../components/action-button";
 import { getUniqueID } from "../controller/batch-controller";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 type LendOneInputs = {
   [key: string]: {
@@ -35,7 +36,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 }) => {
   const { instance: renft } = useContext(ReNFTContext);
   const { isActive, setHash } = useContext(TransactionStateContext);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
   const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>();

@@ -5,26 +5,17 @@ import { Address } from "../types";
 import { UserData, UsersVote } from "../contexts/graph/types";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
-// TODO: move this to .env ang getting values via process.env[key]
 const config = {
-  // apiKey: "AIzaSyAFnsLe_Joxat6qusMBQEIyvjx5JWDLVyA",
-  // authDomain: "renft-cache-nfts.firebaseapp.com",
-  // databaseURL: "https://renft-cache-nfts-default-rtdb.firebaseio.com",
-  //projectId: "renft-cache-nfts",
-  //storageBucket: "renft-cache-nfts.appspot.com",
-  //messagingSenderId: "155132754476",
-  //appId: "1:155132754476:web:be027d2a19f422943b6f89",
-  //measurementId: "G-KHE0KBEHTW",
-
   // my test firebase database
-  apiKey: "AIzaSyAznbJwfefZeJ86FlDB6LDAdo_Ey6dfyhY",
-  authDomain: "renft-bf03b.firebaseapp.com",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   databaseURL:
-    "https://renft-bf03b-default-rtdb.europe-west1.firebasedatabase.app/",
-  projectId: "renft-bf03b",
-  storageBucket: "renft-bf03b.appspot.com",
-  messagingSenderId: "119002251713",
-  appId: "1:119002251713:web:5edb39eb033357353d2f40",
+    process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDERID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 firebase.initializeApp(config);

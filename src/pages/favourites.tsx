@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 
 import GraphContext from "../contexts/graph";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { myFavorites } from "../services/calculate-my-favorites";
 import { getUniqueID } from "../controller/batch-controller";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -31,7 +30,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { getUserData, getAllAvailableToLend } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);

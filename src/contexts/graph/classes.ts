@@ -76,7 +76,8 @@ class Nft {
         .then((d: string) => {
           this._tokenURI = this._parseTokenURI(d);
         })
-        .catch(() => {
+        .catch((e:any) => {
+          console.log(e)
           console.warn(
             "could not fetch tokenURI",
             this.address,
