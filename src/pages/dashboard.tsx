@@ -206,13 +206,8 @@ export const Dashboard: React.FC = () => {
                           {lending.maxRentDuration} days
                         </td>
                         <td className="action-column">
-                          {
-                            // TODO: absolute weirdness if you remove as any. It thinks that lending is LendingT O_O
-                          }
                           <div
-                            onClick={() =>
-                              onCheckboxClick(lending as any as Lending)
-                            }
+                            onClick={() => onCheckboxClick(lend)}
                             className={`checkbox ${
                               checkedMap[lending.id] ? "checked" : ""
                             }`}

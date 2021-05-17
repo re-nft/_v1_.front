@@ -36,7 +36,8 @@ const defaultPageContext = {
   onResetPage: () => true,
 };
 
-export const PageContext = createContext<PageContextType<any>>(defaultPageContext);
+export const PageContext =
+  createContext<PageContextType<any>>(defaultPageContext);
 
 const PAGE_SIZE = 20;
 

@@ -42,7 +42,7 @@ export type ERC1155s = {
 
 // ! RENFT SUBGRAPH BELOW
 
-export type LendingT = {
+export interface ILending {
   id: string;
   nftAddress: Address;
   tokenId: TokenId;
@@ -53,11 +53,11 @@ export type LendingT = {
   nftPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
-  renting?: RentingT;
-};
+  renting?: IRenting;
+}
 
 export type LendingRaw = Omit<
-  LendingT,
+  ILending,
   "maxRentDuration" | "dailyRentPrice" | "nftPrice" | "paymentToken"
 > & {
   maxRentDuration: string;
@@ -68,16 +68,16 @@ export type LendingRaw = Omit<
   lentAmount: string;
 };
 
-export type RentingT = {
+export interface IRenting {
   id: string;
   renterAddress: Address;
   rentDuration: number;
   rentedAt: number;
   lendingId: string;
-  lending: LendingT;
-};
+  lending: ILending;
+}
 
-export type RentingRaw = Omit<RentingT, "rentDuration" | "rentedAt"> & {
+export type RentingRaw = Omit<IRenting, "rentDuration" | "rentedAt"> & {
   rentDuration: string;
   rentedAt: string;
   lending: LendingRaw;

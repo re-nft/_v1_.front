@@ -1,13 +1,7 @@
 import { Address } from "../../types";
 import { ERC721 } from "../../hardhat/typechain/ERC721";
 import { ERC1155 } from "../../hardhat/typechain/ERC1155";
-import {
-  LendingRaw,
-  RentingRaw,
-  LendingT as LendingType,
-  RentingT as RentingType,
-  NftToken,
-} from "./types";
+import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
 import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
@@ -113,19 +107,23 @@ export const isLending = (x: any): x is Lending => {
 
 class Lending extends Nft {
   constructor(
-    nftAddress: Address,
-    tokenId: string,
-    amount: string,
-    signer: ethers.Signer,
     lendingRaw: LendingRaw,
+    signer: ethers.Signer,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, amount, lendingRaw.isERC721, signer, options);
+    super(
+      lendingRaw.nftAddress,
+      lendingRaw.tokenId,
+      lendingRaw.amount,
+      lendingRaw.isERC721,
+      signer,
+      options
+    );
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
   }
-  lending: LendingType;
+  lending: ILending;
   id: string;
 }
 
@@ -143,7 +141,7 @@ class Renting extends Nft {
     this.renting = parseRenting(rentingRaw);
     this.id = rentingRaw.id;
   }
-  renting: RentingType;
+  renting: IRenting;
   id: string;
 }
 

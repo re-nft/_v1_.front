@@ -11,7 +11,10 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
-import { PageContext, PageContextType } from "../../../controller/page-controller";
+import {
+  PageContext,
+  PageContextType,
+} from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const Lendings: React.FC = () => {
