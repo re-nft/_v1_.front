@@ -8,7 +8,6 @@ import React, {
 import { request } from "graphql-request";
 
 import {
-  CurrentAddressContext,
   ReNFTContext,
   SignerContext,
 } from "../../hardhat/SymfoniContext";
@@ -41,6 +40,8 @@ import {
 } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import useFetchNftDev from "./hooks/useFetchNftDev";
+import { IS_PROD } from "../../consts";
+import { CurrentAddressContextWrapper } from "../CurrentAddressContextWrapper";
 
 /**
  * Useful links
@@ -52,22 +53,6 @@ import useFetchNftDev from "./hooks/useFetchNftDev";
  * Luis: https://github.com/microchipgnu
  * Solidity God: wighawag
  */
-const IS_PROD =
-  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
-
-// TODO: environment variables
-
-// renft localhost and prod subgraph for pulling NFTs related to reNFT
-const ENDPOINT_RENFT_PROD =
-  "https://api.thegraph.com/subgraphs/name/nazariyv/rentnft";
-const ENDPOINT_RENFT_DEV =
-  "http://localhost:8000/subgraphs/name/nazariyv/ReNFT";
-
-// non-reNFT prod subgraphs for pulling your NFT balances
-const ENDPOINT_EIP721_PROD =
-  "https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph";
-const ENDPOINT_EIP1155_PROD =
-  "https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph";
 
 type LendingId = string;
 type RentingId = LendingId;
@@ -108,37 +93,50 @@ enum FetchType {
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 export const GraphProvider: React.FC = ({ children }) => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [signer] = useContext(SignerContext);
   const { instance: renft } = useContext(ReNFTContext);
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
-  const [calculatedUsersVote, setCalculatedUsersVote] =
-    useState<CalculatedUserVote>({});
+  const [
+    calculatedUsersVote,
+    setCalculatedUsersVote,
+  ] = useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
   /**
    * Only for dev purposes
    */
   const fetchNftDev = useFetchNftDev(signer);
 
+  console.log('currentAddress graph', currentAddress)
   /**
    * Pings the eip721 and eip1155 subgraphs in prod, to determine what
    * NFTs you own
    */
   const fetchUserProd = useCallback(
     async (fetchType: FetchType) => {
+      console.log("currentAddress", currentAddress);
+      if(!currentAddress) return []
       let query = "";
       let subgraphURI = "";
+
 
       switch (fetchType) {
         case FetchType.ERC721:
           query = queryMyERC721s(currentAddress);
-          subgraphURI = ENDPOINT_EIP721_PROD;
+
+          if (!process.env.REACT_APP_EIP721_API) {
+            throw new Error("EIP721_API is not defined");
+          }
+          subgraphURI = process.env.REACT_APP_EIP721_API;
           break;
         case FetchType.ERC1155:
           query = queryMyERC1155s(currentAddress);
-          subgraphURI = ENDPOINT_EIP1155_PROD;
+          if (!process.env.REACT_APP_EIP1155_API) {
+            throw new Error("EIP1155_API is not defined");
+          }
+          subgraphURI = process.env.REACT_APP_EIP1155_API;
           break;
       }
 
@@ -177,9 +175,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       // TODO: nothing has changed
       return tokens;
     },
-    // ! do not add nfts as a dep, will cause infinite loop
-    /* eslint-disable-next-line */
-    [currentAddress, renft?.address, signer]
+    [currentAddress]
   );
 
   const fetchUsersNfts = async (): Promise<Nft[] | undefined> => {
@@ -211,7 +207,12 @@ export const GraphProvider: React.FC = ({ children }) => {
   const fetchUserLending = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserLendingRenft(currentAddress);
-    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+
+    if (!process.env.REACT_APP_RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
+
+    const subgraphURI = process.env.REACT_APP_RENFT_API;
     const response: {
       user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
     } = await timeItAsync(
@@ -230,7 +231,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   const fetchUserRenting = async (): Promise<string[] | undefined> => {
     if (!currentAddress) return;
     const query = queryUserRentingRenft(currentAddress);
-    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    if (!process.env.REACT_APP_RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
+    const subgraphURI = process.env.REACT_APP_RENFT_API;
     const response: {
       user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
     } = await timeItAsync(
@@ -261,7 +265,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   const fetchRenftsAll = async (): Promise<ReturnReNftAll | undefined> => {
     if (!signer) return;
     const query = queryAllRenft();
-    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+
+    if (!process.env.REACT_APP_RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
+    const subgraphURI = process.env.REACT_APP_RENFT_API;
 
     const response: NftRaw = await timeItAsync(
       "Pulled All Renft Nfts",
@@ -296,9 +304,11 @@ export const GraphProvider: React.FC = ({ children }) => {
   // ALL AVAILABLE TO RENT (filter out the ones that I am lending)
   const getAlllending = async (): Promise<Lending[] | undefined> => {
     if (!signer) return undefined;
-
+    if (!process.env.REACT_APP_RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
     const _currentAddress = currentAddress ? currentAddress : "";
-    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    const subgraphURI = process.env.REACT_APP_RENFT_API;
     const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
       "Pulled All ReNFT Lendings",
       async () => await request(subgraphURI, queryAllLendingRenft)
@@ -319,8 +329,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   // LENDING
   const getUserLending = async (): Promise<Lending[] | undefined> => {
     if (!signer) return undefined;
-
-    const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
+    if (!process.env.RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
+    const subgraphURI = process.env.RENFT_API;
     const response: { users: { lending: LendingRaw[] }[] } = await timeItAsync(
       "Pulled Users ReNFT Lendings",
       async () =>
@@ -374,8 +386,9 @@ export const GraphProvider: React.FC = ({ children }) => {
       getUserDataRequest.promise
         .then(([usersVote, userData]: [UsersVote, UserData | undefined]) => {
           if (usersVote && Object.keys(usersVote).length !== 0) {
-            const calculatedUsersVote: CalculatedUserVote =
-              calculateVoteByUsers(usersVote);
+            const calculatedUsersVote: CalculatedUserVote = calculateVoteByUsers(
+              usersVote
+            );
 
             setCalculatedUsersVote(calculatedUsersVote);
             setUsersVote(usersVote);

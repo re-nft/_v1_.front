@@ -89,8 +89,7 @@ const Lendings: React.FC = () => {
       onResetPage();
       return getUserNftsRequest.cancel();
     };
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
