@@ -18,8 +18,8 @@ import {
   PageContextType,
 } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
-import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
-import { useQueryClient } from "react-query";
+import { fetchNFTMeta } from "../../../services/fetch-nft-meta";
+import { useQueryClient } from 'react-query'
 
 const Lendings: React.FC = () => {
   const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
@@ -88,43 +88,18 @@ const Lendings: React.FC = () => {
     };
   }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
-  //Prefetch metadata
-  useEffect(() => {
-    const contractAddress: string [] = [];
-    const tokenIds: string [] = [];
-    currentPage.map((nft)=>{
-      contractAddress.push(nft.address);
-      tokenIds.push(nft.tokenId)
-    })
-    queryClient.prefetchQuery(
-      "ntfsMeta",
-      () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
-      { cacheTime: Infinity }
-    );
-  }, [currentPage, queryClient]);
-
-  useEffect(() => {
-    if (currentPage) {
-      currentPage.map((nft, ix) => {
-        queryCache.prefetchQuery(
-          ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
-          () => {
-            //:eniko TODO use API_KEY
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve(ix);
-              }, ix * 1200);
-            }).then(() => fetchNFTMeta(nft));
-          },
-          {
-            cacheTime: Infinity,
-          }
-        );
-      });
-    }
-  }, [currentPage]);
+  // Prefetch metadata
+  // useEffect(()=>{
+  //   currentPage.map((nft)=>{
+  //     queryClient.prefetchQuery(
+  //       ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
+  //       () => fetchNFTMeta(nft),
+  //       {cacheTime: Infinity}
+  //     );
+  //   })
+  // }, [currentPage, queryClient])
 
   if (isLoading) {
     return <CatalogueLoader />;

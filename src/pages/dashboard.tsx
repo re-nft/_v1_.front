@@ -8,12 +8,11 @@ import { BatchContext, getUniqueID } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lend";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
-import { getLendingPriceByCurreny, short } from "../utils";
-import BatchBar from "../components/batch-bar";
+import { getLendingPriceByCurreny } from "../utils";
+import { short } from "../utils";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
