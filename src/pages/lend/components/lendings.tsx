@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
-import { Nft } from "../../../contexts/graph/classes";
+import { Lending, Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
 import CatalogueItem from "../../../components/catalogue-item";
@@ -11,7 +11,7 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
-import { PageContext } from "../../../controller/page-controller";
+import { PageContext, PageContextType } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const Lendings: React.FC = () => {
@@ -30,7 +30,7 @@ const Lendings: React.FC = () => {
     onSetPage,
     onResetPage,
     onChangePage,
-  } = useContext(PageContext);
+  } = useContext<PageContextType<Nft>>(PageContext);
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
