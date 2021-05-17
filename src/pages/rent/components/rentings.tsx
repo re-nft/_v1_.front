@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
-  CurrentAddressContext,
   ReNFTContext,
   SignerContext,
   ResolverContext,
@@ -23,6 +22,7 @@ import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
+import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
 
 const AvailableToRent: React.FC = () => {
   const {
@@ -43,7 +43,7 @@ const AvailableToRent: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);

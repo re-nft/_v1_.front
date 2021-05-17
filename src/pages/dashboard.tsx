@@ -9,12 +9,12 @@ import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lending";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny } from "../utils";
 import { short } from "../utils";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -26,7 +26,7 @@ enum DashboardViewType {
 }
 
 export const Dashboard: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);

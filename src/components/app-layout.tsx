@@ -15,9 +15,9 @@ import MyFavorites from "../pages/favourites";
 import Leaderboard from "../pages/leaderboard";
 import Profile from "../pages/profile";
 import { TransactionNotifier } from "./transaction-notifier";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
 import { short } from "../utils";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const ROUTES = [
   {
@@ -47,7 +47,7 @@ const ROUTES = [
 ];
 
 const App: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { userData } = useContext(GraphContext);
   const [username, setUsername] = useState<string>();
 

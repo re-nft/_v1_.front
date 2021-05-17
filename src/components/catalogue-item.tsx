@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { Nft } from "../contexts/graph/classes";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
 import {
   addOrRemoveUserFavorite,
@@ -17,6 +16,7 @@ import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { fetchNFTMeta } from "../services/fetch-nft-meta";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useQuery } from "react-query";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -36,27 +36,25 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [ref, { entry }] = useIntersectionObserver();
   const isVisible = entry && entry.isIntersecting;
 
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
-  const [currentVote, setCurrentVote] =
-    useState<{
-      downvote?: number;
-      upvote?: number;
-    }>();
-  const [meta, setMeta] =
-    useState<{
-      name?: string;
-      image?: string;
-      description?: string;
-    }>();
+  const [currentVote, setCurrentVote] = useState<{
+    downvote?: number;
+    upvote?: number;
+  }>();
+  const [meta, setMeta] = useState<{
+    name?: string;
+    image?: string;
+    description?: string;
+  }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
 
   const queryInfo = useQuery(
     ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
     () => fetchNFTMeta(nft),
-    { cacheTime: Infinity, enabled: false }
+    {cacheTime: Infinity}
   );
 
   const onCheckboxClick = useCallback(() => {

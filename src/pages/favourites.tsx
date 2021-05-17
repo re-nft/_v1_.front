@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 
 import GraphContext from "../contexts/graph";
 import { UserData } from "../contexts/graph/types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -10,9 +9,10 @@ import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import { calculateMyFavorites } from "../services/calculate-my-favorites";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 export const MyFavorites: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { getUserData, getUserNfts } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);

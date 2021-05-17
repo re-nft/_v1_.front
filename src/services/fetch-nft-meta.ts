@@ -1,6 +1,5 @@
 import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
-import { CORS_PROXY } from "../consts";
 
 const IPFSGateway = "https://dweb.link/ipfs/";
 
@@ -130,7 +129,12 @@ export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
       isJoyWorld(tokenURI) ||
       isNftBoxes(tokenURI) ||
       isGftAuthentic(tokenURI);
-    const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
+    if (!process.env.REACT_APP_CORS_PROXY) {
+      throw new Error("CORS_PROXY is not defined");
+    }
+    const fetchThis = isProxyable
+      ? `${process.env.REACT_APP_CORS_PROXY}${tokenURI}`
+      : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();
 
@@ -155,11 +159,14 @@ export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
 export const fetchNFTFromOpenSea = async (
   nft: Nft
 ): Promise<NftToken["meta"]> => {
+  if (!process.env.REACT_APP_OPENSEA_API) {
+    throw new Error("OPENSEA_API is not defined");
+  }
   return await fetch(
     `https://api.opensea.io/api/v1/asset/${nft.address}/${nft.tokenId}`,
     {
       headers: {
-        "X-API-KEY": "6d554baabc82422d867c722f4dbb98d3",
+        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
       },
     }
   )

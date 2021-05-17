@@ -3,12 +3,12 @@ import Modal from "./modal";
 import { Renting } from "../contexts/graph/classes";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import { ProviderContext } from "../hardhat/SymfoniContext";
 import ActionButton from "../components/action-button";
 import isApprovalForAll from "../services/is-approval-for-all";
 import returnIt from "../services/return-it";
 import setApprovalForAll from "../services/set-approval-for-all";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 type ReturnModalProps = {
   nfts: Renting[];
@@ -22,7 +22,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   onClose,
 }) => {
   const [isApproved, setIsApproved] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [provider] = useContext(ProviderContext);
