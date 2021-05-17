@@ -109,7 +109,7 @@ const UserLendings: React.FC = () => {
         {
           // TODO: where did any come from here. punish it
         }
-        {((currentPage as any) as Lending[]).map((nft: Lending, ix: number) => (
+        {(currentPage as any as Lending[]).map((nft: Lending, ix: number) => (
           <CatalogueItem
             key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             checked={checkedMap[nft.tokenId] || false}

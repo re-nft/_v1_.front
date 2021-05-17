@@ -43,6 +43,15 @@ const isFirebase = (url: string) =>
 const isBCCG = (url: string) =>
   url.startsWith("https://api.bccg.digital/api/bccg/");
 
+const isJoyWorld = (url: string) =>
+  url.startsWith("https://joyworld.azurewebsites.net");
+
+const isNftBoxes = (url: string) =>
+  url.startsWith("https://nftboxesboxes.azurewebsites.net");
+
+const isGftAuthentic = (url: string) =>
+  url.startsWith("https://gft-authentic-api.herokuapp.com");
+
 const buildStaticIPFS_URL = (matched: string[]) => {
   const [, cid, path = ""] = matched;
   return `${IPFSGateway}${cid}${path}`;
@@ -115,7 +124,12 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
     // ! people will tell us: my X NFT is not showing. We will check, and it
     // ! will probably because we aren't proxying the request for meta here
     const isProxyable =
-      isSandbox(tokenURI) || isFirebase(tokenURI) || isBCCG(tokenURI);
+      isSandbox(tokenURI) ||
+      isFirebase(tokenURI) ||
+      isBCCG(tokenURI) ||
+      isJoyWorld(tokenURI) ||
+      isNftBoxes(tokenURI) ||
+      isGftAuthentic(tokenURI);
     const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
     const response = await fetch(fetchThis);
     const data = await response?.json();

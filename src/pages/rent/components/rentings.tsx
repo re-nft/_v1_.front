@@ -155,13 +155,13 @@ const AvailableToRent: React.FC = () => {
   return (
     <>
       <BatchRentModal
-        nft={(checkedItems as any) as Lending[]}
+        nft={checkedItems as any as Lending[]}
         open={isOpenBatchModel}
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
-        {((currentPage as any) as Lending[]).map((nft: Lending, ix: number) => (
+        {(currentPage as any as Lending[]).map((nft: Lending, ix: number) => (
           <CatalogueItem
             key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
             nft={nft}

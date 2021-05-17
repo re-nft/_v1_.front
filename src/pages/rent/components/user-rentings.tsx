@@ -106,7 +106,7 @@ const UserRentings: React.FC = () => {
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          nfts={(checkedItems as any) as Renting[]}
+          nfts={checkedItems as any as Renting[]}
           onClose={handleCloseModal}
         />
       )}
