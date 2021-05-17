@@ -20,7 +20,6 @@ const Lendings: React.FC = () => {
     checkedMap,
     countOfCheckedItems,
     onReset,
-    onCheckboxChange,
     onSetCheckedItem,
     onSetItems,
   } = useContext(BatchContext);
@@ -79,8 +78,7 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
         console.warn("could not get user nfts request");
       });
 
@@ -91,13 +89,9 @@ const Lendings: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
+  if (isLoading) return <CatalogueLoader />;
+  if (!isLoading && currentPage.length === 0)
     return <div className="center">You don&apos;t have any NFTs to lend</div>;
-  }
 
   return (
     <>
@@ -115,7 +109,6 @@ const Lendings: React.FC = () => {
             nft={nft}
             // TODO: this isn't a correct id. Should be nftAddress::tokenId::lendingId (if lending id exists, 0 otherwise)
             checked={checkedMap[nft.tokenId] || false}
-            onCheckboxChange={onCheckboxChange}
           >
             <ActionButton<Nft>
               nft={nft}

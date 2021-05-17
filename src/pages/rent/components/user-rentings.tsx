@@ -23,7 +23,6 @@ const UserRentings: React.FC = () => {
     checkedMap,
     countOfCheckedItems,
     onReset,
-    onCheckboxChange,
     onSetCheckedItem,
     onSetItems,
   } = useContext(BatchContext);
@@ -106,7 +105,8 @@ const UserRentings: React.FC = () => {
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          nfts={checkedItems as any as Renting[]}
+          // TODO: checkedItems have a lendingId?
+          nfts={checkedItems.map((item) => ({ ...item, lendingId: "1" }))}
           onClose={handleCloseModal}
         />
       )}
@@ -118,7 +118,6 @@ const UserRentings: React.FC = () => {
               key={id}
               nft={nft}
               checked={checkedMap[nft.tokenId] || false}
-              onCheckboxChange={onCheckboxChange}
             >
               <NumericField
                 text="Daily price"

@@ -106,6 +106,11 @@ class Nft {
   };
 }
 
+// typeguard for Lending class
+export const isLending = (x: any): x is Lending => {
+  return "lending" in x;
+};
+
 class Lending extends Nft {
   constructor(
     nftAddress: Address,

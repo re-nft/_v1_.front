@@ -4,7 +4,7 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import { ReNFTContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
@@ -18,12 +18,13 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import LendingFields from "../../../components/lending-fields";
 
 const UserLendings: React.FC = () => {
+  // what's the point of getting onCheckboxChange from context here and passing as props into CatalogueItem
+  // you can just get it from context inside of CatalogueItem
   const {
-    checkedItems,
+    checkedLendingItems,
     checkedMap,
     countOfCheckedItems,
     onReset,
-    onCheckboxChange,
     onSetItems,
   } = useContext(BatchContext);
   const {
@@ -52,9 +53,12 @@ const UserLendings: React.FC = () => {
   }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
 
   const handleStopLend = useCallback(
-    async (nfts: Nft[]) => {
+    async (nfts: Lending[]) => {
       if (!renft) return;
-      const tx = await stopLend(renft, nfts);
+      const tx = await stopLend(
+        renft,
+        nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }))
+      );
       await setHash(tx.hash);
       onReset();
       handleReset();
@@ -63,15 +67,15 @@ const UserLendings: React.FC = () => {
   );
 
   const handleClickNft = useCallback(
-    async (nft: Nft) => {
+    async (nft: Lending) => {
       handleStopLend([nft]);
     },
     [handleStopLend]
   );
 
   const handleBatchStopnLend = useCallback(async () => {
-    handleStopLend(checkedItems);
-  }, [handleStopLend, checkedItems]);
+    handleStopLend(checkedLendingItems);
+  }, [handleStopLend, checkedLendingItems]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -95,35 +99,31 @@ const UserLendings: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
+  if (isLoading) return <CatalogueLoader />;
+  if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;
-  }
 
   return (
     <>
       <ItemWrapper>
-        {
-          // TODO: where did any come from here. punish it
-        }
-        {(currentPage as any as Lending[]).map((nft: Lending, ix: number) => (
-          <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
-            checked={checkedMap[nft.tokenId] || false}
-            nft={nft}
-            onCheckboxChange={onCheckboxChange}
-          >
-            <LendingFields nft={nft} />
-            <ActionButton<Nft>
-              nft={nft}
-              title="Stop Lending"
-              onClick={handleClickNft}
-            />
-          </CatalogueItem>
-        ))}
+        {currentPage.map((nft: Nft | Lending, ix: number) => {
+          if (isLending(nft)) {
+            return (
+              <CatalogueItem
+                key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
+                checked={checkedMap[nft.tokenId] || false}
+                nft={nft}
+              >
+                <LendingFields nft={nft} />
+                <ActionButton<Lending>
+                  nft={nft}
+                  title="Stop Lending"
+                  onClick={handleClickNft}
+                />
+              </CatalogueItem>
+            );
+          }
+        })}
       </ItemWrapper>
       <Pagination
         totalPages={totalPages}

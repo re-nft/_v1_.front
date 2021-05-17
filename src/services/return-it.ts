@@ -1,15 +1,26 @@
 import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { ContractTransaction } from "ethers";
-import { Lending, Renting } from "../contexts/graph/classes";
 
 export default async function returnIt(
   renft: ReNFT,
-  nfts: Renting[]
+  nfts: {
+    address: string;
+    tokenId: string;
+    amount: string;
+    lendingId: string;
+  }[]
 ): Promise<ContractTransaction> {
-  const addresses = nfts.map((item) => item.address);
-  const tokenIds = nfts.map((item) => item.tokenId);
-  const lendingIds = nfts.map((item) => item.renting.lendingId);
-  // TODO: will fail
-  const amounts = [1];
+  const addresses: string[] = [];
+  const tokenIds: string[] = [];
+  const amounts: string[] = [];
+  const lendingIds: string[] = [];
+
+  for (const nft of nfts) {
+    addresses.push(nft.address);
+    tokenIds.push(nft.tokenId);
+    amounts.push(nft.amount);
+    lendingIds.push(nft.lendingId);
+  }
+
   return await renft.returnIt(addresses, tokenIds, amounts, lendingIds);
 }

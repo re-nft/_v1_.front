@@ -131,8 +131,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       let query = "";
       let subgraphURI = "";
 
-      console.log("currentAddress", currentAddress);
-
       switch (fetchType) {
         case FetchType.ERC721:
           query = queryMyERC721s(currentAddress);
@@ -148,8 +146,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
-
-      console.log(response);
 
       let tokens: NftToken[] = [];
       switch (fetchType) {

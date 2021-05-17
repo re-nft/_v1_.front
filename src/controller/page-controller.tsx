@@ -1,12 +1,12 @@
-import { lightGreen } from "@material-ui/core/colors";
 import React, { createContext } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Nft, Lending } from "../contexts/graph/classes";
 
 /* eslint-disable-next-line */
 type Props = {};
 type State = {
-  pageItems: Nft[];
-  currentPage: Nft[];
+  // todo: Renting probably too
+  pageItems: (Nft | Lending)[];
+  currentPage: (Nft | Lending)[];
   currentPageNumber: number;
   totalPages: number;
 };
@@ -19,11 +19,11 @@ const defaultSate = {
 };
 
 export type PageContextType = {
-  currentPage: Nft[];
+  currentPage: State["pageItems"];
   currentPageNumber: number;
   totalPages: number;
   onSetPage(pageNumber: number): void;
-  onChangePage(items: Nft[]): void;
+  onChangePage(items: State["pageItems"]): void;
   onResetPage(): void;
 };
 
@@ -31,7 +31,6 @@ const defaultPageContext = {
   currentPage: [],
   currentPageNumber: 1,
   totalPages: 1,
-  // Avoid @typescript-eslint/no-empty-function
   onSetPage: () => true,
   onChangePage: () => true,
   onResetPage: () => true,

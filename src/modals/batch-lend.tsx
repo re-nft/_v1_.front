@@ -81,13 +81,13 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || isActive || !provider) return;
     const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
-      console.log("issue approving all in batch lend");
+      console.warn("issue approving all in batch lend");
       return [undefined];
     });
     if (!tx) return;
     setHash(tx.hash);
     const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
-      console.log("issue pulling txn receipt in batch lend");
+      console.warn("issue pulling txn receipt in batch lend");
       return undefined;
     });
     const status = receipt?.status ?? 0;
@@ -230,7 +230,5 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     </Modal>
   );
 };
-
-// TODO: fix all the ts-ignores
 
 export default BatchLendModal;

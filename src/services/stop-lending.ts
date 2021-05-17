@@ -1,17 +1,26 @@
 import { ReNFT } from "../hardhat/typechain/ReNFT";
-import { BigNumber, ContractTransaction } from "ethers";
-import { Lending, Nft } from "../contexts/graph/classes";
+import { ContractTransaction } from "ethers";
 
 export default async function stopLend(
   renft: ReNFT,
-  nfts: Nft[]
+  nfts: {
+    address: string;
+    tokenId: string;
+    amount: string;
+    lendingId: string;
+  }[]
 ): Promise<ContractTransaction> {
-  const address = nfts.map((item) => item.address);
-  const tokenIds = nfts.map((item) => item.tokenId);
-  const lendingIds: BigNumber[] = (nfts as any[] as Lending[]).map(
-    (item: Lending) => BigNumber.from(item.id)
-  );
-  // TODO: will fail
-  const amounts = [1];
-  return await renft.stopLending(address, tokenIds, amounts, lendingIds);
+  const addresses: string[] = [];
+  const tokenIds: string[] = [];
+  const lendingIds: string[] = [];
+  const amounts: string[] = [];
+
+  for (const nft of nfts) {
+    addresses.push(nft.address);
+    tokenIds.push(nft.tokenId);
+    lendingIds.push(nft.lendingId);
+    amounts.push(nft.amount);
+  }
+
+  return await renft.stopLending(addresses, tokenIds, amounts, lendingIds);
 }
