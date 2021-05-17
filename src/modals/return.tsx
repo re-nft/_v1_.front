@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import Modal from "./modal";
-import { Renting } from "../contexts/graph/classes";
+import { ERC721 } from "../hardhat/typechain/ERC721";
+import { ERC1155 } from "../hardhat/typechain/ERC1155";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
@@ -10,8 +11,16 @@ import isApprovalForAll from "../services/is-approval-for-all";
 import returnIt from "../services/return-it";
 import setApprovalForAll from "../services/set-approval-for-all";
 
+type ReturnNft = {
+  address: string;
+  tokenId: string;
+  lendingId: string;
+  amount: string;
+  contract: () => ERC721 | ERC1155;
+};
+
 type ReturnModalProps = {
-  nfts: Renting[];
+  nfts: ReturnNft[];
   open: boolean;
   onClose: () => void;
 };
@@ -65,14 +74,14 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
           {!isApproved && (
-            <ActionButton<Renting>
+            <ActionButton<ReturnNft>
               title="Approve All"
               nft={nft}
               onClick={handleApproveAll}
             />
           )}
           {isApproved && (
-            <ActionButton<Renting>
+            <ActionButton<ReturnNft>
               title="Return It"
               nft={nft}
               onClick={handleReturnNft}

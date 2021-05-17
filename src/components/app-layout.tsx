@@ -14,6 +14,7 @@ import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
 import Leaderboard from "../pages/leaderboard";
 import Profile from "../pages/profile";
+import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
@@ -98,7 +99,9 @@ const App: React.FC = () => {
               <Lend />
             </Route>
             <Route exact path="/dashboard">
-              <Dashboard />
+              <PageLayout>
+                <Dashboard />
+              </PageLayout>
             </Route>
             <Route exact path="/favourites">
               <MyFavorites />

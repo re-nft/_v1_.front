@@ -78,7 +78,7 @@ export const useFetchNftDev = (
 
     for (let i = 0; i < num1155s.length; i++) {
       const tokenURI = await e1155.uri(erc1155Ids[i]).catch(() => {
-        console.log("could not fetch user dev 1155 tokenURI");
+        console.warn("could not fetch user dev 1155 tokenURI");
         return "";
       });
       const amountBalance = await e1155.balanceOf(

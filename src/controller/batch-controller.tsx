@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
 
-import { Nft } from "../contexts/graph/classes";
+import { Nft, Lending, isLending } from "../contexts/graph/classes";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 /* eslint-disable-next-line */
@@ -13,6 +13,8 @@ type State = {
 
 export type BatchContextType = {
   checkedItems: Nft[];
+  // this is a typeguard of the above
+  checkedLendingItems: Lending[];
   checkedMap: Record<string, boolean>;
   countOfCheckedItems: number;
   onReset(): void;
@@ -23,6 +25,7 @@ export type BatchContextType = {
 
 const defaultBatchContext = {
   checkedItems: [],
+  checkedLendingItems: [],
   checkedMap: {},
   countOfCheckedItems: 0,
   // Avoid @typescript-eslint/no-empty-function
@@ -76,6 +79,7 @@ class BatchProvider extends React.Component<Props, State> {
       },
     });
 
+    // ? how about when item is undefined and sourceIndex === -1?
     if (sourceIndex === -1 && item) {
       sources.push(item);
       this.setState({ checkedItems: sources });
@@ -83,6 +87,19 @@ class BatchProvider extends React.Component<Props, State> {
       sources.splice(sourceIndex, 1);
       this.setState({ checkedItems: sources });
     }
+  };
+
+  checkedLendingItems = (): Lending[] => {
+    const _checkedLendingItems: Lending[] = [];
+
+    // ? is this the correct way to pull from the state
+    for (const _checkedItem of this.state.checkedItems) {
+      if (isLending(_checkedItem)) {
+        _checkedLendingItems.push(_checkedItem);
+      }
+    }
+
+    return _checkedLendingItems;
   };
 
   componentWillUnmount(): void {
@@ -94,6 +111,7 @@ class BatchProvider extends React.Component<Props, State> {
     const { checkedItems, checkedMap } = this.state;
     const contextValues: BatchContextType = {
       checkedItems,
+      checkedLendingItems: this.checkedLendingItems(),
       checkedMap,
       countOfCheckedItems: checkedItems.length,
       onReset: this.handleReset,

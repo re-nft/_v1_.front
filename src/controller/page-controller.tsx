@@ -1,12 +1,12 @@
-import { lightGreen } from "@material-ui/core/colors";
 import React, { createContext } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Nft, Lending } from "../contexts/graph/classes";
 
 /* eslint-disable-next-line */
 type Props = {};
-type State = {
-  pageItems: Nft[];
-  currentPage: Nft[];
+type State<T> = {
+  // todo: Renting probably too
+  pageItems: T[];
+  currentPage: T[];
   currentPageNumber: number;
   totalPages: number;
 };
@@ -18,12 +18,12 @@ const defaultSate = {
   totalPages: 1,
 };
 
-export type PageContextType = {
-  currentPage: Nft[];
+export type PageContextType<T> = {
+  currentPage: T[];
   currentPageNumber: number;
   totalPages: number;
   onSetPage(pageNumber: number): void;
-  onChangePage(items: Nft[]): void;
+  onChangePage(items: T[]): void;
   onResetPage(): void;
 };
 
@@ -31,22 +31,22 @@ const defaultPageContext = {
   currentPage: [],
   currentPageNumber: 1,
   totalPages: 1,
-  // Avoid @typescript-eslint/no-empty-function
   onSetPage: () => true,
   onChangePage: () => true,
   onResetPage: () => true,
 };
 
-export const PageContext = createContext<PageContextType>(defaultPageContext);
+export const PageContext =
+  createContext<PageContextType<any>>(defaultPageContext);
 
 const PAGE_SIZE = 20;
 
-class PageProvider extends React.Component<Props, State> {
-  state: State = defaultSate;
+class PageProvider<T> extends React.Component<Props, State<T>> {
+  state: State<T> = defaultSate;
 
   handleReset = (): void => this.setState(defaultSate);
 
-  onChangePage = (pageItems: Nft[]): void => {
+  onChangePage = (pageItems: T[]): void => {
     const totalItems = pageItems.length || 0;
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
     this.setState({ pageItems, totalPages }, () => this.onSetPage(1));
@@ -80,7 +80,7 @@ class PageProvider extends React.Component<Props, State> {
 
   render(): JSX.Element {
     const { currentPage, currentPageNumber, totalPages } = this.state;
-    const contextValues: PageContextType = {
+    const contextValues: PageContextType<T> = {
       currentPage,
       currentPageNumber,
       totalPages,

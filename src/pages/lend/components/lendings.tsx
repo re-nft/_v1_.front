@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
-import { Nft } from "../../../contexts/graph/classes";
+import { Lending, Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
 import CatalogueItem from "../../../components/catalogue-item";
@@ -11,7 +11,10 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
-import { PageContext } from "../../../controller/page-controller";
+import {
+  PageContext,
+  PageContextType,
+} from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const Lendings: React.FC = () => {
@@ -20,7 +23,6 @@ const Lendings: React.FC = () => {
     checkedMap,
     countOfCheckedItems,
     onReset,
-    onCheckboxChange,
     onSetCheckedItem,
     onSetItems,
   } = useContext(BatchContext);
@@ -31,7 +33,7 @@ const Lendings: React.FC = () => {
     onSetPage,
     onResetPage,
     onChangePage,
-  } = useContext(PageContext);
+  } = useContext<PageContextType<Nft>>(PageContext);
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -79,8 +81,7 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
         console.warn("could not get user nfts request");
       });
 
@@ -91,13 +92,9 @@ const Lendings: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
+  if (isLoading) return <CatalogueLoader />;
+  if (!isLoading && currentPage.length === 0)
     return <div className="center">You don&apos;t have any NFTs to lend</div>;
-  }
 
   return (
     <>
@@ -113,8 +110,8 @@ const Lendings: React.FC = () => {
           <CatalogueItem
             key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
             nft={nft}
+            // TODO: this isn't a correct id. Should be nftAddress::tokenId::lendingId (if lending id exists, 0 otherwise)
             checked={checkedMap[nft.tokenId] || false}
-            onCheckboxChange={onCheckboxChange}
           >
             <ActionButton<Nft>
               nft={nft}

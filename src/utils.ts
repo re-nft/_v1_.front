@@ -179,7 +179,7 @@ export const getLendingPriceByCurreny = (
   }
 };
 
-// ! must be the same as in packages/contracts/src/Resolver.sol
+// ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
     case "0":
@@ -195,6 +195,7 @@ export const parsePaymentToken = (tkn: string): PaymentToken => {
     case "5":
       return PaymentToken.TUSD;
     default:
+      console.warn("unknown token type passed");
       return PaymentToken.DAI;
   }
 };
@@ -254,3 +255,15 @@ export const toDataURLFromURL = (
       console.warn("could not get dataURL");
       return "";
     });
+
+/**
+ * ReNFT is implemented in such a way that it invokes handlers (lent, rend, stopLend, claim, return)
+ * on unique groups of NFTs. For example, 721A,1155A,1155A,1155B will invoke the handler 3 times.
+ * Once for 721A, once for 1155A,1155A and once for 1155B. This means, that we must bundle the NFTs
+ * correctly on the front-end to be passed to the contracts. That means that same addresses must
+ * be next to each other, and the respective tokenIds (in the case of 1155s) must be ordered in ascending
+ * order
+ */
+const bundleNfts = () => {
+  true;
+};

@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useContext, useEffect } from "react";
+import React, {
+  useCallback,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 
 import {
   CurrentAddressContext,
@@ -15,7 +21,7 @@ import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
-import { Lending } from "../../../contexts/graph/classes";
+import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import { BatchContext } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
@@ -26,11 +32,10 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
 const AvailableToRent: React.FC = () => {
   const {
-    checkedItems,
+    checkedLendingItems,
     checkedMap,
     countOfCheckedItems,
     onReset,
-    onCheckboxChange,
     onSetCheckedItem,
     onSetItems,
   } = useContext(BatchContext);
@@ -142,40 +147,37 @@ const AvailableToRent: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
+  if (isLoading) return <CatalogueLoader />;
+  if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;
-  }
-
-  // TODO: so many anys it hurts
 
   return (
     <>
       <BatchRentModal
-        nft={checkedItems as any as Lending[]}
+        nft={checkedLendingItems}
         open={isOpenBatchModel}
         onSubmit={handleRent}
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
-        {(currentPage as any as Lending[]).map((nft: Lending, ix: number) => (
-          <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
-            nft={nft}
-            checked={checkedMap[nft.tokenId] || false}
-            onCheckboxChange={onCheckboxChange}
-          >
-            <LendingFields nft={nft} />
-            <ActionButton<Lending>
-              onClick={handleBatchModalOpen}
-              nft={nft}
-              title="Rent Now"
-            />
-          </CatalogueItem>
-        ))}
+        {currentPage.map((nft: Lending | Nft, ix: number) => {
+          if (isLending(nft)) {
+            return (
+              <CatalogueItem
+                key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                nft={nft}
+                checked={checkedMap[nft.tokenId] || false}
+              >
+                <LendingFields nft={nft} />
+                <ActionButton<Lending>
+                  onClick={handleBatchModalOpen}
+                  nft={nft}
+                  title="Rent Now"
+                />
+              </CatalogueItem>
+            );
+          }
+        })}
       </ItemWrapper>
       <Pagination
         totalPages={totalPages}

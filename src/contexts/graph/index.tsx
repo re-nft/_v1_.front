@@ -131,8 +131,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       let query = "";
       let subgraphURI = "";
 
-      console.log("currentAddress", currentAddress);
-
       switch (fetchType) {
         case FetchType.ERC721:
           query = queryMyERC721s(currentAddress);
@@ -148,8 +146,6 @@ export const GraphProvider: React.FC = ({ children }) => {
         `Pulled My ${FetchType[fetchType]} NFTs`,
         async () => await request(subgraphURI, query)
       );
-
-      console.log(response);
 
       let tokens: NftToken[] = [];
       switch (fetchType) {
@@ -276,14 +272,9 @@ export const GraphProvider: React.FC = ({ children }) => {
     response?.nfts.forEach(({ id, lending, renting }) => {
       const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       lending?.forEach((l) => {
-        _allRenftsLending[id] = new Lending(
-          address,
-          tokenId,
-          l.lentAmount,
-          signer,
-          l
-        );
+        _allRenftsLending[id] = new Lending(l, signer);
       });
+      // TODO: -1
       renting?.forEach((r) => {
         _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
       });
@@ -316,15 +307,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     for (const lending of Object.values(response?.data?.lendings)) {
       if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
         continue;
-      lendingsReNFT.push(
-        new Lending(
-          lending.nftAddress,
-          lending.tokenId,
-          lending.lentAmount,
-          signer,
-          lending
-        )
-      );
+      lendingsReNFT.push(new Lending(lending, signer));
     }
     return lendingsReNFT;
   };
@@ -345,13 +328,7 @@ export const GraphProvider: React.FC = ({ children }) => {
     if (!response?.users[0]) return undefined;
 
     const lendings = Object.values(response.users[0].lending).map((lending) => {
-      return new Lending(
-        lending.nftAddress,
-        lending.tokenId,
-        lending.lentAmount,
-        signer,
-        lending
-      );
+      return new Lending(lending, signer);
     });
 
     return lendings;

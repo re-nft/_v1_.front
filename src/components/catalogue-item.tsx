@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 
+import { BatchContext } from "../controller/batch-controller";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { Nft } from "../contexts/graph/classes";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
@@ -20,20 +21,18 @@ export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
-  // When Catalog Item have a multi-select we need to pass onCheckboxChange callback func
-  onCheckboxChange?: (name: string, checked: boolean) => void;
 };
 
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
   isAlreadyFavourited,
-  onCheckboxChange,
   children,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
   const isVisible = entry && entry.isIntersecting;
 
+  const { onCheckboxChange } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
@@ -53,11 +52,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
-    onCheckboxChange &&
-      onCheckboxChange(
-        `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`,
-        !isChecked
-      );
+    // ! either pass a type as the id, or do not assume that the id must have a certain
+    // ! format inside of the onCheckboxChange
+    onCheckboxChange(
+      `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`,
+      !isChecked
+    );
   }, [nft, isChecked, onCheckboxChange]);
 
   const preloadImage = (imgSrc: string) => {
@@ -167,14 +167,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
             </div>
             <div className="spacer" />
-            {onCheckboxChange && (
-              <div className="nft__checkbox">
-                <div
-                  onClick={onCheckboxClick}
-                  className={`checkbox ${isChecked ? "checked" : ""}`}
-                ></div>
-              </div>
-            )}
+            <div className="nft__checkbox">
+              <div
+                onClick={onCheckboxClick}
+                className={`checkbox ${isChecked ? "checked" : ""}`}
+              />
+            </div>
           </div>
           <div className="nft__image">
             {image ? (
@@ -189,7 +187,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
               text="NFT Address"
               value={
                 <a
-                  href={`https://goerli.etherscan.io/address/${nft.address}`}
+                  href={`https://etherscan.io/address/${nft.address}`}
                   target="_blank"
                   rel="noreferrer"
                 >

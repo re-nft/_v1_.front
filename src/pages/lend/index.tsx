@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
-import Lending from "./components/lendings";
-import UserLending from "./components/user-lendings";
+import AvailableToLend from "./components/lendings";
+import UserCurrentlyLending from "./components/user-lendings";
 import PageLayout from "../../components/page-layout";
 
 enum LendSpecificity {
@@ -23,12 +23,14 @@ export const Lend: React.FC = () => {
 
   return (
     <PageLayout
-      title={specificity.valueOf() === 0 ? "AVAILABLE TO LEND" : "LENDING"}
+      title={
+        specificity === LendSpecificity.ALL ? "AVAILABLE TO LEND" : "LENDING"
+      }
       toggleValue={specificity === LendSpecificity.LENDING}
       onSwitch={switchSpecificity}
     >
-      {specificity === LendSpecificity.LENDING && <UserLending />}
-      {specificity === LendSpecificity.ALL && <Lending />}
+      {specificity === LendSpecificity.LENDING && <UserCurrentlyLending />}
+      {specificity === LendSpecificity.ALL && <AvailableToLend />}
     </PageLayout>
   );
 };
