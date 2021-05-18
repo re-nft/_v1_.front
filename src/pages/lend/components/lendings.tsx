@@ -17,7 +17,7 @@ import {
 } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
-import { useQueryClient } from "react-query";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const Lendings: React.FC = () => {
   const {
@@ -39,6 +39,7 @@ const Lendings: React.FC = () => {
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, addMetas] = useContext(NFTMetaContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -76,15 +77,14 @@ const Lendings: React.FC = () => {
     setIsLoading(true);
 
     const getUserNftsRequest = createCancellablePromise(getUserNfts());
-
+   
     getUserNftsRequest.promise
       .then((items: Nft[] | undefined) => {
         onChangePage(items || []);
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.log(e)
+      .catch(() => {
         console.warn("could not get user nfts request");
       });
 
@@ -94,7 +94,6 @@ const Lendings: React.FC = () => {
     };
   }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
 
-  const queryClient = useQueryClient();
 
   //Prefetch metadata
   useEffect(() => {
@@ -105,13 +104,12 @@ const Lendings: React.FC = () => {
       tokenIds.push(nft.tokenId);
     });
     if (contractAddress.length > 0 && tokenIds.length > 0) {
-      queryClient.prefetchQuery(
-        "ntfsMeta",
-        () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
-        { cacheTime: Infinity }
-      );
+      fetchNFTsFromOpenSea(contractAddress, tokenIds).then(data => {
+        addMetas(data)
+      })
+ 
     }
-  }, [currentPage, queryClient]);
+  }, [addMetas, currentPage]);
 
   if (isLoading) {
     return <CatalogueLoader />;

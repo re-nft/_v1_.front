@@ -36,6 +36,7 @@ class Nft {
       /* eslint-disable-next-line */
       const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
 
+      
       uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;

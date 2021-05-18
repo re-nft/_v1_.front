@@ -211,9 +211,10 @@ export const timeItAsync = async <T>(
   msg: string,
   callable: CallableFunction
 ): Promise<T> => {
-  console.time(msg);
+  const name = `${msg}-${Date.now()}`
+  console.time(name);
   const res: T = await callable();
-  console.timeEnd(msg);
+  console.timeEnd(name);
   return res;
 };
 

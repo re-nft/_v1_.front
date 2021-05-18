@@ -2,8 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
-import { ReactQueryDevtools } from "react-query/devtools";
-import { QueryClient, QueryClientProvider } from "react-query";
 
 dotenv.config();
 
@@ -12,6 +10,7 @@ import { GraphProvider } from "./contexts/graph/index";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
 import { CurrentAddressContextWrapperProvider } from "./contexts/CurrentAddressContextWrapper";
+import { NFTMetaProvider } from "./contexts/NftMetaState";
 
 const theme = createMuiTheme({
   typography: {
@@ -25,21 +24,18 @@ const theme = createMuiTheme({
   },
 });
 
-const queryClient = new QueryClient();
-
 ReactDOM.render(
   <Symfoni>
     <CurrentAddressContextWrapperProvider>
-      <GraphProvider>
-        <TransactionStateProvider>
-          <QueryClientProvider client={queryClient}>
+      <NFTMetaProvider>
+        <GraphProvider>
+          <TransactionStateProvider>
             <ThemeProvider theme={theme}>
               <App />
             </ThemeProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
-        </TransactionStateProvider>
-      </GraphProvider>
+          </TransactionStateProvider>
+        </GraphProvider>
+      </NFTMetaProvider>
     </CurrentAddressContextWrapperProvider>
   </Symfoni>,
   document.getElementById("root")
