@@ -83,7 +83,8 @@ const Lendings: React.FC = () => {
         onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         console.warn("could not get user nfts request");
       });
 
@@ -97,17 +98,19 @@ const Lendings: React.FC = () => {
 
   //Prefetch metadata
   useEffect(() => {
-    const contractAddress: string [] = [];
-    const tokenIds: string [] = [];
-    currentPage.map((nft)=>{
+    const contractAddress: string[] = [];
+    const tokenIds: string[] = [];
+    currentPage.map((nft) => {
       contractAddress.push(nft.address);
-      tokenIds.push(nft.tokenId)
-    })
-    queryClient.prefetchQuery(
-      "ntfsMeta",
-      () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
-      { cacheTime: Infinity }
-    );
+      tokenIds.push(nft.tokenId);
+    });
+    if (contractAddress.length > 0 && tokenIds.length > 0) {
+      queryClient.prefetchQuery(
+        "ntfsMeta",
+        () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
+        { cacheTime: Infinity }
+      );
+    }
   }, [currentPage, queryClient]);
 
   if (isLoading) {
