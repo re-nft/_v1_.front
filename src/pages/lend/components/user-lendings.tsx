@@ -1,6 +1,5 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import { ReNFTContext } from "../../../hardhat/SymfoniContext";
 import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -8,7 +7,7 @@ import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
-import stopLend from "../../../services/stop-lending";
+import stopLend from "../../../services/stop-lend";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {

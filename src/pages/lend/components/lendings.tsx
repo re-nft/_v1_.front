@@ -21,7 +21,7 @@ import {
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const Lendings: React.FC = () => {
-  const { checkedItems, checkedNftItems, handleReset } =
+  const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
     useContext(BatchContext);
   const {
     totalPages,
@@ -55,9 +55,10 @@ const Lendings: React.FC = () => {
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {
+      onCheckboxChange(nft);
       setModalOpen(true);
     },
-    [setModalOpen]
+    [setModalOpen, onCheckboxChange]
   );
 
   const handleBatchModalOpen = useCallback(() => {

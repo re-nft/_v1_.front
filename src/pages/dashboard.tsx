@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
 
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -10,7 +9,7 @@ import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import stopLend from "../services/stop-lending";
+import stopLend from "../services/stop-lend";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny, short } from "../utils";
@@ -86,16 +85,17 @@ export const Dashboard: React.FC = () => {
   );
 
   const handleStopLend = useCallback(
-    async (lending: Lending) => {
+    async (lending: Lending[]) => {
       if (!renft) return;
-      const tx = await stopLend(renft, [
-        {
-          address: lending.address,
-          amount: lending.amount,
-          lendingId: lending.lending.id,
-          tokenId: lending.tokenId,
-        },
-      ]);
+      const tx = await stopLend(
+        renft,
+        lending.map((l) => ({
+          address: l.address,
+          amount: l.amount,
+          lendingId: l.lending.id,
+          tokenId: l.tokenId,
+        }))
+      );
       await setHash(tx.hash);
       handleRefresh();
     },
@@ -215,24 +215,14 @@ export const Dashboard: React.FC = () => {
                             style={{ margin: "auto", marginTop: "1em" }}
                           />
                         </td>
-                        {/* <td className="action-column">
-                          {_claim(lend) && (
-                            <span
-                              className="nft__button small"
-                              onClick={() => handleClaimCollateral(lend)}
-                            >
-                              💰
-                            </span>
-                          )}
-                          {!_claim(lend) && !lend.lending.renting && (
-                            <span
-                              className="nft__button small"
-                              onClick={() => handleStopLend(lend)}
-                            >
-                              Stop lend
-                            </span>
-                          )}
-                        </td> */}
+                        <td className="action-column">
+                          <span
+                            className="nft__button small"
+                            onClick={() => handleStopLend([lend])}
+                          >
+                            Stop lend
+                          </span>
+                        </td>
                       </tr>
                     );
                   })}
@@ -313,7 +303,7 @@ export const Dashboard: React.FC = () => {
           title={`Selected ${checkedLendingItems.length} items`}
           actionTitle="Stop Lend All"
           onCancel={handleReset}
-          onClick={handleBatchModalOpen}
+          onClick={() => handleStopLend(checkedLendingItems)}
         />
       )}
       {checkedRentingItems.length > 1 && (
