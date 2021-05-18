@@ -98,8 +98,9 @@ export const Dashboard: React.FC = () => {
       );
       await setHash(tx.hash);
       handleRefresh();
+      handleReset();
     },
-    [renft, setHash, handleRefresh]
+    [renft, setHash, handleRefresh, handleReset]
   );
 
   const _returnBy = (renting: Renting) =>
