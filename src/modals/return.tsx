@@ -4,12 +4,12 @@ import { ERC721 } from "../hardhat/typechain/ERC721";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
+import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import { ProviderContext } from "../hardhat/SymfoniContext";
 import ActionButton from "../components/action-button";
 import isApprovalForAll from "../services/is-approval-for-all";
 import returnIt from "../services/return-it";
 import setApprovalForAll from "../services/set-approval-for-all";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 type ReturnNft = {
   address: string;
@@ -31,7 +31,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   onClose,
 }) => {
   const [isApproved, setIsApproved] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const [currentAddress] = useContext(CurrentAddressContext);
   const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [provider] = useContext(ProviderContext);
