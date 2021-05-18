@@ -78,7 +78,8 @@ const Lendings: React.FC = () => {
         onChangePage(nfts);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e)
         console.warn("could not get user nfts request");
       });
 
@@ -90,16 +91,22 @@ const Lendings: React.FC = () => {
 
   const queryClient = useQueryClient()
 
-  // Prefetch metadata
-  // useEffect(()=>{
-  //   currentPage.map((nft)=>{
-  //     queryClient.prefetchQuery(
-  //       ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
-  //       () => fetchNFTMeta(nft),
-  //       {cacheTime: Infinity}
-  //     );
-  //   })
-  // }, [currentPage, queryClient])
+  //Prefetch metadata
+  useEffect(() => {
+    const contractAddress: string[] = [];
+    const tokenIds: string[] = [];
+    currentPage.map((nft) => {
+      contractAddress.push(nft.address);
+      tokenIds.push(nft.tokenId);
+    });
+    if (contractAddress.length > 0 && tokenIds.length > 0) {
+      queryClient.prefetchQuery(
+        "ntfsMeta",
+        () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
+        { cacheTime: Infinity }
+      );
+    }
+  }, [currentPage, queryClient]);
 
   if (isLoading) {
     return <CatalogueLoader />;
