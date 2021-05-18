@@ -1,8 +1,10 @@
 import React, { createContext, useState, useEffect, useMemo } from "react";
 
 import {
+  Nft,
   Lending,
   Renting,
+  isNft,
   isLending,
   isRenting,
 } from "../contexts/graph/classes";
@@ -29,17 +31,19 @@ export type BatchContextType = {
   // nftAddress::tokenId::0 <- 0 in the end is the sentinel placeholder
   // if there is a lending id, then the id becomes
   // nftAddress::tokenId:lendingId
-  checkedItems: Record<UniqueID, Lending | Renting>;
+  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
+  checkedNftItems: Nft[];
   checkedLendingItems: Lending[];
   checkedRentingItems: Renting[];
 
   handleReset(): void;
-  onCheckboxChange(item: Lending | Renting): void;
+  onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
 const defaultBatchContext = {
   checkedItems: {},
+  checkedNftItems: [],
   checkedLendingItems: [],
   checkedRentingItems: [],
   // functions
@@ -57,7 +61,7 @@ export const BatchProvider: React.FC = ({ children }) => {
 
   const handleReset = () => setCheckedItems(defaultBatchContext.checkedItems);
 
-  const onCheckboxChange = (item: Lending | Renting) => {
+  const onCheckboxChange: BatchContextType["onCheckboxChange"] = (item) => {
     let lendingID = "0";
     if (isLending(item)) lendingID = item.lending.id;
     else if (isRenting(item)) lendingID = item.renting.lendingId;
@@ -77,10 +81,18 @@ export const BatchProvider: React.FC = ({ children }) => {
     });
   };
 
+  const checkedNftItems = useMemo((): Nft[] => {
+    const nftItems: Nft[] = [];
+    for (const checkedItem of Object.values(checkedItems)) {
+      if (isNft(checkedItem)) nftItems.push(checkedItem);
+    }
+    return nftItems;
+  }, [checkedItems]);
+
   const checkedLendingItems = useMemo((): Lending[] => {
     const lendingItems: Lending[] = [];
-    for (const item of Object.values(checkedItems)) {
-      if (isLending(item)) lendingItems.push(item);
+    for (const checkedItem of Object.values(checkedItems)) {
+      if (isLending(checkedItem)) lendingItems.push(checkedItem);
     }
     return lendingItems;
   }, [checkedItems]);
@@ -101,6 +113,7 @@ export const BatchProvider: React.FC = ({ children }) => {
     <BatchContext.Provider
       value={{
         checkedItems,
+        checkedNftItems,
         checkedLendingItems,
         checkedRentingItems,
         handleReset,

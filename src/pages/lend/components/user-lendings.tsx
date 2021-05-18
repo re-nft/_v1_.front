@@ -11,21 +11,20 @@ import ActionButton from "../../../components/action-button";
 import stopLend from "../../../services/stop-lending";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
-import { BatchContext } from "../../../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+} from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
 
-const UserLendings: React.FC = () => {
-  // what's the point of getting onCheckboxChange from context here and passing as props into CatalogueItem
-  // you can just get it from context inside of CatalogueItem
+const UserCurrentlyLending: React.FC = () => {
   const {
+    checkedItems,
     checkedLendingItems,
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
-    onSetItems,
+    handleReset: batchHandleReset,
   } = useContext(BatchContext);
   const {
     totalPages,
@@ -44,26 +43,29 @@ const UserLendings: React.FC = () => {
     getUserLending()
       .then((userLnding: Lending[] | undefined) => {
         onChangePage(userLnding || []);
-        onSetItems(userLnding || []);
         setIsLoading(false);
       })
       .catch(() => {
         console.warn("could not handle reset");
       });
-  }, [getUserLending, onChangePage, onSetItems, setIsLoading]);
+  }, [getUserLending, onChangePage, setIsLoading]);
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
       if (!renft) return;
+
       const tx = await stopLend(
         renft,
         nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }))
       );
+
       await setHash(tx.hash);
-      onReset();
+
+      batchHandleReset();
       handleReset();
     },
-    [renft, setHash, handleReset, onReset]
+
+    [renft, setHash, handleReset, batchHandleReset]
   );
 
   const handleClickNft = useCallback(
@@ -85,7 +87,6 @@ const UserLendings: React.FC = () => {
     getUserLendingRequest.promise
       .then((userLnding: Lending[] | undefined) => {
         onChangePage(userLnding || []);
-        onSetItems(userLnding || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -103,15 +104,23 @@ const UserLendings: React.FC = () => {
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;
 
+  // TODO: this bloody code is repeat of ./lendings.tsx
   return (
     <>
       <ItemWrapper>
-        {currentPage.map((nft: Nft | Lending, ix: number) => {
+        {/* 
+          TODO: how the f is currentPage  any !?
+        */}
+        {currentPage.map((nft: Nft | Lending) => {
           if (isLending(nft)) {
             return (
               <CatalogueItem
-                key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
-                checked={checkedMap[nft.tokenId] || false}
+                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
+                checked={
+                  !!checkedItems[
+                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+                  ]
+                }
                 nft={nft}
               >
                 <LendingFields nft={nft} />
@@ -130,16 +139,16 @@ const UserLendings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {countOfCheckedItems > 1 && (
+      {checkedLendingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
+          title={`Selected ${checkedLendingItems.length} items`}
           actionTitle="Stop Lending"
           onClick={handleBatchStopnLend}
-          onCancel={onReset}
+          onCancel={batchHandleReset}
         />
       )}
     </>
   );
 };
 
-export default React.memo(UserLendings);
+export default React.memo(UserCurrentlyLending);

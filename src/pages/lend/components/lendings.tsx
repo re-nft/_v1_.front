@@ -9,7 +9,10 @@ import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
-import { BatchContext } from "../../../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+} from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import {
   PageContext,
@@ -18,14 +21,8 @@ import {
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const Lendings: React.FC = () => {
-  const {
-    checkedItems,
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
-    onSetCheckedItem,
-    onSetItems,
-  } = useContext(BatchContext);
+  const { checkedItems, checkedNftItems, handleReset } =
+    useContext(BatchContext);
   const {
     totalPages,
     currentPageNumber,
@@ -43,27 +40,24 @@ const Lendings: React.FC = () => {
     getUserNfts()
       .then((items: Nft[] | undefined) => {
         onChangePage(items || []);
-        onSetItems(items || []);
         setIsLoading(false);
       })
-      .catch((e) => {
+      .catch(() => {
         console.warn("could not fetch user nfts");
-        console.warn(e);
       });
-  }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
+  }, [setIsLoading, getUserNfts, onChangePage]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
-    onReset();
+    handleReset();
     handleRefresh();
-  }, [setModalOpen, onReset, handleRefresh]);
+  }, [setModalOpen, handleReset, handleRefresh]);
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {
-      onSetCheckedItem(nft);
       setModalOpen(true);
     },
-    [setModalOpen, onSetCheckedItem]
+    [setModalOpen]
   );
 
   const handleBatchModalOpen = useCallback(() => {
@@ -78,7 +72,6 @@ const Lendings: React.FC = () => {
     getUserNftsRequest.promise
       .then((items: Nft[] | undefined) => {
         onChangePage(items || []);
-        onSetItems(items || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -100,18 +93,19 @@ const Lendings: React.FC = () => {
     <>
       {modalOpen && (
         <BatchLendModal
-          nfts={checkedItems}
+          nfts={checkedNftItems}
           open={modalOpen}
           onClose={handleClose}
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft, ix) => (
+        {currentPage.map((nft) => (
           <CatalogueItem
-            key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`}
+            key={getUniqueID(nft.address, nft.tokenId)}
             nft={nft}
-            // TODO: this isn't a correct id. Should be nftAddress::tokenId::lendingId (if lending id exists, 0 otherwise)
-            checked={checkedMap[nft.tokenId] || false}
+            checked={
+              !!checkedItems[getUniqueID(nft.address, nft.tokenId)] || false
+            }
           >
             <ActionButton<Nft>
               nft={nft}
@@ -126,11 +120,11 @@ const Lendings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {countOfCheckedItems > 1 && (
+      {checkedNftItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
-          actionTitle="Lend all"
-          onCancel={onReset}
+          title={`Selected ${checkedNftItems.length} items`}
+          actionTitle="Lend All"
+          onCancel={handleReset}
           onClick={handleBatchModalOpen}
         />
       )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 
 import { BatchContext } from "../controller/batch-controller";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { Nft } from "../contexts/graph/classes";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
@@ -54,10 +53,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     setIsChecked(!isChecked);
     // ! either pass a type as the id, or do not assume that the id must have a certain
     // ! format inside of the onCheckboxChange
-    onCheckboxChange(
-      `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}`,
-      !isChecked
-    );
+    onCheckboxChange(nft);
   }, [nft, isChecked, onCheckboxChange]);
 
   const preloadImage = (imgSrc: string) => {

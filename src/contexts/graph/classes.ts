@@ -13,6 +13,20 @@ type NftOptions = {
   meta?: NftToken["meta"];
 };
 
+// typeguard for Lending class
+export const isLending = (x: any): x is Lending => {
+  return "lending" in x;
+};
+
+// typeguard for Renting class
+export const isRenting = (x: any): x is Renting => {
+  return "renting" in x;
+};
+
+export const isNft = (x: any): x is Nft => {
+  return !isLending(x) && !isRenting(x);
+};
+
 class Nft {
   constructor(
     nftAddress: Address,
@@ -100,11 +114,6 @@ class Nft {
   };
 }
 
-// typeguard for Lending class
-export const isLending = (x: any): x is Lending => {
-  return "lending" in x;
-};
-
 class Lending extends Nft {
   constructor(
     lendingRaw: LendingRaw,
@@ -126,11 +135,6 @@ class Lending extends Nft {
   lending: ILending;
   id: string;
 }
-
-// typeguard for Renting class
-export const isRenting = (x: any): x is Renting => {
-  return "renting" in x;
-};
 
 class Renting extends Nft {
   constructor(

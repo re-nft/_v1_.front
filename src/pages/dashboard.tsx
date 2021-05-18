@@ -5,7 +5,7 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
-import { BatchContext } from "../controller/batch-controller";
+import { BatchContext, getUniqueID } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
@@ -32,11 +32,11 @@ enum DashboardViewType {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const {
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
+    checkedItems,
+    checkedLendingItems,
+    checkedRentingItems,
     onCheckboxChange,
-    onSetItems,
+    handleReset,
   } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
@@ -54,13 +54,8 @@ export const Dashboard: React.FC = () => {
   const handleRefresh = useCallback(() => {
     Promise.all([getUserLending(), getUserRenting()])
       .then(([userLending, userRenting]) => {
-        const _userLending = userLending || [];
-        const _userRenting = userRenting || [];
-
-        setLendingItems(_userLending);
-        setRentingItems(_userRenting);
-
-        onSetItems([..._userLending, ..._userRenting]);
+        setLendingItems(userLending || []);
+        setRentingItems(userRenting || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -69,7 +64,6 @@ export const Dashboard: React.FC = () => {
   }, [
     getUserLending,
     getUserRenting,
-    onSetItems,
     setLendingItems,
     setRentingItems,
     setIsLoading,
@@ -108,16 +102,10 @@ export const Dashboard: React.FC = () => {
     [renft, setHash, handleRefresh]
   );
 
-  // todo: get rid of all of the ts-ignores
+  const _returnBy = (renting: Renting) =>
+    returnBy(renting.renting?.rentedAt, renting.renting?.rentDuration);
 
-  const _returnBy = (lending: Lending) =>
-    returnBy(
-      // @ts-ignore
-      lending.renting?.rentedAt,
-      // @ts-ignore
-      lending.renting?.rentDuration
-    );
-  const _claim = (lending: Lending) => _now.isAfter(_returnBy(lending));
+  const _claim = (renting: Renting) => _now.isAfter(_returnBy(renting));
 
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);
@@ -125,12 +113,9 @@ export const Dashboard: React.FC = () => {
 
   const onCheckboxClick = useCallback(
     (lending: Lending) => {
-      onCheckboxChange(
-        `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`,
-        checkedMap[lending.id] == null ? true : !checkedMap[lending.id]
-      );
+      onCheckboxChange(lending);
     },
-    [onCheckboxChange, checkedMap]
+    [onCheckboxChange]
   );
 
   useEffect(() => {
@@ -142,16 +127,8 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        const _userLending = userLending || [];
-        const _userRenting = userRenting || [];
-
-        console.log(_userLending);
-        console.log(_userRenting);
-
-        setLendingItems(_userLending);
-        setRentingItems(_userRenting);
-
-        onSetItems([..._userLending, ..._userRenting]);
+        setLendingItems(userLending || []);
+        setRentingItems(userRenting || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -194,11 +171,11 @@ export const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {lendingItems.map((lend: Lending, ix: number) => {
+                  {lendingItems.map((lend: Lending) => {
                     const lending = lend.lending;
                     return (
                       <tr
-                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                        key={getUniqueID(lend.address, lend.tokenId, lend.id)}
                       >
                         <td className="column">{short(lending.nftAddress)}</td>
                         <td className="column">{lend.tokenId}</td>
@@ -225,12 +202,20 @@ export const Dashboard: React.FC = () => {
                           <div
                             onClick={() => onCheckboxClick(lend)}
                             className={`checkbox ${
-                              checkedMap[lending.id] ? "checked" : ""
+                              checkedItems[
+                                getUniqueID(
+                                  lend.address,
+                                  lend.tokenId,
+                                  lending.id
+                                )
+                              ]
+                                ? "checked"
+                                : ""
                             }`}
                             style={{ margin: "auto", marginTop: "1em" }}
                           />
                         </td>
-                        <td className="action-column">
+                        {/* <td className="action-column">
                           {_claim(lend) && (
                             <span
                               className="nft__button small"
@@ -247,7 +232,7 @@ export const Dashboard: React.FC = () => {
                               Stop lend
                             </span>
                           )}
-                        </td>
+                        </td> */}
                       </tr>
                     );
                   })}
@@ -278,7 +263,11 @@ export const Dashboard: React.FC = () => {
                     const renting = rent.renting;
                     return (
                       <tr
-                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                        key={getUniqueID(
+                          rent.address,
+                          rent.tokenId,
+                          renting.lendingId
+                        )}
                       >
                         <td className="column">
                           {short(renting.renterAddress)}
@@ -312,15 +301,32 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       )}
-      {viewType === DashboardViewType.MINIATURE_VIEW && <div>miniature</div>}
-      {countOfCheckedItems > 1 && (
+      {
+        // TODO: should not be able to check some in lending and some in renting. Only one or the other
+        // TODO: potential solution: just show the batchbar for one or the other at a time
+        // TODO: force them to de-select in one or the other
+        // TODO: best solution: show two batch bars stacked on top of each other
+        // TODO: one for lending and one for renting
+      }
+      {checkedLendingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
-          actionTitle="Lend all"
-          onCancel={onReset}
+          title={`Selected ${checkedLendingItems.length} items`}
+          actionTitle="Stop Lend All"
+          onCancel={handleReset}
           onClick={handleBatchModalOpen}
         />
       )}
+      {checkedRentingItems.length > 1 && (
+        <BatchBar
+          title={`Selected ${checkedRentingItems.length} items`}
+          actionTitle="Return All"
+          onCancel={handleReset}
+          onClick={handleBatchModalOpen}
+        />
+      )}
+      {
+        // TODO: claim collateral all
+      }
     </div>
   );
 };

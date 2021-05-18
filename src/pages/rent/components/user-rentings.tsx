@@ -9,22 +9,21 @@ import ReturnModal from "../../../modals/return";
 import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
-import { BatchContext } from "../../../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+} from "../../../controller/batch-controller";
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
 const UserRentings: React.FC = () => {
   const {
     checkedItems,
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
-    onSetCheckedItem,
-    onSetItems,
+    checkedRentingItems,
+    handleReset: handleBatchReset,
   } = useContext(BatchContext);
   const {
     totalPages,
@@ -41,14 +40,13 @@ const UserRentings: React.FC = () => {
   const handleRefrash = useCallback(() => {
     getUserRenting()
       .then((userRenting: Renting[] | undefined) => {
-        onSetItems(userRenting || []);
         onChangePage(userRenting || []);
         setIsLoading(false);
       })
       .catch(() => {
         console.warn("could not handle refresh");
       });
-  }, [onSetItems, onChangePage, setIsLoading, getUserRenting]);
+  }, [onChangePage, setIsLoading, getUserRenting]);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
@@ -62,10 +60,9 @@ const UserRentings: React.FC = () => {
 
   const handleOpenModal = useCallback(
     async (nft: Nft) => {
-      onSetCheckedItem(nft);
       setModalOpen(true);
     },
-    [setModalOpen, onSetCheckedItem]
+    [setModalOpen]
   );
 
   useEffect(() => {
@@ -75,7 +72,6 @@ const UserRentings: React.FC = () => {
 
     getUserRentingRequest.promise
       .then((userRenting: Renting[] | undefined) => {
-        onSetItems(userRenting || []);
         onChangePage(userRenting || []);
         setIsLoading(false);
       })
@@ -90,45 +86,52 @@ const UserRentings: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
+  if (isLoading) return <CatalogueLoader />;
+  if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;
-  }
 
   // TODO: remove all the anys
-
   return (
     <>
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          // TODO: checkedItems have a lendingId?
-          nfts={checkedItems.map((item) => ({ ...item, lendingId: "1" }))}
+          nfts={checkedRentingItems.map((item) => ({
+            address: item.address,
+            tokenId: item.tokenId,
+            lendingId: item.renting.lendingId,
+            amount: item.renting.lending.amount,
+            contract: item.contract,
+          }))}
           onClose={handleCloseModal}
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft: Nft, ix: number) => {
-          const id = `${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${ix}`;
+        {/* 
+          TODO: this is wild, this should not be any (about currentPage)
+        */}
+        {currentPage.map((nft: Renting) => {
+          const id = getUniqueID(
+            nft.address,
+            nft.tokenId,
+            nft.renting.lendingId
+          );
           return (
             <CatalogueItem
               key={id}
               nft={nft}
-              checked={checkedMap[nft.tokenId] || false}
+              checked={
+                !!checkedItems[
+                  getUniqueID(nft.address, nft.tokenId, nft.renting.lendingId)
+                ]
+              }
             >
               <NumericField
                 text="Daily price"
-                value={String(0)}
+                value="0"
                 unit={PaymentToken[PaymentToken.DAI]}
               />
-              <NumericField
-                text="Rent Duration"
-                value={String(0)}
-                unit="days"
-              />
+              <NumericField text="Rent Duration" value="0" unit="days" />
               <ActionButton<Nft>
                 title="Return It"
                 nft={nft}
@@ -143,11 +146,11 @@ const UserRentings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {countOfCheckedItems > 1 && (
+      {checkedRentingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
+          title={`Selected ${checkedRentingItems.length} items`}
           actionTitle="Stop Rents All"
-          onCancel={onReset}
+          onCancel={handleBatchReset}
           onClick={handleBatchStopRent}
         />
       )}

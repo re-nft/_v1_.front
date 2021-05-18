@@ -75,6 +75,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       if (tx) setHash(tx.hash);
       onClose();
     },
+
     [renft, isActive, lendOneInputs, pmtToken, nfts, setHash, onClose]
   );
 
@@ -84,16 +85,17 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       console.warn("issue approving all in batch lend");
       return [undefined];
     });
+
     if (!tx) return;
+
     setHash(tx.hash);
     const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
       console.warn("issue pulling txn receipt in batch lend");
       return undefined;
     });
+
     const status = receipt?.status ?? 0;
-    if (status === 1) {
-      setIsApproved(true);
-    }
+    if (status === 1) setIsApproved(true);
   }, [currentAddress, renft, isActive, setHash, provider, setIsApproved, nfts]);
 
   const handleStateChange = useCallback(

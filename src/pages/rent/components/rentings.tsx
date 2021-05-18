@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
   CurrentAddressContext,
@@ -23,21 +17,22 @@ import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
-import { BatchContext } from "../../../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+} from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
+// TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
   const {
+    checkedItems,
     checkedLendingItems,
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
-    onSetCheckedItem,
-    onSetItems,
+    checkedRentingItems,
+    handleReset: handleBatchReset,
   } = useContext(BatchContext);
   const {
     totalPages,
@@ -61,27 +56,24 @@ const AvailableToRent: React.FC = () => {
     getUsersLending()
       .then((items: Lending[] | undefined) => {
         onChangePage(items || []);
-        onSetItems(items || []);
         setIsLoading(false);
       })
       .catch(() => {
         console.warn("could not get user lending");
       });
-  }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
+  }, [setIsLoading, getUsersLending, onChangePage]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
-    onReset();
+    handleBatchReset();
     handleRefresh();
-  }, [onReset, setOpenBatchModel, handleRefresh]);
+  }, [handleBatchReset, setOpenBatchModel, handleRefresh]);
 
   const handleBatchModalOpen = useCallback(
     (nft: Lending) => {
-      // @ts-ignore
-      onSetCheckedItem(nft);
       setOpenBatchModel(true);
     },
-    [onSetCheckedItem, setOpenBatchModel]
+    [setOpenBatchModel]
   );
 
   const handleRent = useCallback(
@@ -96,6 +88,7 @@ const AvailableToRent: React.FC = () => {
       )
         return;
 
+      // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
       const pmtToken = PaymentToken.DAI;
       const tx = await startRent(
         renft,
@@ -106,8 +99,7 @@ const AvailableToRent: React.FC = () => {
         rentDuration,
         pmtToken
       );
-      // @ts-ignore
-      setHash(tx.hash);
+      if (tx) setHash(tx.hash);
       handleBatchModalClose();
     },
     [
@@ -133,7 +125,6 @@ const AvailableToRent: React.FC = () => {
     getUsersLendingRequest.promise
       .then((usersLnding: Lending[] | undefined) => {
         onChangePage(usersLnding || []);
-        onSetItems(usersLnding || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -160,13 +151,17 @@ const AvailableToRent: React.FC = () => {
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
-        {currentPage.map((nft: Lending | Nft, ix: number) => {
+        {currentPage.map((nft: Lending | Nft) => {
           if (isLending(nft)) {
             return (
               <CatalogueItem
-                key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
                 nft={nft}
-                checked={checkedMap[nft.tokenId] || false}
+                checked={
+                  !!checkedItems[
+                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+                  ]
+                }
               >
                 <LendingFields nft={nft} />
                 <ActionButton<Lending>
@@ -184,11 +179,11 @@ const AvailableToRent: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {countOfCheckedItems > 1 && (
+      {checkedRentingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
+          title={`Selected ${checkedRentingItems.length} items`}
           actionTitle="Rents All"
-          onCancel={onReset}
+          onCancel={handleBatchReset}
           onClick={handleBatchRent}
         />
       )}
