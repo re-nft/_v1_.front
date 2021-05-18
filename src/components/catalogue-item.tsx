@@ -9,14 +9,18 @@ import {
   upvoteOrDownvote,
   getNftVote,
 } from "../services/firebase";
-import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
+import {
+  CalculatedUserVote,
+  NftToken,
+  UsersVote,
+} from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { fetchNFTMeta } from "../services/fetch-nft-meta";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useQuery } from "react-query";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../contexts/NftMetaState";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -43,20 +47,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     downvote?: number;
     upvote?: number;
   }>();
-  const [meta, setMeta] = useState<{
-    name?: string;
-    image?: string;
-    description?: string;
-  }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
-
-  const queryInfo = useQuery<unknown, unknown, {image: string}>(
-    ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
-    () => {
-      // do nothing
-    },
-    { cacheTime: Infinity }
-  );
+  const [metas] = useContext(NFTMetaContext);
+  const meta = metas.get(`${nft.address}-${nft.tokenId}`);
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -117,14 +110,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }, [checked, nft, meta?.image, currentAddress]);
 
   useEffect(() => {
-    if (!queryInfo.isLoading) {
-      if (queryInfo.data?.image) {
-        setImageIsReady(true);
-        console.log(queryInfo.data);
-        setMeta(queryInfo.data);
-      }
+    if (meta) {
+      setImageIsReady(true);
     }
-  }, [queryInfo]);
+  }, [meta]);
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites =

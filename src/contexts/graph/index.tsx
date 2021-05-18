@@ -107,14 +107,12 @@ export const GraphProvider: React.FC = ({ children }) => {
    */
   const fetchNftDev = useFetchNftDev(signer);
 
-  console.log('currentAddress graph', currentAddress)
   /**
    * Pings the eip721 and eip1155 subgraphs in prod, to determine what
    * NFTs you own
    */
   const fetchUserProd = useCallback(
     async (fetchType: FetchType) => {
-      console.log("currentAddress", currentAddress);
       if(!currentAddress) return []
       let query = "";
       let subgraphURI = "";

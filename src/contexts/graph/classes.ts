@@ -72,6 +72,7 @@ class Nft {
 
       uriSelector.bind(this);
 
+      
       uriSelector(this.tokenId)
         .then((d: string) => {
           this._tokenURI = this._parseTokenURI(d);

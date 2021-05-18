@@ -184,7 +184,7 @@ const arrayToURI = (name: string, array: Array<string>) => {
 export const fetchNFTsFromOpenSea = async (
   asset_contract_addresses: Array<string>,
   token_ids: Array<string>
-): Promise<NftToken["meta"]> => {
+): Promise<Array<NftToken["meta"] & {id: string}>> => {
   if (!process.env.REACT_APP_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
@@ -201,9 +201,14 @@ export const fetchNFTsFromOpenSea = async (
   )
     .then((r) => r.json())
     .then((r) => {
-      return {
-        image: r.image_url || r.image_preview_url,
-      };
+      // TODO
+      return r.assets.map((nft:any) =>{
+        return {
+          ...nft,
+          image: nft.image_preview_url || nft.image_preview_url || nft.image_thumbnail_url || nft.image_original_url,
+          id: `${nft.asset_contract.address}-${nft.token_id}`,
+        }
+      })
     });
 };
 export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
