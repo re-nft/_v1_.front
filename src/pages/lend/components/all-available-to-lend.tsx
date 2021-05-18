@@ -18,6 +18,8 @@ import {
   PageContextType,
 } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
+import { useQueryClient } from "react-query";
 
 const Lendings: React.FC = () => {
   const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
@@ -86,9 +88,30 @@ const Lendings: React.FC = () => {
     };
   }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
 
-  if (isLoading) return <CatalogueLoader />;
-  if (!isLoading && currentPage.length === 0)
+  const queryClient = useQueryClient();
+
+  //Prefetch metadata
+  useEffect(() => {
+    const contractAddress: string [] = [];
+    const tokenIds: string [] = [];
+    currentPage.map((nft)=>{
+      contractAddress.push(nft.address);
+      tokenIds.push(nft.tokenId)
+    })
+    queryClient.prefetchQuery(
+      "ntfsMeta",
+      () => fetchNFTsFromOpenSea(contractAddress, tokenIds),
+      { cacheTime: Infinity }
+    );
+  }, [currentPage, queryClient]);
+
+  if (isLoading) {
+    return <CatalogueLoader />;
+  }
+
+  if (!isLoading && currentPage.length === 0) {
     return <div className="center">You don&apos;t have any NFTs to lend</div>;
+  }
 
   return (
     <>

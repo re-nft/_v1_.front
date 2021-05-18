@@ -50,10 +50,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
 
-  const queryInfo = useQuery(
+  const queryInfo = useQuery<unknown, unknown, {image: string}>(
     ["ntfsMeta", `${nft.address}-${nft.tokenId}`],
-    () => fetchNFTMeta(nft),
-    {cacheTime: Infinity}
+    () => {
+      // do nothing
+    },
+    { cacheTime: Infinity }
   );
 
   const onCheckboxClick = useCallback(() => {

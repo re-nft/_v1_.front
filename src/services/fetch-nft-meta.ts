@@ -176,6 +176,36 @@ export const fetchNFTFromOpenSea = async (
       };
     });
 };
+
+const arrayToURI = (name: string, array: Array<string>) => {
+  return `${array.map((item: string) => `${name}=${item}`).join("&")}`;
+};
+
+export const fetchNFTsFromOpenSea = async (
+  asset_contract_addresses: Array<string>,
+  token_ids: Array<string>
+): Promise<NftToken["meta"]> => {
+  if (!process.env.REACT_APP_OPENSEA_API) {
+    throw new Error("OPENSEA_API is not defined");
+  }
+  return await fetch(
+    `https://api.opensea.io/api/v1/assets/?${arrayToURI(
+      "asset_contract_addresses",
+      asset_contract_addresses
+    )}&${arrayToURI("token_ids", token_ids)}`,
+    {
+      headers: {
+        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
+      },
+    }
+  )
+    .then((r) => r.json())
+    .then((r) => {
+      return {
+        image: r.image_url || r.image_preview_url,
+      };
+    });
+};
 export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
   return fetchNFTFromOpenSea(nft);
   //return Promise.any([fetchNFTFromIPFS(nft), fetchNFTFromOpenSea(nft)])
