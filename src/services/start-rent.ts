@@ -3,7 +3,7 @@ import { Signer, ContractTransaction, ethers } from "ethers";
 import { PaymentToken } from "../types";
 import { Lending } from "../contexts/graph/classes";
 import { Resolver } from "../hardhat/typechain/Resolver";
-import { getERC20 } from "../utils";
+import { getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 
 export default async function startRent(
@@ -47,7 +47,7 @@ export default async function startRent(
     console.warn("could not fetch address for payment token");
     return undefined;
   }
-  const erc20 = getERC20(erc20Address, signer);
+  const erc20 = getE20(erc20Address, signer);
 
   if (!erc20) {
     console.warn("could not fetch erc20 contract");

@@ -21,7 +21,7 @@ export const getRandomInt = (max: number): number => {
   return Math.floor(Math.random() * Math.floor(max));
 };
 
-const erc20abi = [
+const e20abi = [
   "function balanceOf(address owner) view returns (uint256)",
   "function decimals() view returns (uint8)",
   "function symbol() view returns (string)",
@@ -31,7 +31,7 @@ const erc20abi = [
   "event Transfer(address indexed from, address indexed to, uint amount)",
 ];
 
-const erc721abi = [
+const e721abi = [
   "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
   "event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)",
   "event ApprovalForAll(address indexed owner, address indexed operator, bool approved)",
@@ -47,7 +47,7 @@ const erc721abi = [
   "function tokenURI(uint256 tokenId) external view returns (string address)",
 ];
 
-const erc1155abi = [
+const e1155abi = [
   "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
   "event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values)",
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
@@ -60,31 +60,28 @@ const erc1155abi = [
   "function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external",
 ];
 
-export const getERC20 = (address: string, signer?: ethers.Signer): ERC20 => {
+export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
   const erc20Contract = new ethers.Contract(
     ethers.utils.getAddress(address),
-    erc20abi,
+    e20abi,
     signer
   ) as ERC20;
   return erc20Contract;
 };
 
-export const getERC721 = (address: string, signer?: ethers.Signer): ERC721 => {
+export const getE721 = (address: string, signer?: ethers.Signer): ERC721 => {
   const erc721Contract = new ethers.Contract(
     ethers.utils.getAddress(address),
-    erc721abi,
+    e721abi,
     signer
   ) as ERC721;
   return erc721Contract;
 };
 
-export const getERC1155 = (
-  address: string,
-  signer?: ethers.Signer
-): ERC1155 => {
+export const getE1155 = (address: string, signer?: ethers.Signer): ERC1155 => {
   const erc1155Contract = new ethers.Contract(
     ethers.utils.getAddress(address),
-    erc1155abi,
+    e1155abi,
     signer
   ) as ERC1155;
   return erc1155Contract;
@@ -97,7 +94,7 @@ export const fetchNftApprovedERC721 = async (
 ): Promise<string> => {
   const erc721Contract = new ethers.Contract(
     address.toLowerCase(),
-    erc721abi,
+    e721abi,
     signer
   ) as ERC721;
   const approved = await erc721Contract.getApproved(tokenId);
@@ -226,10 +223,10 @@ export const getContract = async (
   // todo: don't think this will actually work
   // todo: need that schema from github
   try {
-    contract = getERC721(tokenAddress, signer);
+    contract = getE721(tokenAddress, signer);
     isERC721 = true;
   } catch {
-    contract = getERC1155(tokenAddress, signer);
+    contract = getE1155(tokenAddress, signer);
   }
   return { contract, isERC721 };
 };

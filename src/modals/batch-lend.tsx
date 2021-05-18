@@ -61,6 +61,8 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         nftPriceValues.push(item["nftPrice"]);
       }
 
+      console.log("lendAmountsValues", lendAmountsValues);
+
       const pmtTokens = Object.values(pmtToken);
       const tx = await startLend(
         renft,
@@ -81,6 +83,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || isActive || !provider) return;
+
     const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
       console.warn("issue approving all in batch lend");
       return [undefined];
@@ -101,6 +104,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const handleStateChange = useCallback(
     (target: string, value: string) => {
       const [id, name] = target.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+      // todo: this is poor naming of the variable
       setLendOneInputs({
         ...lendOneInputs,
         [id]: {
@@ -160,6 +164,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
                 <CssTextField
                   required
                   label="Amount"
+                  // todo: this is not a unique name and will cause collisions
                   id={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
                   variant="outlined"
                   value={lendOneInputs[nftItem.tokenId]?.lendAmount ?? ""}
