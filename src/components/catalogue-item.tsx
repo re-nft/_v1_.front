@@ -120,7 +120,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
-  const { name, image, description } = meta || {};
+  const { name, image } = meta || {};
 
   return (
     <div

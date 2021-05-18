@@ -6,6 +6,7 @@ import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
+import { decimalToPaddedHexString } from "../../utils";
 
 type NftOptions = {
   tokenURI?: string;
@@ -14,15 +15,18 @@ type NftOptions = {
 };
 
 // typeguard for Lending class
+/* eslint-disable-next-line */
 export const isLending = (x: any): x is Lending => {
   return "lending" in x;
 };
 
 // typeguard for Renting class
+/* eslint-disable-next-line */
 export const isRenting = (x: any): x is Renting => {
   return "renting" in x;
 };
 
+/* eslint-disable-next-line */
 export const isNft = (x: any): x is Nft => {
   return !isLending(x) && !isRenting(x);
 };
@@ -44,15 +48,18 @@ class Nft {
     this.isERC721 = isERC721;
 
     this._meta = options?.meta;
+    this._tokenURI = options?.tokenURI ?? "";
+    this._mediaURI = options?.mediaURI ?? "";
 
     if (!options?.tokenURI) {
       const _contract = this.contract();
-      /* eslint-disable-next-line */
       const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
+
+      uriSelector.bind(this);
 
       uriSelector(this.tokenId)
         .then((d: string) => {
-          this._tokenURI = d;
+          this._tokenURI = this._parseTokenURI(d);
         })
         .catch(() => {
           console.warn(
@@ -63,9 +70,6 @@ class Nft {
           );
         });
     }
-
-    this._tokenURI = options?.tokenURI ?? "";
-    this._mediaURI = options?.mediaURI ?? "";
   }
 
   nftAddress: Address;
@@ -106,11 +110,28 @@ class Nft {
           ethers.BigNumber.from(this.tokenId)
         );
       } else {
-        return await this.contract().uri();
+        return this._parseTokenURI(
+          await this.contract().uri(ethers.BigNumber.from(this.tokenId))
+        );
       }
-    } catch (err) {
+    } catch {
       console.warn("loadTokenURI error");
     }
+  };
+
+  _parseTokenURI = (uri: string): string => {
+    // https://eips.ethereum.org/EIPS/eip-1155
+    // will contain {id}
+    const uriMatch = uri.match(/(^.+)(\{id\})/);
+    if (uriMatch) {
+      const [baseURI, _] = uriMatch;
+      const url = `${baseURI}${decimalToPaddedHexString(
+        Number(this.tokenId),
+        64
+      ).slice(2)}`;
+      return url;
+    }
+    return uri;
   };
 }
 

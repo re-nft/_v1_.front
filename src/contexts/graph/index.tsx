@@ -299,14 +299,15 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     const _currentAddress = currentAddress ? currentAddress : "";
     const subgraphURI = IS_PROD ? ENDPOINT_RENFT_PROD : ENDPOINT_RENFT_DEV;
-    const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
+    const response: { lendings: LendingRaw[] } = await timeItAsync(
       "Pulled All ReNFT Lendings",
       async () => await request(subgraphURI, queryAllLendingRenft)
     );
 
     const lendingsReNFT = [];
 
-    for (const lending of Object.values(response?.data?.lendings)) {
+    for (const lending of Object.values(response?.lendings)) {
+      // filters out the nfts that you have lent
       if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
         continue;
       lendingsReNFT.push(new Lending(lending, signer));

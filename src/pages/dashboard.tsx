@@ -132,8 +132,9 @@ export const Dashboard: React.FC = () => {
         setRentingItems(userRenting || []);
         setIsLoading(false);
       })
-      .catch(() => {
-        console.warn("could not get user lending request");
+      .catch((e) => {
+        console.warn(e);
+        console.warn("could not get user lending and renting request");
       });
 
     return getUserLendingRequest.cancel;

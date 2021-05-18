@@ -81,7 +81,7 @@ const loadMetaFromIPFS = async (
     let data: any = {};
     try {
       data = await response.json();
-    } catch (e) {
+    } catch {
       // ! this happens with ZORA media for me
       console.warn("could not get json, which could mean this is media");
       return { image: staticIPFS_URL };
@@ -101,9 +101,10 @@ const loadMetaFromIPFS = async (
 };
 
 export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
-  const { _mediaURI, _tokenURI } = nft;
+  const { _mediaURI } = nft;
 
-  let tokenURI: string = _tokenURI;
+  let tokenURI = await nft.loadTokenURI();
+  if (!tokenURI) return {};
 
   const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);
   if (isWeirdBaseURL) {
@@ -112,10 +113,7 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
     tokenURI = removeWeirdBaseURLEnd(tokenURI) + nft.tokenId;
   }
 
-  if (_mediaURI) {
-    return { image: _mediaURI };
-  }
-  if (!tokenURI) return {};
+  if (_mediaURI) return { image: _mediaURI };
 
   const isIPFS_URL = matchIPFS_URL(tokenURI);
   if (isIPFS_URL) return await loadMetaFromIPFS(isIPFS_URL);
@@ -146,8 +144,9 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
       );
       return {};
     }
-  } catch (err) {
-    console.warn(err);
+  } catch (e) {
+    console.warn(e);
+    console.warn("error fetching nft meta");
     return {};
   }
 };
