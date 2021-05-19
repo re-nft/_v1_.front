@@ -16,7 +16,6 @@ import {
   PageContextType,
 } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
-import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const Lendings: React.FC = () => {
@@ -39,7 +38,7 @@ const Lendings: React.FC = () => {
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [_, addMetas] = useContext(NFTMetaContext);
+  const [_, fetchNfts] = useContext(NFTMetaContext)
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -97,19 +96,8 @@ const Lendings: React.FC = () => {
 
   //Prefetch metadata
   useEffect(() => {
-    const contractAddress: string[] = [];
-    const tokenIds: string[] = [];
-    currentPage.map((nft) => {
-      contractAddress.push(nft.address);
-      tokenIds.push(nft.tokenId);
-    });
-    if (contractAddress.length > 0 && tokenIds.length > 0) {
-      fetchNFTsFromOpenSea(contractAddress, tokenIds).then(data => {
-        addMetas(data)
-      })
- 
-    }
-  }, [addMetas, currentPage]);
+    fetchNfts(currentPage)
+  }, [currentPage, fetchNfts]);
 
   if (isLoading) {
     return <CatalogueLoader />;
