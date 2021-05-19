@@ -19,6 +19,7 @@ import {
 } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
+import { nftId } from "../../../services/firebase";
 
 const Lendings: React.FC = () => {
   const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
@@ -34,7 +35,7 @@ const Lendings: React.FC = () => {
   const { getAllAvailableToLend } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [_, fetchNfts] = useContext(NFTMetaContext)
+  const [metas, fetchNfts] = useContext(NFTMetaContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -86,13 +87,14 @@ const Lendings: React.FC = () => {
       onResetPage();
       return getUserNftsRequest.cancel();
     };
-  }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
-
+  }, [getAllAvailableToLend, onChangePage, onResetPage, onSetItems]);
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage)
+    fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
+
+
 
   if (isLoading) {
     return <CatalogueLoader />;

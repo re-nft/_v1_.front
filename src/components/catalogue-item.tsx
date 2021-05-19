@@ -48,7 +48,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
   const id = nftId(nft.address, nft.tokenId);
-  const meta = metas.get(id);
+  const meta = metas[id];
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -120,7 +120,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
-  const { name, image, description } = meta || {};
+  const { name, image, description } = meta?.data || {};
 
   return (
     <div

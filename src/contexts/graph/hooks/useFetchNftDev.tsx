@@ -10,7 +10,7 @@ import {
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
-import fetch from 'unfetch'
+import fetch from 'cross-fetch'
 
 const BigNumZero = BigNumber.from("0");
 
