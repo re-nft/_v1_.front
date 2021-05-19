@@ -84,12 +84,13 @@ const UserCurrentlyLending: React.FC = () => {
     const getUserLendingRequest = createCancellablePromise(getUserLending());
 
     getUserLendingRequest.promise
-      .then((userLnding: Lending[] | undefined) => {
-        onChangePage(userLnding || []);
+      .then((lendings) => {
+        onChangePage(lendings);
         setIsLoading(false);
       })
-      .catch(() => {
-        console.warn("could not get userLending request");
+      .catch((e) => {
+        console.warn(e);
+        console.warn("could not get user Lending request");
       });
 
     return () => {

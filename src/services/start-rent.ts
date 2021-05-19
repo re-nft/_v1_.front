@@ -64,7 +64,5 @@ export default async function startRent(
     await erc20.approve(renft.address, MAX_UINT256);
   }
 
-  // TODO: will fail
-
   return await renft.rent(addresses, tokenIds, amounts, lendingIds, durations);
 }

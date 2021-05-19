@@ -46,26 +46,30 @@ export interface ILending {
   id: string;
   nftAddress: Address;
   tokenId: TokenId;
-  amount: string;
+  lentAmount: string;
   lenderAddress: Address;
   maxRentDuration: number;
   dailyRentPrice: number;
   nftPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
+  isERC721: boolean;
   renting?: IRenting;
 }
 
-export type LendingRaw = Omit<
-  ILending,
-  "maxRentDuration" | "dailyRentPrice" | "nftPrice" | "paymentToken" | "amount"
-> & {
+export type LendingRaw = {
+  id: string;
+  nftAddress: string;
+  tokenId: string;
+  lentAmount: string;
+  lenderAddress: string;
   maxRentDuration: string;
   dailyRentPrice: string;
   nftPrice: string;
   paymentToken: string;
+  collateralClaimed: boolean;
   isERC721: boolean;
-  lentAmount: string;
+  renting: RentingRaw;
 };
 
 export interface IRenting {
@@ -77,11 +81,13 @@ export interface IRenting {
   lending: ILending;
 }
 
-export type RentingRaw = Omit<IRenting, "rentDuration" | "rentedAt"> & {
+export type RentingRaw = {
+  id: string;
+  renterAddress: string;
   rentDuration: string;
   rentedAt: string;
+  lendingId: string;
   lending: LendingRaw;
-  isERC721: boolean;
 };
 
 export type NftRaw = {

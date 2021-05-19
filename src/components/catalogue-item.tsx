@@ -186,7 +186,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           <div className="nft__meta">
             {name && <div className="nft__name">{name}</div>}
             <CatalogueItemRow
-              text="NFT Address"
+              text="Address"
               value={
                 <a
                   href={`https://etherscan.io/address/${nft.address}`}

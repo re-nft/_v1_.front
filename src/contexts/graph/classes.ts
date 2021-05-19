@@ -167,8 +167,14 @@ class Lending extends Nft {
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
+
+    if (lendingRaw.renting) {
+      this.renting = parseRenting(lendingRaw.renting, this.lending);
+    }
   }
+
   lending: ILending;
+  renting?: IRenting;
   id: string;
 }
 
@@ -176,16 +182,26 @@ class Renting extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
-    amount: string,
-    signer: ethers.Signer,
+    lending: ILending,
     rentingRaw: RentingRaw,
+    signer: ethers.Signer,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, amount, rentingRaw.isERC721, signer, options);
+    super(
+      nftAddress,
+      tokenId,
+      lending.lentAmount,
+      lending.isERC721,
+      signer,
+      options
+    );
 
-    this.renting = parseRenting(rentingRaw);
+    this.lending = lending;
+    this.renting = parseRenting(rentingRaw, lending);
     this.id = rentingRaw.id;
   }
+
+  lending: ILending;
   renting: IRenting;
   id: string;
 }

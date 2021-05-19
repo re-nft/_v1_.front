@@ -100,7 +100,7 @@ const UserRentings: React.FC = () => {
             address: item.address,
             tokenId: item.tokenId,
             lendingId: item.renting.lendingId,
-            amount: item.renting.lending.amount,
+            amount: item.renting.lending.lentAmount,
             contract: item.contract,
           }))}
           onClose={handleCloseModal}

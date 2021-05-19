@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import GraphContext from "../../../contexts/graph";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
 import CatalogueItem from "../../../components/catalogue-item";
@@ -31,21 +30,21 @@ const Lendings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext<PageContextType<Nft>>(PageContext);
-  const { getUserNfts } = useContext(GraphContext);
+  const { getAllAvailableToLend } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUserNfts()
-      .then((items: Nft[] | undefined) => {
-        onChangePage(items || []);
+    getAllAvailableToLend()
+      .then((nfts) => {
+        onChangePage(nfts);
         setIsLoading(false);
       })
       .catch(() => {
         console.warn("could not fetch user nfts");
       });
-  }, [setIsLoading, getUserNfts, onChangePage]);
+  }, [setIsLoading, getAllAvailableToLend, onChangePage]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -68,11 +67,13 @@ const Lendings: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const getUserNftsRequest = createCancellablePromise(getUserNfts());
+    const getUserNftsRequest = createCancellablePromise(
+      getAllAvailableToLend()
+    );
 
     getUserNftsRequest.promise
-      .then((items: Nft[] | undefined) => {
-        onChangePage(items || []);
+      .then((nfts) => {
+        onChangePage(nfts);
         setIsLoading(false);
       })
       .catch(() => {

@@ -33,6 +33,7 @@ const AvailableToRent: React.FC = () => {
     checkedLendingItems,
     checkedRentingItems,
     handleReset: handleBatchReset,
+    onCheckboxChange,
   } = useContext(BatchContext);
   const {
     totalPages,
@@ -47,21 +48,22 @@ const AvailableToRent: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
-  const { getUsersLending } = useContext(GraphContext);
+  const { getAllAvailableToRent } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isActive, setHash } = useContext(TransactionStateContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUsersLending()
-      .then((items: Lending[] | undefined) => {
-        onChangePage(items || []);
+    getAllAvailableToRent()
+      .then((lendings: Lending[]) => {
+        onChangePage(lendings);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get user lending");
       });
-  }, [setIsLoading, getUsersLending, onChangePage]);
+  }, [setIsLoading, getAllAvailableToRent, onChangePage]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
@@ -71,9 +73,10 @@ const AvailableToRent: React.FC = () => {
 
   const handleBatchModalOpen = useCallback(
     (nft: Lending) => {
+      onCheckboxChange(nft);
       setOpenBatchModel(true);
     },
-    [setOpenBatchModel]
+    [setOpenBatchModel, onCheckboxChange]
   );
 
   const handleRent = useCallback(
@@ -88,6 +91,7 @@ const AvailableToRent: React.FC = () => {
       )
         return;
 
+      // TODO: hardcoded payment token
       // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
       const pmtToken = PaymentToken.DAI;
       const tx = await startRent(
@@ -100,6 +104,7 @@ const AvailableToRent: React.FC = () => {
         pmtToken
       );
       if (tx) setHash(tx.hash);
+
       handleBatchModalClose();
     },
     [
@@ -120,20 +125,24 @@ const AvailableToRent: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const getUsersLendingRequest = createCancellablePromise(getUsersLending());
+    const allAvailableToRentRequest = createCancellablePromise(
+      getAllAvailableToRent()
+    );
 
-    getUsersLendingRequest.promise
-      .then((usersLnding: Lending[] | undefined) => {
-        onChangePage(usersLnding || []);
+    allAvailableToRentRequest.promise
+      .then((lending) => {
+        // todo: onchangepage takes any!
+        onChangePage(lending);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get usersLending request");
       });
 
     return () => {
       onResetPage();
-      return getUsersLendingRequest.cancel();
+      return allAvailableToRentRequest.cancel();
     };
     /* eslint-disable-next-line */
   }, []);
@@ -179,10 +188,18 @@ const AvailableToRent: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
+      {checkedLendingItems.length > 1 && (
+        <BatchBar
+          title={`Selected ${checkedLendingItems.length} items`}
+          actionTitle="Rent All"
+          onCancel={handleBatchReset}
+          onClick={handleBatchRent}
+        />
+      )}
       {checkedRentingItems.length > 1 && (
         <BatchBar
           title={`Selected ${checkedRentingItems.length} items`}
-          actionTitle="Rents All"
+          actionTitle="Rent All"
           onCancel={handleBatchReset}
           onClick={handleBatchRent}
         />

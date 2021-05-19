@@ -159,8 +159,8 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>NFT Address</th>
-                    <th style={{ width: "7%" }}>TokenId</th>
+                    <th style={{ width: "15%" }}>Address</th>
+                    <th style={{ width: "7%" }}>ID</th>
                     <th style={{ width: "7%" }}>Amount</th>
                     <th style={{ width: "10%" }}>Pmt in</th>
                     <th style={{ width: "11%" }}>Collateral</th>
@@ -238,8 +238,8 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>NFT Address</th>
-                    <th style={{ width: "7%" }}>TokenId</th>
+                    <th style={{ width: "15%" }}>Address</th>
+                    <th style={{ width: "7%" }}>ID</th>
                     <th style={{ width: "7%" }}>Amount</th>
                     <th style={{ width: "10%" }}>Pmt in</th>
                     <th style={{ width: "7%" }}>Duration</th>
@@ -265,7 +265,7 @@ export const Dashboard: React.FC = () => {
                           {short(renting.renterAddress)}
                         </td>
                         <td className="column">{rent.tokenId}</td>
-                        <td className="column">{renting.lending.amount}</td>
+                        <td className="column">{renting.lending.lentAmount}</td>
                         <td className="column">
                           {PaymentToken[renting.lending.paymentToken ?? 0]}
                         </td>
