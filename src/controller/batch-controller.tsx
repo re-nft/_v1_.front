@@ -64,7 +64,10 @@ export const BatchProvider: React.FC = ({ children }) => {
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = (item) => {
     let lendingID = "0";
     if (isLending(item)) lendingID = item.lending.id;
-    else if (isRenting(item)) lendingID = item.renting.lendingId;
+    else if (isRenting(item))
+      lendingID = item.renting.lendingId
+        .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
+        .concat("renting");
 
     const uniqueID = getUniqueID(item.address, item.tokenId, lendingID);
 

@@ -24,6 +24,31 @@ enum DashboardViewType {
   MINIATURE_VIEW,
 }
 
+type CheckboxProps = {
+  onCheckboxClick: (nft: Lending | Renting) => void;
+  nft: Lending | Renting;
+};
+
+const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
+  const { checkedItems } = useContext(BatchContext);
+
+  const handleClick = useCallback(() => {
+    return onCheckboxClick(nft);
+  }, [onCheckboxClick, nft]);
+
+  return (
+    <div
+      onClick={handleClick}
+      className={`checkbox ${
+        checkedItems[getUniqueID(nft.address, nft.tokenId, nft.lending.id)]
+          ? "checked"
+          : ""
+      }`}
+      style={{ margin: "auto", marginTop: "1em" }}
+    />
+  );
+};
+
 // TODO: this code is not DRY
 // TODO: lendings has this batch architecture too
 // TODO: it would be good to abstract batching
@@ -113,7 +138,7 @@ export const Dashboard: React.FC = () => {
   }, [setModalOpen]);
 
   const onCheckboxClick = useCallback(
-    (lending: Lending) => {
+    (lending: Lending | Renting) => {
       onCheckboxChange(lending);
     },
     [onCheckboxChange]
@@ -128,8 +153,8 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
+        setLendingItems(userLending);
+        setRentingItems(userRenting);
         setIsLoading(false);
       })
       .catch((e) => {
@@ -161,8 +186,8 @@ export const Dashboard: React.FC = () => {
                   <tr>
                     <th style={{ width: "15%" }}>Address</th>
                     <th style={{ width: "7%" }}>ID</th>
-                    <th style={{ width: "7%" }}>Amount</th>
-                    <th style={{ width: "10%" }}>Pmt in</th>
+                    <th style={{ width: "5%" }}>Amount</th>
+                    <th style={{ width: "5%" }}>Pmt in</th>
                     <th style={{ width: "11%" }}>Collateral</th>
                     <th style={{ width: "7%" }}>Rent</th>
                     <th style={{ width: "7%" }}>Duration</th>
@@ -201,23 +226,15 @@ export const Dashboard: React.FC = () => {
                           {lending.maxRentDuration} days
                         </td>
                         <td className="action-column">
-                          <div
-                            onClick={() => onCheckboxClick(lend)}
-                            className={`checkbox ${
-                              checkedItems[
-                                getUniqueID(
-                                  lend.address,
-                                  lend.tokenId,
-                                  lending.id
-                                )
-                              ]
-                                ? "checked"
-                                : ""
-                            }`}
-                            style={{ margin: "auto", marginTop: "1em" }}
+                          <Checkbox
+                            onCheckboxClick={onCheckboxClick}
+                            nft={lend}
                           />
                         </td>
                         <td className="action-column">
+                          {/* 
+                            TODO: handleStopLend
+                          */}
                           <span
                             className="nft__button small"
                             onClick={() => handleStopLend([lend])}
@@ -239,30 +256,32 @@ export const Dashboard: React.FC = () => {
                 <thead>
                   <tr>
                     <th style={{ width: "15%" }}>Address</th>
-                    <th style={{ width: "7%" }}>ID</th>
-                    <th style={{ width: "7%" }}>Amount</th>
-                    <th style={{ width: "10%" }}>Pmt in</th>
+                    <th style={{ width: "5%" }}>ID</th>
+                    <th style={{ width: "5%" }}>Amount</th>
+                    <th style={{ width: "7%" }}>Pmt in</th>
+                    <th style={{ width: "7%" }}>Collateral</th>
+                    <th style={{ width: "11%" }}>Rented On</th>
                     <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "11%" }}>Rented At</th>
-                    <th style={{ width: "7%" }}>Rent</th>
+                    <th style={{ width: "7%" }}>Due Date</th>
+                    <th style={{ width: "7%" }}>Batch Select</th>
                     <th style={{ width: "20%" }} className="action-column">
                       &nbsp;
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rentingItems.map((rent: Renting, ix: number) => {
+                  {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     return (
                       <tr
                         key={getUniqueID(
-                          rent.address,
-                          rent.tokenId,
+                          rent.lending.nftAddress,
+                          rent.lending.tokenId,
                           renting.lendingId
                         )}
                       >
                         <td className="column">
-                          {short(renting.renterAddress)}
+                          {short(renting.lending.nftAddress)}
                         </td>
                         <td className="column">{rent.tokenId}</td>
                         <td className="column">{renting.lending.lentAmount}</td>
@@ -275,8 +294,15 @@ export const Dashboard: React.FC = () => {
                             "MM/D/YY hh:mm"
                           )}
                         </td>
+                        <td className="column">{renting.rentDuration} days</td>
                         <td className="column">
                           {renting.lending.dailyRentPrice}
+                        </td>
+                        <td className="action-column">
+                          <Checkbox
+                            onCheckboxClick={onCheckboxClick}
+                            nft={rent}
+                          />
                         </td>
                         <td className="action-column">
                           {renting.lending.lenderAddress !==

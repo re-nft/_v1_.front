@@ -342,8 +342,6 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     if (!response?.users[0]) return [];
 
-    console.log("here");
-
     const lendings = Object.values(response.users[0].lending).map(
       (lending) => new Lending(lending, signer)
     );

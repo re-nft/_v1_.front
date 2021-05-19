@@ -8,6 +8,12 @@ import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__facto
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
 import { decimalToPaddedHexString } from "../../utils";
 
+enum NftType {
+  Nft,
+  Lending,
+  Renting,
+}
+
 type NftOptions = {
   tokenURI?: string;
   mediaURI?: string;
@@ -17,18 +23,27 @@ type NftOptions = {
 // typeguard for Lending class
 /* eslint-disable-next-line */
 export const isLending = (x: any): x is Lending => {
-  return "lending" in x;
+  if ("type" in x) {
+    return x.type === NftType.Lending;
+  }
+  return false;
 };
 
 // typeguard for Renting class
 /* eslint-disable-next-line */
 export const isRenting = (x: any): x is Renting => {
-  return "renting" in x;
+  if ("type" in x) {
+    return x.type === NftType.Renting;
+  }
+  return false;
 };
 
 /* eslint-disable-next-line */
 export const isNft = (x: any): x is Nft => {
-  return !isLending(x) && !isRenting(x);
+  if ("type" in x) {
+    return x.type === NftType.Nft;
+  }
+  return false;
 };
 
 class Nft {
@@ -72,6 +87,7 @@ class Nft {
     }
   }
 
+  type = NftType.Nft;
   nftAddress: Address;
   address: Address;
   tokenId: string;
@@ -173,6 +189,7 @@ class Lending extends Nft {
     }
   }
 
+  type = NftType.Lending;
   lending: ILending;
   renting?: IRenting;
   id: string;
@@ -201,6 +218,7 @@ class Renting extends Nft {
     this.id = rentingRaw.id;
   }
 
+  type = NftType.Renting;
   lending: ILending;
   renting: IRenting;
   id: string;
