@@ -11,13 +11,11 @@ import {
 } from "../services/firebase";
 import {
   CalculatedUserVote,
-  NftToken,
   UsersVote,
 } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
-import { fetchNFTMeta } from "../services/fetch-nft-meta";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
@@ -49,7 +47,8 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
-  const meta = metas.get(`${nft.address}-${nft.tokenId}`);
+  const id = nftId(nft.address, nft.tokenId);
+  const meta = metas.get(id);
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -109,13 +108,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     }
   }, [checked, nft, meta?.image, currentAddress]);
 
+  //TODO:eniko fetch from other files as well
+  //Todo:eniko show error message
   useEffect(() => {
     if (meta) {
       setImageIsReady(true);
     }
   }, [meta]);
 
-  const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites =
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =

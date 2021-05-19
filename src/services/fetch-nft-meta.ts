@@ -1,5 +1,7 @@
 import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
+import { OpenSeaAsset } from "opensea-js/lib/types";
+import { nftId } from "./firebase";
 
 const IPFSGateway = "https://dweb.link/ipfs/";
 
@@ -56,21 +58,21 @@ const buildStaticIPFS_URL = (matched: string[]) => {
   return `${IPFSGateway}${cid}${path}`;
 };
 
+export type NftMetaWithId = NftToken["meta"] & { id: string };
+export type NftError = {id: string; error: string}
+
 /**
  *
  * @param IPFS_URL is an output from matchIPFS_URL function.
  * @returns
  */
 const loadMetaFromIPFS = async (
-  IPFS_URL: RegExpMatchArray | null
-): Promise<NftToken["meta"]> => {
+  IPFS_URL: RegExpMatchArray | null,
+  id: string
+): Promise<NftMetaWithId | NftError> => {
   if (!IPFS_URL) {
     console.warn("could not fetch meta IPFS URL");
-    return {
-      image: "",
-      description: "",
-      name: "",
-    };
+    return { id, error: "cannot fetch meta from ipfs url" };
   }
 
   const staticIPFS_URL = buildStaticIPFS_URL(IPFS_URL);
@@ -83,7 +85,7 @@ const loadMetaFromIPFS = async (
     } catch {
       // ! this happens with ZORA media for me
       console.warn("could not get json, which could mean this is media");
-      return { image: staticIPFS_URL };
+      return { image: staticIPFS_URL, id };
     }
 
     const imageIsIPFS_URL = matchIPFS_URL(data?.image);
@@ -93,18 +95,21 @@ const loadMetaFromIPFS = async (
         : data?.image,
       description: data?.description,
       name: data?.name,
+      id,
     };
   } catch (err) {
     console.warn("issue loading meta from IPFS");
+    return { id, error: "cannot load meta from ipfs" };
   }
 };
 
-export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
+export const fetchNFTFromOtherSource = async (
+  nft: Nft
+): Promise<NftMetaWithId | NftError> => {
   const { _mediaURI, _tokenURI } = nft;
 
-  let tokenURI = await nft.loadTokenURI();
-  if (!tokenURI) return {};
-
+  let tokenURI: string = _tokenURI;
+  const key = nftId(nft.address, nft.tokenId);
   const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);
   if (isWeirdBaseURL) {
     // ! this is opensea, in my tests. And even though this weird base url says you need hex
@@ -112,10 +117,13 @@ export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
     tokenURI = removeWeirdBaseURLEnd(tokenURI) + nft.tokenId;
   }
 
-  if (_mediaURI) return { image: _mediaURI };
+  if (_mediaURI) {
+    return { image: _mediaURI, id: key };
+  }
+  if (!tokenURI) return { id: key, error: "No tokenUri" };
 
   const isIPFS_URL = matchIPFS_URL(tokenURI);
-  if (isIPFS_URL) return await loadMetaFromIPFS(isIPFS_URL);
+  if (isIPFS_URL) return await loadMetaFromIPFS(isIPFS_URL, key);
 
   try {
     // ! people will tell us: my X NFT is not showing. We will check, and it
@@ -141,50 +149,48 @@ export const fetchNFTFromIPFS = async (nft: Nft): Promise<NftToken["meta"]> => {
         image: data?.image,
         description: data?.description,
         name: data?.name,
+        id: key,
       };
     } else {
       console.warn(
         "is not IPFS URL, but we are downloading meta as if it is O_O"
       );
-      return {};
+      return { id: key, error: "non-ipfs url" };
     }
-  } catch (e) {
-    console.warn(e);
-    console.warn("error fetching nft meta");
-    return {};
+  } catch (err) {
+    console.warn(err);
+    return { id: key, error: "unknown error" };
   }
-};
-
-export const fetchNFTFromOpenSea = async (
-  nft: Nft
-): Promise<NftToken["meta"]> => {
-  if (!process.env.REACT_APP_OPENSEA_API) {
-    throw new Error("OPENSEA_API is not defined");
-  }
-  return await fetch(
-    `https://api.opensea.io/api/v1/asset/${nft.address}/${nft.tokenId}`,
-    {
-      headers: {
-        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
-      },
-    }
-  )
-    .then((r) => r.json())
-    .then((r) => {
-      return {
-        image: r.image_url || r.image_preview_url,
-      };
-    });
 };
 
 const arrayToURI = (name: string, array: Array<string>) => {
   return `${array.map((item: string) => `${name}=${item}`).join("&")}`;
 };
 
+const isObject = (obj: unknown) => {
+  return Object.prototype.toString.call(obj) === "[object Object]";
+};
+
+const snakeCaseToCamelCase = (obj: Record<string, unknown>) => {
+  const initialVal: Record<string, unknown> = {};
+  return Object.keys(obj).reduce((acc, key) => {
+    const value = obj[key];
+    const newKey = key.replace(/(_\w)/g, function(k) {
+      return k[1].toUpperCase();
+    })
+    if (isObject(value)) {
+      acc[newKey] = snakeCaseToCamelCase(value as Record<string, unknown>);
+    } else {
+      acc[newKey] = value;
+    }
+    return acc;
+  }, initialVal);
+};
+
 export const fetchNFTsFromOpenSea = async (
   asset_contract_addresses: Array<string>,
   token_ids: Array<string>
-): Promise<Array<NftToken["meta"] & {id: string}>> => {
+): Promise<Array<NftMetaWithId>> => {
   if (!process.env.REACT_APP_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
@@ -201,17 +207,16 @@ export const fetchNFTsFromOpenSea = async (
   )
     .then((r) => r.json())
     .then((r) => {
-      // TODO
-      return r.assets.map((nft:any) =>{
+      return r.assets.map(snakeCaseToCamelCase).map((nft: OpenSeaAsset) => {
         return {
           ...nft,
-          image: nft.image_preview_url || nft.image_preview_url || nft.image_thumbnail_url || nft.image_original_url,
-          id: `${nft.asset_contract.address}-${nft.token_id}`,
-        }
-      })
+          image:
+            nft.imagePreviewUrl ||
+            nft.imageUrlThumbnail ||
+            nft.imageUrl ||
+            nft.imageUrlOriginal,
+          id: nftId(nft.assetContract.address, nft.tokenId || ""),
+        };
+      });
     });
-};
-export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
-  return fetchNFTFromOpenSea(nft);
-  //return Promise.any([fetchNFTFromIPFS(nft), fetchNFTFromOpenSea(nft)])
 };
