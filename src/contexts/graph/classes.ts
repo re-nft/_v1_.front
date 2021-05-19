@@ -6,6 +6,10 @@ import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
+import createDebugger from "debug";
+
+// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
+const debug = createDebugger("FETCH_TOKENURI");
 
 type NftOptions = {
   tokenURI?: string;
@@ -36,15 +40,14 @@ class Nft {
       /* eslint-disable-next-line */
       const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
 
-      
       uriSelector(this.tokenId)
         .then((d: any) => {
           this._tokenURI = d;
         })
-        .catch((e:any) => {
+        .catch((e: any) => {
           // TODO:eniko debug
           // console.log(e)
-          console.warn(
+          debug(
             "could not fetch tokenURI",
             this.address,
             "tokenID",
