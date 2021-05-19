@@ -37,10 +37,10 @@ const ROUTES = [
     path: "/favourites",
     name: "My Favourites",
   },
-  {
-    path: "/leaderboard",
-    name: "Leaderboard",
-  },
+  // {
+  //   path: "/leaderboard",
+  //   name: "Leaderboard",
+  // },
   {
     path: "/faq",
     name: "FAQ",
@@ -106,9 +106,9 @@ const App: React.FC = () => {
             <Route exact path="/favourites">
               <MyFavorites />
             </Route>
-            <Route exact path="/leaderboard">
+            {/* <Route exact path="/leaderboard">
               <Leaderboard />
-            </Route>
+            </Route> */}
             <Route exact path="/faq">
               <Faq />
             </Route>

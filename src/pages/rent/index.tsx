@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
-import Rentings from "./components/rentings";
-import UserRentings from "./components/user-rentings";
+import AvailableToRent from "./components/all-available-to-rent";
+import UserCurrentlyRenting from "./components/user-is-renting";
 import PageLayout from "../../components/page-layout";
 
 enum RentSpecificity {
@@ -27,8 +27,8 @@ export const Rent: React.FC = () => {
       toggleValue={specificity === RentSpecificity.RENTING}
       onSwitch={switchSpecificity}
     >
-      {specificity === RentSpecificity.RENTING && <UserRentings />}
-      {specificity === RentSpecificity.ALL && <Rentings />}
+      {specificity === RentSpecificity.RENTING && <UserCurrentlyRenting />}
+      {specificity === RentSpecificity.ALL && <AvailableToRent />}
     </PageLayout>
   );
 };

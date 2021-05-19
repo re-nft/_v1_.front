@@ -6,11 +6,44 @@ import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
+import { decimalToPaddedHexString } from "../../utils";
+
+enum NftType {
+  Nft,
+  Lending,
+  Renting,
+}
 
 type NftOptions = {
   tokenURI?: string;
   mediaURI?: string;
   meta?: NftToken["meta"];
+};
+
+// typeguard for Lending class
+/* eslint-disable-next-line */
+export const isLending = (x: any): x is Lending => {
+  if ("type" in x) {
+    return x.type === NftType.Lending;
+  }
+  return false;
+};
+
+// typeguard for Renting class
+/* eslint-disable-next-line */
+export const isRenting = (x: any): x is Renting => {
+  if ("type" in x) {
+    return x.type === NftType.Renting;
+  }
+  return false;
+};
+
+/* eslint-disable-next-line */
+export const isNft = (x: any): x is Nft => {
+  if ("type" in x) {
+    return x.type === NftType.Nft;
+  }
+  return false;
 };
 
 class Nft {
@@ -30,15 +63,18 @@ class Nft {
     this.isERC721 = isERC721;
 
     this._meta = options?.meta;
+    this._tokenURI = options?.tokenURI ?? "";
+    this._mediaURI = options?.mediaURI ?? "";
 
     if (!options?.tokenURI) {
       const _contract = this.contract();
-      /* eslint-disable-next-line */
       const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
 
+      uriSelector.bind(this);
+
       uriSelector(this.tokenId)
-        .then((d: any) => {
-          this._tokenURI = d;
+        .then((d: string) => {
+          this._tokenURI = this._parseTokenURI(d);
         })
         .catch(() => {
           console.warn(
@@ -49,11 +85,9 @@ class Nft {
           );
         });
     }
-
-    this._tokenURI = options?.tokenURI ?? "";
-    this._mediaURI = options?.mediaURI ?? "";
   }
 
+  type = NftType.Nft;
   nftAddress: Address;
   address: Address;
   tokenId: string;
@@ -92,18 +126,45 @@ class Nft {
           ethers.BigNumber.from(this.tokenId)
         );
       } else {
-        return await this.contract().uri();
+        return this._parseTokenURI(
+          await this.contract().uri(ethers.BigNumber.from(this.tokenId))
+        );
       }
-    } catch (err) {
+    } catch {
       console.warn("loadTokenURI error");
     }
   };
-}
 
-// typeguard for Lending class
-export const isLending = (x: any): x is Lending => {
-  return "lending" in x;
-};
+  loadAmount = async (address?: string): Promise<string> => {
+    if (this.isERC721 || !address) this.amount = "1";
+    // not returning the already computed amount because the provider can change and with it the address
+    // anothe reason is due to users of renft lending and renting and thus amounts dynamically changing
+    else {
+      const amount = (
+        await this.contract()
+          .balanceOf(address, this.tokenId)
+          .catch(() => "0")
+      ).toString();
+      this.amount = amount;
+    }
+    return this.amount;
+  };
+
+  _parseTokenURI = (uri: string): string => {
+    // https://eips.ethereum.org/EIPS/eip-1155
+    // will contain {id}
+    const uriMatch = uri.match(/(^.+)(\{id\})/);
+    if (uriMatch) {
+      const [baseURI, _] = uriMatch;
+      const url = `${baseURI}${decimalToPaddedHexString(
+        Number(this.tokenId),
+        64
+      ).slice(2)}`;
+      return url;
+    }
+    return uri;
+  };
+}
 
 class Lending extends Nft {
   constructor(
@@ -114,7 +175,7 @@ class Lending extends Nft {
     super(
       lendingRaw.nftAddress,
       lendingRaw.tokenId,
-      lendingRaw.amount,
+      lendingRaw.lentAmount,
       lendingRaw.isERC721,
       signer,
       options
@@ -122,8 +183,15 @@ class Lending extends Nft {
 
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
+
+    if (lendingRaw.renting) {
+      this.renting = parseRenting(lendingRaw.renting, this.lending);
+    }
   }
+
+  type = NftType.Lending;
   lending: ILending;
+  renting?: IRenting;
   id: string;
 }
 
@@ -131,16 +199,27 @@ class Renting extends Nft {
   constructor(
     nftAddress: Address,
     tokenId: string,
-    amount: string,
-    signer: ethers.Signer,
+    lending: ILending,
     rentingRaw: RentingRaw,
+    signer: ethers.Signer,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, amount, rentingRaw.isERC721, signer, options);
+    super(
+      nftAddress,
+      tokenId,
+      lending.lentAmount,
+      lending.isERC721,
+      signer,
+      options
+    );
 
-    this.renting = parseRenting(rentingRaw);
+    this.lending = lending;
+    this.renting = parseRenting(rentingRaw, lending);
     this.id = rentingRaw.id;
   }
+
+  type = NftType.Renting;
+  lending: ILending;
   renting: IRenting;
   id: string;
 }

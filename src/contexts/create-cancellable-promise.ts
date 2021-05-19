@@ -1,40 +1,36 @@
-/* eslint-disable */
-
-type CancelPromise = () => void;
-
 export type CancellablePromise<T> = {
   promise: Promise<T>;
-  cancel: CancelPromise;
+  cancel: () => void;
 };
-
-// todo: what is this Function O_O
 
 export default function createCancellablePromise<T>(
   promise: Promise<T>
 ): CancellablePromise<T> {
-  let cancel: CancelPromise = Function;
+  let cancel = () => {
+    console.warn("nothing to cancel");
+  };
+
   const cancellablePromise: Promise<T> = new Promise(
-    (resolve: Function | null, reject: Function | null) => {
+    (
+      resolve: (value: T | PromiseLike<T>) => void,
+      reject: (reason?: any) => void
+    ) => {
       cancel = () => {
-        resolve = null;
-        reject = null;
+        resolve = () => null;
+        reject = () => null;
       };
 
       promise
         .then(
           (value) => {
-            if (resolve) {
-              resolve(value);
-            }
+            if (resolve) resolve(value);
           },
           (error) => {
-            if (reject) {
-              reject(error);
-            }
+            if (reject) reject(error);
           }
         )
         .catch(() => {
-          console.warn("weird function error");
+          console.warn("cancellable function error");
         });
     }
   );

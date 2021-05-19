@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
-import AvailableToLend from "./components/lendings";
-import UserCurrentlyLending from "./components/user-lendings";
+import AvailableToLend from "./components/all-available-to-lend";
+import UserCurrentlyLending from "./components/user-is-lending";
 import PageLayout from "../../components/page-layout";
 
 enum LendSpecificity {

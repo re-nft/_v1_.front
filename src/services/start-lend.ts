@@ -21,7 +21,6 @@ export default async function startLend(
   const collaterals: string[] = [];
   const pmtTokens: string[] = [];
 
-  // todo: packPrice no validation whatsoever
   try {
     for (let i = 0; i < maxDurations.length; i++) {
       addresses.push(nfts[i].address);

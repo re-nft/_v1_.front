@@ -1,10 +1,8 @@
 import React, { createContext } from "react";
-import { Nft, Lending } from "../contexts/graph/classes";
 
 /* eslint-disable-next-line */
 type Props = {};
 type State<T> = {
-  // todo: Renting probably too
   pageItems: T[];
   currentPage: T[];
   currentPageNumber: number;

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
   CurrentAddressContext,
@@ -23,21 +17,23 @@ import { TransactionStateContext } from "../../../contexts/TransactionState";
 import GraphContext from "../../../contexts/graph";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
-import { BatchContext } from "../../../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+} from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 
+// TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
   const {
+    checkedItems,
     checkedLendingItems,
-    checkedMap,
-    countOfCheckedItems,
-    onReset,
-    onSetCheckedItem,
-    onSetItems,
+    checkedRentingItems,
+    handleReset: handleBatchReset,
+    onCheckboxChange,
   } = useContext(BatchContext);
   const {
     totalPages,
@@ -52,36 +48,35 @@ const AvailableToRent: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
-  const { getUsersLending } = useContext(GraphContext);
+  const { getAllAvailableToRent } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isActive, setHash } = useContext(TransactionStateContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    getUsersLending()
-      .then((items: Lending[] | undefined) => {
-        onChangePage(items || []);
-        onSetItems(items || []);
+    getAllAvailableToRent()
+      .then((lendings: Lending[]) => {
+        onChangePage(lendings);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get user lending");
       });
-  }, [setIsLoading, getUsersLending, onChangePage, onSetItems]);
+  }, [setIsLoading, getAllAvailableToRent, onChangePage]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
-    onReset();
+    handleBatchReset();
     handleRefresh();
-  }, [onReset, setOpenBatchModel, handleRefresh]);
+  }, [handleBatchReset, setOpenBatchModel, handleRefresh]);
 
   const handleBatchModalOpen = useCallback(
     (nft: Lending) => {
-      // @ts-ignore
-      onSetCheckedItem(nft);
+      onCheckboxChange(nft);
       setOpenBatchModel(true);
     },
-    [onSetCheckedItem, setOpenBatchModel]
+    [setOpenBatchModel, onCheckboxChange]
   );
 
   const handleRent = useCallback(
@@ -96,6 +91,8 @@ const AvailableToRent: React.FC = () => {
       )
         return;
 
+      // TODO: hardcoded payment token
+      // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
       const pmtToken = PaymentToken.DAI;
       const tx = await startRent(
         renft,
@@ -106,8 +103,8 @@ const AvailableToRent: React.FC = () => {
         rentDuration,
         pmtToken
       );
-      // @ts-ignore
-      setHash(tx.hash);
+      if (tx) setHash(tx.hash);
+
       handleBatchModalClose();
     },
     [
@@ -128,21 +125,24 @@ const AvailableToRent: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const getUsersLendingRequest = createCancellablePromise(getUsersLending());
+    const allAvailableToRentRequest = createCancellablePromise(
+      getAllAvailableToRent()
+    );
 
-    getUsersLendingRequest.promise
-      .then((usersLnding: Lending[] | undefined) => {
-        onChangePage(usersLnding || []);
-        onSetItems(usersLnding || []);
+    allAvailableToRentRequest.promise
+      .then((lending) => {
+        // todo: onchangepage takes any!
+        onChangePage(lending);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.warn(e);
         console.warn("could not get usersLending request");
       });
 
     return () => {
       onResetPage();
-      return getUsersLendingRequest.cancel();
+      return allAvailableToRentRequest.cancel();
     };
     /* eslint-disable-next-line */
   }, []);
@@ -160,13 +160,17 @@ const AvailableToRent: React.FC = () => {
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
-        {currentPage.map((nft: Lending | Nft, ix: number) => {
+        {currentPage.map((nft: Lending | Nft) => {
           if (isLending(nft)) {
             return (
               <CatalogueItem
-                key={`${nft.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
                 nft={nft}
-                checked={checkedMap[nft.tokenId] || false}
+                checked={
+                  !!checkedItems[
+                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+                  ]
+                }
               >
                 <LendingFields nft={nft} />
                 <ActionButton<Lending>
@@ -184,11 +188,19 @@ const AvailableToRent: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {countOfCheckedItems > 1 && (
+      {checkedLendingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
-          actionTitle="Rents All"
-          onCancel={onReset}
+          title={`Selected ${checkedLendingItems.length} items`}
+          actionTitle="Rent All"
+          onCancel={handleBatchReset}
+          onClick={handleBatchRent}
+        />
+      )}
+      {checkedRentingItems.length > 1 && (
+        <BatchBar
+          title={`Selected ${checkedRentingItems.length} items`}
+          actionTitle="Rent All"
+          onCancel={handleBatchReset}
           onClick={handleBatchRent}
         />
       )}

@@ -10,18 +10,18 @@ import { Resolver } from "./typechain/Resolver";
 import { Resolver__factory } from "./typechain/factories/Resolver__factory";
 import { DAI } from "./typechain/DAI";
 import { DAI__factory } from "./typechain/factories/DAI__factory";
-import { E1155 } from "./typechain/E1155";
-import { E1155__factory } from "./typechain/factories/E1155__factory";
-import { E1155B } from "./typechain/E1155B";
-import { E1155B__factory } from "./typechain/factories/E1155B__factory";
 import { E721 } from "./typechain/E721";
 import { E721__factory } from "./typechain/factories/E721__factory";
+import { E1155 } from "./typechain/E1155";
+import { E1155__factory } from "./typechain/factories/E1155__factory";
 import { E721B } from "./typechain/E721B";
 import { E721B__factory } from "./typechain/factories/E721B__factory";
 import { USDC } from "./typechain/USDC";
 import { USDC__factory } from "./typechain/factories/USDC__factory";
 import { USDT } from "./typechain/USDT";
 import { USDT__factory } from "./typechain/factories/USDT__factory";
+import { E1155B } from "./typechain/E1155B";
+import { E1155B__factory } from "./typechain/factories/E1155B__factory";
 import { Utils } from "./typechain/Utils";
 import { Utils__factory } from "./typechain/factories/Utils__factory";
 import { WETH } from "./typechain/WETH";
@@ -68,12 +68,12 @@ export const ReNFTContext = React.createContext<SymfoniReNFT>(emptyContract);
 export const ResolverContext =
   React.createContext<SymfoniResolver>(emptyContract);
 export const DAIContext = React.createContext<SymfoniDAI>(emptyContract);
-export const E1155Context = React.createContext<SymfoniE1155>(emptyContract);
-export const E1155BContext = React.createContext<SymfoniE1155B>(emptyContract);
 export const E721Context = React.createContext<SymfoniE721>(emptyContract);
+export const E1155Context = React.createContext<SymfoniE1155>(emptyContract);
 export const E721BContext = React.createContext<SymfoniE721B>(emptyContract);
 export const USDCContext = React.createContext<SymfoniUSDC>(emptyContract);
 export const USDTContext = React.createContext<SymfoniUSDT>(emptyContract);
+export const E1155BContext = React.createContext<SymfoniE1155B>(emptyContract);
 export const UtilsContext = React.createContext<SymfoniUtils>(emptyContract);
 export const WETHContext = React.createContext<SymfoniWETH>(emptyContract);
 export const ERC1155Context =
@@ -110,19 +110,14 @@ export interface SymfoniDAI {
   factory?: DAI__factory;
 }
 
-export interface SymfoniE1155 {
-  instance?: E1155;
-  factory?: E1155__factory;
-}
-
-export interface SymfoniE1155B {
-  instance?: E1155B;
-  factory?: E1155B__factory;
-}
-
 export interface SymfoniE721 {
   instance?: E721;
   factory?: E721__factory;
+}
+
+export interface SymfoniE1155 {
+  instance?: E1155;
+  factory?: E1155__factory;
 }
 
 export interface SymfoniE721B {
@@ -138,6 +133,11 @@ export interface SymfoniUSDC {
 export interface SymfoniUSDT {
   instance?: USDT;
   factory?: USDT__factory;
+}
+
+export interface SymfoniE1155B {
+  instance?: E1155B;
+  factory?: E1155B__factory;
 }
 
 export interface SymfoniUtils {
@@ -188,12 +188,12 @@ export const Symfoni: React.FC<SymfoniProps> = ({
   const [ReNFT, setReNFT] = useState<SymfoniReNFT>(emptyContract);
   const [Resolver, setResolver] = useState<SymfoniResolver>(emptyContract);
   const [DAI, setDAI] = useState<SymfoniDAI>(emptyContract);
-  const [E1155, setE1155] = useState<SymfoniE1155>(emptyContract);
-  const [E1155B, setE1155B] = useState<SymfoniE1155B>(emptyContract);
   const [E721, setE721] = useState<SymfoniE721>(emptyContract);
+  const [E1155, setE1155] = useState<SymfoniE1155>(emptyContract);
   const [E721B, setE721B] = useState<SymfoniE721B>(emptyContract);
   const [USDC, setUSDC] = useState<SymfoniUSDC>(emptyContract);
   const [USDT, setUSDT] = useState<SymfoniUSDT>(emptyContract);
+  const [E1155B, setE1155B] = useState<SymfoniE1155B>(emptyContract);
   const [Utils, setUtils] = useState<SymfoniUtils>(emptyContract);
   const [WETH, setWETH] = useState<SymfoniWETH>(emptyContract);
   const [ERC1155, setERC1155] = useState<SymfoniERC1155>(emptyContract);
@@ -293,12 +293,12 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         setReNFT(getReNFT(_provider, _signer));
         setResolver(getResolver(_provider, _signer));
         setDAI(getDAI(_provider, _signer));
-        setE1155(getE1155(_provider, _signer));
-        setE1155B(getE1155B(_provider, _signer));
         setE721(getE721(_provider, _signer));
+        setE1155(getE1155(_provider, _signer));
         setE721B(getE721B(_provider, _signer));
         setUSDC(getUSDC(_provider, _signer));
         setUSDT(getUSDT(_provider, _signer));
+        setE1155B(getE1155B(_provider, _signer));
         setUtils(getUtils(_provider, _signer));
         setWETH(getWETH(_provider, _signer));
         setERC1155(getERC1155(_provider, _signer));
@@ -377,28 +377,6 @@ export const Symfoni: React.FC<SymfoniProps> = ({
     };
     return contract;
   };
-  const getE1155 = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
-    const instance = _signer
-      ? E1155__factory.connect(contractAddress, _signer)
-      : E1155__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE1155 = {
-      instance: instance,
-      factory: _signer ? new E1155__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getE1155B = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
-    const instance = _signer
-      ? E1155B__factory.connect(contractAddress, _signer)
-      : E1155B__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE1155B = {
-      instance: instance,
-      factory: _signer ? new E1155B__factory(_signer) : undefined,
-    };
-    return contract;
-  };
   const getE721 = (_provider: providers.Provider, _signer?: Signer) => {
     const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
     const instance = _signer
@@ -407,6 +385,17 @@ export const Symfoni: React.FC<SymfoniProps> = ({
     const contract: SymfoniE721 = {
       instance: instance,
       factory: _signer ? new E721__factory(_signer) : undefined,
+    };
+    return contract;
+  };
+  const getE1155 = (_provider: providers.Provider, _signer?: Signer) => {
+    const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+    const instance = _signer
+      ? E1155__factory.connect(contractAddress, _signer)
+      : E1155__factory.connect(contractAddress, _provider);
+    const contract: SymfoniE1155 = {
+      instance: instance,
+      factory: _signer ? new E1155__factory(_signer) : undefined,
     };
     return contract;
   };
@@ -440,6 +429,17 @@ export const Symfoni: React.FC<SymfoniProps> = ({
     const contract: SymfoniUSDT = {
       instance: instance,
       factory: _signer ? new USDT__factory(_signer) : undefined,
+    };
+    return contract;
+  };
+  const getE1155B = (_provider: providers.Provider, _signer?: Signer) => {
+    const contractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
+    const instance = _signer
+      ? E1155B__factory.connect(contractAddress, _signer)
+      : E1155B__factory.connect(contractAddress, _provider);
+    const contract: SymfoniE1155B = {
+      instance: instance,
+      factory: _signer ? new E1155B__factory(_signer) : undefined,
     };
     return contract;
   };
@@ -523,12 +523,12 @@ export const Symfoni: React.FC<SymfoniProps> = ({
             <ReNFTContext.Provider value={ReNFT}>
               <ResolverContext.Provider value={Resolver}>
                 <DAIContext.Provider value={DAI}>
-                  <E1155Context.Provider value={E1155}>
-                    <E1155BContext.Provider value={E1155B}>
-                      <E721Context.Provider value={E721}>
-                        <E721BContext.Provider value={E721B}>
-                          <USDCContext.Provider value={USDC}>
-                            <USDTContext.Provider value={USDT}>
+                  <E721Context.Provider value={E721}>
+                    <E1155Context.Provider value={E1155}>
+                      <E721BContext.Provider value={E721B}>
+                        <USDCContext.Provider value={USDC}>
+                          <USDTContext.Provider value={USDT}>
+                            <E1155BContext.Provider value={E1155B}>
                               <UtilsContext.Provider value={Utils}>
                                 <WETHContext.Provider value={WETH}>
                                   <ERC1155Context.Provider value={ERC1155}>
@@ -552,12 +552,12 @@ export const Symfoni: React.FC<SymfoniProps> = ({
                                   </ERC1155Context.Provider>
                                 </WETHContext.Provider>
                               </UtilsContext.Provider>
-                            </USDTContext.Provider>
-                          </USDCContext.Provider>
-                        </E721BContext.Provider>
-                      </E721Context.Provider>
-                    </E1155BContext.Provider>
-                  </E1155Context.Provider>
+                            </E1155BContext.Provider>
+                          </USDTContext.Provider>
+                        </USDCContext.Provider>
+                      </E721BContext.Provider>
+                    </E1155Context.Provider>
+                  </E721Context.Provider>
                 </DAIContext.Provider>
               </ResolverContext.Provider>
             </ReNFTContext.Provider>

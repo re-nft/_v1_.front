@@ -1,16 +1,15 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
 
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
-import { BatchContext } from "../controller/batch-controller";
+import { BatchContext, getUniqueID } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { CurrentAddressContext } from "../hardhat/SymfoniContext";
-import stopLend from "../services/stop-lending";
+import stopLend from "../services/stop-lend";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny, short } from "../utils";
@@ -25,14 +24,44 @@ enum DashboardViewType {
   MINIATURE_VIEW,
 }
 
+type CheckboxProps = {
+  onCheckboxClick: (nft: Lending | Renting) => void;
+  nft: Lending | Renting;
+};
+
+const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
+  const { checkedItems } = useContext(BatchContext);
+
+  const handleClick = useCallback(() => {
+    return onCheckboxClick(nft);
+  }, [onCheckboxClick, nft]);
+
+  return (
+    <div
+      onClick={handleClick}
+      className={`checkbox ${
+        checkedItems[getUniqueID(nft.address, nft.tokenId, nft.lending.id)]
+          ? "checked"
+          : ""
+      }`}
+      style={{ margin: "auto", marginTop: "1em" }}
+    />
+  );
+};
+
 // TODO: this code is not DRY
 // TODO: lendings has this batch architecture too
 // TODO: it would be good to abstract batching
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
-  const { checkedMap, countOfCheckedItems, onReset, onCheckboxChange } =
-    useContext(BatchContext);
+  const {
+    checkedItems,
+    checkedLendingItems,
+    checkedRentingItems,
+    onCheckboxChange,
+    handleReset,
+  } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
@@ -81,45 +110,38 @@ export const Dashboard: React.FC = () => {
   );
 
   const handleStopLend = useCallback(
-    async (lending: Lending) => {
+    async (lending: Lending[]) => {
       if (!renft) return;
-      const tx = await stopLend(renft, [
-        {
-          address: lending.address,
-          amount: lending.amount,
-          lendingId: lending.lending.id,
-          tokenId: lending.tokenId,
-        },
-      ]);
+      const tx = await stopLend(
+        renft,
+        lending.map((l) => ({
+          address: l.address,
+          amount: l.amount,
+          lendingId: l.lending.id,
+          tokenId: l.tokenId,
+        }))
+      );
       await setHash(tx.hash);
       handleRefresh();
+      handleReset();
     },
-    [renft, setHash, handleRefresh]
+    [renft, setHash, handleRefresh, handleReset]
   );
 
-  // todo: get rid of all of the ts-ignores
+  const _returnBy = (renting: Renting) =>
+    returnBy(renting.renting?.rentedAt, renting.renting?.rentDuration);
 
-  const _returnBy = (lending: Lending) =>
-    returnBy(
-      // @ts-ignore
-      lending.renting?.rentedAt,
-      // @ts-ignore
-      lending.renting?.rentDuration
-    );
-  const _claim = (lending: Lending) => _now.isAfter(_returnBy(lending));
+  const _claim = (renting: Renting) => _now.isAfter(_returnBy(renting));
 
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
 
   const onCheckboxClick = useCallback(
-    (lending: Lending) => {
-      onCheckboxChange(
-        `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`,
-        checkedMap[lending.id] == null ? true : !checkedMap[lending.id]
-      );
+    (lending: Lending | Renting) => {
+      onCheckboxChange(lending);
     },
-    [onCheckboxChange, checkedMap]
+    [onCheckboxChange]
   );
 
   useEffect(() => {
@@ -131,22 +153,20 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
+        setLendingItems(userLending);
+        setRentingItems(userRenting);
         setIsLoading(false);
       })
       .catch((e) => {
         console.warn(e);
-        console.warn("could not get user lending request");
+        console.warn("could not get user lending and renting request");
       });
 
     return getUserLendingRequest.cancel;
     /* eslint-disable-next-line */
   }, []);
 
-  if (isLoading) {
-    return <CatalogueLoader />;
-  }
+  if (isLoading) return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
@@ -164,10 +184,10 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>NFT Address</th>
-                    <th style={{ width: "7%" }}>TokenId</th>
-                    <th style={{ width: "7%" }}>Amount</th>
-                    <th style={{ width: "10%" }}>Pmt in</th>
+                    <th style={{ width: "15%" }}>Address</th>
+                    <th style={{ width: "7%" }}>ID</th>
+                    <th style={{ width: "5%" }}>Amount</th>
+                    <th style={{ width: "5%" }}>Pmt in</th>
                     <th style={{ width: "11%" }}>Collateral</th>
                     <th style={{ width: "7%" }}>Rent</th>
                     <th style={{ width: "7%" }}>Duration</th>
@@ -178,11 +198,11 @@ export const Dashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {lendingItems.map((lend: Lending, ix: number) => {
+                  {lendingItems.map((lend: Lending) => {
                     const lending = lend.lending;
                     return (
                       <tr
-                        key={`${lend.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${lend.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                        key={getUniqueID(lend.address, lend.tokenId, lend.id)}
                       >
                         <td className="column">{short(lending.nftAddress)}</td>
                         <td className="column">{lend.tokenId}</td>
@@ -206,31 +226,21 @@ export const Dashboard: React.FC = () => {
                           {lending.maxRentDuration} days
                         </td>
                         <td className="action-column">
-                          <div
-                            onClick={() => onCheckboxClick(lend)}
-                            className={`checkbox ${
-                              checkedMap[lending.id] ? "checked" : ""
-                            }`}
-                            style={{ margin: "auto", marginTop: "1em" }}
+                          <Checkbox
+                            onCheckboxClick={onCheckboxClick}
+                            nft={lend}
                           />
                         </td>
                         <td className="action-column">
-                          {_claim(lend) && (
-                            <span
-                              className="nft__button small"
-                              onClick={() => handleClaimCollateral(lend)}
-                            >
-                              💰
-                            </span>
-                          )}
-                          {!_claim(lend) && !lend.lending.renting && (
-                            <span
-                              className="nft__button small"
-                              onClick={() => handleStopLend(lend)}
-                            >
-                              Stop lend
-                            </span>
-                          )}
+                          {/* 
+                            TODO: handleStopLend
+                          */}
+                          <span
+                            className="nft__button small"
+                            onClick={() => handleStopLend([lend])}
+                          >
+                            Stop lend
+                          </span>
                         </td>
                       </tr>
                     );
@@ -245,30 +255,36 @@ export const Dashboard: React.FC = () => {
               <table className="list">
                 <thead>
                   <tr>
-                    <th style={{ width: "15%" }}>NFT Address</th>
-                    <th style={{ width: "7%" }}>TokenId</th>
-                    <th style={{ width: "7%" }}>Amount</th>
-                    <th style={{ width: "10%" }}>Pmt in</th>
+                    <th style={{ width: "15%" }}>Address</th>
+                    <th style={{ width: "5%" }}>ID</th>
+                    <th style={{ width: "5%" }}>Amount</th>
+                    <th style={{ width: "7%" }}>Pmt in</th>
+                    <th style={{ width: "7%" }}>Collateral</th>
+                    <th style={{ width: "11%" }}>Rented On</th>
                     <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "11%" }}>Rented At</th>
-                    <th style={{ width: "7%" }}>Rent</th>
+                    <th style={{ width: "7%" }}>Due Date</th>
+                    <th style={{ width: "7%" }}>Batch Select</th>
                     <th style={{ width: "20%" }} className="action-column">
                       &nbsp;
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rentingItems.map((rent: Renting, ix: number) => {
+                  {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     return (
                       <tr
-                        key={`${rent.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${rent.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${ix}`}
+                        key={getUniqueID(
+                          rent.lending.nftAddress,
+                          rent.lending.tokenId,
+                          renting.lendingId
+                        )}
                       >
                         <td className="column">
-                          {short(renting.renterAddress)}
+                          {short(renting.lending.nftAddress)}
                         </td>
                         <td className="column">{rent.tokenId}</td>
-                        <td className="column">{renting.lending.amount}</td>
+                        <td className="column">{renting.lending.lentAmount}</td>
                         <td className="column">
                           {PaymentToken[renting.lending.paymentToken ?? 0]}
                         </td>
@@ -278,8 +294,15 @@ export const Dashboard: React.FC = () => {
                             "MM/D/YY hh:mm"
                           )}
                         </td>
+                        <td className="column">{renting.rentDuration} days</td>
                         <td className="column">
                           {renting.lending.dailyRentPrice}
+                        </td>
+                        <td className="action-column">
+                          <Checkbox
+                            onCheckboxClick={onCheckboxClick}
+                            nft={rent}
+                          />
                         </td>
                         <td className="action-column">
                           {renting.lending.lenderAddress !==
@@ -296,15 +319,32 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       )}
-      {viewType === DashboardViewType.MINIATURE_VIEW && <div>miniature</div>}
-      {countOfCheckedItems > 1 && (
+      {
+        // TODO: should not be able to check some in lending and some in renting. Only one or the other
+        // TODO: potential solution: just show the batchbar for one or the other at a time
+        // TODO: force them to de-select in one or the other
+        // TODO: best solution: show two batch bars stacked on top of each other
+        // TODO: one for lending and one for renting
+      }
+      {checkedLendingItems.length > 1 && (
         <BatchBar
-          title={`Selected ${countOfCheckedItems} items`}
-          actionTitle="Lend all"
-          onCancel={onReset}
+          title={`Selected ${checkedLendingItems.length} items`}
+          actionTitle="Stop Lend All"
+          onCancel={handleReset}
+          onClick={() => handleStopLend(checkedLendingItems)}
+        />
+      )}
+      {checkedRentingItems.length > 1 && (
+        <BatchBar
+          title={`Selected ${checkedRentingItems.length} items`}
+          actionTitle="Return All"
+          onCancel={handleReset}
           onClick={handleBatchModalOpen}
         />
       )}
+      {
+        // TODO: claim collateral all
+      }
     </div>
   );
 };

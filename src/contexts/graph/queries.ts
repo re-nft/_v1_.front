@@ -42,6 +42,12 @@ export const queryAllLendingRenft = `
       paymentToken
       collateralClaimed
       isERC721
+      renting {
+        id
+        renterAddress
+        rentDuration
+        rentedAt
+      }
     }
   }
 `;
@@ -160,6 +166,12 @@ export const queryUserLendingRenft = (user: string): string => {
         lenderAddress
         maxRentDuration
         isERC721
+        renting {
+          id
+          renterAddress
+          rentDuration
+          rentedAt
+        }
       }
     }
   }`;
