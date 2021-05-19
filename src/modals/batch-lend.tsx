@@ -207,10 +207,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
                   name={`${nftItem.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}nftPrice`}
                 />
                 <MinimalSelect
-                  // @ts-ignore
-                  onSelect={(value) =>
-                    onSelectPaymentToken(value, nftItem.tokenId)
-                  }
+                  onSelect={(v) => onSelectPaymentToken(v, nftItem.tokenId)}
                   selectedValue={pmtToken[nftItem.tokenId] ?? -1}
                 />
               </div>

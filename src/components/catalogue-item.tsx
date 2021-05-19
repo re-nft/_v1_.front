@@ -36,6 +36,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
+  const [amount, setAmount] = useState<string>("0");
   const [currentVote, setCurrentVote] =
     useState<{
       downvote?: number;
@@ -84,7 +85,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 resp,
                 id
               );
-              // @ts-ignore
               const currentAddressVote = voteData?.[id] ?? {};
               setCurrentVote(currentAddressVote);
             })
@@ -98,6 +98,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     },
     [nft, currentAddress]
   );
+
+  const handleUpVote = useCallback(() => handleVote(1), [handleVote]);
+  const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
   useEffect(() => {
     setIsChecked(checked || false);
@@ -113,7 +116,16 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         })
         .catch(() => console.warn("could not fetch nft meta"));
     }
-  }, [checked, isVisible, nft, meta?.image]);
+
+    if (!nft.isERC721 && currentAddress) {
+      nft
+        .loadAmount(currentAddress)
+        .then((a) => {
+          setAmount(a);
+        })
+        .catch(() => console.warn("could not load amount"));
+    }
+  }, [checked, isVisible, nft, meta?.image, currentAddress]);
 
   const id = nftId(nft.address, nft.tokenId);
   const addedToFavorites =
@@ -150,16 +162,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 onClick={addOrRemoveFavorite}
               />
             )}
-            <div
-              className="nft__vote nft__vote-plus"
-              onClick={() => handleVote(1)}
-            >
+            <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
               <span className="icon-plus" />+{nftVote?.upvote || "?"}
             </div>
-            <div
-              className="nft__vote nft__vote-minus"
-              onClick={() => handleVote(-1)}
-            >
+            <div className="nft__vote nft__vote-minus" onClick={handleDownVote}>
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
             </div>
             <div className="spacer" />
@@ -192,6 +198,14 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
               }
             />
             <CatalogueItemRow text="Token id" value={nft.tokenId} />
+            <CatalogueItemRow
+              text="Standard"
+              value={nft.isERC721 ? "721" : "1155"}
+            />
+            <CatalogueItemRow
+              text="Amount"
+              value={nft.isERC721 ? "1" : amount}
+            />
           </div>
           {children}
         </>
