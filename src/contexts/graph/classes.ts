@@ -119,8 +119,8 @@ class Nft {
     }
   };
 
-  loadAmount = async (address: string): Promise<string> => {
-    if (this.isERC721) this.amount = "1";
+  loadAmount = async (address?: string): Promise<string> => {
+    if (this.isERC721 || !address) this.amount = "1";
     // not returning the already computed amount because the provider can change and with it the address
     // anothe reason is due to users of renft lending and renting and thus amounts dynamically changing
     else {
