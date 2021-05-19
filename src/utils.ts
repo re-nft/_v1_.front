@@ -3,7 +3,7 @@ import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
-import fetch from 'unfetch'
+import fetch from 'cross-fetch'
 import createDebugger from "debug";
 
 createDebugger.enable('TIMER')

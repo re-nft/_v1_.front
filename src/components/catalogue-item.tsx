@@ -49,7 +49,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
   const id = nftId(nft.address, nft.tokenId);
-  const meta = metas.get(id);
+  const meta = metas[id];
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -99,7 +99,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   useEffect(() => {
     setIsChecked(checked || false);
-  }, [checked, isVisible, nft, meta?.image]);
+  }, [checked, isVisible, nft, meta?.data.image]);
 
   //TODO:eniko fetch from other files as well
   //Todo:eniko show error message
@@ -113,7 +113,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
-  const { name, image, description } = meta || {};
+  const { name, image, description } = meta?.data || {};
 
   return (
     <div

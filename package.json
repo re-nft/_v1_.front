@@ -6,6 +6,7 @@
     "@material-ui/core": "4.11.3",
     "@material-ui/icons": "4.11.2",
     "bl": "5.0.0",
+    "cross-fetch": "^3.1.4",
     "debug": "^4.3.1",
     "ethers": "5.1.0",
     "firebase": "8.2.10",
@@ -18,7 +19,6 @@
     "react-lazy-load-image-component": "1.5.1",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.2",
-    "unfetch": "^4.2.0",
     "web3modal": "1.9.3"
   },
   "devDependencies": {
