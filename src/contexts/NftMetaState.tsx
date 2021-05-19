@@ -2,6 +2,7 @@ import React, { createContext, useState, useCallback, useEffect } from "react";
 import {
   fetchNFTFromOtherSource,
   fetchNFTsFromOpenSea,
+  NftMetaWithId,
 } from "../services/fetch-nft-meta";
 import { nftId } from "../services/firebase";
 import { Nft } from "./graph/classes";
@@ -19,10 +20,11 @@ export const NFTMetaContext = createContext<[MetaMap, typeof fetchMetas]>([
   fetchMetas,
 ]);
 
+type NFTwithId = Nft & {id: string}
+
 export const NFTMetaProvider: React.FC = ({ children }) => {
   const [metas, setMetas] = useState<MetaMap>(new Map());
-  const [fetchNotfounds, setFetchNotFounds] = useState<Nft[]>([]);
-  const [fetching, setFetching] = useState<Nft[]>([]);
+  const [fetchNotfounds, setFetchNotFounds] = useState<NFTwithId[]>([]);
 
   const addMetas = useCallback(
     (items: MetaArray) => {
@@ -42,39 +44,42 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
   );
   const fetchNFTs = useCallback(
     (items: Nft[]) => {
-      const fetchingItems = items.filter((nft) => {
-        const key = nftId(nft.address, nft.tokenId);
-        return !metas.has(key);
-      });
-      setFetching(fetchingItems);
-    },
-    [metas]
-  );
-  // TODO:eniko how to cancel
-  useEffect(() => {
-    const contractAddress: string[] = [];
-    const tokenIds: string[] = [];
-    fetching.map((nft) => {
-      contractAddress.push(nft.nftAddress);
-      tokenIds.push(nft.tokenId);
-    });
+      const fetchNotfoundsSet = new Set<string>(
+        fetchNotfounds.map((v) => v.id)
+      );
+      const fetching = items
+        .map((nft) => {
+          const key = nftId(nft.address, nft.tokenId);
 
-    if (contractAddress.length > 0 && tokenIds.length > 0) {
-      fetchNFTsFromOpenSea(contractAddress, tokenIds).then((data) => {
-        const found = data.reduce((acc, nft) => {
-          acc.add(nft.id);
-          return acc;
-        }, new Set());
-        const notFounds = fetching.filter((nft) => {
-          const key = `${nft.nftAddress}-${nft.tokenId}`;
-          return !found.has(key);
+          return { ...nft, id: key };
+        })
+        .filter((nft) => {
+          return !metas.has(nft.id) && !fetchNotfoundsSet.has(nft.id);
         });
-        setFetching([]);
-        addMetas(data);
-        setFetchNotFounds([...fetchNotfounds, ...notFounds]);
+
+      const contractAddress: string[] = [];
+      const tokenIds: string[] = [];
+      fetching.map((nft) => {
+        contractAddress.push(nft.nftAddress);
+        tokenIds.push(nft.tokenId);
       });
-    }
-  }, [addMetas, fetchNotfounds, fetching]);
+
+      if (contractAddress.length > 0 && tokenIds.length > 0) {
+        fetchNFTsFromOpenSea(contractAddress, tokenIds).then((data) => {
+          const found = data.reduce((acc, nft) => {
+            acc.add(nft.id);
+            return acc;
+          }, new Set());
+          const notFounds = fetching.filter((nft) => {
+            return !found.has(nft.id);
+          });
+          addMetas(data);
+          setFetchNotFounds([...notFounds, ...fetchNotfounds]);
+        });
+      }
+    },
+    [addMetas, fetchNotfounds, metas]
+  );
 
   useEffect(() => {
     // TODO:eniko cancel

@@ -2,8 +2,10 @@ import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
 import { OpenSeaAsset } from "opensea-js/lib/types";
 import { nftId } from "./firebase";
+import fetch from "unfetch";
 
-const IPFSGateway = "https://dweb.link/ipfs/";
+// https://ipfs.github.io/public-gateway-checker/gateways.json
+const IPFSGateway = "https://ipfs.io/ipfs/";
 
 /**
  * Matches IPFS CIDv0 (all start with Qm)
@@ -59,7 +61,7 @@ const buildStaticIPFS_URL = (matched: string[]) => {
 };
 
 export type NftMetaWithId = NftToken["meta"] & { id: string };
-export type NftError = {id: string; error: string}
+export type NftError = { id: string; error: string };
 
 /**
  *
@@ -77,6 +79,7 @@ const loadMetaFromIPFS = async (
 
   const staticIPFS_URL = buildStaticIPFS_URL(IPFS_URL);
   try {
+    console.log('static ipfs url', staticIPFS_URL)
     const response = await fetch(staticIPFS_URL);
 
     let data: any = {};
@@ -84,7 +87,7 @@ const loadMetaFromIPFS = async (
       data = await response.json();
     } catch {
       // ! this happens with ZORA media for me
-      console.warn("could not get json, which could mean this is media");
+      console.warn(`could not get json for ${staticIPFS_URL}, which could mean this is media`);
       return { image: staticIPFS_URL, id };
     }
 
@@ -141,7 +144,17 @@ export const fetchNFTFromOtherSource = async (
     const fetchThis = isProxyable
       ? `${process.env.REACT_APP_CORS_PROXY}${tokenURI}`
       : tokenURI;
-    const response = await fetch(fetchThis);
+    // It's still possible that the tokenUri points to opensea...
+    const headers: Record<string, string> = {};
+    if (
+      process.env.REACT_APP_OPENSEA_API &&
+      fetchThis.indexOf("api.opensea") > -1
+    ) {
+      headers["X-API-KEY"] = process.env.REACT_APP_OPENSEA_API;
+    }
+    const response = await fetch(fetchThis, {
+      headers,
+    });
     const data = await response?.json();
 
     if (!data?.image?.startsWith("ipfs://ipfs/")) {
@@ -175,9 +188,9 @@ const snakeCaseToCamelCase = (obj: Record<string, unknown>) => {
   const initialVal: Record<string, unknown> = {};
   return Object.keys(obj).reduce((acc, key) => {
     const value = obj[key];
-    const newKey = key.replace(/(_\w)/g, function(k) {
+    const newKey = key.replace(/(_\w)/g, function (k) {
       return k[1].toUpperCase();
-    })
+    });
     if (isObject(value)) {
       acc[newKey] = snakeCaseToCamelCase(value as Record<string, unknown>);
     } else {
@@ -198,7 +211,7 @@ export const fetchNFTsFromOpenSea = async (
     `https://api.opensea.io/api/v1/assets/?${arrayToURI(
       "asset_contract_addresses",
       asset_contract_addresses
-    )}&${arrayToURI("token_ids", token_ids)}`,
+    )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
         "X-API-KEY": process.env.REACT_APP_OPENSEA_API,

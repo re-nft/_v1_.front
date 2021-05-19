@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "sourceMap": true
+    "sourceMap": true,
+    "downlevelIteration": true
   },
   "include": ["src"],
   "linterOptions": {

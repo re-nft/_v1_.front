@@ -3,6 +3,12 @@ import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
+import fetch from 'unfetch'
+import createDebugger from "debug";
+
+createDebugger.enable('TIMER')
+// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
+const debug = createDebugger("TIMER");
 
 const PRICE_BITSIZE = 32;
 
@@ -208,10 +214,10 @@ export const timeItAsync = async <T>(
   msg: string,
   callable: CallableFunction
 ): Promise<T> => {
-  const name = `${msg}-${Date.now()}`
-  console.time(name);
+  const start = Date.now()
   const res: T = await callable();
-  console.timeEnd(name);
+  const end = Date.now();
+  debug(`${msg} ${end-start}ms` )
   return res;
 };
 

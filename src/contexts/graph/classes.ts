@@ -7,6 +7,11 @@ import { BigNumber, ethers } from "ethers";
 import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
 import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
 import { decimalToPaddedHexString } from "../../utils";
+import createDebugger from "debug";
+
+// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
+const debug = createDebugger("FETCH_TOKENURI");
+
 
 enum NftType {
   Nft,
@@ -72,15 +77,14 @@ class Nft {
 
       uriSelector.bind(this);
 
-      
       uriSelector(this.tokenId)
         .then((d: string) => {
           this._tokenURI = this._parseTokenURI(d);
         })
-        .catch((e:any) => {
+        .catch((e: any) => {
           // TODO:eniko debug
           // console.log(e)
-          console.warn(
+          debug(
             "could not fetch tokenURI",
             this.address,
             "tokenID",
