@@ -16,7 +16,6 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-helmet": "6.1.0",
-    "react-lazy-load-image-component": "1.5.1",
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.2",
     "web3modal": "1.9.3"
@@ -28,7 +27,6 @@
     "@types/react": "17.0.6",
     "@types/react-dom": "17.0.5",
     "@types/react-helmet": "6.1.1",
-    "@types/react-lazy-load-image-component": "1.5.1",
     "@types/react-router-dom": "5.1.7",
     "@typescript-eslint/eslint-plugin": "4.24.0",
     "@typescript-eslint/parser": "4.24.0",

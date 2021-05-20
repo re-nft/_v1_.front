@@ -1,176 +1,152 @@
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useReducer,
-} from "react";
+import React, { createContext, useEffect, useReducer } from "react";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import {
   fetchNFTFromOtherSource,
   fetchNFTsFromOpenSea,
+  NftMetaWithId,
 } from "../services/fetch-nft-meta";
 import { nftId } from "../services/firebase";
 import { Nft } from "./graph/classes";
-import { NftToken } from "./graph/types";
+import { NftTokenMetaWithId } from "./graph/types";
 
-type MetaType = NftToken["meta"] & { id: string };
-type MetaMap = Map<string, MetaType>;
-type Dunno =  {
-  data: MetaType;
-  fetchReady: boolean;
-  isLoading: boolean;
-  loadingFrom: "opensea" | "ipfs";
-}
 const fetchMetas = (items: Nft[]) => {
   // nothing
 };
 
-export const NFTMetaContext = createContext<[Record<string,Dunno>, typeof fetchMetas]>([
-  {},
-  fetchMetas,
-]);
+interface MetaLoading extends NftTokenMetaWithId {
+  loading?: boolean;
+}
 
-type State = Record<
-  string,
-  Dunno
->;
+export const NFTMetaContext = createContext<
+  [Record<string, MetaLoading>, typeof fetchMetas]
+>([{}, fetchMetas]);
+
+type State = {
+  metas: Record<string, MetaLoading>;
+  nfts: Nft[];
+  fetchReadyOpenSea: MetaLoading[];
+  fetchingOpenSea: MetaLoading[];
+  fetchingIPFS: MetaLoading[];
+  fetchReadyIPFS: MetaLoading[];
+};
 type Action =
   | {
       type: "SET_FETCH_READY";
-      payload: Nft & { id: string }[];
+      payload: Nft[];
     }
   | {
       type: "SET_FETCHING_OPENSEA" | "SET_FETCHING_IPFS";
-      payload: MetaType[];
+      payload: NftMetaWithId[];
     }
   | {
       type: "SET_OPENSEA_RESULT";
       payload: {
-        founds: MetaType[];
-        notFounds: MetaType[];
+        founds: NftMetaWithId[];
+        notFounds: NftMetaWithId[];
       };
     }
   | {
       type: "SET_IPFS_RESULT";
-      payload: MetaType;
+      payload: NftMetaWithId;
     };
+
 const reducer = (state: State, action: Action) => {
-  console.log(state, action)
   switch (action.type) {
     case "SET_FETCH_READY": {
-      const metas = { ...state };
-      const hasDifference = false;
+      const fetchReady: MetaLoading[] = [];
+      let hasChange = false;
       action.payload.forEach((nft) => {
-        if (!metas[nft.id]) {
-          metas[nft.id] = {
-            data: nft,
-            fetchReady: true,
-            isLoading: false,
-            loadingFrom: "opensea",
+        const id = nftId(nft.address, nft.tokenId);
+        if (!state.metas[id]) {
+          hasChange = true;
+          state.metas[id] = {
+            id: id,
+            // @ts-ignore
+            loading: true,
           };
+          fetchReady.push({ id: id, loading: true });
         }
       });
-      if (!hasDifference) {
-        return state;
-      }
-      return metas;
+      if (!hasChange) return state;
+      state.nfts = [...state.nfts, ...action.payload];
+      state.fetchReadyOpenSea = [...fetchReady, ...state.fetchReadyOpenSea];
+      return { ...state };
     }
     case "SET_FETCHING_OPENSEA": {
-      const metas = { ...state };
-      const hasDifference = false;
-      action.payload.forEach((nft) => {
-        metas[nft.id] = {
-          ...metas[nft.id],
-          fetchReady: false,
-          isLoading: true,
-          loadingFrom: "opensea",
-        };
-      });
-      if (!hasDifference) {
-        return state;
-      }
-      return metas;
+      if (action.payload.length < 1) return state;
+      state.fetchingOpenSea = [...state.fetchingOpenSea, ...action.payload];
+      state.fetchReadyOpenSea = [];
+      return { ...state };
     }
     case "SET_FETCHING_IPFS": {
-      const metas = { ...state };
-      const hasDifference = false;
-      action.payload.forEach((nft) => {
-        metas[nft.id] = {
-          ...metas[nft.id],
-          fetchReady: false,
-          isLoading: true,
-          loadingFrom: "ipfs",
-        };
-      });
-      if (!hasDifference) {
-        return state;
-      }
-      return metas;
+      if (action.payload.length < 1) return state;
+      state.fetchingIPFS = [...state.fetchingIPFS, ...action.payload];
+      state.fetchReadyIPFS = [];
+      return { ...state };
     }
     case "SET_OPENSEA_RESULT": {
       const { founds, notFounds } = action.payload;
-      const metas = { ...state };
-      founds.map((nft) => {
-        metas[nft.id] = {
-          data: {
-            ...metas[nft.id].data,
-            ...nft,
-          },
-          fetchReady: false,
-          isLoading: false,
-          loadingFrom: "opensea",
+      if (founds.length < 1 && notFounds.length < 1) return state;
+      const foundSet = new Set(founds.map((f) => f.id));
+      founds.map((meta) => {
+        state.metas[meta.id] = {
+          ...meta,
+          loading: false,
         };
       });
-      notFounds.map((nft) => {
-        metas[nft.id] = {
-          ...metas[nft.id],
-          fetchReady: true,
-          isLoading: false,
-          loadingFrom: "ipfs",
-        };
-      });
-      return metas;
+      state.fetchingOpenSea = state.fetchReadyOpenSea.filter(
+        (n) => !foundSet.has(n.id)
+      );
+      state.fetchReadyIPFS = [...state.fetchReadyIPFS, ...notFounds];
+      return { ...state };
     }
     case "SET_IPFS_RESULT": {
-      const meta = action.payload;
-      const metas = { ...state };
-      metas[meta.id] = {
-        data: {
-          ...metas[meta.id].data,
-          ...meta,
-        },
-        fetchReady: false,
-        isLoading: false,
-        loadingFrom: "opensea",
+      state.metas[action.payload.id] = {
+        ...action.payload,
+        loading: false,
       };
-
-      return metas;
+      state.fetchingIPFS = state.fetchReadyOpenSea.filter(
+        (n) => action.payload.id !== n.id
+      );
+      return { ...state };
     }
   }
 };
+const initialState = {
+  metas: {},
+  fetchReadyOpenSea: [],
+  fetchingOpenSea: [],
+  fetchingIPFS: [],
+  fetchReadyIPFS: [],
+  nfts: [],
+};
+
+const preloadImages = (metas: MetaLoading[]) => {
+  metas.map((meta) => {
+    const img = new Image();
+    if (meta.image) img.src = meta.image;
+  });
+};
 export const NFTMetaProvider: React.FC = ({ children }) => {
-  const [metas, dispatch] = useReducer(reducer, {});
-  const fetchNFTs = useCallback((items: Nft[]) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const fetchNFTs = (items: Nft[]) => {
+    if(items.length < 1) return
     const fetching = items.map((nft) => {
       const key = nftId(nft.address, nft.tokenId);
 
       return { ...nft, id: key };
     });
-    // @ts-ignore
     dispatch({ type: "SET_FETCH_READY", payload: fetching });
-  }, []);
+  };
 
   useEffect(() => {
-    //TODO:eniko Make this into the state
-    const fetchReady = Object.values(metas)
-      .filter((meta) => meta.fetchReady && meta.loadingFrom === "opensea")
-      .map((v) => v.data);
-    console.log('fetchread', fetchReady)  
+    const fetchReady = state.fetchReadyOpenSea;
     if (fetchReady.length < 1) return;
     const contractAddress: string[] = [];
     const tokenIds: string[] = [];
-    fetchReady.forEach((nft) => {
-      const [address, tokenId] = nft.id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+    fetchReady.forEach((meta: NftTokenMetaWithId) => {
+      const [address, tokenId] = meta.id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       contractAddress.push(address);
       tokenIds.push(tokenId);
     });
@@ -179,41 +155,41 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
         acc.add(nft.id);
         return acc;
       }, new Set());
-      const notFounds = fetchReady.filter((nft) => {
+      const notFounds = fetchReady.filter((nft: NftTokenMetaWithId) => {
         return !found.has(nft.id);
       });
+      preloadImages(data);
       dispatch({
         type: "SET_OPENSEA_RESULT",
         payload: {
           notFounds,
-          // @ts-ignore
           founds: data,
         },
       });
     });
-    // TODO:eniko fix ts-ignore
-    // @ts-ignore
-    dispatch({ type: "SET_FETCH_READY", payload: fetchReady });
-  }, [metas]);
+    dispatch({ type: "SET_FETCHING_OPENSEA", payload: fetchReady });
+
+  }, [state.fetchReadyOpenSea]);
 
   useEffect(() => {
-    const fetchReady = Object.values(metas)
-      .filter((meta) => meta.fetchReady && meta.loadingFrom === "ipfs")
-      .map((v) => v.data);
+    const fetchReady = state.fetchReadyIPFS;
     if (fetchReady.length < 1) return;
-    dispatch({ type: "SET_FETCHING_IPFS", payload: fetchReady });
-    // @ts-ignore
-    const promises = fetchReady.map(fetchNFTFromOtherSource);
-    promises.map((promise) => {
-      promise.then((data) => {
+    const fetchSet = new Set(state.fetchReadyIPFS.map((v) => v.id));
+    const fetchNfts = state.nfts.filter((nft) =>
+      fetchSet.has(nftId(nft.address, nft.tokenId))
+    );
+
+    fetchNfts.map((nft)=>{
+      fetchNFTFromOtherSource(nft).then((data) =>{
+        preloadImages([data]);
         dispatch({ type: "SET_IPFS_RESULT", payload: data });
-      });
+      })
     });
-  }, [metas]);
+    dispatch({ type: "SET_FETCHING_IPFS", payload: fetchReady });
+  }, [state.fetchReadyIPFS, state.nfts]);
 
   return (
-    // @ts-ignore
-    <NFTMetaContext.Provider value={[metas, fetchNFTs]}>
+    <NFTMetaContext.Provider value={[state.metas, fetchNFTs]}>
       {children}
     </NFTMetaContext.Provider>
   );

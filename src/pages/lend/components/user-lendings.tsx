@@ -16,6 +16,7 @@ import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const UserLendings: React.FC = () => {
   // what's the point of getting onCheckboxChange from context here and passing as props into CatalogueItem
@@ -39,6 +40,7 @@ const UserLendings: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleReset = useCallback(() => {
     getUserLending()
@@ -99,6 +101,10 @@ const UserLendings: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;

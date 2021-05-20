@@ -10,12 +10,14 @@ import CatalogueItem from "../components/catalogue-item";
 import { calculateMyFavorites } from "../services/calculate-my-favorites";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../contexts/NftMetaState";
 
 export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { getUserData, getUserNfts } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const refreshState = useCallback(() => {
     Promise.all([getUserNfts(), getUserData()])
@@ -82,6 +84,11 @@ export const MyFavorites: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(nftItems);
+  }, [nftItems, fetchNfts]);
+  
   if (isLoading) {
     return <CatalogueLoader />;
   }

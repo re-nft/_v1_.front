@@ -29,6 +29,7 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import LendingFields from "../../../components/lending-fields";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
 import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const AvailableToRent: React.FC = () => {
   const {
@@ -55,6 +56,7 @@ const AvailableToRent: React.FC = () => {
   const { getUsersLending } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isActive, setHash } = useContext(TransactionStateContext);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
@@ -146,6 +148,10 @@ const AvailableToRent: React.FC = () => {
     };
     /* eslint-disable-next-line */
   }, []);
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

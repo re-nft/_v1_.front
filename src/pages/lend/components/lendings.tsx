@@ -15,9 +15,10 @@ import {
   PageContext,
   PageContextType,
 } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import createCancellablePromise, {
+  CancellablePromise,
+} from "../../../contexts/create-cancellable-promise";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { nftId } from "../../../services/firebase";
 
 const Lendings: React.FC = () => {
   const {
@@ -39,9 +40,13 @@ const Lendings: React.FC = () => {
   const { getUserNfts } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [metas, fetchNfts] = useContext(NFTMetaContext);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleRefresh = useCallback(() => {
+    // TODO:eniko too much rerender dataloading
+    if (checkedItems.length < 1) {
+      setIsLoading(true);
+    }
     setIsLoading(true);
     getUserNfts()
       .then((items: Nft[] | undefined) => {
@@ -53,7 +58,7 @@ const Lendings: React.FC = () => {
         console.warn("could not fetch user nfts");
         console.warn(e);
       });
-  }, [setIsLoading, getUserNfts, onChangePage, onSetItems]);
+  }, [setIsLoading, getUserNfts, onChangePage, onSetItems, checkedItems]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -74,7 +79,10 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    setIsLoading(true);
+    // TODO:eniko too much rerender dataloading
+    if (checkedItems.length < 1) {
+      setIsLoading(true);
+    }
 
     const getUserNftsRequest = createCancellablePromise(getUserNfts());
 
@@ -90,16 +98,15 @@ const Lendings: React.FC = () => {
 
     return () => {
       onResetPage();
-      return getUserNftsRequest.cancel();
+      if (getUserNftsRequest) return getUserNftsRequest.cancel();
     };
-  }, [getUserNfts, onChangePage, onResetPage, onSetItems]);
+  }, [getUserNfts, onChangePage, onResetPage, onSetItems, checkedItems]);
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
+    //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
-
-
 
   if (isLoading) {
     return <CatalogueLoader />;
