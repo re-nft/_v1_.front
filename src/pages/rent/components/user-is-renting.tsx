@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
-import { PaymentToken } from "../../../types";
+import { PaymentToken, TransactionStateEnum } from "../../../types";
 import NumericField from "../../../components/numeric-field";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -12,19 +12,21 @@ import BatchBar from "../../../components/batch-bar";
 import {
   BatchContext,
   getUniqueID,
+  useCheckedRentingItems,
 } from "../../../controller/batch-controller";
 import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import TransactionStateContext from "../../../contexts/TransactionState";
+import { usePrevious } from "../../../hooks/usePrevious";
 
 const UserRentings: React.FC = () => {
-  const {
-    checkedItems,
-    checkedRentingItems,
-    handleReset: handleBatchReset,
-  } = useContext(BatchContext);
+  const { checkedItems, handleReset: handleBatchReset } = useContext(
+    BatchContext
+  );
+  const checkedRentingItems = useCheckedRentingItems();
   const {
     totalPages,
     currentPageNumber,
@@ -36,8 +38,14 @@ const UserRentings: React.FC = () => {
   const { getUserRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const handleRefrash = useCallback(() => {
+  const { txnState } = useContext(TransactionStateContext);
+  const previoustxnState = usePrevious(txnState);
+  
+  useEffect(() => {
+    if (
+      txnState === TransactionStateEnum.SUCCESS &&
+      previoustxnState === TransactionStateEnum.PENDING
+    ) {
     getUserRenting()
       .then((userRenting: Renting[] | undefined) => {
         onChangePage(userRenting || []);
@@ -46,17 +54,16 @@ const UserRentings: React.FC = () => {
       .catch(() => {
         console.warn("could not handle refresh");
       });
-  }, [onChangePage, setIsLoading, getUserRenting]);
+    }
+  }, [onChangePage, setIsLoading, getUserRenting, txnState, previoustxnState]);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
-    handleRefrash();
-  }, [setModalOpen, handleRefrash]);
+  }, [setModalOpen]);
 
   const handleBatchStopRent = useCallback(() => {
     setModalOpen(true);
-    handleRefrash();
-  }, [setModalOpen, handleRefrash]);
+  }, [setModalOpen]);
 
   const handleOpenModal = useCallback(
     async (nft: Nft) => {
@@ -83,8 +90,7 @@ const UserRentings: React.FC = () => {
       onResetPage();
       return getUserRentingRequest.cancel();
     };
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserRenting, onChangePage, onResetPage]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

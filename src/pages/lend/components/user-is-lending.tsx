@@ -13,6 +13,7 @@ import BatchBar from "../../../components/batch-bar";
 import {
   BatchContext,
   getUniqueID,
+  useCheckedLendingItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
@@ -20,11 +21,10 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import LendingFields from "../../../components/lending-fields";
 
 const UserCurrentlyLending: React.FC = () => {
-  const {
-    checkedItems,
-    checkedLendingItems,
-    handleReset: batchHandleReset,
-  } = useContext(BatchContext);
+  const { checkedItems, handleReset: batchHandleReset } = useContext(
+    BatchContext
+  );
+  const checkedLendingItems = useCheckedLendingItems();
   const {
     totalPages,
     currentPageNumber,
@@ -89,7 +89,6 @@ const UserCurrentlyLending: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get user Lending request");
       });
 
@@ -97,8 +96,7 @@ const UserCurrentlyLending: React.FC = () => {
       onResetPage();
       return getUserLendingRequest.cancel();
     };
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserLending, onChangePage, onResetPage]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

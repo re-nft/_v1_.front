@@ -4,7 +4,7 @@ import moment from "moment";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
-import { BatchContext, getUniqueID } from "../controller/batch-controller";
+import { BatchContext, getUniqueID, useCheckedLendingItems, useCheckedNftItems, useCheckedRentingItems } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
@@ -55,13 +55,9 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
-  const {
-    checkedItems,
-    checkedLendingItems,
-    checkedRentingItems,
-    onCheckboxChange,
-    handleReset,
-  } = useContext(BatchContext);
+  const { onCheckboxChange, handleReset } = useContext(BatchContext);
+  const checkedLendingItems = useCheckedLendingItems();
+  const checkedRentingItems = useCheckedRentingItems();
   const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
@@ -158,13 +154,11 @@ export const Dashboard: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get user lending and renting request");
       });
 
     return getUserLendingRequest.cancel;
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserLending, getUserRenting]);
 
   if (isLoading) return <CatalogueLoader />;
 

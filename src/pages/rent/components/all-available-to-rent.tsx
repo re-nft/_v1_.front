@@ -6,7 +6,7 @@ import {
   SignerContext,
   ResolverContext,
 } from "../../../hardhat/SymfoniContext";
-import { PaymentToken } from "../../../types";
+import { PaymentToken, TransactionStateEnum } from "../../../types";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchRentModal from "../../../modals/batch-rent";
@@ -20,21 +20,25 @@ import BatchBar from "../../../components/batch-bar";
 import {
   BatchContext,
   getUniqueID,
+  useCheckedLendingItems,
+  useCheckedRentingItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { usePrevious } from "../../../hooks/usePrevious";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
   const {
     checkedItems,
-    checkedLendingItems,
-    checkedRentingItems,
+
     handleReset: handleBatchReset,
     onCheckboxChange,
   } = useContext(BatchContext);
+  const checkedLendingItems = useCheckedLendingItems();
+  const checkedRentingItems = useCheckedRentingItems();
   const {
     totalPages,
     currentPageNumber,
@@ -51,25 +55,32 @@ const AvailableToRent: React.FC = () => {
   const { getAllAvailableToRent } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isActive, setHash } = useContext(TransactionStateContext);
+  const { txnState } = useContext(TransactionStateContext);
+  const previoustxnState = usePrevious(txnState);
 
-  const handleRefresh = useCallback(() => {
-    setIsLoading(true);
-    getAllAvailableToRent()
-      .then((lendings: Lending[]) => {
-        onChangePage(lendings);
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        console.warn(e);
-        console.warn("could not get user lending");
-      });
-  }, [setIsLoading, getAllAvailableToRent, onChangePage]);
+  // refresh when state succeed after rent
+  // nothing to do on reject
+  useEffect(() => {
+    if (
+      txnState === TransactionStateEnum.SUCCESS &&
+      previoustxnState === TransactionStateEnum.PENDING
+    ) {
+      setIsLoading(true);
+      getAllAvailableToRent()
+        .then((lendings: Lending[]) => {
+          onChangePage(lendings);
+          setIsLoading(false);
+        })
+        .catch((e) => {
+          console.warn("could not get user lending");
+        });
+    }
+  }, [txnState, previoustxnState, getAllAvailableToRent, onChangePage]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
     handleBatchReset();
-    handleRefresh();
-  }, [handleBatchReset, setOpenBatchModel, handleRefresh]);
+  }, [handleBatchReset, setOpenBatchModel]);
 
   const handleBatchModalOpen = useCallback(
     (nft: Lending) => {
@@ -136,7 +147,6 @@ const AvailableToRent: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get usersLending request");
       });
 
@@ -144,8 +154,7 @@ const AvailableToRent: React.FC = () => {
       onResetPage();
       return allAvailableToRentRequest.cancel();
     };
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getAllAvailableToRent, onChangePage, onResetPage]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

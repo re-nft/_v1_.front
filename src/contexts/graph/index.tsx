@@ -173,8 +173,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       return tokens;
     },
     // ! do not add nfts as a dep, will cause infinite loop
-    /* eslint-disable-next-line */
-    [currentAddress, renft?.address, signer]
+    [currentAddress]
   );
 
   const fetchUsersNfts = async (): Promise<Nft[]> => {
