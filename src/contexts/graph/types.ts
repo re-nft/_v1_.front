@@ -1,15 +1,21 @@
 import { Address, PaymentToken, TokenId } from "../../types";
 
+export type NftTokenMeta = {
+  name?: string;
+  image?: string;
+  description?: string;
+}
+
+export interface NftTokenMetaWithId extends NftTokenMeta{
+  id: string;
+}
+
 export type NftToken = {
   address: Address;
   tokenId: TokenId;
   isERC721: boolean;
   tokenURI?: string;
-  meta?: {
-    name?: string;
-    image?: string;
-    description?: string;
-  };
+  meta?: NftTokenMeta;
 };
 
 // ! NON-RENFT SUBGRAPHS for 721 and 1155

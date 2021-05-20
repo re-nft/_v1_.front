@@ -8,6 +8,7 @@ import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import { getUniqueID } from "../controller/batch-controller";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../contexts/NftMetaState";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -34,6 +35,7 @@ export const MyFavorites: React.FC = () => {
   const { getUserData, getAllAvailableToLend } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const refreshState = useCallback(() => {
     Promise.all([getAllAvailableToLend(), getUserData()])
@@ -92,6 +94,11 @@ export const MyFavorites: React.FC = () => {
     /* eslint-disable-next-line */
   }, []);
 
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(nftItems);
+  }, [nftItems, fetchNfts]);
+  
   if (isLoading) {
     return <CatalogueLoader />;
   }

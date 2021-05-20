@@ -18,6 +18,8 @@ import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../../consts";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const UserRentings: React.FC = () => {
   const {
@@ -36,6 +38,7 @@ const UserRentings: React.FC = () => {
   const { getUserRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleRefrash = useCallback(() => {
     getUserRenting()
@@ -85,10 +88,17 @@ const UserRentings: React.FC = () => {
     };
     /* eslint-disable-next-line */
   }, []);
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
+  if (isLoading) {
+    return <CatalogueLoader />;
+  }
 
-  if (isLoading) return <CatalogueLoader />;
-  if (!isLoading && currentPage.length === 0)
+  if (!isLoading && currentPage.length === 0) {
     return <div className="center">You dont have any lend anything yet</div>;
+  }
 
   // TODO: remove all the anys
   return (

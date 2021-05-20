@@ -17,9 +17,10 @@ import {
   PageContext,
   PageContextType,
 } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import createCancellablePromise, {
+  CancellablePromise,
+} from "../../../contexts/create-cancellable-promise";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { nftId } from "../../../services/firebase";
 
 const Lendings: React.FC = () => {
   const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
@@ -35,9 +36,13 @@ const Lendings: React.FC = () => {
   const { getAllAvailableToLend } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [metas, fetchNfts] = useContext(NFTMetaContext);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleRefresh = useCallback(() => {
+    // TODO:eniko too much rerender dataloading
+    if (checkedNftItems.length < 1) {
+      setIsLoading(true);
+    }
     setIsLoading(true);
     getAllAvailableToLend()
       .then((nfts) => {
@@ -47,7 +52,7 @@ const Lendings: React.FC = () => {
       .catch(() => {
         console.warn("could not fetch user nfts");
       });
-  }, [setIsLoading, getAllAvailableToLend, onChangePage]);
+  }, [setIsLoading, getAllAvailableToLend, onChangePage, checkedNftItems]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -68,7 +73,10 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    setIsLoading(true);
+    // TODO:eniko too much rerender dataloading
+    if (checkedNftItems.length < 1) {
+      setIsLoading(true);
+    }
 
     const getUserNftsRequest = createCancellablePromise(
       getAllAvailableToLend()
@@ -85,16 +93,15 @@ const Lendings: React.FC = () => {
 
     return () => {
       onResetPage();
-      return getUserNftsRequest.cancel();
+      if (getUserNftsRequest) return getUserNftsRequest.cancel();
     };
-  }, [getAllAvailableToLend, onChangePage, onResetPage, onSetItems]);
+  }, [getAllAvailableToLend, onChangePage, onResetPage, checkedNftItems]);
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
+    //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
-
-
 
   if (isLoading) {
     return <CatalogueLoader />;

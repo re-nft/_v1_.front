@@ -16,7 +16,6 @@ import {
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 
@@ -108,10 +107,8 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     }
   }, [checked, nft, meta?.image, currentAddress]);
 
-  //TODO:eniko fetch from other files as well
-  //Todo:eniko show error message
   useEffect(() => {
-    if (meta) {
+    if (meta && !meta.loading) {
       setImageIsReady(true);
     }
   }, [meta]);
@@ -120,7 +117,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
-  const { name, image, description } = meta?.data || {};
+  const { name, image, description } = meta || {};
 
   return (
     <div
@@ -166,7 +163,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__image">
             {image ? (
-              <LazyLoadImage alt={description} src={image} />
+              <img alt={description} src={image} />
             ) : (
               <div className="no-img">NO IMG</div>
             )}
