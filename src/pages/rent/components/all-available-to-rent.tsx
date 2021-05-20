@@ -69,8 +69,8 @@ const AvailableToRent: React.FC = () => {
     ) {
       setIsLoading(true);
       getAllAvailableToRent()
-        .then((lendings: Lending[]) => {
-          onChangePage(lendings);
+        .then((lendings) => {
+          onChangePage(lendings || []);
           setIsLoading(false);
         })
         .catch((e) => {

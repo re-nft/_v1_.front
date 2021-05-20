@@ -220,10 +220,10 @@ export const GraphProvider: React.FC = ({ children }) => {
   // PUBLIC API
 
   // AVAILABLE TO LEND
-  const getAllAvailableToLend = async (): Promise<Nft[] | undefined> => {
+  const getAllAvailableToLend = useCallback(async (): Promise<Nft[] | undefined> => {
     const allNfts = await fetchUsersNfts();
     return allNfts;
-  };
+  }, [fetchUsersNfts]);
 
   // ALL AVAILABLE TO RENT (filter out the ones that I am lending)
   const getAllAvailableToRent = useCallback(async (): Promise<

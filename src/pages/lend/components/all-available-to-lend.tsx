@@ -45,6 +45,8 @@ const Lendings: React.FC = () => {
   const { txnState } = useContext(TransactionStateContext);
   const previoustxnState = usePrevious(txnState);
 
+
+
   // refresh when lending complete
   // on reject nothing to do
   useEffect(() => {
@@ -55,7 +57,7 @@ const Lendings: React.FC = () => {
       setIsLoading(true);
       getAllAvailableToLend()
         .then((nfts) => {
-          onChangePage(nfts);
+          onChangePage(nfts || []);
           setIsLoading(false);
         })
         .catch(() => {
@@ -99,7 +101,7 @@ const Lendings: React.FC = () => {
 
     getUserNftsRequest.promise
       .then((nfts) => {
-        onChangePage(nfts || []);
+        //onChangePage(nfts || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -107,10 +109,10 @@ const Lendings: React.FC = () => {
       });
 
     return () => {
-      onResetPage();
+     // onResetPage();
       if (getUserNftsRequest) return getUserNftsRequest.cancel();
     };
-  }, [getAllAvailableToLend, onChangePage, onResetPage, checkedNftItems]);
+  }, [getAllAvailableToLend, checkedNftItems]);
 
   //Prefetch metadata
   useEffect(() => {
