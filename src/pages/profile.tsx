@@ -65,8 +65,7 @@ const Profile: React.FC = () => {
       });
 
     return dataRequest.cancel;
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserData]);
 
   if (isLoading) {
     return <CatalogueLoader />;

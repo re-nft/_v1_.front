@@ -11,20 +11,24 @@ import BatchBar from "../../../components/batch-bar";
 import {
   BatchContext,
   getUniqueID,
+  useCheckedNftItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import {
   PageContext,
   PageContextType,
 } from "../../../controller/page-controller";
-import createCancellablePromise, {
-  CancellablePromise,
-} from "../../../contexts/create-cancellable-promise";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
+import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { TransactionStateEnum } from "../../../types";
+import TransactionStateContext from "../../../contexts/TransactionState";
+import { usePrevious } from "../../../hooks/usePrevious";
 
 const Lendings: React.FC = () => {
-  const { checkedItems, checkedNftItems, handleReset, onCheckboxChange } =
-    useContext(BatchContext);
+  const { checkedItems, handleReset, onCheckboxChange } = useContext(
+    BatchContext
+  );
+  const checkedNftItems = useCheckedNftItems();
   const {
     totalPages,
     currentPageNumber,
@@ -38,27 +42,38 @@ const Lendings: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  const handleRefresh = useCallback(() => {
-    // TODO:eniko too much rerender dataloading
-    if (checkedNftItems.length < 1) {
+  const { txnState } = useContext(TransactionStateContext);
+  const previoustxnState = usePrevious(txnState);
+
+  // refresh when lending complete
+  // on reject nothing to do
+  useEffect(() => {
+    if (
+      txnState !== TransactionStateEnum.SUCCESS &&
+      previoustxnState === TransactionStateEnum.PENDING
+    ) {
       setIsLoading(true);
+      getAllAvailableToLend()
+        .then((nfts) => {
+          onChangePage(nfts);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          console.warn("could not fetch user nfts");
+        });
     }
-    setIsLoading(true);
-    getAllAvailableToLend()
-      .then((nfts) => {
-        onChangePage(nfts || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not fetch user nfts");
-      });
-  }, [setIsLoading, getAllAvailableToLend, onChangePage, checkedNftItems]);
+  }, [
+    setIsLoading,
+    getAllAvailableToLend,
+    onChangePage,
+    txnState,
+    previoustxnState,
+  ]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
     handleReset();
-    handleRefresh();
-  }, [setModalOpen, handleReset, handleRefresh]);
+  }, [setModalOpen, handleReset]);
 
   const handleStartLend = useCallback(
     async (nft: Nft) => {

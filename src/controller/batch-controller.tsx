@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useMemo } from "react";
+import React, { createContext, useState, useEffect, useMemo, useContext } from "react";
 
 import {
   Nft,
@@ -33,9 +33,6 @@ export type BatchContextType = {
   // nftAddress::tokenId:lendingId
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
-  checkedNftItems: Nft[];
-  checkedLendingItems: Lending[];
-  checkedRentingItems: Renting[];
 
   handleReset(): void;
   onCheckboxChange(item: Nft | Lending | Renting): void;
@@ -43,9 +40,6 @@ export type BatchContextType = {
 
 const defaultBatchContext = {
   checkedItems: {},
-  checkedNftItems: [],
-  checkedLendingItems: [],
-  checkedRentingItems: [],
   // functions
   handleReset: THROWS,
   onCheckboxChange: THROWS,
@@ -84,29 +78,9 @@ export const BatchProvider: React.FC = ({ children }) => {
     });
   };
 
-  const checkedNftItems = useMemo((): Nft[] => {
-    const nftItems: Nft[] = [];
-    for (const checkedItem of Object.values(checkedItems)) {
-      if (isNft(checkedItem)) nftItems.push(checkedItem);
-    }
-    return nftItems;
-  }, [checkedItems]);
+ 
 
-  const checkedLendingItems = useMemo((): Lending[] => {
-    const lendingItems: Lending[] = [];
-    for (const checkedItem of Object.values(checkedItems)) {
-      if (isLending(checkedItem)) lendingItems.push(checkedItem);
-    }
-    return lendingItems;
-  }, [checkedItems]);
 
-  const checkedRentingItems = useMemo((): Renting[] => {
-    const rentingItems: Renting[] = [];
-    for (const checkedItem of Object.values(checkedItems)) {
-      if (isRenting(checkedItem)) rentingItems.push(checkedItem);
-    }
-    return rentingItems;
-  }, [checkedItems]);
 
   useEffect(() => {
     return handleReset();
@@ -116,9 +90,6 @@ export const BatchProvider: React.FC = ({ children }) => {
     <BatchContext.Provider
       value={{
         checkedItems,
-        checkedNftItems,
-        checkedLendingItems,
-        checkedRentingItems,
         handleReset,
         onCheckboxChange,
       }}
@@ -126,6 +97,33 @@ export const BatchProvider: React.FC = ({ children }) => {
       {children}
     </BatchContext.Provider>
   );
+};
+// This hooks helps with no additional rerender as one of this changes would rerender all the usage
+export const useCheckedNftItems = (): Nft[] => {
+  const {checkedItems} = useContext(BatchContext)
+  const nftItems: Nft[] = [];
+  for (const checkedItem of Object.values(checkedItems)) {
+    if (isNft(checkedItem)) nftItems.push(checkedItem);
+  }
+  return nftItems;
+};
+
+export const useCheckedLendingItems = (): Lending[] => {
+  const {checkedItems} = useContext(BatchContext)
+  const lendingItems: Lending[] = [];
+  for (const checkedItem of Object.values(checkedItems)) {
+    if (isLending(checkedItem)) lendingItems.push(checkedItem);
+  }
+  return lendingItems;
+};
+
+export const useCheckedRentingItems = (): Renting[] => {
+  const {checkedItems} = useContext(BatchContext)
+  const rentingItems: Renting[] = [];
+  for (const checkedItem of Object.values(checkedItems)) {
+    if (isRenting(checkedItem)) rentingItems.push(checkedItem);
+  }
+  return rentingItems;
 };
 
 export default BatchProvider;

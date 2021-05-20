@@ -13,6 +13,7 @@ import BatchBar from "../../../components/batch-bar";
 import {
   BatchContext,
   getUniqueID,
+  useCheckedLendingItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
@@ -21,11 +22,10 @@ import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const UserCurrentlyLending: React.FC = () => {
-  const {
-    checkedItems,
-    checkedLendingItems,
-    handleReset: batchHandleReset,
-  } = useContext(BatchContext);
+  const { checkedItems, handleReset: batchHandleReset } = useContext(
+    BatchContext
+  );
+  const checkedLendingItems = useCheckedLendingItems();
   const {
     totalPages,
     currentPageNumber,
@@ -98,8 +98,7 @@ const UserCurrentlyLending: React.FC = () => {
       onResetPage();
       return getUserLendingRequest.cancel();
     };
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getUserLending, onChangePage, onResetPage]);
 
   //Prefetch metadata
   useEffect(() => {

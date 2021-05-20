@@ -35,14 +35,17 @@ export default async function startLend(
     console.warn("varying length inputs. you must have missed a token");
     return;
   }
-
-  return await renft.lend(
-    addresses,
-    tokenIds,
-    amounts,
-    maxRentDurations,
-    dailyRentPrices,
-    collaterals,
-    pmtTokens
-  );
+  return new Promise((resolve, reject) => {
+    renft.lend(
+      addresses,
+      tokenIds,
+      amounts,
+      maxRentDurations,
+      dailyRentPrices,
+      collaterals,
+      pmtTokens
+    ).then(v => resolve(v)).catch((e) =>{
+      resolve(undefined)
+    });
+  });
 }

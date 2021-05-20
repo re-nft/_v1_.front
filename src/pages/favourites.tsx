@@ -92,8 +92,7 @@ export const MyFavorites: React.FC = () => {
       });
 
     return dataRequest.cancel;
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getAllAvailableToLend, getUserData]);
 
   //Prefetch metadata
   useEffect(() => {
