@@ -89,7 +89,6 @@ const UserCurrentlyLending: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get user Lending request");
       });
 

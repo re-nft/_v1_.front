@@ -72,7 +72,6 @@ const AvailableToRent: React.FC = () => {
           setIsLoading(false);
         })
         .catch((e) => {
-          console.warn(e);
           console.warn("could not get user lending");
         });
     }
@@ -148,7 +147,6 @@ const AvailableToRent: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get usersLending request");
       });
 

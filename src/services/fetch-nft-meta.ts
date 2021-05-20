@@ -145,7 +145,6 @@ export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
       return {};
     }
   } catch (e) {
-    console.warn(e);
     console.warn("error fetching nft meta");
     return {};
   }

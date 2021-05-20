@@ -154,7 +154,6 @@ export const Dashboard: React.FC = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.warn(e);
         console.warn("could not get user lending and renting request");
       });
 
