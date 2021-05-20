@@ -46,7 +46,7 @@ const Lendings: React.FC = () => {
     setIsLoading(true);
     getAllAvailableToLend()
       .then((nfts) => {
-        onChangePage(nfts);
+        onChangePage(nfts || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -84,7 +84,7 @@ const Lendings: React.FC = () => {
 
     getUserNftsRequest.promise
       .then((nfts) => {
-        onChangePage(nfts);
+        onChangePage(nfts || []);
         setIsLoading(false);
       })
       .catch(() => {

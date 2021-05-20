@@ -58,8 +58,8 @@ const AvailableToRent: React.FC = () => {
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
     getAllAvailableToRent()
-      .then((lendings: Lending[]) => {
-        onChangePage(lendings);
+      .then((lendings) => {
+        onChangePage(lendings || []);
         setIsLoading(false);
       })
       .catch((e) => {
@@ -135,7 +135,7 @@ const AvailableToRent: React.FC = () => {
     allAvailableToRentRequest.promise
       .then((lending) => {
         // todo: onchangepage takes any!
-        onChangePage(lending);
+        onChangePage(lending || []);
         setIsLoading(false);
       })
       .catch((e) => {

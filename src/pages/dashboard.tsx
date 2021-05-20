@@ -153,8 +153,8 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending);
-        setRentingItems(userRenting);
+        setLendingItems(userLending || []);
+        setRentingItems(userRenting || []);
         setIsLoading(false);
       })
       .catch((e) => {

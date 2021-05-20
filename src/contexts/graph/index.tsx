@@ -57,9 +57,9 @@ type GraphContextType = {
   userData: UserData;
   usersVote: UsersVote;
   calculatedUsersVote: CalculatedUserVote;
-  getUserNfts(): Promise<Nft[] | undefined>;
+  getAllAvailableToLend(): Promise<Nft[] | undefined>;
   getUserLending(): Promise<Lending[] | undefined>;
-  getUsersLending(): Promise<Lending[] | undefined>;
+  getAllAvailableToRent(): Promise<Lending[] | undefined>;
   getUserRenting(): Promise<Renting[] | undefined>;
   getUserData(): Promise<UserData | undefined>;
   updateGlobalUserData(): Promise<void>;
@@ -73,9 +73,9 @@ const DefaultGraphContext: GraphContextType = {
   userData: defaultUserData,
   usersVote: {},
   calculatedUsersVote: {},
-  getUserNfts: () => Promise.resolve([]),
+  getAllAvailableToLend: () => Promise.resolve([]),
   getUserLending: () => Promise.resolve([]),
-  getUsersLending: () => Promise.resolve([]),
+  getAllAvailableToRent: () => Promise.resolve([]),
   getUserRenting: () => Promise.resolve([]),
   getUserData: () => Promise.resolve(defaultUserData),
   updateGlobalUserData: () => Promise.resolve(),
@@ -209,6 +209,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       });
       // TODO: -1
       renting?.forEach((r) => {
+        // @ts-ignore
         _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
       });
     });
@@ -219,13 +220,13 @@ export const GraphProvider: React.FC = ({ children }) => {
   // PUBLIC API
 
   // AVAILABLE TO LEND
-  const getUserNfts = async (): Promise<Nft[] | undefined> => {
+  const getAllAvailableToLend = async (): Promise<Nft[] | undefined> => {
     const allNfts = await fetchUsersNfts();
     return allNfts;
   };
 
   // ALL AVAILABLE TO RENT (filter out the ones that I am lending)
-  const getAlllending = useCallback(async (): Promise<
+  const getAllAvailableToRent = useCallback(async (): Promise<
     Lending[] | undefined
   > => {
     if (!signer) return;
@@ -334,9 +335,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         userData,
         usersVote,
         calculatedUsersVote,
-        getUserNfts,
+        getAllAvailableToLend,
         getUserLending,
-        getUsersLending: getAlllending,
+        getAllAvailableToRent,
         getUserRenting,
         getUserData,
         updateGlobalUserData,

@@ -87,7 +87,7 @@ const UserCurrentlyLending: React.FC = () => {
 
     getUserLendingRequest.promise
       .then((lendings) => {
-        onChangePage(lendings);
+        onChangePage(lendings || []);
         setIsLoading(false);
       })
       .catch((e) => {

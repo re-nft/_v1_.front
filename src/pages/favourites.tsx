@@ -9,6 +9,7 @@ import CatalogueItem from "../components/catalogue-item";
 import { getUniqueID } from "../controller/batch-controller";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
+import { myFavorites } from "../services/calculate-my-favorites";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -40,7 +41,7 @@ export const MyFavorites: React.FC = () => {
   const refreshState = useCallback(() => {
     Promise.all([getAllAvailableToLend(), getUserData()])
       .then(([nfts, userData]) => {
-        if (!nfts) return;
+        if (!nfts || !userData) return;
 
         const items = myFavorites(userData, nfts);
 
@@ -79,7 +80,7 @@ export const MyFavorites: React.FC = () => {
 
     dataRequest.promise
       .then(([nfts, userData]) => {
-        if (!nfts) return;
+        if (!nfts || !userData) return;
 
         const items = myFavorites(userData, nfts);
 
