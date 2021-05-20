@@ -9,7 +9,7 @@ import { request } from "graphql-request";
 
 import { ReNFTContext, SignerContext } from "../../hardhat/SymfoniContext";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";
-import { ASYNC_THROWS, timeItAsync } from "../../utils";
+import { timeItAsync } from "../../utils";
 import createCancellablePromise from "../create-cancellable-promise";
 import {
   queryAllRenft,
@@ -30,7 +30,6 @@ import {
   LendingRaw,
 } from "./types";
 import { Nft, Lending, Renting } from "./classes";
-import { parseLending, parseRenting } from "./utils";
 import useFetchNftDev from "./hooks/useFetchNftDev";
 import { IS_PROD } from "../../consts";
 import { CurrentAddressContextWrapper } from "../CurrentAddressContextWrapper";
@@ -45,6 +44,10 @@ import {
  * https://api.thegraph.com/subgraphs/name/wighawag/eip721-subgraph
  * https://api.thegraph.com/subgraphs/name/amxx/eip1155-subgraph
  * https://github.com/0xsequence/token-directory
+ *
+ * Kudos to
+ * Luis: https://github.com/microchipgnu
+ * Solidity God: wighawag
  */
 
 type LendingId = string;
@@ -54,11 +57,11 @@ type GraphContextType = {
   userData: UserData;
   usersVote: UsersVote;
   calculatedUsersVote: CalculatedUserVote;
-  getAllAvailableToLend(): Promise<Nft[]>;
-  getUserLending(): Promise<Lending[]>;
-  getAllAvailableToRent(): Promise<Lending[]>;
-  getUserRenting(): Promise<Renting[]>;
-  getUserData(): Promise<UserData>;
+  getUserNfts(): Promise<Nft[] | undefined>;
+  getUserLending(): Promise<Lending[] | undefined>;
+  getUsersLending(): Promise<Lending[] | undefined>;
+  getUserRenting(): Promise<Renting[] | undefined>;
+  getUserData(): Promise<UserData | undefined>;
   updateGlobalUserData(): Promise<void>;
 };
 
@@ -70,12 +73,12 @@ const DefaultGraphContext: GraphContextType = {
   userData: defaultUserData,
   usersVote: {},
   calculatedUsersVote: {},
-  getAllAvailableToLend: () => Promise.resolve([]),
+  getUserNfts: () => Promise.resolve([]),
   getUserLending: () => Promise.resolve([]),
-  getAllAvailableToRent: () => Promise.resolve([]),
+  getUsersLending: () => Promise.resolve([]),
   getUserRenting: () => Promise.resolve([]),
   getUserData: () => Promise.resolve(defaultUserData),
-  updateGlobalUserData: ASYNC_THROWS,
+  updateGlobalUserData: () => Promise.resolve(),
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -90,88 +93,15 @@ export const GraphProvider: React.FC = ({ children }) => {
   const [calculatedUsersVote, setCalculatedUsersVote] =
     useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
-
   /**
    * Only for dev purposes
    */
   const fetchNftDev = useFetchNftDev(signer);
 
-<<<<<<< HEAD
-  /**
-   * Pings the eip721 and eip1155 subgraphs in prod, to determine what
-   * NFTs you own
-   */
-  const fetchUserProd = useCallback(
-    async (fetchType: FetchType) => {
-      if(!currentAddress) return []
-      let query = "";
-      let subgraphURI = "";
-
-
-      switch (fetchType) {
-        case FetchType.ERC721:
-          query = queryMyERC721s(currentAddress);
-
-          if (!process.env.REACT_APP_EIP721_API) {
-            throw new Error("EIP721_API is not defined");
-          }
-          subgraphURI = process.env.REACT_APP_EIP721_API;
-          break;
-        case FetchType.ERC1155:
-          query = queryMyERC1155s(currentAddress);
-          if (!process.env.REACT_APP_EIP1155_API) {
-            throw new Error("EIP1155_API is not defined");
-          }
-          subgraphURI = process.env.REACT_APP_EIP1155_API;
-          break;
-      }
-
-      const response: ERC721s | ERC1155s = await timeItAsync(
-        `Pulled My ${FetchType[fetchType]} NFTs`,
-        async () => await request(subgraphURI, query)
-      );
-
-      let tokens: NftToken[] = [];
-      switch (fetchType) {
-        case FetchType.ERC721:
-          tokens = (response as ERC721s).tokens.map((token) => {
-            // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
-            const [address, tokenId] = token.id.split("_");
-            return {
-              address,
-              tokenURI: token.tokenURI,
-              tokenId,
-              isERC721: true,
-            };
-          });
-          break;
-        case FetchType.ERC1155: {
-          tokens =
-            (response as ERC1155s).account?.balances?.map(({ token }) => ({
-              address: token.registry.contractAddress,
-              tokenURI: token.tokenURI,
-              tokenId: token.tokenId,
-              isERC721: false,
-            })) || [];
-          break;
-        }
-      }
-
-      // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
-      // TODO: nothing has changed
-      return tokens;
-    },
-    [currentAddress]
-  );
-
-  const fetchUsersNfts = async (): Promise<Nft[]> => {
-=======
   const fetchUsersNfts = useCallback(async (): Promise<Nft[] | undefined> => {
     if (!signer) return;
     if (!currentAddress) return;
->>>>>>> 8b6eb08 (optimize render)
     let _usersNfts: Nft[] = [];
-    if (!signer) return _usersNfts;
 
     // // ! comment this out to test prod NFT rendering in dev env
     // if (process.env.REACT_APP_ENVIRONMENT !== "development") {
@@ -197,10 +127,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     return _nfts;
   }, [currentAddress, fetchNftDev, signer]);
 
-  // TODO: these should be used instead of fetching all!
-  const fetchUserLending = async (): Promise<string[]> => {
-    if (!currentAddress) return [];
-
+  const fetchUserLending = async (): Promise<string[] | undefined> => {
+    if (!currentAddress) return;
     const query = queryUserLendingRenft(currentAddress);
 
     if (!process.env.REACT_APP_RENFT_API) {
@@ -223,10 +151,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     );
   };
 
-  // TODO: these should be used instead of fetching all!
-  const fetchUserRenting = async (): Promise<string[]> => {
-    if (!currentAddress) return [];
-
+  const fetchUserRenting = async (): Promise<string[] | undefined> => {
+    if (!currentAddress) return;
     const query = queryUserRentingRenft(currentAddress);
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
@@ -238,7 +164,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       "Pulled My Renft Renting Nfts",
       async () => await request(subgraphURI, query)
     );
-
     return (
       response.user?.renting?.map(
         ({ lending }) =>
@@ -260,7 +185,6 @@ export const GraphProvider: React.FC = ({ children }) => {
       [key: string]: Renting;
     };
   };
-
   const fetchRenftsAll = async (): Promise<ReturnReNftAll | undefined> => {
     if (!signer) return;
     const query = queryAllRenft();
@@ -283,15 +207,9 @@ export const GraphProvider: React.FC = ({ children }) => {
       lending?.forEach((l) => {
         _allRenftsLending[id] = new Lending(l, signer);
       });
+      // TODO: -1
       renting?.forEach((r) => {
-        const iLending = parseLending(r.lending);
-        _allRenftsRenting[id] = new Renting(
-          address,
-          tokenId,
-          iLending,
-          r,
-          signer
-        );
+        _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
       });
     });
 
@@ -300,7 +218,8 @@ export const GraphProvider: React.FC = ({ children }) => {
 
   // PUBLIC API
 
-  const getAllAvailableToLend = async (): Promise<Nft[]> => {
+  // AVAILABLE TO LEND
+  const getUserNfts = async (): Promise<Nft[] | undefined> => {
     const allNfts = await fetchUsersNfts();
     return allNfts;
   };
@@ -323,12 +242,9 @@ export const GraphProvider: React.FC = ({ children }) => {
 
     const lendingsReNFT = [];
 
-    for (const lending of Object.values(response?.lendings)) {
-      // filters out the nfts that you have lent
+    for (const lending of Object.values(response?.data?.lendings)) {
       if (lending.lenderAddress.toLowerCase() === _currentAddress.toLowerCase())
         continue;
-      if (lending.renting) continue;
-
       lendingsReNFT.push(new Lending(lending, signer));
     }
     return lendingsReNFT;
@@ -350,46 +266,36 @@ export const GraphProvider: React.FC = ({ children }) => {
         await request(subgraphURI, queryUserLendingRenft(currentAddress))
     );
 
-<<<<<<< HEAD
-    if (!response?.users[0]) return [];
-=======
     if (!response?.users[0]) return;
->>>>>>> 8b6eb08 (optimize render)
 
-    const lendings = Object.values(response.users[0].lending).map(
-      (lending) => new Lending(lending, signer)
-    );
+    const lendings = Object.values(response.users[0].lending).map((lending) => {
+      return new Lending(lending, signer);
+    });
 
     return lendings;
   }, [signer, currentAddress]);
 
   // RENTING
-  const getUserRenting = async (): Promise<Renting[]> => {
+  const getUserRenting = async (): Promise<Renting[] | undefined> => {
     const renftAll = await fetchRenftsAll();
     if (renftAll) {
       return Object.values(renftAll.renting) || [];
     }
-<<<<<<< HEAD
-    return [];
-=======
->>>>>>> 8b6eb08 (optimize render)
   };
 
-  const getUserData = useCallback(async (): Promise<UserData> => {
+  const getUserData = useCallback(async (): Promise<UserData | undefined> => {
     if (currentAddress) {
       const userData = await getUserDataOrCrateNew(currentAddress);
       return userData;
     }
-<<<<<<< HEAD
-    return {};
-=======
->>>>>>> 8b6eb08 (optimize render)
   }, [currentAddress]);
 
   const updateGlobalUserData = useCallback(() => {
     return getUserData()
-      .then((userData) => {
-        if (userData) setUserData(userData);
+      .then((userData: UserData | undefined) => {
+        if (userData) {
+          setUserData(userData);
+        }
       })
       .catch(() => {
         console.warn("could not update global user data");
@@ -408,7 +314,6 @@ export const GraphProvider: React.FC = ({ children }) => {
             const calculatedUsersVote: CalculatedUserVote =
               calculateVoteByUsers(usersVote);
 
-            // TODO: poor name
             setCalculatedUsersVote(calculatedUsersVote);
             setUsersVote(usersVote);
           }
@@ -429,9 +334,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         userData,
         usersVote,
         calculatedUsersVote,
-        getAllAvailableToLend,
+        getUserNfts,
         getUserLending,
-        getAllAvailableToRent,
+        getUsersLending: getAlllending,
         getUserRenting,
         getUserData,
         updateGlobalUserData,

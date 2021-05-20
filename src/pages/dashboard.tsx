@@ -11,8 +11,8 @@ import { PaymentToken } from "../types";
 import stopLend from "../services/stop-lend";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
-import { getLendingPriceByCurreny } from "../utils";
-import { short } from "../utils";
+import { getLendingPriceByCurreny, short } from "../utils";
+import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
