@@ -90,8 +90,7 @@ const UserCurrentlyLending: React.FC = () => {
         onChangePage(lendings || []);
         setIsLoading(false);
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
         console.warn("could not get user Lending request");
       });
 

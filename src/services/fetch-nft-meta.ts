@@ -81,8 +81,7 @@ export const fetchNFTFromOtherSource = async (
         id: key,
       };
     })
-    .catch((err) => {
-      console.warn(err);
+    .catch(() => {
       return { id: key, error: "unknown error" };
     });
 };
