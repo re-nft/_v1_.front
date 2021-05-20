@@ -90,8 +90,7 @@ export const MyFavorites: React.FC = () => {
       });
 
     return dataRequest.cancel;
-    /* eslint-disable-next-line */
-  }, []);
+  }, [getAllAvailableToLend, getUserData]);
 
   if (isLoading) {
     return <CatalogueLoader />;

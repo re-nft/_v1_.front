@@ -87,6 +87,7 @@ export const useFetchNftDev = (
       );
 
       if (num1155s[i].toNumber() > 0) {
+        console.log('e1155 available to rent', e1155.address)
         usersDevNfts.push(
           new Nft(
             e1155.address,

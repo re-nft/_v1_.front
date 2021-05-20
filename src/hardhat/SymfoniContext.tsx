@@ -4,28 +4,28 @@
 import { providers, Signer, ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import Web3Modal, { IProviderOptions } from "web3modal";
-import { ReNFT } from "./typechain/ReNFT";
-import { ReNFT__factory } from "./typechain/factories/ReNFT__factory";
 import { Resolver } from "./typechain/Resolver";
 import { Resolver__factory } from "./typechain/factories/Resolver__factory";
+import { ReNFT } from "./typechain/ReNFT";
+import { ReNFT__factory } from "./typechain/factories/ReNFT__factory";
 import { DAI } from "./typechain/DAI";
 import { DAI__factory } from "./typechain/factories/DAI__factory";
-import { E721 } from "./typechain/E721";
-import { E721__factory } from "./typechain/factories/E721__factory";
-import { E1155 } from "./typechain/E1155";
-import { E1155__factory } from "./typechain/factories/E1155__factory";
 import { E721B } from "./typechain/E721B";
 import { E721B__factory } from "./typechain/factories/E721B__factory";
+import { E1155B } from "./typechain/E1155B";
+import { E1155B__factory } from "./typechain/factories/E1155B__factory";
 import { USDC } from "./typechain/USDC";
 import { USDC__factory } from "./typechain/factories/USDC__factory";
 import { USDT } from "./typechain/USDT";
 import { USDT__factory } from "./typechain/factories/USDT__factory";
-import { E1155B } from "./typechain/E1155B";
-import { E1155B__factory } from "./typechain/factories/E1155B__factory";
 import { Utils } from "./typechain/Utils";
 import { Utils__factory } from "./typechain/factories/Utils__factory";
 import { WETH } from "./typechain/WETH";
 import { WETH__factory } from "./typechain/factories/WETH__factory";
+import { E1155 } from "./typechain/E1155";
+import { E1155__factory } from "./typechain/factories/E1155__factory";
+import { E721 } from "./typechain/E721";
+import { E721__factory } from "./typechain/factories/E721__factory";
 import { ERC1155 } from "./typechain/ERC1155";
 import { ERC1155__factory } from "./typechain/factories/ERC1155__factory";
 import { ERC20 } from "./typechain/ERC20";
@@ -34,536 +34,475 @@ import { ERC721 } from "./typechain/ERC721";
 import { ERC721__factory } from "./typechain/factories/ERC721__factory";
 
 const emptyContract = {
-  instance: undefined,
-  factory: undefined,
+    instance: undefined,
+    factory: undefined
 };
 const defaultProvider: providers.Provider | undefined = undefined;
-export const ProviderContext = React.createContext<
-  [
-    providers.Provider | undefined,
-    React.Dispatch<React.SetStateAction<providers.Provider | undefined>>
-  ]
->([defaultProvider, () => {}]);
+export const ProviderContext = React.createContext<[providers.Provider | undefined, React.Dispatch<React.SetStateAction<providers.Provider | undefined>>]>([defaultProvider, () => { }]);
 const defaultCurrentAddress: string = "";
-export const CurrentAddressContext = React.createContext<
-  [string, React.Dispatch<React.SetStateAction<string>>]
->([defaultCurrentAddress, () => {}]);
+export const CurrentAddressContext = React.createContext<[string, React.Dispatch<React.SetStateAction<string>>]>([defaultCurrentAddress, () => { }]);
 const defaultSigner: Signer | undefined = undefined;
-export const SignerContext = React.createContext<
-  [Signer | undefined, React.Dispatch<React.SetStateAction<Signer | undefined>>]
->([defaultSigner, () => {}]);
+export const SignerContext = React.createContext<[Signer | undefined, React.Dispatch<React.SetStateAction<Signer | undefined>>]>([defaultSigner, () => { }]);
 const defaultSymfoniContext: SymfoniContextInterface = {
-  currentHardhatProvider: "",
-  init: () => {
-    throw Error("Symfoni context not initialized");
-  },
-  loading: false,
-  messages: [],
-  providers: [],
+    currentHardhatProvider: "",
+    init: () => { throw Error("Symfoni context not initialized") },
+    loading: false,
+    messages: [],
+    providers: []
 };
-export const SymfoniContext = React.createContext<SymfoniContextInterface>(
-  defaultSymfoniContext
-);
+export const SymfoniContext = React.createContext<SymfoniContextInterface>(defaultSymfoniContext);
+export const ResolverContext = React.createContext<SymfoniResolver>(emptyContract);
 export const ReNFTContext = React.createContext<SymfoniReNFT>(emptyContract);
-export const ResolverContext =
-  React.createContext<SymfoniResolver>(emptyContract);
 export const DAIContext = React.createContext<SymfoniDAI>(emptyContract);
-export const E721Context = React.createContext<SymfoniE721>(emptyContract);
-export const E1155Context = React.createContext<SymfoniE1155>(emptyContract);
 export const E721BContext = React.createContext<SymfoniE721B>(emptyContract);
+export const E1155BContext = React.createContext<SymfoniE1155B>(emptyContract);
 export const USDCContext = React.createContext<SymfoniUSDC>(emptyContract);
 export const USDTContext = React.createContext<SymfoniUSDT>(emptyContract);
-export const E1155BContext = React.createContext<SymfoniE1155B>(emptyContract);
 export const UtilsContext = React.createContext<SymfoniUtils>(emptyContract);
 export const WETHContext = React.createContext<SymfoniWETH>(emptyContract);
-export const ERC1155Context =
-  React.createContext<SymfoniERC1155>(emptyContract);
+export const E1155Context = React.createContext<SymfoniE1155>(emptyContract);
+export const E721Context = React.createContext<SymfoniE721>(emptyContract);
+export const ERC1155Context = React.createContext<SymfoniERC1155>(emptyContract);
 export const ERC20Context = React.createContext<SymfoniERC20>(emptyContract);
 export const ERC721Context = React.createContext<SymfoniERC721>(emptyContract);
 
 export interface SymfoniContextInterface {
-  init: (provider?: string) => void;
-  loading: boolean;
-  messages: string[];
-  currentHardhatProvider: string;
-  providers: string[];
+    init: (provider?: string) => void;
+    loading: boolean;
+    messages: string[];
+    currentHardhatProvider: string;
+    providers: string[];
 }
 
 export interface SymfoniProps {
-  autoInit?: boolean;
-  showLoading?: boolean;
-  loadingComponent?: React.ReactNode;
-}
-
-export interface SymfoniReNFT {
-  instance?: ReNFT;
-  factory?: ReNFT__factory;
+    autoInit?: boolean;
+    showLoading?: boolean;
+    loadingComponent?: React.ReactNode;
 }
 
 export interface SymfoniResolver {
-  instance?: Resolver;
-  factory?: Resolver__factory;
+    instance?: Resolver;
+    factory?: Resolver__factory;
+}
+
+export interface SymfoniReNFT {
+    instance?: ReNFT;
+    factory?: ReNFT__factory;
 }
 
 export interface SymfoniDAI {
-  instance?: DAI;
-  factory?: DAI__factory;
-}
-
-export interface SymfoniE721 {
-  instance?: E721;
-  factory?: E721__factory;
-}
-
-export interface SymfoniE1155 {
-  instance?: E1155;
-  factory?: E1155__factory;
+    instance?: DAI;
+    factory?: DAI__factory;
 }
 
 export interface SymfoniE721B {
-  instance?: E721B;
-  factory?: E721B__factory;
-}
-
-export interface SymfoniUSDC {
-  instance?: USDC;
-  factory?: USDC__factory;
-}
-
-export interface SymfoniUSDT {
-  instance?: USDT;
-  factory?: USDT__factory;
+    instance?: E721B;
+    factory?: E721B__factory;
 }
 
 export interface SymfoniE1155B {
-  instance?: E1155B;
-  factory?: E1155B__factory;
+    instance?: E1155B;
+    factory?: E1155B__factory;
+}
+
+export interface SymfoniUSDC {
+    instance?: USDC;
+    factory?: USDC__factory;
+}
+
+export interface SymfoniUSDT {
+    instance?: USDT;
+    factory?: USDT__factory;
 }
 
 export interface SymfoniUtils {
-  instance?: Utils;
-  factory?: Utils__factory;
+    instance?: Utils;
+    factory?: Utils__factory;
 }
 
 export interface SymfoniWETH {
-  instance?: WETH;
-  factory?: WETH__factory;
+    instance?: WETH;
+    factory?: WETH__factory;
+}
+
+export interface SymfoniE1155 {
+    instance?: E1155;
+    factory?: E1155__factory;
+}
+
+export interface SymfoniE721 {
+    instance?: E721;
+    factory?: E721__factory;
 }
 
 export interface SymfoniERC1155 {
-  instance?: ERC1155;
-  factory?: ERC1155__factory;
+    instance?: ERC1155;
+    factory?: ERC1155__factory;
 }
 
 export interface SymfoniERC20 {
-  instance?: ERC20;
-  factory?: ERC20__factory;
+    instance?: ERC20;
+    factory?: ERC20__factory;
 }
 
 export interface SymfoniERC721 {
-  instance?: ERC721;
-  factory?: ERC721__factory;
+    instance?: ERC721;
+    factory?: ERC721__factory;
 }
 
 export const Symfoni: React.FC<SymfoniProps> = ({
-  showLoading = true,
-  autoInit = true,
-  ...props
+    showLoading = true,
+    autoInit = true,
+    ...props
 }) => {
-  const [initializeCounter, setInitializeCounter] = useState(0);
-  const [currentHardhatProvider, setCurrentHardhatProvider] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<string[]>([]);
-  const [signer, setSigner] = useState<Signer | undefined>(defaultSigner);
-  const [provider, setProvider] =
-    useState<providers.Provider | undefined>(defaultProvider);
-  const [currentAddress, setCurrentAddress] = useState<string>(
-    defaultCurrentAddress
-  );
-  const [fallbackProvider] = useState<string | undefined>(undefined);
-  const [providerPriority, setProviderPriority] = useState<string[]>([
-    "web3modal",
-    "hardhat",
-  ]);
-  const [ReNFT, setReNFT] = useState<SymfoniReNFT>(emptyContract);
-  const [Resolver, setResolver] = useState<SymfoniResolver>(emptyContract);
-  const [DAI, setDAI] = useState<SymfoniDAI>(emptyContract);
-  const [E721, setE721] = useState<SymfoniE721>(emptyContract);
-  const [E1155, setE1155] = useState<SymfoniE1155>(emptyContract);
-  const [E721B, setE721B] = useState<SymfoniE721B>(emptyContract);
-  const [USDC, setUSDC] = useState<SymfoniUSDC>(emptyContract);
-  const [USDT, setUSDT] = useState<SymfoniUSDT>(emptyContract);
-  const [E1155B, setE1155B] = useState<SymfoniE1155B>(emptyContract);
-  const [Utils, setUtils] = useState<SymfoniUtils>(emptyContract);
-  const [WETH, setWETH] = useState<SymfoniWETH>(emptyContract);
-  const [ERC1155, setERC1155] = useState<SymfoniERC1155>(emptyContract);
-  const [ERC20, setERC20] = useState<SymfoniERC20>(emptyContract);
-  const [ERC721, setERC721] = useState<SymfoniERC721>(emptyContract);
-  useEffect(() => {
-    if (messages.length > 0) console.debug(messages.pop());
-  }, [messages]);
+    const [initializeCounter, setInitializeCounter] = useState(0);
+    const [currentHardhatProvider, setCurrentHardhatProvider] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [messages, setMessages] = useState<string[]>([]);
+    const [signer, setSigner] = useState<Signer | undefined>(defaultSigner);
+    const [provider, setProvider] = useState<providers.Provider | undefined>(defaultProvider);
+    const [currentAddress, setCurrentAddress] = useState<string>(defaultCurrentAddress);
+    const [fallbackProvider] = useState<string | undefined>(undefined);
+    const [providerPriority, setProviderPriority] = useState<string[]>(["web3modal", "hardhat"]);
+    const [Resolver, setResolver] = useState<SymfoniResolver>(emptyContract);
+    const [ReNFT, setReNFT] = useState<SymfoniReNFT>(emptyContract);
+    const [DAI, setDAI] = useState<SymfoniDAI>(emptyContract);
+    const [E721B, setE721B] = useState<SymfoniE721B>(emptyContract);
+    const [E1155B, setE1155B] = useState<SymfoniE1155B>(emptyContract);
+    const [USDC, setUSDC] = useState<SymfoniUSDC>(emptyContract);
+    const [USDT, setUSDT] = useState<SymfoniUSDT>(emptyContract);
+    const [Utils, setUtils] = useState<SymfoniUtils>(emptyContract);
+    const [WETH, setWETH] = useState<SymfoniWETH>(emptyContract);
+    const [E1155, setE1155] = useState<SymfoniE1155>(emptyContract);
+    const [E721, setE721] = useState<SymfoniE721>(emptyContract);
+    const [ERC1155, setERC1155] = useState<SymfoniERC1155>(emptyContract);
+    const [ERC20, setERC20] = useState<SymfoniERC20>(emptyContract);
+    const [ERC721, setERC721] = useState<SymfoniERC721>(emptyContract);
+    useEffect(() => {
+        if (messages.length > 0)
+            console.debug(messages.pop())
+    }, [messages])
 
-  const getProvider = async (): Promise<
-    { provider: providers.Provider; hardhatProviderName: string } | undefined
-  > => {
-    let hardhatProviderName = "Not set";
-    let _providerPriority = [...providerPriority];
-    // Fallback provider
-    if (fallbackProvider && autoInit && initializeCounter === 0) {
-      if (localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER") === null) {
-        _providerPriority = _providerPriority.sort((a, b) => {
-          return a === fallbackProvider ? -1 : b === fallbackProvider ? 1 : 0;
-        });
-      }
-    }
-    const provider = await _providerPriority.reduce(
-      async (
-        maybeProvider: Promise<providers.Provider | undefined>,
-        providerIdentification
-      ) => {
-        let foundProvider = await maybeProvider;
-        if (foundProvider) {
-          return Promise.resolve(foundProvider);
-        } else {
-          switch (providerIdentification.toLowerCase()) {
-            case "web3modal":
-              try {
-                const provider = await getWeb3ModalProvider();
-                const web3provider = new ethers.providers.Web3Provider(
-                  provider
-                );
-                hardhatProviderName = "web3modal";
-                return Promise.resolve(web3provider);
-              } catch (error) {
-                return Promise.resolve(undefined);
-              }
-            case "hardhat":
-              try {
-                const provider = new ethers.providers.JsonRpcProvider({
-                  url: "http://localhost:8545",
-                });
-                hardhatProviderName = "hardhat";
-                return Promise.resolve(provider);
-              } catch (error) {
-                return Promise.resolve(undefined);
-              }
-            default:
-              return Promise.resolve(undefined);
-          }
+    const getProvider = async (): Promise<{ provider: providers.Provider, hardhatProviderName: string } | undefined> => {
+        let hardhatProviderName = "Not set";
+        let _providerPriority = [...providerPriority];
+        // Fallback provider
+        if (fallbackProvider && autoInit && initializeCounter === 0) {
+            if (localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER") === null) {
+                _providerPriority = _providerPriority.sort((a, b) => {
+                    return a === fallbackProvider ? -1 : b === fallbackProvider ? 1 : 0;
+                })
+            }
         }
-      },
-      Promise.resolve(undefined)
-    ); // end reduce
-    return provider ? { provider, hardhatProviderName } : undefined;
-  };
-  const getSigner = async (
-    _provider: providers.Provider,
-    hardhatProviderName: string
-  ): Promise<Signer | undefined> => {
-    switch (hardhatProviderName) {
-      case "web3modal":
-        const web3provider = _provider as ethers.providers.Web3Provider;
-        return await web3provider.getSigner();
-      case "hardhat":
-        return ethers.Wallet.fromMnemonic(
-          "test test test test test test test test test test test junk"
-        ).connect(_provider);
-      default:
-        return undefined;
+        const provider = await _providerPriority.reduce(async (maybeProvider: Promise<providers.Provider | undefined>, providerIdentification) => {
+            let foundProvider = await maybeProvider
+            if (foundProvider) {
+                return Promise.resolve(foundProvider)
+            }
+            else {
+                switch (providerIdentification.toLowerCase()) {
+                    case "web3modal":
+                        try {
+                            const provider = await getWeb3ModalProvider()
+                            const web3provider = new ethers.providers.Web3Provider(provider);
+                            hardhatProviderName = "web3modal";
+                            return Promise.resolve(web3provider)
+                        } catch (error) {
+                            return Promise.resolve(undefined)
+                        }
+                    case "hardhat":
+                        try {
+                            const provider = new ethers.providers.JsonRpcProvider({
+                                url: "http://localhost:8545",
+                            });
+                            hardhatProviderName = "hardhat";
+                            return Promise.resolve(provider)
+                        } catch (error) {
+                            return Promise.resolve(undefined)
+                        } default:
+                        return Promise.resolve(undefined)
+                }
+            }
+        }, Promise.resolve(undefined)) // end reduce
+        return provider ? { provider, hardhatProviderName } : undefined
+    };
+    const getSigner = async (_provider: providers.Provider, hardhatProviderName: string): Promise<Signer | undefined> => {
+        switch (hardhatProviderName) {
+            case "web3modal":
+                const web3provider = _provider as ethers.providers.Web3Provider
+                return await web3provider.getSigner()
+            case "hardhat":
+                return ethers.Wallet.fromMnemonic("test test test test test test test test test test test junk").connect(_provider)
+            default:
+                return undefined
+        }
+    };
+    const getWeb3ModalProvider = async (): Promise<any> => {
+        const providerOptions: IProviderOptions = {
+
+        };
+        const web3Modal = new Web3Modal({
+            // network: "mainnet",
+            cacheProvider: false,
+            providerOptions, // required
+        });
+        return await web3Modal.connect();
+    };
+
+    useEffect(() => {
+        let subscribed = true
+        const doAsync = async () => {
+            const finish = (text: string) => {
+                setLoading(false)
+                setMessages(old => [...old, text])
+            }
+            const finishWithContracts = (text: string) => {
+                setResolver(getResolver(_provider, _signer))
+                setReNFT(getReNFT(_provider, _signer))
+                setDAI(getDAI(_provider, _signer))
+                setE721B(getE721B(_provider, _signer))
+                setE1155B(getE1155B(_provider, _signer))
+                setUSDC(getUSDC(_provider, _signer))
+                setUSDT(getUSDT(_provider, _signer))
+                setUtils(getUtils(_provider, _signer))
+                setWETH(getWETH(_provider, _signer))
+                setE1155(getE1155(_provider, _signer))
+                setE721(getE721(_provider, _signer))
+                setERC1155(getERC1155(_provider, _signer))
+                setERC20(getERC20(_provider, _signer))
+                setERC721(getERC721(_provider, _signer))
+                finish(text)
+            }
+            if (!autoInit && initializeCounter === 0) return finish("Auto init turned off.")
+            setLoading(true)
+            setMessages(old => [...old, "Initiating Symfoni React"])
+            const providerObject = await getProvider() // getProvider can actually return undefined, see issue https://github.com/microsoft/TypeScript/issues/11094
+
+            if (!subscribed || !providerObject) return finish("No provider or signer.")
+            const _provider = providerObject.provider
+            setProvider(_provider)
+            setMessages(old => [...old, "Useing " + providerObject.hardhatProviderName])
+            setCurrentHardhatProvider(providerObject.hardhatProviderName)
+            const _signer = await getSigner(_provider, providerObject.hardhatProviderName);
+
+            if (!subscribed || !_signer) return finishWithContracts("Provider, without signer.")
+            setSigner(_signer)
+            setMessages(old => [...old, "Useing signer"])
+            const address = await _signer.getAddress()
+
+            if (!subscribed || !address) return finishWithContracts("Provider and signer, without address.")
+            setCurrentAddress(address)
+
+            return finishWithContracts("Completed Symfoni context initialization.")
+        };
+        doAsync();
+        return () => { subscribed = false }
+    }, [initializeCounter])
+
+    const getResolver = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
+        const instance = _signer ? Resolver__factory.connect(contractAddress, _signer) : Resolver__factory.connect(contractAddress, _provider)
+        const contract: SymfoniResolver = {
+            instance: instance,
+            factory: _signer ? new Resolver__factory(_signer) : undefined,
+        }
+        return contract
     }
-  };
-  const getWeb3ModalProvider = async (): Promise<any> => {
-    const providerOptions: IProviderOptions = {};
-    const web3Modal = new Web3Modal({
-      // network: "mainnet",
-      cacheProvider: false,
-      providerOptions, // required
-    });
-    return await web3Modal.connect();
-  };
+        ;
+    const getReNFT = (_provider: providers.Provider, _signer?: Signer) => {
 
-  useEffect(() => {
-    let subscribed = true;
-    const doAsync = async () => {
-      const finish = (text: string) => {
-        setLoading(false);
-        setMessages((old) => [...old, text]);
-      };
-      const finishWithContracts = (text: string) => {
-        setReNFT(getReNFT(_provider, _signer));
-        setResolver(getResolver(_provider, _signer));
-        setDAI(getDAI(_provider, _signer));
-        setE721(getE721(_provider, _signer));
-        setE1155(getE1155(_provider, _signer));
-        setE721B(getE721B(_provider, _signer));
-        setUSDC(getUSDC(_provider, _signer));
-        setUSDT(getUSDT(_provider, _signer));
-        setE1155B(getE1155B(_provider, _signer));
-        setUtils(getUtils(_provider, _signer));
-        setWETH(getWETH(_provider, _signer));
-        setERC1155(getERC1155(_provider, _signer));
-        setERC20(getERC20(_provider, _signer));
-        setERC721(getERC721(_provider, _signer));
-        finish(text);
-      };
-      if (!autoInit && initializeCounter === 0)
-        return finish("Auto init turned off.");
-      setLoading(true);
-      setMessages((old) => [...old, "Initiating Symfoni React"]);
-      const providerObject = await getProvider(); // getProvider can actually return undefined, see issue https://github.com/microsoft/TypeScript/issues/11094
-
-      if (!subscribed || !providerObject)
-        return finish("No provider or signer.");
-      const _provider = providerObject.provider;
-      setProvider(_provider);
-      setMessages((old) => [
-        ...old,
-        "Useing " + providerObject.hardhatProviderName,
-      ]);
-      setCurrentHardhatProvider(providerObject.hardhatProviderName);
-      const _signer = await getSigner(
-        _provider,
-        providerObject.hardhatProviderName
-      );
-
-      if (!subscribed || !_signer)
-        return finishWithContracts("Provider, without signer.");
-      setSigner(_signer);
-      setMessages((old) => [...old, "Useing signer"]);
-      const address = await _signer.getAddress();
-
-      if (!subscribed || !address)
-        return finishWithContracts("Provider and signer, without address.");
-      setCurrentAddress(address);
-
-      return finishWithContracts("Completed Symfoni context initialization.");
-    };
-    doAsync();
-    return () => {
-      subscribed = false;
-    };
-  }, [initializeCounter]);
-
-  const getReNFT = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788";
-    const instance = _signer
-      ? ReNFT__factory.connect(contractAddress, _signer)
-      : ReNFT__factory.connect(contractAddress, _provider);
-    const contract: SymfoniReNFT = {
-      instance: instance,
-      factory: _signer ? new ReNFT__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getResolver = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318";
-    const instance = _signer
-      ? Resolver__factory.connect(contractAddress, _signer)
-      : Resolver__factory.connect(contractAddress, _provider);
-    const contract: SymfoniResolver = {
-      instance: instance,
-      factory: _signer ? new Resolver__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getDAI = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-    const instance = _signer
-      ? DAI__factory.connect(contractAddress, _signer)
-      : DAI__factory.connect(contractAddress, _provider);
-    const contract: SymfoniDAI = {
-      instance: instance,
-      factory: _signer ? new DAI__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getE721 = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-    const instance = _signer
-      ? E721__factory.connect(contractAddress, _signer)
-      : E721__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE721 = {
-      instance: instance,
-      factory: _signer ? new E721__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getE1155 = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
-    const instance = _signer
-      ? E1155__factory.connect(contractAddress, _signer)
-      : E1155__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE1155 = {
-      instance: instance,
-      factory: _signer ? new E1155__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getE721B = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
-    const instance = _signer
-      ? E721B__factory.connect(contractAddress, _signer)
-      : E721B__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE721B = {
-      instance: instance,
-      factory: _signer ? new E721B__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getUSDC = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
-    const instance = _signer
-      ? USDC__factory.connect(contractAddress, _signer)
-      : USDC__factory.connect(contractAddress, _provider);
-    const contract: SymfoniUSDC = {
-      instance: instance,
-      factory: _signer ? new USDC__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getUSDT = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-    const instance = _signer
-      ? USDT__factory.connect(contractAddress, _signer)
-      : USDT__factory.connect(contractAddress, _provider);
-    const contract: SymfoniUSDT = {
-      instance: instance,
-      factory: _signer ? new USDT__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getE1155B = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
-    const instance = _signer
-      ? E1155B__factory.connect(contractAddress, _signer)
-      : E1155B__factory.connect(contractAddress, _provider);
-    const contract: SymfoniE1155B = {
-      instance: instance,
-      factory: _signer ? new E1155B__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getUtils = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
-    const instance = _signer
-      ? Utils__factory.connect(contractAddress, _signer)
-      : Utils__factory.connect(contractAddress, _provider);
-    const contract: SymfoniUtils = {
-      instance: instance,
-      factory: _signer ? new Utils__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getWETH = (_provider: providers.Provider, _signer?: Signer) => {
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const instance = _signer
-      ? WETH__factory.connect(contractAddress, _signer)
-      : WETH__factory.connect(contractAddress, _provider);
-    const contract: SymfoniWETH = {
-      instance: instance,
-      factory: _signer ? new WETH__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getERC1155 = (_provider: providers.Provider, _signer?: Signer) => {
-    let instance = _signer
-      ? ERC1155__factory.connect(ethers.constants.AddressZero, _signer)
-      : ERC1155__factory.connect(ethers.constants.AddressZero, _provider);
-    const contract: SymfoniERC1155 = {
-      instance: instance,
-      factory: _signer ? new ERC1155__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getERC20 = (_provider: providers.Provider, _signer?: Signer) => {
-    let instance = _signer
-      ? ERC20__factory.connect(ethers.constants.AddressZero, _signer)
-      : ERC20__factory.connect(ethers.constants.AddressZero, _provider);
-    const contract: SymfoniERC20 = {
-      instance: instance,
-      factory: _signer ? new ERC20__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const getERC721 = (_provider: providers.Provider, _signer?: Signer) => {
-    let instance = _signer
-      ? ERC721__factory.connect(ethers.constants.AddressZero, _signer)
-      : ERC721__factory.connect(ethers.constants.AddressZero, _provider);
-    const contract: SymfoniERC721 = {
-      instance: instance,
-      factory: _signer ? new ERC721__factory(_signer) : undefined,
-    };
-    return contract;
-  };
-  const handleInitProvider = (provider?: string) => {
-    if (provider) {
-      setProviderPriority((old) =>
-        old.sort((a, b) => {
-          return a === provider ? -1 : b === provider ? 1 : 0;
-        })
-      );
+        const contractAddress = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+        const instance = _signer ? ReNFT__factory.connect(contractAddress, _signer) : ReNFT__factory.connect(contractAddress, _provider)
+        const contract: SymfoniReNFT = {
+            instance: instance,
+            factory: _signer ? new ReNFT__factory(_signer) : undefined,
+        }
+        return contract
     }
-    setInitializeCounter(initializeCounter + 1);
-  };
-  return (
-    <SymfoniContext.Provider
-      value={{
-        init: (provider) => handleInitProvider(provider),
-        providers: providerPriority,
-        currentHardhatProvider,
-        loading,
-        messages,
-      }}
-    >
-      <ProviderContext.Provider value={[provider, setProvider]}>
-        <SignerContext.Provider value={[signer, setSigner]}>
-          <CurrentAddressContext.Provider
-            value={[currentAddress, setCurrentAddress]}
-          >
-            <ReNFTContext.Provider value={ReNFT}>
-              <ResolverContext.Provider value={Resolver}>
-                <DAIContext.Provider value={DAI}>
-                  <E721Context.Provider value={E721}>
-                    <E1155Context.Provider value={E1155}>
-                      <E721BContext.Provider value={E721B}>
-                        <USDCContext.Provider value={USDC}>
-                          <USDTContext.Provider value={USDT}>
-                            <E1155BContext.Provider value={E1155B}>
-                              <UtilsContext.Provider value={Utils}>
-                                <WETHContext.Provider value={WETH}>
-                                  <ERC1155Context.Provider value={ERC1155}>
-                                    <ERC20Context.Provider value={ERC20}>
-                                      <ERC721Context.Provider value={ERC721}>
-                                        {showLoading && loading ? (
-                                          props.loadingComponent ? (
-                                            props.loadingComponent
-                                          ) : (
-                                            <div>
-                                              {messages.map((msg, i) => (
-                                                <p key={i}>{msg}</p>
-                                              ))}
-                                            </div>
-                                          )
-                                        ) : (
-                                          props.children
-                                        )}
-                                      </ERC721Context.Provider>
-                                    </ERC20Context.Provider>
-                                  </ERC1155Context.Provider>
-                                </WETHContext.Provider>
-                              </UtilsContext.Provider>
-                            </E1155BContext.Provider>
-                          </USDTContext.Provider>
-                        </USDCContext.Provider>
-                      </E721BContext.Provider>
-                    </E1155Context.Provider>
-                  </E721Context.Provider>
-                </DAIContext.Provider>
-              </ResolverContext.Provider>
-            </ReNFTContext.Provider>
-          </CurrentAddressContext.Provider>
-        </SignerContext.Provider>
-      </ProviderContext.Provider>
-    </SymfoniContext.Provider>
-  );
+        ;
+    const getDAI = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+        const instance = _signer ? DAI__factory.connect(contractAddress, _signer) : DAI__factory.connect(contractAddress, _provider)
+        const contract: SymfoniDAI = {
+            instance: instance,
+            factory: _signer ? new DAI__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getE721B = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+        const instance = _signer ? E721B__factory.connect(contractAddress, _signer) : E721B__factory.connect(contractAddress, _provider)
+        const contract: SymfoniE721B = {
+            instance: instance,
+            factory: _signer ? new E721B__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getE1155B = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853"
+        const instance = _signer ? E1155B__factory.connect(contractAddress, _signer) : E1155B__factory.connect(contractAddress, _provider)
+        const contract: SymfoniE1155B = {
+            instance: instance,
+            factory: _signer ? new E1155B__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getUSDC = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+        const instance = _signer ? USDC__factory.connect(contractAddress, _signer) : USDC__factory.connect(contractAddress, _provider)
+        const contract: SymfoniUSDC = {
+            instance: instance,
+            factory: _signer ? new USDC__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getUSDT = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+        const instance = _signer ? USDT__factory.connect(contractAddress, _signer) : USDT__factory.connect(contractAddress, _provider)
+        const contract: SymfoniUSDT = {
+            instance: instance,
+            factory: _signer ? new USDT__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getUtils = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
+        const instance = _signer ? Utils__factory.connect(contractAddress, _signer) : Utils__factory.connect(contractAddress, _provider)
+        const contract: SymfoniUtils = {
+            instance: instance,
+            factory: _signer ? new Utils__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getWETH = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+        const instance = _signer ? WETH__factory.connect(contractAddress, _signer) : WETH__factory.connect(contractAddress, _provider)
+        const contract: SymfoniWETH = {
+            instance: instance,
+            factory: _signer ? new WETH__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getE1155 = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F"
+        const instance = _signer ? E1155__factory.connect(contractAddress, _signer) : E1155__factory.connect(contractAddress, _provider)
+        const contract: SymfoniE1155 = {
+            instance: instance,
+            factory: _signer ? new E1155__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getE721 = (_provider: providers.Provider, _signer?: Signer) => {
+
+        const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+        const instance = _signer ? E721__factory.connect(contractAddress, _signer) : E721__factory.connect(contractAddress, _provider)
+        const contract: SymfoniE721 = {
+            instance: instance,
+            factory: _signer ? new E721__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getERC1155 = (_provider: providers.Provider, _signer?: Signer) => {
+        let instance = _signer ? ERC1155__factory.connect(ethers.constants.AddressZero, _signer) : ERC1155__factory.connect(ethers.constants.AddressZero, _provider)
+        const contract: SymfoniERC1155 = {
+            instance: instance,
+            factory: _signer ? new ERC1155__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getERC20 = (_provider: providers.Provider, _signer?: Signer) => {
+        let instance = _signer ? ERC20__factory.connect(ethers.constants.AddressZero, _signer) : ERC20__factory.connect(ethers.constants.AddressZero, _provider)
+        const contract: SymfoniERC20 = {
+            instance: instance,
+            factory: _signer ? new ERC20__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+    const getERC721 = (_provider: providers.Provider, _signer?: Signer) => {
+        let instance = _signer ? ERC721__factory.connect(ethers.constants.AddressZero, _signer) : ERC721__factory.connect(ethers.constants.AddressZero, _provider)
+        const contract: SymfoniERC721 = {
+            instance: instance,
+            factory: _signer ? new ERC721__factory(_signer) : undefined,
+        }
+        return contract
+    }
+        ;
+
+    const handleInitProvider = (provider?: string) => {
+        if (provider) {
+            setProviderPriority(old => old.sort((a, b) => {
+                return a === provider ? -1 : b === provider ? 1 : 0;
+            }))
+        }
+        setInitializeCounter(initializeCounter + 1)
+    }
+    return (
+        <SymfoniContext.Provider value={{ init: (provider) => handleInitProvider(provider), providers: providerPriority, currentHardhatProvider, loading, messages }}>
+            <ProviderContext.Provider value={[provider, setProvider]}>
+                <SignerContext.Provider value={[signer, setSigner]}>
+                    <CurrentAddressContext.Provider value={[currentAddress, setCurrentAddress]}>
+                        <ResolverContext.Provider value={Resolver}>
+                            <ReNFTContext.Provider value={ReNFT}>
+                                <DAIContext.Provider value={DAI}>
+                                    <E721BContext.Provider value={E721B}>
+                                        <E1155BContext.Provider value={E1155B}>
+                                            <USDCContext.Provider value={USDC}>
+                                                <USDTContext.Provider value={USDT}>
+                                                    <UtilsContext.Provider value={Utils}>
+                                                        <WETHContext.Provider value={WETH}>
+                                                            <E1155Context.Provider value={E1155}>
+                                                                <E721Context.Provider value={E721}>
+                                                                    <ERC1155Context.Provider value={ERC1155}>
+                                                                        <ERC20Context.Provider value={ERC20}>
+                                                                            <ERC721Context.Provider value={ERC721}>
+                                                                                {showLoading && loading ?
+                                                                                    props.loadingComponent
+                                                                                        ? props.loadingComponent
+                                                                                        : <div>
+                                                                                            {messages.map((msg, i) => (
+                                                                                                <p key={i}>{msg}</p>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    : props.children
+                                                                                }
+                                                                            </ERC721Context.Provider >
+                                                                        </ERC20Context.Provider >
+                                                                    </ERC1155Context.Provider >
+                                                                </E721Context.Provider >
+                                                            </E1155Context.Provider >
+                                                        </WETHContext.Provider >
+                                                    </UtilsContext.Provider >
+                                                </USDTContext.Provider >
+                                            </USDCContext.Provider >
+                                        </E1155BContext.Provider >
+                                    </E721BContext.Provider >
+                                </DAIContext.Provider >
+                            </ReNFTContext.Provider >
+                        </ResolverContext.Provider >
+                    </CurrentAddressContext.Provider>
+                </SignerContext.Provider>
+            </ProviderContext.Provider>
+        </SymfoniContext.Provider>
+    )
+
 };
