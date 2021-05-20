@@ -35,7 +35,7 @@ export default async function startLend(
     console.warn("varying length inputs. you must have missed a token");
     return;
   }
-  const aaa: Promise<ContractTransaction | undefined> = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     renft.lend(
       addresses,
       tokenIds,
@@ -45,10 +45,7 @@ export default async function startLend(
       collaterals,
       pmtTokens
     ).then(v => resolve(v)).catch((e) =>{
-      console.log(e)
       resolve(undefined)
     });
   });
-
-  return await aaa;
 }
