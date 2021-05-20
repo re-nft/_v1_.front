@@ -9,10 +9,7 @@ import {
   upvoteOrDownvote,
   getNftVote,
 } from "../services/firebase";
-import {
-  CalculatedUserVote,
-  UsersVote,
-} from "../contexts/graph/types";
+import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
@@ -24,7 +21,18 @@ export type CatalogueItemProps = {
   checked?: boolean;
   isAlreadyFavourited?: boolean;
 };
-
+const Skeleton = () => {
+  return (
+    <div className="skeleton">
+      <div className="skeleton-item control"></div>
+      <div className="skeleton-item img"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item btn"></div>
+    </div>
+  );
+};
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
@@ -40,10 +48,11 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const [amount, setAmount] = useState<string>("0");
-  const [currentVote, setCurrentVote] = useState<{
-    downvote?: number;
-    upvote?: number;
-  }>();
+  const [currentVote, setCurrentVote] =
+    useState<{
+      downvote?: number;
+      upvote?: number;
+    }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
   const id = nftId(nft.address, nft.tokenId);
@@ -95,7 +104,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
   useEffect(() => {
-    setIsChecked(checked || false)
+    setIsChecked(checked || false);
 
     if (!nft.isERC721 && currentAddress) {
       nft
@@ -126,16 +135,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >
-      {!imageIsReady && (
-        <div className="skeleton">
-          <div className="skeleton-item control"></div>
-          <div className="skeleton-item img"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item btn"></div>
-        </div>
-      )}
+      {!imageIsReady && <Skeleton></Skeleton>}
       {imageIsReady && (
         <>
           <div className="nft__overlay">
