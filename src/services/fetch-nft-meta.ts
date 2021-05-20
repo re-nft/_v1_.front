@@ -55,7 +55,7 @@ export const fetchNFTFromOtherSource = async (
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
-  return await fetchWithTimeout(transformedUri, {
+  return fetchWithTimeout(transformedUri, {
     headers,
   })
     .then((r) => r.json())
@@ -94,7 +94,7 @@ export const fetchNFTsFromOpenSea = async (
   if (!process.env.REACT_APP_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
-  return await fetch(
+  return fetch(
     `https://api.opensea.io/api/v1/assets/?${arrayToURI(
       "asset_contract_addresses",
       asset_contract_addresses

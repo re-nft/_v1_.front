@@ -36,7 +36,7 @@ export const fetchUserProd721 = async (
 
   const response: ERC721s = await timeItAsync(
     `Pulled My ${FetchType[fetchType]} NFTs`,
-    async () => await request(subgraphURI, query)
+    async () => request(subgraphURI, query)
   );
 
   const tokens: NftToken[] = (response as ERC721s).tokens.map((token) => {
@@ -75,7 +75,7 @@ export const fetchUserProd1155 = async (
 
   const response: ERC1155s = await timeItAsync(
     `Pulled My ${FetchType[fetchType]} NFTs`,
-    async () => await request(subgraphURI, query)
+    async () => request(subgraphURI, query)
   );
 
   const tokens: NftToken[] =
