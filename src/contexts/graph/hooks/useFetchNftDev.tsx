@@ -5,18 +5,19 @@ import { BigNumber, ethers } from "ethers";
 import {
   E721Context,
   E1155Context,
-  CurrentAddressContext,
   ReNFTContext,
 } from "../../../hardhat/SymfoniContext";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
+import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
+import fetch from 'cross-fetch'
 
 const BigNumZero = BigNumber.from("0");
 
 export const useFetchNftDev = (
   signer?: ethers.Signer
 ): (() => Promise<Nft[]>) => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const renft = useContext(ReNFTContext);
   const { instance: e721 } = useContext(E721Context);
   const { instance: e1155 } = useContext(E1155Context);

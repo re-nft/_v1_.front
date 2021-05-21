@@ -19,6 +19,7 @@ import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 
 const UserCurrentlyLending: React.FC = () => {
   const { checkedItems, handleReset: batchHandleReset } = useContext(
@@ -37,6 +38,7 @@ const UserCurrentlyLending: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleReset = useCallback(() => {
     getUserLending()
@@ -85,10 +87,10 @@ const UserCurrentlyLending: React.FC = () => {
 
     getUserLendingRequest.promise
       .then((lendings) => {
-        onChangePage(lendings);
+        onChangePage(lendings || []);
         setIsLoading(false);
       })
-      .catch((e) => {
+      .catch(() => {
         console.warn("could not get user Lending request");
       });
 
@@ -98,6 +100,10 @@ const UserCurrentlyLending: React.FC = () => {
     };
   }, [getUserLending, onChangePage, onResetPage]);
 
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You dont have any lend anything yet</div>;

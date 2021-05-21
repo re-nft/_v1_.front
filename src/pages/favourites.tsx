@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 
 import GraphContext from "../contexts/graph";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { myFavorites } from "../services/calculate-my-favorites";
 import { getUniqueID } from "../controller/batch-controller";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../contexts/NftMetaState";
+import { myFavorites } from "../services/calculate-my-favorites";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -31,15 +32,16 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { getUserData, getAllAvailableToLend } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const refreshState = useCallback(() => {
     Promise.all([getAllAvailableToLend(), getUserData()])
       .then(([nfts, userData]) => {
-        if (!nfts) return;
+        if (!nfts || !userData) return;
 
         const items = myFavorites(userData, nfts);
 
@@ -78,7 +80,7 @@ export const MyFavorites: React.FC = () => {
 
     dataRequest.promise
       .then(([nfts, userData]) => {
-        if (!nfts) return;
+        if (!nfts || !userData) return;
 
         const items = myFavorites(userData, nfts);
 
@@ -92,6 +94,11 @@ export const MyFavorites: React.FC = () => {
     return dataRequest.cancel;
   }, [getAllAvailableToLend, getUserData]);
 
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(nftItems);
+  }, [nftItems, fetchNfts]);
+  
   if (isLoading) {
     return <CatalogueLoader />;
   }

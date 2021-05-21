@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import {
-  CurrentAddressContext,
   ReNFTContext,
   SignerContext,
   ResolverContext,
@@ -27,6 +26,8 @@ import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
+import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { usePrevious } from "../../../hooks/usePrevious";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
@@ -48,13 +49,14 @@ const AvailableToRent: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { getAllAvailableToRent } = useContext(GraphContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isActive, setHash } = useContext(TransactionStateContext);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
   const { txnState } = useContext(TransactionStateContext);
   const previoustxnState = usePrevious(txnState);
 
@@ -67,8 +69,8 @@ const AvailableToRent: React.FC = () => {
     ) {
       setIsLoading(true);
       getAllAvailableToRent()
-        .then((lendings: Lending[]) => {
-          onChangePage(lendings);
+        .then((lendings) => {
+          onChangePage(lendings || []);
           setIsLoading(false);
         })
         .catch((e) => {
@@ -143,7 +145,7 @@ const AvailableToRent: React.FC = () => {
     allAvailableToRentRequest.promise
       .then((lending) => {
         // todo: onchangepage takes any!
-        onChangePage(lending);
+        onChangePage(lending || []);
         setIsLoading(false);
       })
       .catch((e) => {
@@ -155,6 +157,10 @@ const AvailableToRent: React.FC = () => {
       return allAvailableToRentRequest.cancel();
     };
   }, [getAllAvailableToRent, onChangePage, onResetPage]);
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

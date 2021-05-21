@@ -19,6 +19,7 @@ import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import TransactionStateContext from "../../../contexts/TransactionState";
 import { usePrevious } from "../../../hooks/usePrevious";
 
@@ -38,6 +39,8 @@ const UserRentings: React.FC = () => {
   const { getUserRenting } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
+
   const { txnState } = useContext(TransactionStateContext);
   const previoustxnState = usePrevious(txnState);
   
@@ -91,10 +94,18 @@ const UserRentings: React.FC = () => {
       return getUserRentingRequest.cancel();
     };
   }, [getUserRenting, onChangePage, onResetPage]);
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+  }, [currentPage, fetchNfts]);
 
-  if (isLoading) return <CatalogueLoader />;
-  if (!isLoading && currentPage.length === 0)
+  if (isLoading) {
+    return <CatalogueLoader />;
+  }
+
+  if (!isLoading && currentPage.length === 0) {
     return <div className="center">You dont have any lend anything yet</div>;
+  }
 
   // TODO: remove all the anys
   return (

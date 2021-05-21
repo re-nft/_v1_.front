@@ -4,16 +4,22 @@ import moment from "moment";
 import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
-import { BatchContext, getUniqueID, useCheckedLendingItems, useCheckedNftItems, useCheckedRentingItems } from "../controller/batch-controller";
+import {
+  BatchContext,
+  getUniqueID,
+  useCheckedLendingItems,
+  useCheckedNftItems,
+  useCheckedRentingItems,
+} from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import stopLend from "../services/stop-lend";
 import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny, short } from "../utils";
 import BatchBar from "../components/batch-bar";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -55,10 +61,10 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { onCheckboxChange, handleReset } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
-  const [currentAddress] = useContext(CurrentAddressContext);
   const { getUserLending, getUserRenting } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -149,8 +155,8 @@ export const Dashboard: React.FC = () => {
 
     getUserLendingRequest.promise
       .then(([userLending, userRenting]) => {
-        setLendingItems(userLending);
-        setRentingItems(userRenting);
+        setLendingItems(userLending || []);
+        setRentingItems(userRenting || []);
         setIsLoading(false);
       })
       .catch((e) => {

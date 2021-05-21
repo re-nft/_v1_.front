@@ -2,7 +2,7 @@
 // ERC721 tokens (will work only in prod)
 export const queryMyERC721s = (user: string): string => {
   return `{
-    tokens(where: {owner: "0xd387a6e4e84a6c86bd90c158c6028a58cc8ac459"}) {
+    tokens(where: {owner: "${user.toString().toLowerCase()}"}) {
       id
 		  tokenURI
     }
@@ -13,7 +13,7 @@ export const queryMyERC721s = (user: string): string => {
 // ERC1155 tokens (will work only in prod)
 export const queryMyERC1155s = (user: string): string => {
   return `{
-    account(id: "0xd387a6e4e84a6c86bd90c158c6028a58cc8ac459") {
+    account(id: "${user.toString().toLowerCase()}") {
       balances(where: {value_gt: 0}) {
         token {
           tokenURI: URI
@@ -123,7 +123,7 @@ export const queryAllRenft = (): string => {
 // reNFT's query to pull all user's lendings and rentings
 export const queryUserRenft = (user: string): string => {
   return `{
-    user(id: "${user.toLowerCase()}") {
+    user(id: "${user.toString().toLowerCase()}") {
       id
       lending {
         id
@@ -154,7 +154,7 @@ export const queryUserRenft = (user: string): string => {
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
-    users(where: {id: "${user.toLowerCase()}"}) {
+    users(where: {id: "${user.toString().toLowerCase()}"}) {
       lending {
         id
         nftAddress
@@ -179,7 +179,7 @@ export const queryUserLendingRenft = (user: string): string => {
 
 export const queryUserRentingRenft = (user: string): string => {
   return `{
-    user(where: {id: "${user.toLowerCase()}"}) {
+    user(where: {id: "${user.toString().toLowerCase()}"}) {
       renting {
         renterAddress
         rentDuration

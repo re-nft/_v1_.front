@@ -1,151 +1,121 @@
 import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
-import { CORS_PROXY } from "../consts";
+import { OpenSeaAsset } from "opensea-js/lib/types";
+import { nftId } from "./firebase";
+import fetch from "cross-fetch";
+import {
+  arrayToURI,
+  buildStaticIPFS_URL,
+  buildURI,
+  matchIPFS_URL,
+  normalizeTokenUri,
+  snakeCaseToCamelCase,
+} from "./utils";
 
-const IPFSGateway = "https://dweb.link/ipfs/";
+export type NftMetaWithId = NftToken["meta"] & { id: string };
+export type NftError = { id: string; error: string };
 
-/**
- * Matches IPFS CIDv0 (all start with Qm)
- * Matches IPFS CIDv1 (all start with b and use base32 case-insensitive encoding)
- * @param url
- * @returns
- */
-const matchIPFS_URL = (url: string) => {
-  const isIPFS_URL =
-    url.match(/(Qm[1-9A-HJ-NP-Za-km-z]{44})(\/.+)?$/) ||
-    url.match(/(b[1-7a-zA-Z]{58})(\/.+)?$/);
-  return isIPFS_URL;
-};
+async function fetchWithTimeout(
+  resource: string,
+  options: RequestInit & { timeout?: number }
+) {
+  const { timeout = 8000 } = options;
 
-const matchWeirdBaseURL = (url: string) => {
-  const isWeird = url.endsWith("0x{id}");
-  return isWeird;
-};
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
 
-const removeWeirdBaseURLEnd = (url: string) => {
-  const withoutEnd = url.slice(0, url.length - "0x{id}".length);
-  return withoutEnd;
-};
+  const response = await fetch(resource, {
+    ...options,
+    signal: controller.signal,
+  });
+  clearTimeout(id);
 
-/**
- * ! There are issues with CORS policy. So Sandbox and a couple of others need to be
- * ! requested through a proxy
- * @param url check if it is sandbox. Sandbox does not set CORS headers, and so you need
- * to proxy the request, unfortunately.
- * @returns
- */
-const isSandbox = (url: string) =>
-  url.startsWith("https://api.sandbox.game/lands");
+  return response;
+}
 
-const isFirebase = (url: string) =>
-  url.startsWith("https://us-central1-renft-nfts-meta");
+export const fetchNFTFromOtherSource = async (
+  nft: Nft
+): Promise<NftMetaWithId | NftError> => {
+  const key = nftId(nft.address, nft.tokenId);
+  const tokenURI = normalizeTokenUri(nft);
 
-const isBCCG = (url: string) =>
-  url.startsWith("https://api.bccg.digital/api/bccg/");
-
-const isJoyWorld = (url: string) =>
-  url.startsWith("https://joyworld.azurewebsites.net");
-
-const isNftBoxes = (url: string) =>
-  url.startsWith("https://nftboxesboxes.azurewebsites.net");
-
-const isGftAuthentic = (url: string) =>
-  url.startsWith("https://gft-authentic-api.herokuapp.com");
-
-const buildStaticIPFS_URL = (matched: string[]) => {
-  const [, cid, path = ""] = matched;
-  return `${IPFSGateway}${cid}${path}`;
-};
-
-/**
- *
- * @param IPFS_URL is an output from matchIPFS_URL function.
- * @returns
- */
-const loadMetaFromIPFS = async (
-  IPFS_URL: RegExpMatchArray | null
-): Promise<NftToken["meta"]> => {
-  if (!IPFS_URL) {
-    console.warn("could not fetch meta IPFS URL");
-    return {
-      image: "",
-      description: "",
-      name: "",
-    };
+  if (nft._mediaURI) return { image: nft._mediaURI, id: key };
+  if (!tokenURI) {
+    return { id: key, error: "No tokenUri" };
   }
 
-  const staticIPFS_URL = buildStaticIPFS_URL(IPFS_URL);
-  try {
-    const response = await fetch(staticIPFS_URL);
+  // It's still possible that the tokenUri points to opensea...
+  const headers: Record<string, string> = {};
+  const transformedUri = buildURI(tokenURI);
+  if (
+    process.env.REACT_APP_OPENSEA_API &&
+    transformedUri.indexOf("api.opensea") > -1
+  ) {
+    headers["X-API-KEY"] = process.env.REACT_APP_OPENSEA_API;
+  }
+  // We want timeout, as some resources are unfetchable
+  // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
+  return fetchWithTimeout(transformedUri, {
+    headers,
+  })
+    .then((r) => r.json())
+    // @ts-ignore
+    .then((data) => {
+      const imageIsIPFS_URL = matchIPFS_URL(data?.image);
 
-    let data: any = {};
-    try {
-      data = await response.json();
-    } catch {
-      // ! this happens with ZORA media for me
-      console.warn("could not get json, which could mean this is media");
-      return { image: staticIPFS_URL };
-    }
-
-    const imageIsIPFS_URL = matchIPFS_URL(data?.image);
-    return {
-      image: imageIsIPFS_URL
+      if (!imageIsIPFS_URL && data?.image?.startsWith("ipfs://ipfs/")) {
+        console.warn(
+          "is not IPFS URL, but we are downloading meta as if it is O_O",
+          data
+        );
+        return { id: key, error: "non-ipfs url" };
+      }
+      const image = imageIsIPFS_URL
         ? buildStaticIPFS_URL(imageIsIPFS_URL)
-        : data?.image,
-      description: data?.description,
-      name: data?.name,
-    };
-  } catch (err) {
-    console.warn("issue loading meta from IPFS");
-  }
-};
+        : data?.image;
 
-export const fetchNFTMeta = async (nft: Nft): Promise<NftToken["meta"]> => {
-  const { _mediaURI } = nft;
-
-  let tokenURI = await nft.loadTokenURI();
-  if (!tokenURI) return {};
-
-  const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);
-  if (isWeirdBaseURL) {
-    // ! this is opensea, in my tests. And even though this weird base url says you need hex
-    // ! form int, you should in fact, pass an int number lol...
-    tokenURI = removeWeirdBaseURLEnd(tokenURI) + nft.tokenId;
-  }
-
-  if (_mediaURI) return { image: _mediaURI };
-
-  const isIPFS_URL = matchIPFS_URL(tokenURI);
-  if (isIPFS_URL) return await loadMetaFromIPFS(isIPFS_URL);
-
-  try {
-    // ! people will tell us: my X NFT is not showing. We will check, and it
-    // ! will probably because we aren't proxying the request for meta here
-    const isProxyable =
-      isSandbox(tokenURI) ||
-      isFirebase(tokenURI) ||
-      isBCCG(tokenURI) ||
-      isJoyWorld(tokenURI) ||
-      isNftBoxes(tokenURI) ||
-      isGftAuthentic(tokenURI);
-    const fetchThis = isProxyable ? `${CORS_PROXY}${tokenURI}` : tokenURI;
-    const response = await fetch(fetchThis);
-    const data = await response?.json();
-
-    if (!data?.image?.startsWith("ipfs://ipfs/")) {
       return {
-        image: data?.image,
+        image: image,
         description: data?.description,
         name: data?.name,
+        id: key,
       };
-    } else {
-      console.warn(
-        "is not IPFS URL, but we are downloading meta as if it is O_O"
-      );
-      return {};
-    }
-  } catch (e) {
-    console.warn("error fetching nft meta");
-    return {};
+    })
+    .catch(() => {
+      return { id: key, error: "unknown error" };
+    });
+};
+
+export const fetchNFTsFromOpenSea = async (
+  asset_contract_addresses: Array<string>,
+  token_ids: Array<string>
+): Promise<Array<NftMetaWithId>> => {
+  if (!process.env.REACT_APP_OPENSEA_API) {
+    throw new Error("OPENSEA_API is not defined");
   }
+  return fetch(
+    `https://api.opensea.io/api/v1/assets/?${arrayToURI(
+      "asset_contract_addresses",
+      asset_contract_addresses
+    )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
+    {
+      headers: {
+        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
+      },
+    }
+  )
+    .then((r) => r.json())
+    .then((r) => {
+      return r.assets.map(snakeCaseToCamelCase).map((nft: OpenSeaAsset) => {
+        return {
+          ...nft,
+          image:
+            nft.imagePreviewUrl ||
+            nft.imageUrlThumbnail ||
+            nft.imageUrl ||
+            nft.imageUrlOriginal,
+          id: nftId(nft.assetContract.address, nft.tokenId || ""),
+        };
+      });
+    });
 };

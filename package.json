@@ -3,50 +3,50 @@
   "version": "1.0.0",
   "author": "Nazariy Vavryk <nazariy@inbox.ru>",
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "@types/bl": "^2.1.0",
-    "@types/moment": "^2.13.0",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.0",
-    "@types/react-helmet": "^6.1.0",
-    "@types/react-router-dom": "^5.1.7",
-    "bl": "^4.1.0",
-    "dotenv": "^8.2.0",
-    "ethers": "^5.0.31",
-    "firebase": "^8.2.10",
-    "graphql": "^15.5.0",
-    "graphql-request": "^3.4.0",
-    "husky": "4",
-    "ipfs-http-client": "^45.0.0",
-    "moment": "^2.29.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-helmet": "^6.1.0",
-    "react-router-dom": "^5.2.0",
+    "@material-ui/core": "4.11.3",
+    "@material-ui/icons": "4.11.2",
+    "bl": "5.0.0",
+    "cross-fetch": "^3.1.4",
+    "debug": "^4.3.1",
+    "ethers": "5.1.0",
+    "firebase": "8.2.10",
+    "graphql": "15.5.0",
+    "graphql-request": "3.4.0",
+    "moment": "2.29.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-helmet": "6.1.0",
+    "react-router-dom": "5.2.0",
     "react-scripts": "4.0.2",
-    "typescript": "^4.1.2",
-    "web3modal": "^1.9.3"
+    "web3modal": "1.9.3"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.1.1",
-    "@ethersproject/bytes": "^5.1.0",
-    "@ethersproject/providers": "^5.1.2",
-    "@typescript-eslint/eslint-plugin": "^4.15.1",
-    "@typescript-eslint/parser": "^4.15.1",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.20.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-plugin-flowtype": "^5.7.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.22.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.1.2",
-    "pretty-quick": "^3.1.0",
-    "sass": "^1.32.11"
+    "@types/bl": "5.0.1",
+    "@types/debug": "^4.1.5",
+    "@types/moment": "2.13.0",
+    "@types/react": "17.0.6",
+    "@types/react-dom": "17.0.5",
+    "@types/react-helmet": "6.1.1",
+    "@types/react-router-dom": "5.1.7",
+    "@typescript-eslint/eslint-plugin": "4.24.0",
+    "@typescript-eslint/parser": "4.24.0",
+    "babel-eslint": "10.1.0",
+    "dotenv": "9.0.2",
+    "eslint": "7.20.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-config-react-app": "6.0.0",
+    "eslint-plugin-flowtype": "5.7.1",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-jsx-a11y": "6.4.1",
+    "eslint-plugin-react": "7.22.0",
+    "eslint-plugin-react-hooks": "4.2.0",
+    "husky": "6.0.0",
+    "lint-staged": "11.0.0",
+    "opensea-js": "1.1.11",
+    "prettier": "2.3.0",
+    "pretty-quick": "3.1.0",
+    "sass": "1.32.11",
+    "typescript": "4.2.4"
   },
   "husky": {
     "hooks": {
@@ -54,7 +54,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": "prettier --write"
+    "*.ts(x)?": "prettier --write"
   },
   "keywords": [
     "NFT",
@@ -77,6 +77,9 @@
     "extends": [
       "react-app"
     ]
+  },
+  "resolutions": {
+    "@ethersproject/bignumber": "5.1.0"
   },
   "browserslist": {
     "production": [

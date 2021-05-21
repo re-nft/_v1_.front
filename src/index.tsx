@@ -9,6 +9,8 @@ import App from "./components/app-layout";
 import { GraphProvider } from "./contexts/graph/index";
 import { TransactionStateProvider } from "./contexts/TransactionState";
 import { Symfoni } from "./hardhat/SymfoniContext";
+import { CurrentAddressContextWrapperProvider } from "./contexts/CurrentAddressContextWrapper";
+import { NFTMetaProvider } from "./contexts/NftMetaState";
 
 const theme = createMuiTheme({
   typography: {
@@ -24,13 +26,17 @@ const theme = createMuiTheme({
 
 ReactDOM.render(
   <Symfoni>
-    <GraphProvider>
-      <TransactionStateProvider>
-        <ThemeProvider theme={theme}>
-          <App />
-        </ThemeProvider>
-      </TransactionStateProvider>
-    </GraphProvider>
+    <CurrentAddressContextWrapperProvider>
+      <NFTMetaProvider>
+        <GraphProvider>
+          <TransactionStateProvider>
+            <ThemeProvider theme={theme}>
+              <App />
+            </ThemeProvider>
+          </TransactionStateProvider>
+        </GraphProvider>
+      </NFTMetaProvider>
+    </CurrentAddressContextWrapperProvider>
   </Symfoni>,
   document.getElementById("root")
 );

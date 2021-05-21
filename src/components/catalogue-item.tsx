@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 
 import { BatchContext } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 import GraphContext from "../contexts/graph";
 import {
   addOrRemoveUserFavorite,
@@ -14,14 +13,26 @@ import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
-import { fetchNFTMeta } from "../services/fetch-nft-meta";
+import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { NFTMetaContext } from "../contexts/NftMetaState";
 
 export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
 };
-
+const Skeleton = () => {
+  return (
+    <div className="skeleton">
+      <div className="skeleton-item control"></div>
+      <div className="skeleton-item img"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item meta-line"></div>
+      <div className="skeleton-item btn"></div>
+    </div>
+  );
+};
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
@@ -32,7 +43,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const isVisible = entry && entry.isIntersecting;
 
   const { onCheckboxChange } = useContext(BatchContext);
-  const [currentAddress] = useContext(CurrentAddressContext);
+  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
@@ -42,13 +53,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       downvote?: number;
       upvote?: number;
     }>();
-  const [meta, setMeta] =
-    useState<{
-      name?: string;
-      image?: string;
-      description?: string;
-    }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
+  const [metas] = useContext(NFTMetaContext);
+  const id = nftId(nft.address, nft.tokenId);
+  const meta = metas[id];
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -56,13 +64,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     // ! format inside of the onCheckboxChange
     onCheckboxChange(nft);
   }, [nft, isChecked, onCheckboxChange]);
-
-  const preloadImage = (imgSrc: string) => {
-    const img = new Image();
-    img.onload = () => setImageIsReady(true);
-    img.onerror = () => setImageIsReady(true);
-    img.src = imgSrc;
-  };
 
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
@@ -104,18 +105,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   useEffect(() => {
     setIsChecked(checked || false);
-    if (isVisible && !meta?.image) {
-      fetchNFTMeta(nft)
-        .then((response) => {
-          if (response?.image) {
-            preloadImage(response?.image);
-          } else {
-            setImageIsReady(true);
-          }
-          setMeta(response);
-        })
-        .catch(() => console.warn("could not fetch nft meta"));
-    }
 
     if (!nft.isERC721 && currentAddress) {
       nft
@@ -125,14 +114,19 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         })
         .catch(() => console.warn("could not load amount"));
     }
-  }, [checked, isVisible, nft, meta?.image, currentAddress]);
+  }, [checked, nft, meta?.image, currentAddress]);
 
-  const id = nftId(nft.address, nft.tokenId);
+  useEffect(() => {
+    if (meta && !meta.loading) {
+      setImageIsReady(true);
+    }
+  }, [meta]);
+
   const addedToFavorites =
     inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
-  const { name, image } = meta || {};
+  const { name, image, description } = meta || {};
 
   return (
     <div
@@ -141,16 +135,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >
-      {!imageIsReady && (
-        <div className="skeleton">
-          <div className="skeleton-item control"></div>
-          <div className="skeleton-item img"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item meta-line"></div>
-          <div className="skeleton-item btn"></div>
-        </div>
-      )}
+      {!imageIsReady && <Skeleton></Skeleton>}
       {imageIsReady && (
         <>
           <div className="nft__overlay">
@@ -178,7 +163,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__image">
             {image ? (
-              <img loading="lazy" src={image} />
+              <img alt={description} src={image} />
             ) : (
               <div className="no-img">NO IMG</div>
             )}

@@ -18,6 +18,7 @@ import {
   PageContext,
   PageContextType,
 } from "../../../controller/page-controller";
+import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { TransactionStateEnum } from "../../../types";
 import TransactionStateContext from "../../../contexts/TransactionState";
@@ -39,8 +40,12 @@ const Lendings: React.FC = () => {
   const { getAllAvailableToLend } = useContext(GraphContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, fetchNfts] = useContext(NFTMetaContext);
+
   const { txnState } = useContext(TransactionStateContext);
   const previoustxnState = usePrevious(txnState);
+
+
 
   // refresh when lending complete
   // on reject nothing to do
@@ -52,7 +57,7 @@ const Lendings: React.FC = () => {
       setIsLoading(true);
       getAllAvailableToLend()
         .then((nfts) => {
-          onChangePage(nfts);
+          onChangePage(nfts || []);
           setIsLoading(false);
         })
         .catch(() => {
@@ -85,7 +90,10 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    setIsLoading(true);
+    // TODO:eniko too much rerender dataloading
+    if (checkedNftItems.length < 1) {
+      setIsLoading(true);
+    }
 
     const getUserNftsRequest = createCancellablePromise(
       getAllAvailableToLend()
@@ -93,7 +101,7 @@ const Lendings: React.FC = () => {
 
     getUserNftsRequest.promise
       .then((nfts) => {
-        onChangePage(nfts);
+        //onChangePage(nfts || []);
         setIsLoading(false);
       })
       .catch(() => {
@@ -101,15 +109,25 @@ const Lendings: React.FC = () => {
       });
 
     return () => {
-      onResetPage();
-      return getUserNftsRequest.cancel();
+     // onResetPage();
+      if (getUserNftsRequest) return getUserNftsRequest.cancel();
     };
-  }, [getAllAvailableToLend, onChangePage, onResetPage]);
+  }, [getAllAvailableToLend, checkedNftItems]);
 
-  //
-  if (isLoading) return <CatalogueLoader />;
-  if (!isLoading && currentPage.length === 0)
+  //Prefetch metadata
+  useEffect(() => {
+    fetchNfts(currentPage);
+    //TODO:eniko fetch next page
+  }, [currentPage, fetchNfts]);
+
+  if (isLoading) {
+    return <CatalogueLoader />;
+  }
+
+  if (!isLoading && currentPage.length === 0) {
     return <div className="center">You don&apos;t have any NFTs to lend</div>;
+  }
+
   return (
     <>
       {modalOpen && (
