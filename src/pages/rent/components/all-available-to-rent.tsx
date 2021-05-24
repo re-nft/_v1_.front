@@ -53,18 +53,17 @@ const AvailableToRent: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
-  const { allAvailableToRent, isLoading } = useAllAvailableToRent()
+  const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const { isActive, setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   // refresh when state succeed after rent
   // nothing to do on reject
-  // TODO:eniko manually have to force refetch or optimistically set data when rent/lent 
+  // TODO:eniko manually have to force refetch or optimistically set data when rent/lent
 
-
-  useEffect(()=>{
-    onChangePage(allAvailableToRent)
-  }, [allAvailableToRent, onChangePage])
+  useEffect(() => {
+    onChangePage(allAvailableToRent);
+  }, [allAvailableToRent, onChangePage]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
@@ -121,7 +120,6 @@ const AvailableToRent: React.FC = () => {
   const handleBatchRent = useCallback(() => {
     setOpenBatchModel(true);
   }, [setOpenBatchModel]);
-
 
   //Prefetch metadata
   useEffect(() => {

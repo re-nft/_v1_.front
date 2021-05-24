@@ -12,7 +12,6 @@ import createDebugger from "debug";
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("FETCH_TOKENURI");
 
-
 enum NftType {
   Nft,
   Lending,
@@ -82,7 +81,7 @@ class Nft {
           this._tokenURI = this._parseTokenURI(d);
         })
         .catch((e: any) => {
-          debug(e)
+          debug(e);
           debug(
             "could not fetch tokenURI",
             this.address,

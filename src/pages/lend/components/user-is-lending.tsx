@@ -21,9 +21,8 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useUserLending } from "../../../contexts/graph/hooks/useUserLending";
 
 const UserCurrentlyLending: React.FC = () => {
-  const { checkedItems, handleReset: batchHandleReset } = useContext(
-    BatchContext
-  );
+  const { checkedItems, handleReset: batchHandleReset } =
+    useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const {
     totalPages,
@@ -34,13 +33,13 @@ const UserCurrentlyLending: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const { instance: renft } = useContext(ReNFTContext);
-  const {userLending, isLoading} = useUserLending()
+  const { userLending, isLoading } = useUserLending();
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleReset = useCallback(() => {
-      //TODO:eniko
-      //refetch lending
+    //TODO:eniko
+    //refetch lending
   }, []);
 
   const handleStopLend = useCallback(

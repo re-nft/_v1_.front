@@ -33,19 +33,18 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 
 export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const {allAvailableToLend, isLoading: allAvailableIsLoading} = useAllAvailableToLend();
+  const { allAvailableToLend, isLoading: allAvailableIsLoading } =
+    useAllAvailableToLend();
   const { userData, isLoading: userDataIsLoading } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const refreshState = useCallback(() => {
     //TODO:eniko force data refetch
-        // if (!allAvailableToLend || !userData) return;
-
-        // const items = myFavorites(userData, allAvailableToLend);
-
-        // setNftItems(items);
-        // setIsLoading(false);
+    // if (!allAvailableToLend || !userData) return;
+    // const items = myFavorites(userData, allAvailableToLend);
+    // setNftItems(items);
+    // setIsLoading(false);
   }, []);
 
   const onRemoveFromFavorites = useCallback(
@@ -74,7 +73,7 @@ export const MyFavorites: React.FC = () => {
   useEffect(() => {
     fetchNfts(nftItems);
   }, [nftItems, fetchNfts]);
-  
+
   const isLoading = userDataIsLoading || allAvailableIsLoading;
 
   if (isLoading) {

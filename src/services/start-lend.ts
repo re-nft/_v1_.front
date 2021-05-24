@@ -40,17 +40,20 @@ export default async function startLend(
     return;
   }
   return new Promise((resolve, reject) => {
-    renft.lend(
-      addresses,
-      tokenIds,
-      amounts,
-      maxRentDurations,
-      dailyRentPrices,
-      collaterals,
-      pmtTokens
-    ).then(v => resolve(v)).catch((e) =>{
-      debug(e);
-      resolve(undefined)
-    });
+    renft
+      .lend(
+        addresses,
+        tokenIds,
+        amounts,
+        maxRentDurations,
+        dailyRentPrices,
+        collaterals,
+        pmtTokens
+      )
+      .then((v) => resolve(v))
+      .catch((e) => {
+        debug(e);
+        resolve(undefined);
+      });
   });
 }

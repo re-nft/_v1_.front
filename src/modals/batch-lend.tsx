@@ -16,6 +16,7 @@ import setApprovalForAll from "../services/set-approval-for-all";
 import ActionButton from "../components/action-button";
 import { getUniqueID } from "../controller/batch-controller";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
 
 type LendOneInputs = {
   [key: string]: {
@@ -83,25 +84,37 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     [renft, isActive, lendOneInputs, pmtToken, nfts, setHash, onClose]
   );
 
-  const handleApproveAll = useCallback(async () => {
-    if (!currentAddress || !renft || isActive || !provider) return;
+  const handleApproveAll = useCallback(() => {
+    if (!provider) return;
+    if (!renft) return;
+    const fetchRequest = createCancellablePromise(
+      setApprovalForAll(renft, nfts)
+    );
+    fetchRequest.promise
+      .then(([tx]) => {
+        if (!tx) return;
 
-    const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
-      console.warn("issue approving all in batch lend");
-      return [undefined];
-    });
+        setHash(tx.hash);
+        provider
+          .getTransactionReceipt(tx.hash)
+          .then((receipt) => {
+            const status = receipt?.status ?? 0;
+            if (status === 1) setIsApproved(true);
+          })
+          .catch(() => {
+            console.warn("issue pulling txn receipt in batch lend");
+            return undefined;
+          });
+      })
+      .catch(() => {
+        console.warn("issue approving all in batch lend");
+        return [undefined];
+      });
 
-    if (!tx) return;
-
-    setHash(tx.hash);
-    const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
-      console.warn("issue pulling txn receipt in batch lend");
-      return undefined;
-    });
-
-    const status = receipt?.status ?? 0;
-    if (status === 1) setIsApproved(true);
-  }, [currentAddress, renft, isActive, setHash, provider, setIsApproved, nfts]);
+    return () => {
+      fetchRequest.cancel();
+    };
+  }, [nfts, provider, renft, setHash]);
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {

@@ -64,8 +64,10 @@ export const Dashboard: React.FC = () => {
   const { onCheckboxChange, handleReset } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
-  const {userRenting: rentingItems, isLoading: userRentingLoading} = useUserRenting()
-  const {userLending: lendingItems, isLoading: userLendingLoading} = useUserLending()
+  const { userRenting: rentingItems, isLoading: userRentingLoading } =
+    useUserRenting();
+  const { userLending: lendingItems, isLoading: userLendingLoading } =
+    useUserLending();
   const { instance: renft } = useContext(ReNFTContext);
   const [__, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
@@ -73,7 +75,6 @@ export const Dashboard: React.FC = () => {
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
-
 
   // const handleClaimCollateral = useCallback(
   //   async (lending: Lending) => {
@@ -104,7 +105,7 @@ export const Dashboard: React.FC = () => {
         }))
       );
       await setHash(tx.hash);
-     //  handleRefresh();
+      //  handleRefresh();
       handleReset();
     },
     [renft, setHash, handleReset]
@@ -126,9 +127,9 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const isLoading = userLendingLoading || userLendingLoading
+  const isLoading = userLendingLoading || userLendingLoading;
 
-  if (isLoading ) return <CatalogueLoader />;
+  if (isLoading) return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (

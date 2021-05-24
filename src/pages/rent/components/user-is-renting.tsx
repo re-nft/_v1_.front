@@ -21,9 +21,8 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useUserRenting } from "../../../contexts/graph/hooks/useUserRenting";
 
 const UserRentings: React.FC = () => {
-  const { checkedItems, handleReset: handleBatchReset } = useContext(
-    BatchContext
-  );
+  const { checkedItems, handleReset: handleBatchReset } =
+    useContext(BatchContext);
   const checkedRentingItems = useCheckedRentingItems();
   const {
     totalPages,
@@ -33,13 +32,13 @@ const UserRentings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext(PageContext);
-  const {userRenting, isLoading} = useUserRenting();
+  const { userRenting, isLoading } = useUserRenting();
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   //const { txnState } = useContext(TransactionStateContext);
   //const previoustxnState = usePrevious(txnState);
-  
+
   //TODO:eniko force renting to update when state changes
   // useEffect(() => {
   //   if (
@@ -73,7 +72,7 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    onChangePage(userRenting)
+    onChangePage(userRenting);
   }, [onChangePage, userRenting]);
 
   //Prefetch metadata

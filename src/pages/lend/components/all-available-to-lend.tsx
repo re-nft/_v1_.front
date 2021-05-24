@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useContext, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
@@ -20,9 +26,8 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
 
 const Lendings: React.FC = () => {
-  const { checkedItems, handleReset, onCheckboxChange } = useContext(
-    BatchContext
-  );
+  const { checkedItems, handleReset, onCheckboxChange } =
+    useContext(BatchContext);
   const checkedNftItems = useCheckedNftItems();
   const {
     totalPages,
@@ -32,10 +37,9 @@ const Lendings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext<PageContextType<Nft>>(PageContext);
-  const {allAvailableToLend, isLoading} = useAllAvailableToLend()
+  const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -55,7 +59,7 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    onChangePage(allAvailableToLend)
+    onChangePage(allAvailableToLend);
   }, [allAvailableToLend, onChangePage]);
 
   //TODO have to substract NFT that we actually lending from the graph local
@@ -65,7 +69,6 @@ const Lendings: React.FC = () => {
     fetchNfts(currentPage);
     //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
-
 
   if (isLoading) {
     return <CatalogueLoader />;

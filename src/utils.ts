@@ -3,7 +3,7 @@ import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
-import fetch from 'cross-fetch'
+import fetch from "cross-fetch";
 import createDebugger from "debug";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
@@ -213,10 +213,10 @@ export const timeItAsync = async <T>(
   msg: string,
   callable: CallableFunction
 ): Promise<T> => {
-  const start = Date.now()
+  const start = Date.now();
   const res: T = await callable();
   const end = Date.now();
-  debug(`${msg} ${end-start}ms` )
+  debug(`${msg} ${end - start}ms`);
   return res;
 };
 

@@ -127,9 +127,10 @@ export const fetchRenftsAll = async (
 
   const response: NftRaw = await timeItAsync(
     "Pulled All Renft Nfts",
-    async () => await request(subgraphURI, query).catch(e => {
-      return {}
-    })
+    async () =>
+      await request(subgraphURI, query).catch((e) => {
+        return {};
+      })
   );
 
   const _allRenftsLending: { [key: string]: Lending } = {};
@@ -150,9 +151,10 @@ export const fetchRenftsAll = async (
   return { lending: _allRenftsLending, renting: _allRenftsRenting };
 };
 
-
 //TODO unused
-export const fetchUserLending = async (currentAddress: string| undefined): Promise<string[] | undefined> => {
+export const fetchUserLending = async (
+  currentAddress: string | undefined
+): Promise<string[] | undefined> => {
   if (!currentAddress) return;
   const query = queryUserLendingRenft(currentAddress);
 
@@ -177,7 +179,9 @@ export const fetchUserLending = async (currentAddress: string| undefined): Promi
 };
 
 //TODO unused
-export const fetchUserRenting = async (currentAddress: string| undefined): Promise<string[] | undefined> => {
+export const fetchUserRenting = async (
+  currentAddress: string | undefined
+): Promise<string[] | undefined> => {
   if (!currentAddress) return;
   const query = queryUserRentingRenft(currentAddress);
   if (!process.env.REACT_APP_RENFT_API) {

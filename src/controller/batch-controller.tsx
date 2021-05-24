@@ -52,9 +52,8 @@ const defaultBatchContext = {
   onCheckboxChange: THROWS,
 };
 
-export const BatchContext = createContext<BatchContextType>(
-  defaultBatchContext
-);
+export const BatchContext =
+  createContext<BatchContextType>(defaultBatchContext);
 
 export const BatchProvider: React.FC = ({ children }) => {
   const [checkedItems, setCheckedItems] = useState<
@@ -87,9 +86,6 @@ export const BatchProvider: React.FC = ({ children }) => {
       }
     });
   };
-  useEffect(() => {
-    return handleReset();
-  }, [handleReset]);
 
   return (
     <BatchContext.Provider

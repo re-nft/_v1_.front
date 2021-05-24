@@ -29,8 +29,8 @@ export const useAllAvailableToRent = (): {
       const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
         "Pulled All ReNFT Lendings",
         async () =>
-          await request(subgraphURI, queryAllLendingRenft).catch(e=>{
-            return {}
+          await request(subgraphURI, queryAllLendingRenft).catch((e) => {
+            return {};
           })
       );
 

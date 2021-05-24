@@ -1,6 +1,4 @@
-import React, {
-  createContext,
-} from "react";
+import React, { createContext } from "react";
 
 /* eslint-disable-next-line */
 type Props = {};
@@ -97,6 +95,5 @@ class PageProvider<T> extends React.Component<Props, State<T>> {
     );
   }
 }
-
 
 export default PageProvider;
