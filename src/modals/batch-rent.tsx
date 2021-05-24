@@ -105,9 +105,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                   {` x ${
                     !duration[item.tokenId] ? "?" : duration[item.tokenId]
                   } days + ${nftPrice} = ${
-                    totalRent[item.tokenId]
-                      ? totalRent[item.tokenId]
-                      : "? "
+                    totalRent[item.tokenId] ? totalRent[item.tokenId] : "? "
                   }`}
                   {` ${paymentToken}`}
                 </div>

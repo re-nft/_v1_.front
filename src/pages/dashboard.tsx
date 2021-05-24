@@ -173,12 +173,8 @@ export const Dashboard: React.FC = () => {
                         <td className="column">
                           {PaymentToken[lending.paymentToken ?? 0]}
                         </td>
-                        <td className="column">
-                            {lending.nftPrice}
-                        </td>
-                        <td className="column">
-                          {lending.dailyRentPrice}
-                        </td>
+                        <td className="column">{lending.nftPrice}</td>
+                        <td className="column">{lending.dailyRentPrice}</td>
                         <td className="column">
                           {lending.maxRentDuration} days
                         </td>

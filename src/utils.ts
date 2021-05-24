@@ -169,7 +169,6 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
-
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
