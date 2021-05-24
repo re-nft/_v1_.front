@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { FetchType, fetchUserProd1155 } from "../../../services/graph";
+import createCancellablePromise from "../../create-cancellable-promise";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
 import { Nft } from "../classes";
+import { NftToken } from "../types";
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
@@ -17,18 +19,21 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
       if (!currentAddress) return;
       setLoading(true);
       //TODO:eniko current limitation is 5000 items for ERC1155
-      const usersNfts1155 = await Promise.all([
+      const usersNfts1155 = await Promise.allSettled([
         fetchUserProd1155(currentAddress, 0),
         fetchUserProd1155(currentAddress, 1),
         fetchUserProd1155(currentAddress, 2),
         fetchUserProd1155(currentAddress, 3),
         fetchUserProd1155(currentAddress, 4),
-      ])
-        .then(([arr1, arr2, arr3, arr4, arr5]) => {
-          return Promise.resolve([...arr1, ...arr2, ...arr3, ...arr4, ...arr5]);
-        })
-        .then((result) => {
-          return result.map((nft) => {
+      ]).then((r) => {
+        return r
+          .reduce<NftToken[]>((acc, v) => {
+            if (v.status === "fulfilled") {
+              acc = [...acc, ...v.value];
+            }
+            return acc;
+          }, [])
+          .map((nft) => {
             return new Nft(
               nft.address,
               nft.tokenId,
@@ -41,11 +46,12 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
               }
             );
           });
-        });
-      setLoading(false);
+      });
       setNfts(usersNfts1155);
+      setLoading(false);
     }
-    fetchAndCreate();
+    const fetchRequest = createCancellablePromise(fetchAndCreate());
+    return fetchRequest.cancel;
   }, [signer, currentAddress]);
 
   return { ERC1155: nfts, isLoading };

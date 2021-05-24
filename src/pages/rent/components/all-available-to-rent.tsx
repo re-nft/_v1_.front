@@ -23,7 +23,6 @@ import {
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
 import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";

@@ -16,6 +16,7 @@ import { UserData, CalculatedUserVote, UsersVote } from "./types";
 import { Nft, Lending, Renting } from "./classes";
 import { CurrentAddressContextWrapper } from "../CurrentAddressContextWrapper";
 import { fetchRenftsAll, LendingId, RentingId } from "../../services/graph";
+import createCancellablePromise from "../create-cancellable-promise";
 
 /**
  * Useful links
@@ -82,28 +83,31 @@ export const GraphProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const getUserData = () => {
       if (currentAddress) {
-        setLoading(true);
-        getUserDataOrCrateNew(currentAddress)
-          .then((userData: UserData | undefined) => {
-            setLoading(false);
-            if (userData) {
-              setUserData(userData);
-            }
-          })
-          .catch(() => {
-            setLoading(false);
-
-            console.warn("could not update global user data");
-          });
+        return getUserDataOrCrateNew(currentAddress);
       }
+      return Promise.resolve(undefined);
     };
-    const getVotes = () => {
-      getAllUsersVote().then((usersVote) => {
-        setUsersVote(usersVote);
+
+    setLoading(true);
+    const fetchRequest = createCancellablePromise(getUserData());
+    fetchRequest.promise
+      .then((userData: UserData | undefined) => {
+        setLoading(false);
+        if (userData) {
+          setUserData(userData);
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+
+        console.warn("could not update global user data");
       });
+    const fetchRequest2 = createCancellablePromise(getAllUsersVote());
+    fetchRequest2.promise.then((d) => setUsersVote(d));
+    return () => {
+      fetchRequest.cancel();
+      fetchRequest2.cancel();
     };
-    getUserData();
-    getVotes();
   }, [currentAddress]);
 
   useEffect(() => {

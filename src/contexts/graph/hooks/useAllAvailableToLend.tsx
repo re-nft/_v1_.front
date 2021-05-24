@@ -12,6 +12,9 @@ export const useAllAvailableToLend = (): { allAvailableToLend: Nft[], isLoading:
   const allAvailableToLend: Nft[] = useMemo(() => {
     return [...devNfts, ...ERC1155, ...ERC721];
   }, [ERC1155, ERC721, devNfts]);
+  const isLoading = useMemo(()=>{
+    return erc1155Loading || erc721Loading;
+  }, [erc721Loading, erc1155Loading])
 
-  return { allAvailableToLend, isLoading: erc721Loading || erc1155Loading };
+  return { allAvailableToLend, isLoading };
 };

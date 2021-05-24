@@ -6,6 +6,7 @@ import { Lending, Nft } from "../classes";
 import { queryAllLendingRenft } from "../queries";
 import { LendingRaw } from "../types";
 import { timeItAsync } from "../../../utils";
+import createCancellablePromise from "../../create-cancellable-promise";
 
 export const useAllAvailableToRent = (): {
   allAvailableToRent: Nft[];
@@ -28,8 +29,8 @@ export const useAllAvailableToRent = (): {
       const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
         "Pulled All ReNFT Lendings",
         async () =>
-          await request(subgraphURI, queryAllLendingRenft).catch((e) => {
-            return {};
+          await request(subgraphURI, queryAllLendingRenft).catch(e=>{
+            return {}
           })
       );
 
@@ -44,7 +45,8 @@ export const useAllAvailableToRent = (): {
       setLoading(false);
       setNfts(lendingsReNFT);
     };
-    fetchAndCreate();
+    const fetchRequest = createCancellablePromise(fetchAndCreate());
+    return fetchRequest.cancel;
   }, [signer, currentAddress]);
 
   return {

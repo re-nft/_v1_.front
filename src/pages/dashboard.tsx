@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import moment from "moment";
 
-import GraphContext from "../contexts/graph/index";
 import { Lending, Renting } from "../contexts/graph/classes";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import {
   BatchContext,
   getUniqueID,
@@ -15,7 +13,6 @@ import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import stopLend from "../services/stop-lend";
-import claimCollateral from "../services/claim-collateral";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny, short } from "../utils";
 import BatchBar from "../components/batch-bar";

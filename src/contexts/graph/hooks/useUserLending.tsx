@@ -6,6 +6,7 @@ import { Lending, Renting } from "../classes";
 import { queryUserLendingRenft } from "../queries";
 import { LendingRaw } from "../types";
 import { timeItAsync } from "../../../utils";
+import createCancellablePromise from "../../create-cancellable-promise";
 
 export const useUserLending = (): {
   userLending: Lending[];
@@ -47,7 +48,8 @@ export const useUserLending = (): {
         setLendings(lendings);
       }
     };
-    fetchAndCreate();
+    const fetchRequest = createCancellablePromise(fetchAndCreate());
+    return fetchRequest.cancel;
   }, [signer, currentAddress]);
 
   return {

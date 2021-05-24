@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { FetchType, fetchUserProd721 } from "../../../services/graph";
+import createCancellablePromise from "../../create-cancellable-promise";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
 import { Nft } from "../classes";
+import { NftToken } from "../types";
 
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
@@ -16,18 +18,21 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
       if (!currentAddress) return;
       setLoading(false);
       //TODO:eniko current limitation is 5000 items for ERC721
-      const usersNfts721 = await Promise.all([
+      const usersNfts721 = await Promise.allSettled([
         fetchUserProd721(currentAddress, 0),
         fetchUserProd721(currentAddress, 1),
         fetchUserProd721(currentAddress, 2),
         fetchUserProd721(currentAddress, 3),
         fetchUserProd721(currentAddress, 4),
-      ])
-        .then(([arr1, arr2, arr3, arr4, arr5]) => {
-          return Promise.resolve([...arr1, ...arr2, ...arr3, ...arr4, ...arr5]);
-        })
-        .then((result) => {
-          return result.map((nft) => {
+      ]).then((r) => {
+        return r
+          .reduce<NftToken[]>((acc, v) => {
+            if (v.status === "fulfilled") {
+              acc = [...acc, ...v.value];
+            }
+            return acc;
+          }, [])
+          .map((nft) => {
             return new Nft(
               nft.address,
               nft.tokenId,
@@ -40,11 +45,13 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
               }
             );
           });
-        });
-      setLoading(false);
+      });
+
       setNfts(usersNfts721);
+      setLoading(false);
     }
-    fetchAndCreate();
+    const fetchRequest = createCancellablePromise(fetchAndCreate());
+    return fetchRequest.cancel;
   }, [signer, currentAddress]);
 
   return { ERC721: nfts, isLoading };

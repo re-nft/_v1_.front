@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
-import { PaymentToken, TransactionStateEnum } from "../../../types";
+import { PaymentToken } from "../../../types";
 import NumericField from "../../../components/numeric-field";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -14,14 +14,10 @@ import {
   getUniqueID,
   useCheckedRentingItems,
 } from "../../../controller/batch-controller";
-import GraphContext from "../../../contexts/graph";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import TransactionStateContext from "../../../contexts/TransactionState";
-import { usePrevious } from "../../../hooks/usePrevious";
 import { useUserRenting } from "../../../contexts/graph/hooks/useUserRenting";
 
 const UserRentings: React.FC = () => {

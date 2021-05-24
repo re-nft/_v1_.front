@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { fetchRenftsAll } from "../../../services/graph";
+import createCancellablePromise from "../../create-cancellable-promise";
 import { Nft, Renting } from "../classes";
 
 export const useUserRenting = (): {
@@ -21,7 +22,8 @@ export const useUserRenting = (): {
         setRentings(Object.values(renftAll.renting) || []);
       }
     };
-    fetchAndCreate();
+    const fetchRequest = createCancellablePromise(fetchAndCreate());
+    return fetchRequest.cancel;
   }, [signer]);
 
   return { userRenting: renting, isLoading };
