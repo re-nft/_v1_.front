@@ -169,17 +169,6 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
-export const getLendingPriceByCurreny = (
-  price: number,
-  token: PaymentToken
-): string => {
-  switch (token) {
-    case PaymentToken.DAI:
-      return String(parseInt(String(price * 10000), 10));
-    default:
-      return String(price);
-  }
-};
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {

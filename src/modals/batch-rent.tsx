@@ -5,7 +5,6 @@ import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "../types";
-import { getLendingPriceByCurreny } from "../utils";
 import { getUniqueID } from "../controller/batch-controller";
 import CommonInfo from "./common-info";
 
@@ -66,14 +65,8 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
         {nft.map((item: Lending, ix: number) => {
           const token = item.lending.paymentToken;
           const paymentToken = PaymentToken[token];
-          const dailyRentPrice = getLendingPriceByCurreny(
-            item.lending.dailyRentPrice,
-            token
-          );
-          const nftPrice = getLendingPriceByCurreny(
-            item.lending.nftPrice,
-            token
-          );
+          const dailyRentPrice = item.lending.dailyRentPrice;
+          const nftPrice = item.lending.nftPrice;
           return (
             <CommonInfo
               nft={item}
@@ -113,7 +106,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                     !duration[item.tokenId] ? "?" : duration[item.tokenId]
                   } days + ${nftPrice} = ${
                     totalRent[item.tokenId]
-                      ? getLendingPriceByCurreny(totalRent[item.tokenId], token)
+                      ? totalRent[item.tokenId]
                       : "? "
                   }`}
                   {` ${paymentToken}`}

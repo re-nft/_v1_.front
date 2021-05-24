@@ -14,7 +14,7 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import stopLend from "../services/stop-lend";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
-import { getLendingPriceByCurreny, short } from "../utils";
+import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { useUserRenting } from "../contexts/graph/hooks/useUserRenting";
@@ -174,16 +174,10 @@ export const Dashboard: React.FC = () => {
                           {PaymentToken[lending.paymentToken ?? 0]}
                         </td>
                         <td className="column">
-                          {getLendingPriceByCurreny(
-                            lending.nftPrice,
-                            lending.paymentToken
-                          )}
+                            {lending.nftPrice}
                         </td>
                         <td className="column">
-                          {getLendingPriceByCurreny(
-                            lending.dailyRentPrice,
-                            lending.paymentToken
-                          )}
+                          {lending.dailyRentPrice}
                         </td>
                         <td className="column">
                           {lending.maxRentDuration} days
