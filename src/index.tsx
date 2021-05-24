@@ -2,8 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
+import Debug from "debug";
 
 dotenv.config();
+Debug.enable(process.env.REACT_APP_DEBUG || "");
 
 import App from "./components/app-layout";
 import { GraphProvider } from "./contexts/graph/index";

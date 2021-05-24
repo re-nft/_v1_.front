@@ -13,7 +13,6 @@ import ActionButton from "../../../components/action-button";
 import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
-import GraphContext from "../../../contexts/graph";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import {
@@ -29,6 +28,8 @@ import LendingFields from "../../../components/lending-fields";
 import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { usePrevious } from "../../../hooks/usePrevious";
+import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
+import allAvailableToLend from "../../lend/components/all-available-to-lend";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
@@ -53,31 +54,18 @@ const AvailableToRent: React.FC = () => {
   const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
-  const { getAllAvailableToRent } = useContext(GraphContext);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { allAvailableToRent, isLoading } = useAllAvailableToRent()
   const { isActive, setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-  const { txnState } = useContext(TransactionStateContext);
-  const previoustxnState = usePrevious(txnState);
 
   // refresh when state succeed after rent
   // nothing to do on reject
-  useEffect(() => {
-    if (
-      txnState === TransactionStateEnum.SUCCESS &&
-      previoustxnState === TransactionStateEnum.PENDING
-    ) {
-      setIsLoading(true);
-      getAllAvailableToRent()
-        .then((lendings) => {
-          onChangePage(lendings || []);
-          setIsLoading(false);
-        })
-        .catch((e) => {
-          console.warn("could not get user lending");
-        });
-    }
-  }, [txnState, previoustxnState, getAllAvailableToRent, onChangePage]);
+  // TODO:eniko manually have to force refetch or optimistically set data when rent/lent 
+
+
+  useEffect(()=>{
+    onChangePage(allAvailableToRent)
+  }, [allAvailableToRent, onChangePage])
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
@@ -135,28 +123,7 @@ const AvailableToRent: React.FC = () => {
     setOpenBatchModel(true);
   }, [setOpenBatchModel]);
 
-  useEffect(() => {
-    setIsLoading(true);
 
-    const allAvailableToRentRequest = createCancellablePromise(
-      getAllAvailableToRent()
-    );
-
-    allAvailableToRentRequest.promise
-      .then((lending) => {
-        // todo: onchangepage takes any!
-        onChangePage(lending || []);
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        console.warn("could not get usersLending request");
-      });
-
-    return () => {
-      onResetPage();
-      return allAvailableToRentRequest.cancel();
-    };
-  }, [getAllAvailableToRent, onChangePage, onResetPage]);
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);

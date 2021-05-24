@@ -1,7 +1,6 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 
 import { ReNFTContext } from "../../../hardhat/SymfoniContext";
-import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
@@ -17,9 +16,9 @@ import {
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
+import { useUserLending } from "../../../contexts/graph/hooks/useUserLending";
 
 const UserCurrentlyLending: React.FC = () => {
   const { checkedItems, handleReset: batchHandleReset } = useContext(
@@ -34,22 +33,15 @@ const UserCurrentlyLending: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext(PageContext);
-  const { getUserLending } = useContext(GraphContext);
   const { instance: renft } = useContext(ReNFTContext);
+  const {userLending, isLoading} = useUserLending()
   const { setHash } = useContext(TransactionStateContext);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   const handleReset = useCallback(() => {
-    getUserLending()
-      .then((userLnding: Lending[] | undefined) => {
-        onChangePage(userLnding || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not handle reset");
-      });
-  }, [getUserLending, onChangePage, setIsLoading]);
+      //TODO:eniko
+      //refetch lending
+  }, []);
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
@@ -81,24 +73,8 @@ const UserCurrentlyLending: React.FC = () => {
   }, [handleStopLend, checkedLendingItems]);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    const getUserLendingRequest = createCancellablePromise(getUserLending());
-
-    getUserLendingRequest.promise
-      .then((lendings) => {
-        onChangePage(lendings || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not get user Lending request");
-      });
-
-    return () => {
-      onResetPage();
-      return getUserLendingRequest.cancel();
-    };
-  }, [getUserLending, onChangePage, onResetPage]);
+    onChangePage(userLending);
+  }, [onChangePage, userLending]);
 
   //Prefetch metadata
   useEffect(() => {

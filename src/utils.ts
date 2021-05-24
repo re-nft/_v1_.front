@@ -6,7 +6,6 @@ import { PaymentToken } from "./types";
 import fetch from 'cross-fetch'
 import createDebugger from "debug";
 
-createDebugger.enable('TIMER')
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("TIMER");
 

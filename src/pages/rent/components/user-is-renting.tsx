@@ -22,6 +22,7 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import TransactionStateContext from "../../../contexts/TransactionState";
 import { usePrevious } from "../../../hooks/usePrevious";
+import { useUserRenting } from "../../../contexts/graph/hooks/useUserRenting";
 
 const UserRentings: React.FC = () => {
   const { checkedItems, handleReset: handleBatchReset } = useContext(
@@ -36,29 +37,29 @@ const UserRentings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext(PageContext);
-  const { getUserRenting } = useContext(GraphContext);
+  const {userRenting, isLoading} = useUserRenting();
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  const { txnState } = useContext(TransactionStateContext);
-  const previoustxnState = usePrevious(txnState);
+  //const { txnState } = useContext(TransactionStateContext);
+  //const previoustxnState = usePrevious(txnState);
   
-  useEffect(() => {
-    if (
-      txnState === TransactionStateEnum.SUCCESS &&
-      previoustxnState === TransactionStateEnum.PENDING
-    ) {
-    getUserRenting()
-      .then((userRenting: Renting[] | undefined) => {
-        onChangePage(userRenting || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not handle refresh");
-      });
-    }
-  }, [onChangePage, setIsLoading, getUserRenting, txnState, previoustxnState]);
+  //TODO:eniko force renting to update when state changes
+  // useEffect(() => {
+  //   if (
+  //     txnState === TransactionStateEnum.SUCCESS &&
+  //     previoustxnState === TransactionStateEnum.PENDING
+  //   ) {
+  //   getUserRenting()
+  //     .then((userRenting: Renting[] | undefined) => {
+  //       onChangePage(userRenting || []);
+  //       setIsLoading(false);
+  //     })
+  //     .catch(() => {
+  //       console.warn("could not handle refresh");
+  //     });
+  //   }
+  // }, [onChangePage, setIsLoading, getUserRenting, txnState, previoustxnState]);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
@@ -76,24 +77,9 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    setIsLoading(true);
+    onChangePage(userRenting)
+  }, [onChangePage, userRenting]);
 
-    const getUserRentingRequest = createCancellablePromise(getUserRenting());
-
-    getUserRentingRequest.promise
-      .then((userRenting: Renting[] | undefined) => {
-        onChangePage(userRenting || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not get user renting request");
-      });
-
-    return () => {
-      onResetPage();
-      return getUserRentingRequest.cancel();
-    };
-  }, [getUserRenting, onChangePage, onResetPage]);
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);

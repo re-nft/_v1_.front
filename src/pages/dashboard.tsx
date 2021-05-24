@@ -20,6 +20,8 @@ import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { getLendingPriceByCurreny, short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { useUserRenting } from "../contexts/graph/hooks/useUserRenting";
+import { useUserLending } from "../contexts/graph/hooks/useUserLending";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -65,11 +67,9 @@ export const Dashboard: React.FC = () => {
   const { onCheckboxChange, handleReset } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
-  const { getUserLending, getUserRenting } = useContext(GraphContext);
+  const {userRenting: rentingItems, isLoading: userRentingLoading} = useUserRenting()
+  const {userLending: lendingItems, isLoading: userLendingLoading} = useUserLending()
   const { instance: renft } = useContext(ReNFTContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [lendingItems, setLendingItems] = useState<Lending[]>([]);
-  const [rentingItems, setRentingItems] = useState<Renting[]>([]);
   const [__, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();
@@ -77,39 +77,22 @@ export const Dashboard: React.FC = () => {
     DashboardViewType.LIST_VIEW
   );
 
-  const handleRefresh = useCallback(() => {
-    Promise.all([getUserLending(), getUserRenting()])
-      .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not handle refresh");
-      });
-  }, [
-    getUserLending,
-    getUserRenting,
-    setLendingItems,
-    setRentingItems,
-    setIsLoading,
-  ]);
 
-  const handleClaimCollateral = useCallback(
-    async (lending: Lending) => {
-      if (!renft) return;
-      const tx = await claimCollateral(renft, [
-        {
-          address: lending.address,
-          tokenId: lending.tokenId,
-          lendingId: lending.id,
-        },
-      ]);
-      await setHash(tx.hash);
-      handleRefresh();
-    },
-    [renft, setHash, handleRefresh]
-  );
+  // const handleClaimCollateral = useCallback(
+  //   async (lending: Lending) => {
+  //     if (!renft) return;
+  //     const tx = await claimCollateral(renft, [
+  //       {
+  //         address: lending.address,
+  //         tokenId: lending.tokenId,
+  //         lendingId: lending.id,
+  //       },
+  //     ]);
+  //     await setHash(tx.hash);
+  //     handleRefresh();
+  //   },
+  //   [renft, setHash, handleRefresh]
+  // );
 
   const handleStopLend = useCallback(
     async (lending: Lending[]) => {
@@ -124,10 +107,10 @@ export const Dashboard: React.FC = () => {
         }))
       );
       await setHash(tx.hash);
-      handleRefresh();
+     //  handleRefresh();
       handleReset();
     },
-    [renft, setHash, handleRefresh, handleReset]
+    [renft, setHash, handleReset]
   );
 
   const _returnBy = (renting: Renting) =>
@@ -146,27 +129,9 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange]
   );
 
-  useEffect(() => {
-    setIsLoading(true);
+  const isLoading = userLendingLoading || userLendingLoading
 
-    const getUserLendingRequest = createCancellablePromise(
-      Promise.all([getUserLending(), getUserRenting()])
-    );
-
-    getUserLendingRequest.promise
-      .then(([userLending, userRenting]) => {
-        setLendingItems(userLending || []);
-        setRentingItems(userRenting || []);
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        console.warn("could not get user lending and renting request");
-      });
-
-    return getUserLendingRequest.cancel;
-  }, [getUserLending, getUserRenting]);
-
-  if (isLoading) return <CatalogueLoader />;
+  if (isLoading ) return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (

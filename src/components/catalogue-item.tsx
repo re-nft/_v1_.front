@@ -40,7 +40,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
-  const isVisible = entry && entry.isIntersecting;
 
   const { onCheckboxChange } = useContext(BatchContext);
   const [currentAddress] = useContext(CurrentAddressContextWrapper);

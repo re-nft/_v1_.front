@@ -3,6 +3,10 @@ import { BigNumber, ContractTransaction } from "ethers";
 import { PaymentToken } from "../types";
 import { Nft } from "../contexts/graph/classes";
 import { packPrice } from "../utils";
+import createDebugger from "debug";
+
+// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
+const debug = createDebugger("RENFT_LOG");
 
 export default async function startLend(
   renft: ReNFT,
@@ -45,6 +49,7 @@ export default async function startLend(
       collaterals,
       pmtTokens
     ).then(v => resolve(v)).catch((e) =>{
+      debug(e);
       resolve(undefined)
     });
   });

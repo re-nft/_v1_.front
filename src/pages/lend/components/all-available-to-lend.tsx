@@ -1,6 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
-
-import GraphContext from "../../../contexts/graph";
+import React, { useState, useCallback, useContext, useEffect, useMemo } from "react";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
@@ -19,10 +17,7 @@ import {
   PageContextType,
 } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
-import { TransactionStateEnum } from "../../../types";
-import TransactionStateContext from "../../../contexts/TransactionState";
-import { usePrevious } from "../../../hooks/usePrevious";
+import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
 
 const Lendings: React.FC = () => {
   const { checkedItems, handleReset, onCheckboxChange } = useContext(
@@ -37,40 +32,10 @@ const Lendings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext<PageContextType<Nft>>(PageContext);
-  const { getAllAvailableToLend } = useContext(GraphContext);
+  const {allAvailableToLend, isLoading} = useAllAvailableToLend()
   const [modalOpen, setModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  const { txnState } = useContext(TransactionStateContext);
-  const previoustxnState = usePrevious(txnState);
-
-
-
-  // refresh when lending complete
-  // on reject nothing to do
-  useEffect(() => {
-    if (
-      txnState !== TransactionStateEnum.SUCCESS &&
-      previoustxnState === TransactionStateEnum.PENDING
-    ) {
-      setIsLoading(true);
-      getAllAvailableToLend()
-        .then((nfts) => {
-          onChangePage(nfts || []);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          console.warn("could not fetch user nfts");
-        });
-    }
-  }, [
-    setIsLoading,
-    getAllAvailableToLend,
-    onChangePage,
-    txnState,
-    previoustxnState,
-  ]);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -90,35 +55,17 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    // TODO:eniko too much rerender dataloading
-    if (checkedNftItems.length < 1) {
-      setIsLoading(true);
-    }
+    onChangePage(allAvailableToLend)
+  }, [allAvailableToLend, onChangePage]);
 
-    const getUserNftsRequest = createCancellablePromise(
-      getAllAvailableToLend()
-    );
-
-    getUserNftsRequest.promise
-      .then((nfts) => {
-        //onChangePage(nfts || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not get user nfts request");
-      });
-
-    return () => {
-     // onResetPage();
-      if (getUserNftsRequest) return getUserNftsRequest.cancel();
-    };
-  }, [getAllAvailableToLend, checkedNftItems]);
+  //TODO have to substract NFT that we actually lending from the graph local
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
     //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
+
 
   if (isLoading) {
     return <CatalogueLoader />;
