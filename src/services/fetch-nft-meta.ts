@@ -1,6 +1,5 @@
 import { NftToken } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
-import { OpenSeaAsset } from "opensea-js/lib/types";
 import { nftId } from "./firebase";
 import fetch from "cross-fetch";
 import {
@@ -14,6 +13,68 @@ import {
 
 export type NftMetaWithId = NftToken["meta"] & { id: string };
 export type NftError = { id: string; error: string };
+
+ export interface Asset {
+  tokenId: string | null;
+  tokenAddress: string;
+  // schemaName?: WyvernSchemaName;
+  // version?: TokenStandardVersion;
+  name?: string;
+  decimals?: number;
+}
+
+export interface OpenSeaFees {
+  openseaSellerFeeBasisPoints: number;
+  openseaBuyerFeeBasisPoints: number;
+  devSellerFeeBasisPoints: number;
+  devBuyerFeeBasisPoints: number;
+}
+
+/**
+ * Annotated asset contract with OpenSea metadata
+ */
+ export interface OpenSeaAssetContract extends OpenSeaFees {
+  name: string;
+  address: string;
+  // type: AssetContractType;
+  // schemaName: WyvernSchemaName;
+  sellerFeeBasisPoints: number;
+  buyerFeeBasisPoints: number;
+  description: string;
+  tokenSymbol: string;
+  imageUrl: string;
+  // stats?: object;
+  // traits?: object[];
+  externalLink?: string;
+  wikiLink?: string;
+}
+
+/**
+ * Annotated asset spec with OpenSea metadata
+ */
+ export interface OpenSeaAsset extends Asset {
+  assetContract: OpenSeaAssetContract;
+  // collection: OpenSeaCollection;
+  name: string;
+  description: string;
+  // owner: OpenSeaAccount;
+  // orders: Order[] | null;
+  // buyOrders: Order[] | null;
+  // sellOrders: Order[] | null;
+  isPresale: boolean;
+  imageUrl: string;
+  imagePreviewUrl: string;
+  imageUrlOriginal: string;
+  imageUrlThumbnail: string;
+  openseaLink: string;
+  externalLink: string;
+  // traits: object[];
+  numSales: number;
+  // lastSale: AssetEvent | null;
+  backgroundColor: string | null;
+  // transferFee: BigNumber | string | null;
+  // transferFeePaymentToken: OpenSeaFungibleToken | null;
+}
 
 async function fetchWithTimeout(
   resource: string,
