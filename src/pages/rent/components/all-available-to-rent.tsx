@@ -50,7 +50,6 @@ const AvailableToRent: React.FC = () => {
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { instance: renft } = useContext(ReNFTContext);
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
@@ -82,39 +81,32 @@ const AvailableToRent: React.FC = () => {
     async (nft: Lending[], { rentDuration }: { rentDuration: string[] }) => {
       if (
         nft.length === 0 ||
-        !currentAddress ||
-        !renft ||
         !signer ||
         !resolver ||
         isActive
       )
         return;
 
-      // TODO: hardcoded payment token
-      // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
-      const pmtToken = PaymentToken.DAI;
-      const tx = await startRent(
-        renft,
-        nft,
-        resolver,
-        currentAddress,
-        signer,
-        rentDuration,
-        pmtToken
-      );
-      if (tx) setHash(tx.hash);
+      // // TODO: hardcoded payment token
+      // // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
+      // const pmtToken = PaymentToken.DAI;
+      // const tx = await startRent(
+      //   signer,
+      //   resolver,
+      //   [{
+      //     address: nft.address,
+      //     tokenId: string;
+      //     amount: string;
+      //     lendingId: string;
+      //     rentDuration: string;
+      //     paymentToken: pmtToken
+      //   }]
+      // );
+      // if (tx) setHash(tx.hash);
 
       handleBatchModalClose();
     },
-    [
-      renft,
-      currentAddress,
-      signer,
-      resolver,
-      handleBatchModalClose,
-      isActive,
-      setHash,
-    ]
+    [signer, resolver, handleBatchModalClose, isActive]
   );
 
   const handleBatchRent = useCallback(() => {
