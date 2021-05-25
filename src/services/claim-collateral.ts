@@ -1,6 +1,5 @@
-import { ReNFT } from "../hardhat/typechain/ReNFT";
-import { BigNumber, ContractTransaction } from "ethers";
-import { Renting } from "../contexts/graph/classes";
+import { ReNFT } from "@renft/sdk";
+import { BigNumber, ContractTransaction, Signer } from "ethers";
 
 /**
  * claim collateral can be successfully invoked when the renting is past the due date.
@@ -10,24 +9,13 @@ import { Renting } from "../contexts/graph/classes";
  * @returns
  */
 export default async function claimCollateral(
-  renft: ReNFT,
-  nfts: { address: string; tokenId: string; lendingId: string }[]
+  signer: Signer,
+  nfts: { address: string; tokenId: string; lendingId: string; lendingAmount: string }[]
 ): Promise<ContractTransaction> {
-  // same 1155s need to be gathered together, and their tokenIds must be sorted in ascending order
-
-  // for (let nft of nfts)
-
-  // const address = nfts.map((item) => item.address);
-  // const tokenIds = nfts.map((item) => item.tokenId);
-  // const lendingIds: BigNumber[] = nfts.map(
-  //   (item: Lending) => BigNumber.from(item.id)
-  // );
-  // TODO: will fail
-  const amounts = [1];
-  return await renft.claimCollateral(
-    [nfts[0].address],
-    [nfts[0].tokenId],
-    amounts,
-    [nfts[0].lendingId]
+  return await new ReNFT(signer).claimCollateral(
+    nfts.map((nft) => (nft.address)),
+    nfts.map((nft) => (BigNumber.from(nft.tokenId))),
+    nfts.map((nft) => (Number(nft.lendingAmount))),
+    nfts.map((nft) => (BigNumber.from(nft.lendingId)))
   );
 }

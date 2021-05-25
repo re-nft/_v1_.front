@@ -10,19 +10,10 @@ export default async function returnIt(
     lendingId: string;
   }[]
 ): Promise<ContractTransaction> {
-  const addresses: string[] = [];
-  const tokenIds: BigNumber[] = [];
-  const amounts: number[] = [];
-  const lendingIds: BigNumber[] = [];
-
-  for (const nft of nfts) {
-    addresses.push(nft.address);
-    tokenIds.push(BigNumber.from(nft.tokenId));
-    amounts.push(Number(nft.amount));
-    lendingIds.push(BigNumber.from(nft.lendingId));
-  }
-
-  const renft = new ReNFT(signer);
-
-  return await renft.returnIt(addresses, tokenIds, amounts, lendingIds);
+  return await new ReNFT(signer).returnIt(
+    nfts.map((nft) => (nft.address)),
+    nfts.map((nft) => (BigNumber.from(nft.tokenId))),
+    nfts.map((nft) => (Number(nft.amount))),
+    nfts.map((nft) => (BigNumber.from(nft.lendingId)))
+  );
 }
