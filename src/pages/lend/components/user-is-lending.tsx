@@ -78,7 +78,7 @@ const UserCurrentlyLending: React.FC = () => {
   }, [currentPage, fetchNfts]);
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You dont have any lend anything yet</div>;
+    return <div className="center">You are not lending anything yet</div>;
 
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (

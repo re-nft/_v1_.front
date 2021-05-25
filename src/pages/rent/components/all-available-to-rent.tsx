@@ -120,7 +120,7 @@ const AvailableToRent: React.FC = () => {
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You dont have any lend anything yet</div>;
+    return <div className="center">You can&nbsp;t rent anything yet</div>;
 
   return (
     <>

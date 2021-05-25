@@ -85,7 +85,7 @@ const UserRentings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You dont have any lend anything yet</div>;
+    return <div className="center">You are not renting anything yet</div>;
   }
 
   // TODO: remove all the anys
