@@ -2,6 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 import Modal from "./modal";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
+import { SignerContext } from "../hardhat/SymfoniContext";
 import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { ProviderContext } from "../hardhat/SymfoniContext";
@@ -31,6 +32,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   onClose,
 }) => {
   const [isApproved, setIsApproved] = useState(false);
+  const [signer] = useContext(SignerContext);
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: renft } = useContext(ReNFTContext);
   const { setHash } = useContext(TransactionStateContext);
@@ -38,13 +40,13 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const [nft] = nfts;
 
   const handleReturnNft = useCallback(async () => {
-    if (!renft || !nft.contract) return;
-    const tx = await returnIt(renft, nfts);
+    if (!nft.contract || !signer) return;
+    const tx = await returnIt(signer, nfts);
     const isSuccess = await setHash(tx.hash);
     if (isSuccess) {
       onClose();
     }
-  }, [renft, setHash, nfts, nft, onClose]);
+  }, [setHash, nfts, nft, onClose, signer]);
 
   const handleApproveAll = useCallback(async () => {
     if (!currentAddress || !renft || !provider) return;

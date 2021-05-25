@@ -1,8 +1,8 @@
-import { ReNFT } from "../hardhat/typechain/ReNFT";
-import { ContractTransaction } from "ethers";
+import { ReNFT } from "@renft/sdk";
+import { ContractTransaction, Signer, BigNumber } from "ethers";
 
 export default async function returnIt(
-  renft: ReNFT,
+  signer: Signer,
   nfts: {
     address: string;
     tokenId: string;
@@ -11,16 +11,18 @@ export default async function returnIt(
   }[]
 ): Promise<ContractTransaction> {
   const addresses: string[] = [];
-  const tokenIds: string[] = [];
-  const amounts: string[] = [];
-  const lendingIds: string[] = [];
+  const tokenIds: BigNumber[] = [];
+  const amounts: number[] = [];
+  const lendingIds: BigNumber[] = [];
 
   for (const nft of nfts) {
     addresses.push(nft.address);
-    tokenIds.push(nft.tokenId);
-    amounts.push(nft.amount);
-    lendingIds.push(nft.lendingId);
+    tokenIds.push(BigNumber.from(nft.tokenId));
+    amounts.push(Number(nft.amount));
+    lendingIds.push(BigNumber.from(nft.lendingId));
   }
+
+  const renft = new ReNFT(signer);
 
   return await renft.returnIt(addresses, tokenIds, amounts, lendingIds);
 }
