@@ -1,6 +1,6 @@
 import React, { useContext, useCallback, useEffect } from "react";
 
-import { ReNFTContext } from "../../../hardhat/SymfoniContext";
+import { SignerContext } from "../../../hardhat/SymfoniContext";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
@@ -32,7 +32,7 @@ const UserCurrentlyLending: React.FC = () => {
     onSetPage,
     onChangePage,
   } = useContext(PageContext);
-  const { instance: renft } = useContext(ReNFTContext);
+  const [signer] = useContext(SignerContext);
   const { userLending, isLoading } = useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -40,10 +40,12 @@ const UserCurrentlyLending: React.FC = () => {
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
-      if (!renft) return;
+      if (!signer) return;
+
       const transaction = createCancellablePromise(
-        stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
+        stopLending(signer, nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
+
       transaction.promise.then((tx) => {
         if (tx) setHash(tx.hash);
         batchHandleReset();
@@ -52,7 +54,7 @@ const UserCurrentlyLending: React.FC = () => {
       return transaction.cancel;
     },
 
-    [renft, stopLending, setHash, batchHandleReset]
+    [stopLending, setHash, batchHandleReset, signer]
   );
 
   const handleClickNft = useCallback(

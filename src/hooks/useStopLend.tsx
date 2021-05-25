@@ -1,11 +1,12 @@
-import { ContractTransaction } from "@ethersproject/contracts";
-import { useCallback, useContext, useMemo } from "react";
-import { ReNFTContext, SignerContext } from "../hardhat/SymfoniContext";
+import { useCallback, useContext } from "react";
 import { ReNFT } from "@renft/sdk";
+import { ContractTransaction } from "@ethersproject/contracts";
+import { Signer } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { UserLendingContext } from "../contexts/UserLending";
 
 export const useStopLend = (): ((
+  signer: Signer,
   nfts: {
     address: string;
     tokenId: string;
@@ -13,16 +14,11 @@ export const useStopLend = (): ((
     lendingId: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
-  const [signer] = useContext(SignerContext);
-
   const { refetchLending } = useContext(UserLendingContext);
-  const renft = useMemo(() => {
-    if (!signer) return;
-    return new ReNFT(signer);
-  }, [signer]);
-
+  
   return useCallback(
     (
+      signer,
       nfts: {
         address: string;
         tokenId: string;
@@ -30,24 +26,17 @@ export const useStopLend = (): ((
         lendingId: string;
       }[]
     ) => {
-      if (!renft) return Promise.resolve();
-      const addresses: string[] = [];
-      const tokenIds: BigNumber[] = [];
-      const lendingIds: BigNumber[] = [];
-      const amounts: number[] = [];
-
-      for (const nft of nfts) {
-        addresses.push(nft.address);
-        tokenIds.push(BigNumber.from(nft.tokenId));
-        lendingIds.push(BigNumber.from(nft.lendingId));
-        amounts.push(parseFloat(nft.amount));
-      }
-      return renft
-        .stopLending(addresses, tokenIds, amounts, lendingIds)
+      return new ReNFT(signer)
+        .stopLending(
+          nfts.map((nft) => (nft.address)),
+          nfts.map((nft) => (BigNumber.from(nft.tokenId))),
+          nfts.map((nft) => (Number(nft.amount))),
+          nfts.map((nft) => (BigNumber.from(nft.lendingId)))
+        )
         .then(() => {
           refetchLending();
         });
     },
-    [refetchLending, renft]
+    [refetchLending]
   );
 };

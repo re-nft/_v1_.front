@@ -14,6 +14,7 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
+import { SignerContext } from "../hardhat/SymfoniContext";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -61,6 +62,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const [signer] = useContext(SignerContext);
   const { onCheckboxChange, handleReset } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
@@ -95,8 +97,13 @@ export const Dashboard: React.FC = () => {
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
+      if (!signer) return;
+
+      // ! eniko: don't know if it is good to refresh so quickly in stop lend
+      // ! eniko: there is no update on the front that transaction is pending at all
       const transaction = createCancellablePromise(
         stopLending(
+          signer,
           lending.map((l) => ({
             address: l.address,
             amount: l.amount,
@@ -105,12 +112,13 @@ export const Dashboard: React.FC = () => {
           }))
         )
       );
+
       transaction.promise.then((tx) => {
         if (tx) setHash(tx.hash);
         handleReset();
       });
     },
-    [stopLending, setHash, handleReset]
+    [stopLending, setHash, handleReset, signer]
   );
 
   const _returnBy = (renting: Renting) =>
