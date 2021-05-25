@@ -6,7 +6,6 @@ import {
   NftMetaWithId,
 } from "../services/fetch-nft-meta";
 import { nftId } from "../services/firebase";
-import createCancellablePromise from "./create-cancellable-promise";
 import { Nft } from "./graph/classes";
 import { NftTokenMetaWithId } from "./graph/types";
 
@@ -30,6 +29,7 @@ type State = {
   fetchingIPFS: MetaLoading[];
   fetchReadyIPFS: MetaLoading[];
 };
+
 type Action =
   | {
       type: "SET_FETCH_READY";
@@ -113,6 +113,7 @@ const reducer = (state: State, action: Action) => {
     }
   }
 };
+
 const initialState = {
   metas: {},
   fetchReadyOpenSea: [],
@@ -128,6 +129,7 @@ const preloadImages = (metas: MetaLoading[]) => {
     if (meta.image) img.src = meta.image;
   });
 };
+
 export const NFTMetaProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 

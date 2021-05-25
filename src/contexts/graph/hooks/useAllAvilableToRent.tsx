@@ -22,22 +22,25 @@ export const useAllAvailableToRent = (): {
       if (!process.env.REACT_APP_RENFT_API) {
         throw new Error("RENFT_API is not defined");
       }
-      if (!signer) return;
-      if (!currentAddress) return;
+      if (!signer || !currentAddress) return;
       setLoading(true);
+
       const subgraphURI = process.env.REACT_APP_RENFT_API;
-      const response: { data: { lendings: LendingRaw[] } } = await timeItAsync(
+      const response: { lendings: LendingRaw[] } = await timeItAsync(
         "Pulled All ReNFT Lendings",
         async () =>
-          await request(subgraphURI, queryAllLendingRenft).catch((e) => {
+          await request(subgraphURI, queryAllLendingRenft).catch(() => {
+            console.warn("could not pull all ReNFT lendings");
             return {};
           })
       );
 
       const address = currentAddress.toLowerCase();
-      const lendingsReNFT = Object.values(response?.data?.lendings || [])
+      const lendingsReNFT = Object.values(response?.lendings || [])
         .filter((v) => v != null)
-        .filter((l) => l.lenderAddress.toLowerCase() === address)
+        // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
+        // ! therefore, this check is !==
+        .filter((l) => l.lenderAddress.toLowerCase() !== address)
         .map((lending) => {
           return new Lending(lending, signer);
         });

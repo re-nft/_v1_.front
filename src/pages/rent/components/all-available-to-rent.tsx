@@ -1,18 +1,10 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
-import {
-  ReNFTContext,
-  SignerContext,
-  ResolverContext,
-} from "../../../hardhat/SymfoniContext";
-import { PaymentToken, TransactionStateEnum } from "../../../types";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
 import BatchRentModal from "../../../modals/batch-rent";
 import ActionButton from "../../../components/action-button";
-import startRent from "../../../services/start-rent";
 import CatalogueLoader from "../../../components/catalogue-loader";
-import { TransactionStateContext } from "../../../contexts/TransactionState";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import {
@@ -24,17 +16,13 @@ import {
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
-import { CurrentAddressContextWrapper } from "../../../contexts/CurrentAddressContextWrapper";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { usePrevious } from "../../../hooks/usePrevious";
 import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
-import allAvailableToLend from "../../lend/components/all-available-to-lend";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
   const {
     checkedItems,
-
     handleReset: handleBatchReset,
     onCheckboxChange,
   } = useContext(BatchContext);
@@ -45,15 +33,10 @@ const AvailableToRent: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onResetPage,
     onChangePage,
   } = useContext(PageContext);
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const [signer] = useContext(SignerContext);
-  const { instance: resolver } = useContext(ResolverContext);
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
-  const { isActive, setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   // refresh when state succeed after rent
@@ -77,38 +60,6 @@ const AvailableToRent: React.FC = () => {
     [setOpenBatchModel, onCheckboxChange]
   );
 
-  const handleRent = useCallback(
-    async (nft: Lending[], { rentDuration }: { rentDuration: string[] }) => {
-      if (
-        nft.length === 0 ||
-        !signer ||
-        !resolver ||
-        isActive
-      )
-        return;
-
-      // // TODO: hardcoded payment token
-      // // TODO: how come this is not in one of those services, even though everything else that is handling the contracts is, wtf
-      // const pmtToken = PaymentToken.DAI;
-      // const tx = await startRent(
-      //   signer,
-      //   resolver,
-      //   [{
-      //     address: nft.address,
-      //     tokenId: string;
-      //     amount: string;
-      //     lendingId: string;
-      //     rentDuration: string;
-      //     paymentToken: pmtToken
-      //   }]
-      // );
-      // if (tx) setHash(tx.hash);
-
-      handleBatchModalClose();
-    },
-    [signer, resolver, handleBatchModalClose, isActive]
-  );
-
   const handleBatchRent = useCallback(() => {
     setOpenBatchModel(true);
   }, [setOpenBatchModel]);
@@ -120,14 +71,15 @@ const AvailableToRent: React.FC = () => {
 
   if (isLoading) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You can&nbsp;t rent anything yet</div>;
+    return <div className="center">You cant rent anything yet</div>;
 
   return (
     <>
       <BatchRentModal
         nft={checkedLendingItems}
         open={isOpenBatchModel}
-        onSubmit={handleRent}
+        // TODO
+        onSubmit={() => { console.warn("TODO") }}
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
