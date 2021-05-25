@@ -2,7 +2,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { SignerContext, ReNFTContext } from "../hardhat/SymfoniContext";
 import { ReNFT, PaymentToken } from "@renft/sdk";
 import { BigNumber, ContractTransaction } from "ethers";
-import { useUserLending } from "../contexts/graph/hooks/useUserLending";
+import { UserLendingContext } from "../contexts/UserLending";
 
 export const useStartLend = (): ((
   addresses: string[],
@@ -14,7 +14,7 @@ export const useStartLend = (): ((
   tokens: PaymentToken[]
 ) => Promise<void | ContractTransaction>) => {
   const [signer] = useContext(SignerContext);
-  const { refetchLending } = useUserLending();
+  const { refetchLending } = useContext(UserLendingContext);
 
   const renft = useMemo(() => {
     if (!signer) return;

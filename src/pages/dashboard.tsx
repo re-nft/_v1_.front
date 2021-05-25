@@ -15,10 +15,10 @@ import { PaymentToken } from "../types";
 import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
-import { useUserRenting } from "../contexts/graph/hooks/useUserRenting";
-import { useUserLending } from "../contexts/graph/hooks/useUserLending";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { UserLendingContext } from "../contexts/UserLending";
+import { UserRentingContext } from "../contexts/UserRenting";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -65,9 +65,9 @@ export const Dashboard: React.FC = () => {
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
-    useUserRenting();
+    useContext(UserRentingContext)
   const { userLending: lendingItems, isLoading: userLendingLoading } =
-    useUserLending();
+    useContext(UserLendingContext);
   const [__, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();

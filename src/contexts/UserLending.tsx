@@ -1,18 +1,36 @@
 import request from "graphql-request";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { SignerContext } from "../../../hardhat/SymfoniContext";
-import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
-import { Lending, Renting } from "../classes";
-import { queryUserLendingRenft } from "../queries";
-import { LendingRaw } from "../types";
-import { timeItAsync } from "../../../utils";
-import createCancellablePromise from "../../create-cancellable-promise";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  CurrentAddressContext,
+  SignerContext,
+} from "../hardhat/SymfoniContext";
+import { timeItAsync } from "../utils";
+import createCancellablePromise from "./create-cancellable-promise";
+import { CurrentAddressContextWrapper } from "./CurrentAddressContextWrapper";
+import { Lending } from "./graph/classes";
+import { queryUserLendingRenft } from "./graph/queries";
+import { LendingRaw } from "./graph/types";
 
-export const useUserLending = (): {
-  userLending: Lending[];
-  isLoading: boolean;
-  refetchLending: () => (() => void) | undefined;
-} => {
+export type UserLendingContextType = {
+    userLending: Lending[],
+    isLoading: boolean,
+    refetchLending: () => (() => void) | undefined;
+}
+export const UserLendingContext = createContext<UserLendingContextType>({
+    userLending: [],
+    isLoading: false,
+    refetchLending: () => {
+        return undefined;
+    }
+});
+
+export const UserLendingProvider: React.FC = ({ children }) => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [signer] = useContext(SignerContext);
   const [lending, setLendings] = useState<Lending[]>([]);
@@ -26,7 +44,7 @@ export const useUserLending = (): {
     }
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
-    const fetchRequest = createCancellablePromise(
+    const fetchRequest = createCancellablePromise<{ users: { lending: LendingRaw[] }[] }>(
       timeItAsync(
         "Pulled Users ReNFT Lendings",
         async () =>
@@ -39,9 +57,7 @@ export const useUserLending = (): {
       )
     );
     fetchRequest.promise
-      //TODO:eniko remove ts-ignore
-      // @ts-ignore
-      .then((response: { users: { lending: LendingRaw[] }[] }) => {
+      .then((response) => {
         if (response && response.users && response.users[0]) {
           const lendings = Object.values(response.users[0].lending)
             .filter((v) => v != null)
@@ -61,9 +77,15 @@ export const useUserLending = (): {
     fetchLending();
   }, [fetchLending]);
 
-  return {
-    userLending: lending,
-    isLoading,
-    refetchLending: fetchLending,
-  };
+  return (
+    <UserLendingContext.Provider
+      value={{
+        userLending: lending,
+        isLoading,
+        refetchLending: fetchLending,
+      }}
+    >
+      {children}
+    </UserLendingContext.Provider>
+  );
 };

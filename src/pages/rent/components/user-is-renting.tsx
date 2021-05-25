@@ -18,7 +18,7 @@ import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useUserRenting } from "../../../contexts/graph/hooks/useUserRenting";
+import { UserRentingContext } from "../../../contexts/UserRenting";
 
 const UserRentings: React.FC = () => {
   const { checkedItems, handleReset: handleBatchReset } =
@@ -32,7 +32,7 @@ const UserRentings: React.FC = () => {
     onResetPage,
     onChangePage,
   } = useContext(PageContext);
-  const { userRenting, isLoading } = useUserRenting();
+  const { userRenting, isLoading } = useContext(UserRentingContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 

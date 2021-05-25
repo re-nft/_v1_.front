@@ -17,9 +17,9 @@ import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useUserLending } from "../../../contexts/graph/hooks/useUserLending";
 import { useStopLend } from "../../../hooks/useStopLend";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { UserLendingContext } from "../../../contexts/UserLending";
 
 const UserCurrentlyLending: React.FC = () => {
   const { checkedItems, handleReset: batchHandleReset } =
@@ -33,7 +33,7 @@ const UserCurrentlyLending: React.FC = () => {
     onChangePage,
   } = useContext(PageContext);
   const { instance: renft } = useContext(ReNFTContext);
-  const { userLending, isLoading } = useUserLending();
+  const { userLending, isLoading } = useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
   const stopLending = useStopLend();
