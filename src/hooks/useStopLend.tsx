@@ -14,15 +14,11 @@ export const useStopLend = (): ((
   }[]
 ) => Promise<void | ContractTransaction>) => {
   const [signer] = useContext(SignerContext);
-  const { instance: contract } = useContext(ReNFTContext);
   const { refetchLending } = useUserLending();
   const renft = useMemo(() => {
     if (!signer) return;
-    if (!contract) return;
-    //TODO:eniko remove ts-ignore
-    // @ts-ignore
-    return new ReNFT(signer, contract);
-  }, [signer, contract]);
+    return new ReNFT(signer);
+  }, [signer]);
 
   return useCallback(
     (
