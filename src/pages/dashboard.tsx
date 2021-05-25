@@ -107,9 +107,8 @@ export const Dashboard: React.FC = () => {
       );
       transaction.promise.then((tx) => {
         if (tx) setHash(tx.hash);
-        handleReset()
+        handleReset();
       });
-     
     },
     [stopLending, setHash, handleReset]
   );

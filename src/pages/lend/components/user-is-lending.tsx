@@ -38,7 +38,6 @@ const UserCurrentlyLending: React.FC = () => {
   const [_, fetchNfts] = useContext(NFTMetaContext);
   const stopLending = useStopLend();
 
-
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
       if (!renft) return;

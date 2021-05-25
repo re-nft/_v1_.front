@@ -1,8 +1,5 @@
 import { useCallback, useContext, useMemo } from "react";
-import {
-  SignerContext,
-  ReNFTContext,
-} from "../hardhat/SymfoniContext";
+import { SignerContext, ReNFTContext } from "../hardhat/SymfoniContext";
 import { ReNFT, PaymentToken } from "@renft/sdk";
 import { BigNumber, ContractTransaction } from "ethers";
 import { useUserLending } from "../contexts/graph/hooks/useUserLending";
@@ -51,7 +48,7 @@ export const useStartLend = (): ((
           return v;
         })
         .catch((e) => {
-          console.log(e)
+          console.log(e);
           return;
         });
     },

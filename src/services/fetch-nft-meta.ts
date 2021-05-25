@@ -14,7 +14,7 @@ import {
 export type NftMetaWithId = NftToken["meta"] & { id: string };
 export type NftError = { id: string; error: string };
 
- export interface Asset {
+export interface Asset {
   tokenId: string | null;
   tokenAddress: string;
   // schemaName?: WyvernSchemaName;
@@ -33,7 +33,7 @@ export interface OpenSeaFees {
 /**
  * Annotated asset contract with OpenSea metadata
  */
- export interface OpenSeaAssetContract extends OpenSeaFees {
+export interface OpenSeaAssetContract extends OpenSeaFees {
   name: string;
   address: string;
   // type: AssetContractType;
@@ -52,7 +52,7 @@ export interface OpenSeaFees {
 /**
  * Annotated asset spec with OpenSea metadata
  */
- export interface OpenSeaAsset extends Asset {
+export interface OpenSeaAsset extends Asset {
   assetContract: OpenSeaAssetContract;
   // collection: OpenSeaCollection;
   name: string;
