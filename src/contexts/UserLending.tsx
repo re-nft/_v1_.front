@@ -7,12 +7,10 @@ import React, {
   useCallback,
 } from "react";
 import {
-  CurrentAddressContext,
   SignerContext,
 } from "../hardhat/SymfoniContext";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
-import { CurrentAddressContextWrapper } from "./CurrentAddressContextWrapper";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
@@ -31,31 +29,37 @@ export const UserLendingContext = createContext<UserLendingContextType>({
 });
 
 export const UserLendingProvider: React.FC = ({ children }) => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [signer] = useContext(SignerContext);
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
 
   const fetchLending = useCallback(() => {
     if (!signer) return;
-    if (!currentAddress) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
+
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
+
     const fetchRequest = createCancellablePromise<{ users: { lending: LendingRaw[] }[] }>(
       timeItAsync(
         "Pulled Users ReNFT Lendings",
         async () =>
           await request(
             subgraphURI,
-            queryUserLendingRenft(currentAddress)
-          ).catch((e) => {
+            queryUserLendingRenft(await signer.getAddress())
+          ).catch(() => {
+            // ! let's warn with unique messages, without console logging the error message
+            // ! that something went wrong. That way, if the app behaves incorrectly, we will
+            // ! know where to look. Right now I am running into an issue of localising the
+            // ! problem why user's lending does not show and there is no console.warn here
+            console.warn("could not pull users ReNFT lendings");
             return {};
           })
       )
     );
+
     fetchRequest.promise
       .then((response) => {
         if (response && response.users && response.users[0]) {
@@ -71,7 +75,8 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [signer, currentAddress]);
+
+  }, [signer]);
 
   useEffect(() => {
     fetchLending();
