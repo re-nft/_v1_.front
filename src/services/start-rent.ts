@@ -1,68 +1,49 @@
-import { ReNFT } from "../hardhat/typechain/ReNFT";
-import { Signer, ContractTransaction, ethers } from "ethers";
+import { ReNFT, RENFT_ADDRESS } from "@renft/sdk";
+import { Signer, ContractTransaction, BigNumber } from "ethers";
 import { PaymentToken } from "../types";
-import { Lending } from "../contexts/graph/classes";
 import { Resolver } from "../hardhat/typechain/Resolver";
 import { getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 
 export default async function startRent(
-  renft: ReNFT,
-  nft: Lending[],
-  resolver: Resolver,
-  currentAddress: string,
   signer: Signer,
-  rentDurations: string[],
-  pmtToken: PaymentToken
+  resolver: Resolver,
+  nfts: {
+    address: string;
+    tokenId: string;
+    amount: string;
+    lendingId: string;
+    rentDuration: string;
+    paymentToken: PaymentToken;
+  }[]
 ): Promise<ContractTransaction | undefined> {
-  const amountPayable = nft.reduce((sum, item, index) => {
-    const dailyRentPrice = item.lending.dailyRentPrice;
-    const collateral = item.lending.nftPrice;
-    sum += Number(rentDurations[index]) * dailyRentPrice + collateral;
-    return sum;
-  }, 0);
-
-  const isETHPayment = pmtToken === PaymentToken.WETH;
-  const addresses = nft.map((x) => x.address);
-  const tokenIds = nft.map((x) => x.tokenId);
-  const lendingIds = nft.map((x) => x.lending.id);
-  const durations = rentDurations.map((x) => Number(x));
-
-  // TODO: will fail
-  const amounts = [1];
-
-  if (isETHPayment) {
-    return await renft.rent(
-      addresses,
-      tokenIds,
-      amounts,
-      lendingIds,
-      durations
-    );
+  // TODO: need to abstract this code away, perhaps add the util function to the sdk!
+  // TODO: because this needs to be called in the lend function as well
+  const currentAddress = await signer.getAddress();
+  const tokens = new Set<PaymentToken>();
+  nfts.forEach((nft) => tokens.add(nft.paymentToken))
+  const promiseTokenAddresses: Promise<string>[] = [];
+  for (const token of tokens.values()) {
+    promiseTokenAddresses.push(resolver.getPaymentToken(token));
   }
+  const tokenAddresses: string[] = await Promise.all(promiseTokenAddresses);
+  const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
+  const promiseTokenAllowances: Promise<BigNumber>[] = tokenAddresses.map((_, ix) => erc20s[ix].allowance(currentAddress, RENFT_ADDRESS));
+  const tokenAllowances: BigNumber[] = await Promise.all(promiseTokenAllowances);
+  const promiseApprovals: Promise<ContractTransaction>[] = [];
+  tokenAllowances.forEach((allowance, ix) => {
+    if (allowance.lt(MAX_UINT256)) {
+      promiseApprovals.push(erc20s[ix].approve(RENFT_ADDRESS, MAX_UINT256));
+    }
+  });
+  // this invokes approvals on all the tokens
+  await Promise.all(promiseApprovals);
 
-  const erc20Address = await resolver.getPaymentToken(pmtToken);
-
-  if (!erc20Address) {
-    console.warn("could not fetch address for payment token");
-    return undefined;
-  }
-  const erc20 = getE20(erc20Address, signer);
-
-  if (!erc20) {
-    console.warn("could not fetch erc20 contract");
-    return undefined;
-  }
-
-  const allowance = await erc20.allowance(currentAddress, renft.address);
-
-  const notEnough = ethers.utils
-    .parseEther(String(amountPayable))
-    .gt(allowance);
-
-  if (notEnough) {
-    await erc20.approve(renft.address, MAX_UINT256);
-  }
-
-  return await renft.rent(addresses, tokenIds, amounts, lendingIds, durations);
+  return await new ReNFT(signer).rent(
+    nfts.map((nft) => (nft.address)),
+    nfts.map((nft) => (BigNumber.from(nft.tokenId))),
+    nfts.map((nft) => (Number(nft.amount))),
+    nfts.map((nft) => (BigNumber.from(nft.lendingId))),
+    nfts.map((nft) => (Number(nft.rentDuration)))
+  );
 }
