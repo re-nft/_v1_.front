@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
 } from "react";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/items-wrapper";

@@ -12,13 +12,13 @@ import {
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import stopLend from "../services/stop-lend";
-import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { useUserRenting } from "../contexts/graph/hooks/useUserRenting";
 import { useUserLending } from "../contexts/graph/hooks/useUserLending";
+import { useStopLend } from "../hooks/useStopLend";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -68,14 +68,15 @@ export const Dashboard: React.FC = () => {
     useUserRenting();
   const { userLending: lendingItems, isLoading: userLendingLoading } =
     useUserLending();
-  const { instance: renft } = useContext(ReNFTContext);
   const [__, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
+  const stopLending = useStopLend();
 
+  //TODO:eniko
   // const handleClaimCollateral = useCallback(
   //   async (lending: Lending) => {
   //     if (!renft) return;
@@ -93,22 +94,24 @@ export const Dashboard: React.FC = () => {
   // );
 
   const handleStopLend = useCallback(
-    async (lending: Lending[]) => {
-      if (!renft) return;
-      const tx = await stopLend(
-        renft,
-        lending.map((l) => ({
-          address: l.address,
-          amount: l.amount,
-          lendingId: l.lending.id,
-          tokenId: l.tokenId,
-        }))
+    (lending: Lending[]) => {
+      const transaction = createCancellablePromise(
+        stopLending(
+          lending.map((l) => ({
+            address: l.address,
+            amount: l.amount,
+            lendingId: l.lending.id,
+            tokenId: l.tokenId,
+          }))
+        )
       );
-      await setHash(tx.hash);
-      //  handleRefresh();
-      handleReset();
+      transaction.promise.then((tx) => {
+        if (tx) setHash(tx.hash);
+        handleReset()
+      });
+     
     },
-    [renft, setHash, handleReset]
+    [stopLending, setHash, handleReset]
   );
 
   const _returnBy = (renting: Renting) =>
@@ -127,7 +130,7 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const isLoading = userLendingLoading || userLendingLoading;
+  const isLoading = userLendingLoading || userRentingLoading;
 
   if (isLoading) return <CatalogueLoader />;
 

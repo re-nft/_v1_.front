@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState, useEffect } from "react";
+import React, { useContext, useCallback, useEffect } from "react";
 
 import { ReNFTContext } from "../../../hardhat/SymfoniContext";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -6,7 +6,6 @@ import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
-import stopLend from "../../../services/stop-lend";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
@@ -19,6 +18,8 @@ import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useUserLending } from "../../../contexts/graph/hooks/useUserLending";
+import { useStopLend } from "../../../hooks/useStopLend";
+import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 
 const UserCurrentlyLending: React.FC = () => {
   const { checkedItems, handleReset: batchHandleReset } =
@@ -29,39 +30,34 @@ const UserCurrentlyLending: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onResetPage,
     onChangePage,
   } = useContext(PageContext);
   const { instance: renft } = useContext(ReNFTContext);
   const { userLending, isLoading } = useUserLending();
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
+  const stopLending = useStopLend();
 
-  const handleReset = useCallback(() => {
-    //TODO:eniko
-    //refetch lending
-  }, []);
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
       if (!renft) return;
-
-      const tx = await stopLend(
-        renft,
-        nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }))
+      const transaction = createCancellablePromise(
+        stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
+      transaction.promise.then((tx) => {
+        if (tx) setHash(tx.hash);
+        batchHandleReset();
+      });
 
-      await setHash(tx.hash);
-
-      batchHandleReset();
-      handleReset();
+      return transaction.cancel;
     },
 
-    [renft, setHash, handleReset, batchHandleReset]
+    [renft, stopLending, setHash, batchHandleReset]
   );
 
   const handleClickNft = useCallback(
-    async (nft: Lending) => {
+    (nft: Lending) => {
       handleStopLend([nft]);
     },
     [handleStopLend]

@@ -127,6 +127,7 @@ export const decimalToPaddedHexString = (
   );
 };
 
+//TODO:eniko do we need this
 export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(

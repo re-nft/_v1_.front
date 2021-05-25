@@ -9,7 +9,7 @@
     "bl": "5.0.0",
     "cross-fetch": "3.1.4",
     "debug": "4.3.1",
-    "ethers": "5.1.0",
+    "ethers": "5.1.4",
     "firebase": "8.2.10",
     "graphql": "15.5.0",
     "graphql-request": "3.4.0",
