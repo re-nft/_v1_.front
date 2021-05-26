@@ -1,9 +1,10 @@
-import { ReNFT, RENFT_ADDRESS } from "@renft/sdk";
+import { RENFT_ADDRESS } from "@renft/sdk";
 import { Signer, ContractTransaction, BigNumber } from "ethers";
 import { PaymentToken } from "../types";
 import { Resolver } from "../hardhat/typechain/Resolver";
 import { getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
+import { getReNFT } from "./get-renft-instance";
 
 export default async function startRent(
   signer: Signer,
@@ -39,7 +40,7 @@ export default async function startRent(
   // this invokes approvals on all the tokens
   await Promise.all(promiseApprovals);
 
-  return await new ReNFT(signer).rent(
+  return await getReNFT(signer).rent(
     nfts.map((nft) => (nft.address)),
     nfts.map((nft) => (BigNumber.from(nft.tokenId))),
     nfts.map((nft) => (Number(nft.amount))),

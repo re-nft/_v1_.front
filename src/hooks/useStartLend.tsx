@@ -1,6 +1,7 @@
 import { useCallback, useContext, useMemo } from "react";
 import { SignerContext } from "../hardhat/SymfoniContext";
-import { ReNFT, PaymentToken } from "@renft/sdk";
+import { PaymentToken } from "@renft/sdk";
+import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
 import { UserLendingContext } from "../contexts/UserLending";
 
@@ -18,7 +19,7 @@ export const useStartLend = (): ((
 
   const renft = useMemo(() => {
     if (!signer) return;
-    return new ReNFT(signer);
+    return getReNFT(signer);
   }, [signer]);
 
   const startLend = useCallback(

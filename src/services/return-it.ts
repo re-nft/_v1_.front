@@ -1,5 +1,6 @@
 import { ReNFT } from "@renft/sdk";
 import { ContractTransaction, Signer, BigNumber } from "ethers";
+import { getReNFT } from "./get-renft-instance";
 
 export default async function returnIt(
   signer: Signer,
@@ -10,7 +11,7 @@ export default async function returnIt(
     lendingId: string;
   }[]
 ): Promise<ContractTransaction> {
-  return await new ReNFT(signer).returnIt(
+  return await getReNFT(signer).returnIt(
     nfts.map((nft) => (nft.address)),
     nfts.map((nft) => (BigNumber.from(nft.tokenId))),
     nfts.map((nft) => (Number(nft.amount))),

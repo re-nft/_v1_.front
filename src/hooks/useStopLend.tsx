@@ -4,6 +4,7 @@ import { ContractTransaction } from "@ethersproject/contracts";
 import { Signer } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { UserLendingContext } from "../contexts/UserLending";
+import { getReNFT } from "../services/get-renft-instance";
 
 export const useStopLend = (): ((
   signer: Signer,
@@ -26,7 +27,7 @@ export const useStopLend = (): ((
         lendingId: string;
       }[]
     ) => {
-      return new ReNFT(signer)
+      return getReNFT(signer)
         .stopLending(
           nfts.map((nft) => (nft.address)),
           nfts.map((nft) => (BigNumber.from(nft.tokenId))),
