@@ -25,6 +25,8 @@ export const UserLendingContext = createContext<UserLendingContextType>({
     isLoading: false,
 });
 
+UserLendingContext.displayName = 'UserLendingContext';
+
 export const UserLendingProvider: React.FC = ({ children }) => {
   const [signer] = useContext(SignerContext);
   const [lending, setLendings] = useState<Lending[]>([]);

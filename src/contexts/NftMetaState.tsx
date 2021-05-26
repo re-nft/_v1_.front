@@ -1,4 +1,9 @@
-import React, { createContext, useEffect, useReducer } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+} from "react";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import {
   fetchNFTFromOtherSource,
@@ -20,6 +25,8 @@ interface MetaLoading extends NftTokenMetaWithId {
 export const NFTMetaContext = createContext<
   [Record<string, MetaLoading>, typeof fetchMetas]
 >([{}, fetchMetas]);
+
+NFTMetaContext.displayName = "NFTMetaContext";
 
 type State = {
   metas: Record<string, MetaLoading>;
@@ -131,9 +138,10 @@ const preloadImages = (metas: MetaLoading[]) => {
 };
 
 export const NFTMetaProvider: React.FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ fetchReadyOpenSea, fetchReadyIPFS, nfts, metas }, dispatch] =
+    useReducer(reducer, initialState);
 
-  const fetchNFTs = (items: Nft[]) => {
+  const fetchNFTs = useCallback((items: Nft[]) => {
     if (items.length < 1) return;
     const fetching = items.map((nft) => {
       const key = nftId(nft.address, nft.tokenId);
@@ -141,10 +149,10 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
       return { ...nft, id: key };
     });
     dispatch({ type: "SET_FETCH_READY", payload: fetching });
-  };
+  }, []);
 
   useEffect(() => {
-    const fetchReady = state.fetchReadyOpenSea;
+    const fetchReady = fetchReadyOpenSea;
     if (fetchReady.length < 1) return;
     const contractAddress: string[] = [];
     const tokenIds: string[] = [];
@@ -173,13 +181,13 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
       });
     });
     dispatch({ type: "SET_FETCHING_OPENSEA", payload: fetchReady });
-  }, [state.fetchReadyOpenSea]);
+  }, [fetchReadyOpenSea]);
 
   useEffect(() => {
-    const fetchReady = state.fetchReadyIPFS;
+    const fetchReady = fetchReadyIPFS;
     if (fetchReady.length < 1) return;
-    const fetchSet = new Set(state.fetchReadyIPFS.map((v) => v.id));
-    const fetchNfts = state.nfts.filter((nft) =>
+    const fetchSet = new Set(fetchReadyIPFS.map((v) => v.id));
+    const fetchNfts = nfts.filter((nft) =>
       fetchSet.has(nftId(nft.address, nft.tokenId))
     );
 
@@ -192,10 +200,10 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
       return fetchRequest;
     });
     dispatch({ type: "SET_FETCHING_IPFS", payload: fetchReady });
-  }, [state.fetchReadyIPFS, state.nfts]);
+  }, [fetchReadyIPFS, nfts]);
 
   return (
-    <NFTMetaContext.Provider value={[state.metas, fetchNFTs]}>
+    <NFTMetaContext.Provider value={[metas, fetchNFTs]}>
       {children}
     </NFTMetaContext.Provider>
   );

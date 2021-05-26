@@ -1,11 +1,13 @@
-import React from 'react';
+import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
 import Debug from "debug";
 
 dotenv.config();
-Debug.enable(process.env.REACT_APP_DEBUG || "");
+if (process.env.REACT_APP_DEBUG) {
+  Debug.enable(process.env.REACT_APP_DEBUG);
+}
 
 import App from "./components/app-layout";
 import { GraphProvider } from "./contexts/graph/index";
@@ -28,13 +30,9 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <Symfoni>
     <StateProvider>
-      <GraphProvider>
-        <TransactionStateProvider>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-        </TransactionStateProvider>
-      </GraphProvider>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </StateProvider>
   </Symfoni>,
   document.getElementById("root")

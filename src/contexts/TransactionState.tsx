@@ -27,6 +27,7 @@ const TransactionStateDefault: TransactionStateType = {
 export const TransactionStateContext = createContext<TransactionStateType>(
   TransactionStateDefault
 );
+TransactionStateContext.displayName = 'TransactionStateContext';
 
 // * this implementation does not guard against the developer forgetting
 // * to set back the transaction to inactive for example,

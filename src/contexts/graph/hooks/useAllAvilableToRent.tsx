@@ -1,5 +1,5 @@
 import request from "graphql-request";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
 import { Lending, Nft } from "../classes";
@@ -7,6 +7,7 @@ import { queryAllLendingRenft } from "../queries";
 import { LendingRaw } from "../types";
 import { timeItAsync } from "../../../utils";
 import createCancellablePromise from "../../create-cancellable-promise";
+import usePoller from "../../../hooks/usePoller";
 
 export const useAllAvailableToRent = (): {
   allAvailableToRent: Nft[];
@@ -17,40 +18,48 @@ export const useAllAvailableToRent = (): {
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchAndCreate = async () => {
-      if (!process.env.REACT_APP_RENFT_API) {
-        throw new Error("RENFT_API is not defined");
-      }
-      if (!signer || !currentAddress) return;
-      setLoading(true);
+  const fetchRentings = useCallback(() => {
+    if (!signer || !currentAddress) return;
+    if (!process.env.REACT_APP_RENFT_API) {
+      throw new Error("RENFT_API is not defined");
+    }
+    setLoading(true);
 
-      const subgraphURI = process.env.REACT_APP_RENFT_API;
-      const response: { lendings: LendingRaw[] } = await timeItAsync(
+    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const fetchRequest = createCancellablePromise<{ lendings: LendingRaw[] }>(
+      timeItAsync(
         "Pulled All ReNFT Lendings",
         async () =>
           await request(subgraphURI, queryAllLendingRenft).catch(() => {
             console.warn("could not pull all ReNFT lendings");
             return {};
           })
-      );
-
-      const address = currentAddress.toLowerCase();
-      const lendingsReNFT = Object.values(response?.lendings || [])
-        .filter((v) => v != null)
-        // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
-        // ! therefore, this check is !==
-        .filter((l) => l.lenderAddress.toLowerCase() !== address)
-        .map((lending) => {
-          return new Lending(lending, signer);
-        });
-
-      setLoading(false);
-      setNfts(lendingsReNFT);
-    };
-    const fetchRequest = createCancellablePromise(fetchAndCreate());
+      )
+    );
+    fetchRequest.promise
+      .then((response) => {
+        const address = currentAddress.toLowerCase();
+        const lendingsReNFT = Object.values(response?.lendings || [])
+          .filter((v) => v != null)
+          // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
+          // ! therefore, this check is !==
+          .filter((l) => l.lenderAddress.toLowerCase() !== address)
+          .map((lending) => {
+            return new Lending(lending, signer);
+          });
+        setNfts(lendingsReNFT);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
     return fetchRequest.cancel;
-  }, [signer, currentAddress]);
+  }, [currentAddress, signer]);
+
+  useEffect(() => {
+    fetchRentings();
+  }, [fetchRentings]);
+
+  usePoller(fetchRentings, 10000);
 
   return {
     allAvailableToRent: nfts,
