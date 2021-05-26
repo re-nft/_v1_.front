@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 import Debug from "debug";
 
 dotenv.config();
+
 if (process.env.REACT_APP_DEBUG) {
+  console.log('debug enabled', process.env.REACT_APP_DEBUG)
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
 

@@ -7,7 +7,7 @@ import fetch from "cross-fetch";
 import createDebugger from "debug";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
-const debug = createDebugger("TIMER");
+const debug = createDebugger("app:timer");
 
 const PRICE_BITSIZE = 32;
 

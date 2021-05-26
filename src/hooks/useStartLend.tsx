@@ -3,6 +3,10 @@ import { SignerContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
+import createDebugger from "debug";
+
+// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
+const debug = createDebugger("app:contract");
 
 export const useStartLend = (): ((
   addresses: string[],
@@ -32,6 +36,13 @@ export const useStartLend = (): ((
     ) => {
       if (!renft) return Promise.resolve();
 
+      debug('addresses', addresses)
+      debug('tokenIds', tokenIds)
+      debug('amounts', amounts)
+      debug('maxRentDurations', maxRentDurations)
+      debug('dailyRentPrices', dailyRentPrices)
+      debug('nftPrice', nftPrice)
+      debug('tokens', tokens)
       return renft
         .lend(
           addresses,
@@ -45,7 +56,8 @@ export const useStartLend = (): ((
         .then((v) => {
           return v;
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e)
           console.warn("could not start lend");
           return;
         });

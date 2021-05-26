@@ -10,7 +10,7 @@ import { decimalToPaddedHexString } from "../../utils";
 import createDebugger from "debug";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
-const debug = createDebugger("FETCH_TOKENURI");
+const debug = createDebugger("app:fetch");
 
 enum NftType {
   Nft,
