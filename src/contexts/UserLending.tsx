@@ -9,6 +9,7 @@ import React, {
 import {
   SignerContext,
 } from "../hardhat/SymfoniContext";
+import usePoller from "../hooks/usePoller";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
 import { Lending } from "./graph/classes";
@@ -18,14 +19,10 @@ import { LendingRaw } from "./graph/types";
 export type UserLendingContextType = {
     userLending: Lending[],
     isLoading: boolean,
-    refetchLending: () => Promise<(() => void) | undefined>;
 }
 export const UserLendingContext = createContext<UserLendingContextType>({
     userLending: [],
     isLoading: false,
-    refetchLending: () => {
-        return Promise.resolve(undefined);
-    }
 });
 
 export const UserLendingProvider: React.FC = ({ children }) => {
@@ -34,7 +31,6 @@ export const UserLendingProvider: React.FC = ({ children }) => {
   const [isLoading, setLoading] = useState(false);
 
   const fetchLending = useCallback(async() => {
-    console.log('refetching lending', signer)
     if (!signer) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
@@ -43,7 +39,6 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
     const address = await signer.getAddress();
-    console.log(address)
     const fetchRequest = createCancellablePromise<{ users: { lending: LendingRaw[] }[] }>(
       timeItAsync(
         "Pulled Users ReNFT Lendings",
@@ -84,12 +79,13 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     fetchLending();
   }, [fetchLending]);
 
+  //TODO usePoller(fetchLending, 3000);
+
   return (
     <UserLendingContext.Provider
       value={{
         userLending: lending,
         isLoading,
-        refetchLending: fetchLending,
       }}
     >
       {children}

@@ -97,13 +97,11 @@ export const Dashboard: React.FC = () => {
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
-      if (!signer) return;
 
       // ! eniko: don't know if it is good to refresh so quickly in stop lend
       // ! eniko: there is no update on the front that transaction is pending at all
       const transaction = createCancellablePromise(
         stopLending(
-          signer,
           lending.map((l) => ({
             address: l.address,
             amount: l.amount,
@@ -118,7 +116,7 @@ export const Dashboard: React.FC = () => {
         handleReset();
       });
     },
-    [stopLending, setHash, handleReset, signer]
+    [stopLending, setHash, handleReset]
   );
 
   const _returnBy = (renting: Renting) =>

@@ -1,13 +1,10 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { ReNFT } from "@renft/sdk";
 import { ContractTransaction } from "@ethersproject/contracts";
-import { Signer } from "ethers";
 import { BigNumber } from "@ethersproject/bignumber";
-import { UserLendingContext } from "../contexts/UserLending";
-import { getReNFT } from "../services/get-renft-instance";
+import { SignerContext } from "../hardhat/SymfoniContext";
 
 export const useStopLend = (): ((
-  signer: Signer,
   nfts: {
     address: string;
     tokenId: string;
@@ -15,11 +12,13 @@ export const useStopLend = (): ((
     lendingId: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
-  const { refetchLending } = useContext(UserLendingContext);
-  
+  const [signer] = useContext(SignerContext);
+  const renft = useMemo(() => {
+    if (!signer) return;
+    return new ReNFT(signer);
+  }, [signer]);
   return useCallback(
     (
-      signer,
       nfts: {
         address: string;
         tokenId: string;
@@ -27,17 +26,17 @@ export const useStopLend = (): ((
         lendingId: string;
       }[]
     ) => {
-      return getReNFT(signer)
-        .stopLending(
-          nfts.map((nft) => (nft.address)),
-          nfts.map((nft) => (BigNumber.from(nft.tokenId))),
-          nfts.map((nft) => (Number(nft.amount))),
-          nfts.map((nft) => (BigNumber.from(nft.lendingId)))
-        )
-        .then(() => {
-          refetchLending();
-        });
+      if (!renft) return Promise.resolve();
+      const arr: [string[], BigNumber[], number[], BigNumber[]] = [
+        nfts.map((nft) => nft.address),
+        nfts.map((nft) => BigNumber.from(nft.tokenId)),
+        nfts.map((nft) => Number(nft.amount)),
+        nfts.map((nft) => BigNumber.from(nft.lendingId)),
+      ];
+      return renft.stopLending(...arr).catch((e) => {
+        return;
+      });
     },
-    [refetchLending]
+    [renft]
   );
 };

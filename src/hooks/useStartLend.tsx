@@ -3,7 +3,6 @@ import { SignerContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
-import { UserLendingContext } from "../contexts/UserLending";
 
 export const useStartLend = (): ((
   addresses: string[],
@@ -15,7 +14,6 @@ export const useStartLend = (): ((
   tokens: PaymentToken[]
 ) => Promise<void | ContractTransaction>) => {
   const [signer] = useContext(SignerContext);
-  const { refetchLending } = useContext(UserLendingContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -45,16 +43,14 @@ export const useStartLend = (): ((
           tokens
         )
         .then((v) => {
-          refetchLending();
           return v;
         })
-        .catch((e) => {
-          console.log(e)
+        .catch(() => {
           console.warn("could not start lend");
           return;
         });
     },
-    [refetchLending, renft]
+    [renft]
   );
   return startLend;
 };

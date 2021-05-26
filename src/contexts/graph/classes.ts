@@ -63,6 +63,7 @@ class Nft {
     this.nftAddress = nftAddress;
     this.tokenId = tokenId.toString();
     this.amount = amount.toString();
+
     this.signer = signer;
     this.isERC721 = isERC721;
 
@@ -198,6 +199,10 @@ class Lending extends Nft {
   lending: ILending;
   renting?: IRenting;
   id: string;
+
+  loadAmount = async (address?: string): Promise<string> => {
+    return this.amount;
+  };
 }
 
 class Renting extends Nft {
@@ -227,6 +232,11 @@ class Renting extends Nft {
   lending: ILending;
   renting: IRenting;
   id: string;
+
+
+  loadAmount = async (address?: string): Promise<string> => {
+    return this.amount;
+  };
 }
 
 export { Nft, Lending, Renting };

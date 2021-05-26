@@ -32,7 +32,6 @@ const UserCurrentlyLending: React.FC = () => {
     onSetPage,
     onChangePage,
   } = useContext(PageContext);
-  const [signer] = useContext(SignerContext);
   const { userLending, isLoading } = useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -40,10 +39,9 @@ const UserCurrentlyLending: React.FC = () => {
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
-      if (!signer) return;
 
       const transaction = createCancellablePromise(
-        stopLending(signer, nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
+        stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
 
       transaction.promise.then((tx) => {
@@ -54,7 +52,7 @@ const UserCurrentlyLending: React.FC = () => {
       return transaction.cancel;
     },
 
-    [stopLending, setHash, batchHandleReset, signer]
+    [stopLending, setHash, batchHandleReset]
   );
 
   const handleClickNft = useCallback(
