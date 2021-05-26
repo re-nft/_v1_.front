@@ -18,6 +18,8 @@ import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
+import { SignerContext, ResolverContext } from "../../../hardhat/SymfoniContext";
+import startRent from "../../../services/start-rent";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
@@ -26,6 +28,8 @@ const AvailableToRent: React.FC = () => {
     handleReset: handleBatchReset,
     onCheckboxChange,
   } = useContext(BatchContext);
+  const [signer] = useContext(SignerContext);
+  const { instance: resolver } = useContext(ResolverContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const {
@@ -57,8 +61,19 @@ const AvailableToRent: React.FC = () => {
   );
 
   const handleBatchRent = useCallback(() => {
+    // ! resolver here might have a different address than in the sdk
+    if (!signer || !resolver) return;
     setOpenBatchModel(true);
-  }, [setOpenBatchModel]);
+    startRent(signer, resolver, checkedLendingItems.map((nft) => ({
+      address: nft.address,
+      tokenId: nft.tokenId,
+      amount: nft.lending.lentAmount,
+      lendingId: nft.lending.id,
+      // TODO
+      rentDuration: "1",
+      paymentToken: nft.lending.paymentToken
+    })));
+  }, [setOpenBatchModel, checkedLendingItems, signer, resolver]);
 
   //Prefetch metadata
   useEffect(() => {
