@@ -64,7 +64,7 @@ const Lendings: React.FC = () => {
     //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
 
-  if (isLoading) {
+  if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
 

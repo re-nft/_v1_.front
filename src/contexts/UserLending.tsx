@@ -79,7 +79,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     fetchLending();
   }, [fetchLending]);
 
-  //TODO usePoller(fetchLending, 3000);
+  usePoller(fetchLending, 10000);
 
   return (
     <UserLendingContext.Provider

@@ -35,17 +35,10 @@ export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { allAvailableToLend, isLoading: allAvailableIsLoading } =
     useAllAvailableToLend();
-  const { userData, isLoading: userDataIsLoading } = useContext(GraphContext);
+  const { userData, isLoading: userDataIsLoading, refreshUserData } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  const refreshState = useCallback(() => {
-    //TODO:eniko force data refetch
-    // if (!allAvailableToLend || !userData) return;
-    // const items = myFavorites(userData, allAvailableToLend);
-    // setNftItems(items);
-    // setIsLoading(false);
-  }, []);
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
@@ -54,13 +47,13 @@ export const MyFavorites: React.FC = () => {
       // todo: the function may need in the future
       addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
         .then(() => {
-          refreshState();
+          refreshUserData();
         })
         .catch(() => {
           console.warn("could not add or remove user favourite");
         });
     },
-    [currentAddress, refreshState]
+    [currentAddress, refreshUserData]
   );
 
   useEffect(() => {

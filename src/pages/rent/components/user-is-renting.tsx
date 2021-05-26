@@ -39,7 +39,6 @@ const UserRentings: React.FC = () => {
   //const { txnState } = useContext(TransactionStateContext);
   //const previoustxnState = usePrevious(txnState);
 
-  //TODO:eniko force renting to update when state changes
   // useEffect(() => {
   //   if (
   //     txnState === TransactionStateEnum.SUCCESS &&
@@ -80,7 +79,7 @@ const UserRentings: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
-  if (isLoading) {
+  if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
 

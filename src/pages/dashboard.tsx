@@ -137,7 +137,7 @@ export const Dashboard: React.FC = () => {
 
   const isLoading = userLendingLoading || userRentingLoading;
 
-  if (isLoading) return <CatalogueLoader />;
+  if (isLoading && lendingItems.length === 0 && rentingItems.length === 0) return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
@@ -149,7 +149,7 @@ export const Dashboard: React.FC = () => {
     <div>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
-          {lendingItems.length !== 0 && !isLoading && (
+          {lendingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
               <table className="list">
@@ -210,7 +210,7 @@ export const Dashboard: React.FC = () => {
               </table>
             </div>
           )}
-          {rentingItems.length !== 0 && !isLoading && (
+          {rentingItems.length !== 0  && (
             <div className="dashboard-section">
               <h2 className="renting">Renting</h2>
               <table className="list">

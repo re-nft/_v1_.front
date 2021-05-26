@@ -39,10 +39,6 @@ const AvailableToRent: React.FC = () => {
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  // refresh when state succeed after rent
-  // nothing to do on reject
-  // TODO:eniko manually have to force refetch or optimistically set data when rent/lent
-
   useEffect(() => {
     onChangePage(allAvailableToRent);
   }, [allAvailableToRent, onChangePage]);
@@ -69,7 +65,7 @@ const AvailableToRent: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
-  if (isLoading) return <CatalogueLoader />;
+  if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You cant rent anything yet</div>;
 

@@ -7,6 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import { SignerContext } from "../hardhat/SymfoniContext";
+import usePoller from "../hooks/usePoller";
 import { fetchRenftsAll, ReturnReNftAll } from "../services/graph";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
@@ -51,6 +52,8 @@ export const UserRentingProvider: React.FC = ({ children }) => {
   useEffect(() => {
     fetchRenting();
   }, [fetchRenting]);
+
+  usePoller(fetchRenting, 10000);
 
   return (
     <UserRentingContext.Provider
