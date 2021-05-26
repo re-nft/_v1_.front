@@ -18,13 +18,13 @@ import { LendingRaw } from "./graph/types";
 export type UserLendingContextType = {
     userLending: Lending[],
     isLoading: boolean,
-    refetchLending: () => (() => void) | undefined;
+    refetchLending: () => Promise<(() => void) | undefined>;
 }
 export const UserLendingContext = createContext<UserLendingContextType>({
     userLending: [],
     isLoading: false,
     refetchLending: () => {
-        return undefined;
+        return Promise.resolve(undefined);
     }
 });
 
@@ -33,7 +33,8 @@ export const UserLendingProvider: React.FC = ({ children }) => {
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
 
-  const fetchLending = useCallback(() => {
+  const fetchLending = useCallback(async() => {
+    console.log('refetching lending', signer)
     if (!signer) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
@@ -41,14 +42,15 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
-
+    const address = await signer.getAddress();
+    console.log(address)
     const fetchRequest = createCancellablePromise<{ users: { lending: LendingRaw[] }[] }>(
       timeItAsync(
         "Pulled Users ReNFT Lendings",
         async () =>
           await request(
             subgraphURI,
-            queryUserLendingRenft(await signer.getAddress())
+            queryUserLendingRenft(address)
           ).catch(() => {
             // ! let's warn with unique messages, without console logging the error message
             // ! that something went wrong. That way, if the app behaves incorrectly, we will

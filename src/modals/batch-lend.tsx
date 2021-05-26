@@ -44,7 +44,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
   const [provider] = useContext(ProviderContext);
-  const [isApproved, setIsApproved] = useState<boolean>();
+  const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nft] = nfts;
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
   const startLend = useStartLend();
@@ -53,6 +53,8 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     (e: React.FormEvent) => {
       e.preventDefault();
       if (!startLend) return;
+      if(!isApproved) return;
+      if(isActive) return;
 
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
@@ -85,15 +87,14 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         )
       );
       transaction.promise.then((tx) => {
+        onClose();
         if (tx) setHash(tx.hash);
       });
-
-      onClose();
 
       return transaction.cancel;
     },
 
-    [lendOneInputs, pmtToken, startLend, nfts, setHash, onClose]
+    [startLend, isApproved, isActive, pmtToken, lendOneInputs, nfts, onClose, setHash]
   );
 
   useEffect(() => {

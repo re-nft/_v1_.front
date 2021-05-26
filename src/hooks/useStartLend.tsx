@@ -47,7 +47,8 @@ export const useStartLend = (): ((
           refetchLending();
           return v;
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e)
           console.warn("could not start lend");
           return;
         });
