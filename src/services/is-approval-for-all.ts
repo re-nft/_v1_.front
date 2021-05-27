@@ -1,12 +1,15 @@
-import { ReNFT } from "../hardhat/typechain/ReNFT";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
+import { CONTRACT_ADDRESS } from "../consts";
 
 export default async function isApprovalForAll(
-  renft: ReNFT,
   nft: { address: string; contract: () => ERC721 | ERC1155 }[],
   currentAddress: string
 ): Promise<boolean> {
+  if (!CONTRACT_ADDRESS)
+    throw new Error(
+      `Please specify contract address for ${process.env.REACT_APP_ENVIRONMENT}`
+    );
   const distinctItems = nft.filter(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index
@@ -15,7 +18,7 @@ export default async function isApprovalForAll(
   const result = await Promise.all(
     distinctItems.map((nft) => {
       const contract = nft.contract();
-      return contract.isApprovedForAll(currentAddress, renft.address);
+      return contract.isApprovedForAll(currentAddress, CONTRACT_ADDRESS as string);
     })
   );
 

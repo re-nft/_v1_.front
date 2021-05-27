@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useEffect, useContext } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+} from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
@@ -21,8 +27,11 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { UserRentingContext } from "../../../contexts/UserRenting";
 
 const UserRentings: React.FC = () => {
-  const { checkedItems, handleReset: handleBatchReset } =
-    useContext(BatchContext);
+  const {
+    checkedItems,
+    handleReset: handleBatchReset,
+    onCheckboxChange,
+  } = useContext(BatchContext);
   const checkedRentingItems = useCheckedRentingItems();
   const {
     totalPages,
@@ -36,25 +45,6 @@ const UserRentings: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  //const { txnState } = useContext(TransactionStateContext);
-  //const previoustxnState = usePrevious(txnState);
-
-  // useEffect(() => {
-  //   if (
-  //     txnState === TransactionStateEnum.SUCCESS &&
-  //     previoustxnState === TransactionStateEnum.PENDING
-  //   ) {
-  //   getUserRenting()
-  //     .then((userRenting: Renting[] | undefined) => {
-  //       onChangePage(userRenting || []);
-  //       setIsLoading(false);
-  //     })
-  //     .catch(() => {
-  //       console.warn("could not handle refresh");
-  //     });
-  //   }
-  // }, [onChangePage, setIsLoading, getUserRenting, txnState, previoustxnState]);
-
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
@@ -63,11 +53,12 @@ const UserRentings: React.FC = () => {
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const handleOpenModal = useCallback(
-    async (nft: Nft) => {
+  const handleReturnNft = useCallback(
+    (nft) => {
+      onCheckboxChange(nft);
       setModalOpen(true);
     },
-    [setModalOpen]
+    [onCheckboxChange]
   );
 
   useEffect(() => {
@@ -79,6 +70,16 @@ const UserRentings: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
+  const returnItems = useMemo(() => {
+    return checkedRentingItems.map((item) => ({
+      address: item.address,
+      tokenId: item.tokenId,
+      lendingId: item.renting.lendingId,
+      amount: item.renting.lending.lentAmount,
+      contract: item.contract,
+    }));
+  }, [checkedRentingItems]);
+
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
@@ -87,19 +88,15 @@ const UserRentings: React.FC = () => {
     return <div className="center">You are not renting anything yet</div>;
   }
 
+  //TODO:eniko after returning the nft it returns is as Lending not REnting
+  //TODO remove the filter bellow
   // TODO: remove all the anys
   return (
     <>
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          nfts={checkedRentingItems.map((item) => ({
-            address: item.address,
-            tokenId: item.tokenId,
-            lendingId: item.renting.lendingId,
-            amount: item.renting.lending.lentAmount,
-            contract: item.contract,
-          }))}
+          nfts={returnItems}
           onClose={handleCloseModal}
         />
       )}
@@ -107,36 +104,43 @@ const UserRentings: React.FC = () => {
         {/* 
           TODO: this is wild, this should not be any (about currentPage)
         */}
-        {currentPage.map((nft: Renting) => {
-          const id = getUniqueID(
-            nft.address,
-            nft.tokenId,
-            nft.renting.lendingId
-          );
-          return (
-            <CatalogueItem
-              key={id}
-              nft={nft}
-              checked={
-                !!checkedItems[
-                  getUniqueID(nft.address, nft.tokenId, nft.renting.lendingId)
-                ]
-              }
-            >
-              <NumericField
-                text="Daily price"
-                value="0"
-                unit={PaymentToken[PaymentToken.DAI]}
-              />
-              <NumericField text="Rent Duration" value="0" unit="days" />
-              <ActionButton<Nft>
-                title="Return It"
-                nft={nft}
-                onClick={handleOpenModal}
-              />
-            </CatalogueItem>
-          );
-        })}
+        {currentPage.length > 0 &&
+          currentPage
+            .filter((r) => r.renting)
+            .map((nft: Renting) => {
+              const id = getUniqueID(
+                nft.address,
+                nft.tokenId,
+                nft.renting.lendingId
+              );
+              return (
+                <CatalogueItem
+                  key={id}
+                  nft={nft}
+                  checked={
+                    !!checkedItems[
+                      getUniqueID(
+                        nft.address,
+                        nft.tokenId,
+                        nft.renting.lendingId
+                      )
+                    ]
+                  }
+                >
+                  <NumericField
+                    text="Daily price"
+                    value="0"
+                    unit={PaymentToken[PaymentToken.DAI]}
+                  />
+                  <NumericField text="Rent Duration" value="0" unit="days" />
+                  <ActionButton<Nft>
+                    title="Return It"
+                    nft={nft}
+                    onClick={() => handleReturnNft(nft)}
+                  />
+                </CatalogueItem>
+              );
+            })}
       </ItemWrapper>
       <Pagination
         totalPages={totalPages}

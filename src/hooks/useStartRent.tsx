@@ -31,6 +31,7 @@ export const useStartRent = (
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: resolver } = useContext(ResolverContext);
   const [approvals, setApprovals] = useState<ERC20[]>();
+  const [isApproved, setApproved] = useState(false);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -64,15 +65,11 @@ export const useStartRent = (
               return erc20s[ix];
             });
           setApprovals(approvals);
+          if(approvals.length < 1) setApproved(true)
         }
       );
     });
   }, [currentAddress, nfts, resolver, signer]);
-
-  const isApproved: boolean = useMemo(() => {
-    if (approvals) return approvals.length < 1;
-    return false;
-  }, [approvals]);
 
   const handleApproveAll = useCallback(() => {
     if (!isApproved && approvals && approvals.length > 0) {
@@ -80,7 +77,9 @@ export const useStartRent = (
         approvals.map((approval) =>
           approval.approve(CONTRACT_ADDRESS as string, MAX_UINT256)
         )
-      );
+      ).then(()=>{
+        setApproved(true);
+      });
     }
   }, [approvals, isApproved]);
 

@@ -120,7 +120,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     if (!provider) return;
     if (!renft) return;
     const transaction = createCancellablePromise(
-      setApprovalForAll(renft, nfts)
+      setApprovalForAll(nfts)
     );
     transaction.promise
       .then(([tx]) => {
@@ -173,7 +173,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   useEffect(() => {
     if (!renft || !currentAddress) return;
     const transaction = createCancellablePromise(
-      isApprovalForAll(renft, nfts, currentAddress)
+      isApprovalForAll(nfts, currentAddress)
     );
     transaction.promise
       .then((isApproved) => {
