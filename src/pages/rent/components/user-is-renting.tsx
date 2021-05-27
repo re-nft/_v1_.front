@@ -72,6 +72,7 @@ const UserRentings: React.FC = () => {
 
   const returnItems = useMemo(() => {
     return checkedRentingItems.map((item) => ({
+      id: item.id,
       address: item.address,
       tokenId: item.tokenId,
       lendingId: item.renting.lendingId,

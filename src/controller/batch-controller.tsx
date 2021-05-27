@@ -42,6 +42,8 @@ export type BatchContextType = {
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
 
   handleReset(): void;
+  handleResetLending(lending?: string[]): void;
+  handleResetRenting(renting?: string[]): void;
   onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
@@ -49,7 +51,39 @@ const defaultBatchContext = {
   checkedItems: {},
   // functions
   handleReset: THROWS,
+  handleResetLending: THROWS,
+  handleResetRenting: THROWS,
   onCheckboxChange: THROWS,
+};
+
+const shouldDelete =
+  (items: string [] | undefined, isrentcheck = true) =>
+  (item: Renting | Lending | Nft) => {
+    const keys = new Set(items);
+    if (keys && keys.size > 0) {
+      // TODO this is always works, not sure why not in this project
+      // @ts-ignore
+      if (item.id) {
+        // @ts-ignore
+        return keys.has(item.id);
+      }
+    }
+    return isrentcheck ? isRenting(item): isLending(item);
+  };
+
+const filter = (
+  checkedItems: Record<UniqueID, Nft | Lending | Renting>,
+  items: string[] | undefined,
+  isrentcheck = true
+) => {
+  const fn = shouldDelete(items, isrentcheck);
+  return Object.keys(checkedItems).reduce<
+    Record<UniqueID, Nft | Lending | Renting>
+  >((acc, key) => {
+    const item = checkedItems[key];
+    if (!fn(item)) acc[key] = item;
+    return acc;
+  }, {});
 };
 
 export const BatchContext =
@@ -64,6 +98,23 @@ export const BatchProvider: React.FC = ({ children }) => {
     if (Object.keys(checkedItems).length > 0)
       setCheckedItems(defaultBatchContext.checkedItems);
   }, [checkedItems]);
+
+  const handleResetRenting = useCallback(
+    (renting?: string[]) => {
+      if (Object.keys(checkedItems).length > 0)
+        setCheckedItems(filter(checkedItems, renting));
+    },
+    [checkedItems]
+  );
+
+  // remove provided items or all the lendings
+  const handleResetLending = useCallback(
+    (lending?: string[]) => {
+      if (Object.keys(checkedItems).length > 0)
+        setCheckedItems(filter(checkedItems, lending, false));
+    },
+    [checkedItems]
+  );
 
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = (item) => {
     let lendingID = "0";
@@ -93,6 +144,8 @@ export const BatchProvider: React.FC = ({ children }) => {
         checkedItems,
         handleReset,
         onCheckboxChange,
+        handleResetLending,
+        handleResetRenting,
       }}
     >
       {children}

@@ -78,8 +78,6 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     [duration, nft]
   );
 
-  console.log(isValid, 'isvalid', duration, nft)
-
   // TODO close modal when transaction done
   // TODO fix the disabled button, when invalid it should be disabled
   return (

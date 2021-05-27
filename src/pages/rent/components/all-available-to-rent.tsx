@@ -22,8 +22,6 @@ import {
   SignerContext,
   ResolverContext,
 } from "../../../hardhat/SymfoniContext";
-import startRent from "../../../services/start-rent";
-import { useStartRent } from "../../../hooks/useStartRent";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {

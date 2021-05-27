@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect } from "react";
 import ActionButton from "../components/action-button";
+import { Renting } from "../contexts/graph/classes";
 import { ReturnNft, useReturnIt } from "../hooks/useReturnIt";
 import Modal from "./modal";
-
 
 type ReturnModalProps = {
   nfts: ReturnNft[];
   open: boolean;
-  onClose: () => void;
+  onClose: (nfts?: ReturnNft[]) => void;
 };
 
 export const ReturnModal: React.FC<ReturnModalProps> = ({
@@ -16,39 +16,25 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   onClose,
 }) => {
   const [nft] = nfts;
-  const {isApproved, approveAll, returnIt} = useReturnIt(nfts);
+  const returnIt = useReturnIt(nfts);
 
   const handleReturnNft = useCallback(async () => {
     const isSuccess = await returnIt();
     if (isSuccess) {
-      onClose();
+      onClose(nfts);
     }
-  }, [returnIt, onClose]);
-
-  const handleApproveAll = useCallback( () => {
-    approveAll()
-  }, [approveAll]);
- 
+  }, [returnIt, onClose, nfts]);
 
   return (
-    <Modal open={open} handleClose={onClose}>
+    <Modal open={open} handleClose={() => onClose()}>
       <div className="modal-dialog-section">
         <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
-          {!isApproved && (
-            <ActionButton<ReturnNft>
-              title="Approve All"
-              nft={nft}
-              onClick={handleApproveAll}
-            />
-          )}
-          {isApproved && (
-            <ActionButton<ReturnNft>
-              title="Return It"
-              nft={nft}
-              onClick={handleReturnNft}
-            />
-          )}
+          <ActionButton<ReturnNft>
+            title="Return It"
+            nft={nft}
+            onClick={handleReturnNft}
+          />
         </div>
       </div>
     </Modal>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useEffect } from "react";
+import React, { useState, useCallback, useContext, useEffect, useMemo } from "react";
 import moment from "moment";
 
 import { Lending, Renting } from "../contexts/graph/classes";
@@ -20,6 +20,8 @@ import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
+import ReturnModal from "../modals/return";
+import { ReturnNft } from "../hooks/useReturnIt";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -62,21 +64,20 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const [signer] = useContext(SignerContext);
-  const { onCheckboxChange, handleReset } = useContext(BatchContext);
+  const { onCheckboxChange, handleReset , handleResetLending, handleResetRenting} = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
-    useContext(UserRentingContext)
+    useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
     useContext(UserLendingContext);
-  const [__, setModalOpen] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
   const _now = moment();
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
   const stopLending = useStopLend();
+  const [rentModalOpen, setRentModalOpen] = useState(false);
 
   //TODO:eniko
   // const handleClaimCollateral = useCallback(
@@ -97,7 +98,6 @@ export const Dashboard: React.FC = () => {
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
-
       // ! eniko: don't know if it is good to refresh so quickly in stop lend
       // ! eniko: there is no update on the front that transaction is pending at all
       const transaction = createCancellablePromise(
@@ -113,11 +113,12 @@ export const Dashboard: React.FC = () => {
 
       transaction.promise.then((tx) => {
         if (tx) setHash(tx.hash);
-        handleReset();
+        handleResetLending(lending.map((m)=> m.id));
       });
     },
-    [stopLending, setHash, handleReset]
+    [stopLending, setHash, handleResetLending]
   );
+
 
   const _returnBy = (renting: Renting) =>
     returnBy(renting.renting?.rentedAt, renting.renting?.rentDuration);
@@ -125,8 +126,8 @@ export const Dashboard: React.FC = () => {
   const _claim = (renting: Renting) => _now.isAfter(_returnBy(renting));
 
   const handleBatchModalOpen = useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
+    setRentModalOpen(true);
+  }, [setRentModalOpen]);
 
   const onCheckboxClick = useCallback(
     (lending: Lending | Renting) => {
@@ -136,8 +137,33 @@ export const Dashboard: React.FC = () => {
   );
 
   const isLoading = userLendingLoading || userRentingLoading;
+  
+  const handleReturnNft = useCallback(
+    (nft) => {
+      onCheckboxChange(nft);
+      setRentModalOpen(true);
+    },
+    [onCheckboxChange]
+  );
 
-  if (isLoading && lendingItems.length === 0 && rentingItems.length === 0) return <CatalogueLoader />;
+  const returnItems = useMemo(() => {
+    return checkedRentingItems.map((item) => ({
+      id: item.id,
+      address: item.address,
+      tokenId: item.tokenId,
+      lendingId: item.renting.lendingId,
+      amount: item.renting.lending.lentAmount,
+      contract: item.contract,
+    }));
+  }, [checkedRentingItems]);
+
+  const handleCloseModal = useCallback((nfts?: ReturnNft[]) => {
+    handleResetRenting(nfts?.map(i => i.id));
+    setRentModalOpen(false)
+  }, [handleResetRenting])
+
+  if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
+    return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
@@ -147,6 +173,13 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div>
+       {rentModalOpen && (
+        <ReturnModal
+          open={rentModalOpen}
+          nfts={returnItems}
+          onClose={handleCloseModal}
+        />
+      )}
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && (
@@ -210,7 +243,7 @@ export const Dashboard: React.FC = () => {
               </table>
             </div>
           )}
-          {rentingItems.length !== 0  && (
+          {rentingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="renting">Renting</h2>
               <table className="list">
@@ -268,7 +301,12 @@ export const Dashboard: React.FC = () => {
                         <td className="action-column">
                           {renting.lending.lenderAddress !==
                             currentAddress.toLowerCase() && (
-                            <span className="nft__button small">Return It</span>
+                            <span
+                              className="nft__button small"
+                              onClick={() => handleReturnNft(rent)}
+                            >
+                              Return It
+                            </span>
                           )}
                         </td>
                       </tr>
