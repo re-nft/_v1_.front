@@ -18,8 +18,12 @@ import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
-import { SignerContext, ResolverContext } from "../../../hardhat/SymfoniContext";
+import {
+  SignerContext,
+  ResolverContext,
+} from "../../../hardhat/SymfoniContext";
 import startRent from "../../../services/start-rent";
+import { useStartRent } from "../../../hooks/useStartRent";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
@@ -29,7 +33,6 @@ const AvailableToRent: React.FC = () => {
     onCheckboxChange,
   } = useContext(BatchContext);
   const [signer] = useContext(SignerContext);
-  const { instance: resolver } = useContext(ResolverContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const {
@@ -42,6 +45,7 @@ const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const [_, fetchNfts] = useContext(NFTMetaContext);
+  const startRent = useStartRent();
 
   useEffect(() => {
     onChangePage(allAvailableToRent);
@@ -62,18 +66,19 @@ const AvailableToRent: React.FC = () => {
 
   const handleBatchRent = useCallback(() => {
     // ! resolver here might have a different address than in the sdk
-    if (!signer || !resolver) return;
     setOpenBatchModel(true);
-    startRent(signer, resolver, checkedLendingItems.map((nft) => ({
-      address: nft.address,
-      tokenId: nft.tokenId,
-      amount: nft.lending.lentAmount,
-      lendingId: nft.lending.id,
-      // TODO
-      rentDuration: "1",
-      paymentToken: nft.lending.paymentToken
-    })));
-  }, [setOpenBatchModel, checkedLendingItems, signer, resolver]);
+    startRent(
+      checkedLendingItems.map((nft) => ({
+        address: nft.address,
+        tokenId: nft.tokenId,
+        amount: nft.lending.lentAmount,
+        lendingId: nft.lending.id,
+        // TODO
+        rentDuration: "1",
+        paymentToken: nft.lending.paymentToken,
+      }))
+    );
+  }, [startRent, checkedLendingItems]);
 
   //Prefetch metadata
   useEffect(() => {
@@ -90,7 +95,9 @@ const AvailableToRent: React.FC = () => {
         nft={checkedLendingItems}
         open={isOpenBatchModel}
         // TODO
-        onSubmit={() => { console.warn("TODO") }}
+        onSubmit={() => {
+          console.warn("TODO");
+        }}
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>
