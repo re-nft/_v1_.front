@@ -233,7 +233,6 @@ class Renting extends Nft {
   renting: IRenting;
   id: string;
 
-
   loadAmount = async (address?: string): Promise<string> => {
     return this.amount;
   };

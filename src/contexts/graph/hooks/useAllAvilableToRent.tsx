@@ -46,7 +46,8 @@ export const useAllAvailableToRent = (): {
           .filter((l) => {
             console.log(l);
             const userNotLender = l.lenderAddress.toLowerCase() !== address;
-            const userNotRenter = ((l.renting?.renterAddress ?? "o_0").toLowerCase()) !== address;
+            const userNotRenter =
+              (l.renting?.renterAddress ?? "o_0").toLowerCase() !== address;
             return userNotLender && userNotRenter;
           })
           .map((lending) => {

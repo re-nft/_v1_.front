@@ -53,8 +53,8 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     (e: React.FormEvent) => {
       e.preventDefault();
       if (!startLend) return;
-      if(!isApproved) return;
-      if(isActive) return;
+      if (!isApproved) return;
+      if (isActive) return;
 
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
@@ -94,7 +94,16 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       return transaction.cancel;
     },
 
-    [startLend, isApproved, isActive, pmtToken, lendOneInputs, nfts, onClose, setHash]
+    [
+      startLend,
+      isApproved,
+      isActive,
+      pmtToken,
+      lendOneInputs,
+      nfts,
+      onClose,
+      setHash,
+    ]
   );
 
   useEffect(() => {
@@ -119,9 +128,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
     if (!renft) return;
-    const transaction = createCancellablePromise(
-      setApprovalForAll(nfts)
-    );
+    const transaction = createCancellablePromise(setApprovalForAll(nfts));
     transaction.promise
       .then(([tx]) => {
         if (!tx) return;

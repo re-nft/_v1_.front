@@ -57,7 +57,7 @@ const defaultBatchContext = {
 };
 
 const shouldDelete =
-  (items: string [] | undefined, isrentcheck = true) =>
+  (items: string[] | undefined, isrentcheck = true) =>
   (item: Renting | Lending | Nft) => {
     const keys = new Set(items);
     if (keys && keys.size > 0) {
@@ -68,7 +68,7 @@ const shouldDelete =
         return keys.has(item.id);
       }
     }
-    return isrentcheck ? isRenting(item): isLending(item);
+    return isrentcheck ? isRenting(item) : isLending(item);
   };
 
 const filter = (

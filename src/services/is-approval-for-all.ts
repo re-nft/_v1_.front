@@ -18,7 +18,10 @@ export default async function isApprovalForAll(
   const result = await Promise.all(
     distinctItems.map((nft) => {
       const contract = nft.contract();
-      return contract.isApprovedForAll(currentAddress, CONTRACT_ADDRESS as string);
+      return contract.isApprovedForAll(
+        currentAddress,
+        CONTRACT_ADDRESS as string
+      );
     })
   );
 

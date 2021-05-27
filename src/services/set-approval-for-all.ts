@@ -7,9 +7,9 @@ export default async function setApprovalForAll(
   nfts: { address: string; contract: () => ERC721 | ERC1155 }[]
 ): Promise<ContractTransaction[]> {
   if (!CONTRACT_ADDRESS)
-  throw new Error(
-    `Please specify contract address for ${process.env.REACT_APP_ENVIRONMENT}`
-  );
+    throw new Error(
+      `Please specify contract address for ${process.env.REACT_APP_ENVIRONMENT}`
+    );
   const distinctItems = nfts.filter(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index

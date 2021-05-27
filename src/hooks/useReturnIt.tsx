@@ -22,7 +22,7 @@ export type ReturnNft = {
 
 export const useReturnIt = (
   nfts: ReturnNft[]
-): () => Promise<void | boolean> => {
+): (() => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { instance: resolver } = useContext(ResolverContext);
@@ -37,7 +37,7 @@ export const useReturnIt = (
 
   return useCallback(async () => {
     if (!renft) return;
-    if(nfts.length < 1) return;
+    if (nfts.length < 1) return;
     const tx = await renft.returnIt(
       nfts.map((nft) => nft.address),
       nfts.map((nft) => BigNumber.from(nft.tokenId)),
@@ -47,5 +47,4 @@ export const useReturnIt = (
     const isSuccess = await setHash(tx.hash);
     return isSuccess;
   }, [nfts, renft, setHash]);
-
 };

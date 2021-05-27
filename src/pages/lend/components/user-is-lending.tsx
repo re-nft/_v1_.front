@@ -39,7 +39,6 @@ const UserCurrentlyLending: React.FC = () => {
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
-
       const transaction = createCancellablePromise(
         stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );

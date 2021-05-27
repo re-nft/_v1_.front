@@ -36,13 +36,13 @@ export const useStartLend = (): ((
     ) => {
       if (!renft) return Promise.resolve();
 
-      debug('addresses', addresses)
-      debug('tokenIds', tokenIds)
-      debug('amounts', amounts)
-      debug('maxRentDurations', maxRentDurations)
-      debug('dailyRentPrices', dailyRentPrices)
-      debug('nftPrice', nftPrice)
-      debug('tokens', tokens)
+      debug("addresses", addresses);
+      debug("tokenIds", tokenIds);
+      debug("amounts", amounts);
+      debug("maxRentDurations", maxRentDurations);
+      debug("dailyRentPrices", dailyRentPrices);
+      debug("nftPrice", nftPrice);
+      debug("tokens", tokens);
       return renft
         .lend(
           addresses,

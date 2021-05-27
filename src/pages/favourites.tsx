@@ -35,10 +35,13 @@ export const MyFavorites: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
   const { allAvailableToLend, isLoading: allAvailableIsLoading } =
     useAllAvailableToLend();
-  const { userData, isLoading: userDataIsLoading, refreshUserData } = useContext(GraphContext);
+  const {
+    userData,
+    isLoading: userDataIsLoading,
+    refreshUserData,
+  } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-
 
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {

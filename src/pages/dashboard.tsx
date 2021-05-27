@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useContext, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 import moment from "moment";
 
 import { Lending, Renting } from "../contexts/graph/classes";
@@ -6,7 +12,6 @@ import {
   BatchContext,
   getUniqueID,
   useCheckedLendingItems,
-  useCheckedNftItems,
   useCheckedRentingItems,
 } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
@@ -14,7 +19,6 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -35,6 +39,44 @@ enum DashboardViewType {
 type CheckboxProps = {
   onCheckboxClick: (nft: Lending | Renting) => void;
   nft: Lending | Renting;
+};
+
+type StopLendButtonProps = {
+  handleStopLend: (lending: Lending[]) => void;
+  lend: Lending;
+};
+
+type ReturnNftButtonProps = {
+  handleReturnNft: (renting: Renting[]) => void;
+  rent: Renting;
+};
+
+const ReturnNftButton: React.FC<ReturnNftButtonProps> = ({
+  handleReturnNft,
+  rent,
+}) => {
+  const handleClick = useCallback(() => {
+    return handleReturnNft([rent]);
+  }, [handleReturnNft, rent]);
+  return (
+    <span className="nft__button small" onClick={handleClick}>
+      Return It
+    </span>
+  );
+};
+
+const StopLendButton: React.FC<StopLendButtonProps> = ({
+  handleStopLend,
+  lend,
+}) => {
+  const handleClick = useCallback(() => {
+    return handleStopLend([lend]);
+  }, [handleStopLend, lend]);
+  return (
+    <span className="nft__button small" onClick={handleClick}>
+      Stop lend
+    </span>
+  );
 };
 
 const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
@@ -64,7 +106,12 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { onCheckboxChange, handleReset , handleResetLending, handleResetRenting} = useContext(BatchContext);
+  const {
+    onCheckboxChange,
+    handleReset,
+    handleResetLending,
+    handleResetRenting,
+  } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
@@ -113,12 +160,11 @@ export const Dashboard: React.FC = () => {
 
       transaction.promise.then((tx) => {
         if (tx) setHash(tx.hash);
-        handleResetLending(lending.map((m)=> m.id));
+        handleResetLending(lending.map((m) => m.id));
       });
     },
     [stopLending, setHash, handleResetLending]
   );
-
 
   const _returnBy = (renting: Renting) =>
     returnBy(renting.renting?.rentedAt, renting.renting?.rentDuration);
@@ -137,7 +183,7 @@ export const Dashboard: React.FC = () => {
   );
 
   const isLoading = userLendingLoading || userRentingLoading;
-  
+
   const handleReturnNft = useCallback(
     (nft) => {
       onCheckboxChange(nft);
@@ -157,10 +203,13 @@ export const Dashboard: React.FC = () => {
     }));
   }, [checkedRentingItems]);
 
-  const handleCloseModal = useCallback((nfts?: ReturnNft[]) => {
-    handleResetRenting(nfts?.map(i => i.id));
-    setRentModalOpen(false)
-  }, [handleResetRenting])
+  const handleCloseModal = useCallback(
+    (nfts?: ReturnNft[]) => {
+      handleResetRenting(nfts?.map((i) => i.id));
+      setRentModalOpen(false);
+    },
+    [handleResetRenting]
+  );
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
@@ -173,7 +222,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div>
-       {rentModalOpen && (
+      {rentModalOpen && (
         <ReturnModal
           open={rentModalOpen}
           nfts={returnItems}
@@ -185,6 +234,10 @@ export const Dashboard: React.FC = () => {
           {lendingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
+              <h3 style={{ color: "white", marginBottom: "1em" }}>
+                  Here you will find the NFTs that you are lending. These can also
+                  be found in the Lending tab after you toggle the view.
+              </h3>
               <table className="list">
                 <thead>
                   <tr>
@@ -226,15 +279,10 @@ export const Dashboard: React.FC = () => {
                           />
                         </td>
                         <td className="action-column">
-                          {/* 
-                            TODO: handleStopLend
-                          */}
-                          <span
-                            className="nft__button small"
-                            onClick={() => handleStopLend([lend])}
-                          >
-                            Stop lend
-                          </span>
+                          <StopLendButton
+                            handleStopLend={handleStopLend}
+                            lend={lend}
+                          />
                         </td>
                       </tr>
                     );
@@ -246,6 +294,10 @@ export const Dashboard: React.FC = () => {
           {rentingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="renting">Renting</h2>
+              <h3 style={{ color: "white", marginBottom: "1em" }}>
+                Here you will find the NFTs that you are renting. These can also
+                be found in the renting tab, after you toggle the view.
+              </h3>
               <table className="list">
                 <thead>
                   <tr>
@@ -301,12 +353,10 @@ export const Dashboard: React.FC = () => {
                         <td className="action-column">
                           {renting.lending.lenderAddress !==
                             currentAddress.toLowerCase() && (
-                            <span
-                              className="nft__button small"
-                              onClick={() => handleReturnNft(rent)}
-                            >
-                              Return It
-                            </span>
+                            <ReturnNftButton
+                              handleReturnNft={handleReturnNft}
+                              rent={rent}
+                            />
                           )}
                         </td>
                       </tr>

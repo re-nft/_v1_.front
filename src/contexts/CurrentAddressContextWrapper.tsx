@@ -12,7 +12,7 @@ export const CurrentAddressContextWrapper = createContext<
   // eslint-disable-next-line @typescript-eslint/no-empty-function
 >(["", () => {}]);
 
-CurrentAddressContextWrapper.displayName = 'CurrentAddressContextWrapper';
+CurrentAddressContextWrapper.displayName = "CurrentAddressContextWrapper";
 
 export const CurrentAddressContextWrapperProvider: React.FC = ({
   children,

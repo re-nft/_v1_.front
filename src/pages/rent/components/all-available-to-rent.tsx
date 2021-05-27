@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useContext, useEffect, useMemo } from "react";
+import React, {
+  useCallback,
+  useState,
+  useContext,
+  useEffect,
+  useMemo,
+} from "react";
 
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -18,7 +24,6 @@ import { PageContext } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
-
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
