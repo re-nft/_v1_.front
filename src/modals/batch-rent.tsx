@@ -73,10 +73,11 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     [handleApproveAll, handleClose, isApproved, startRent]
   );
 
-  const isValid = useMemo(
-    () => nft.length === Object.values(duration).length,
-    [duration, nft]
-  );
+  // todo: something wrong in here
+  // const isValid = useMemo(
+  //   () => nft.length === Object.values(duration).length,
+  //   [duration, nft]
+  // );
 
   // TODO close modal when transaction done
   // TODO fix the disabled button, when invalid it should be disabled
@@ -136,8 +137,8 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           {!isApproved && (
             <button
               type="submit"
-              disabled={!isValid}
-              className={`nft__button ${!isValid && "disabled"}`}
+              // disabled={!isValid}
+              className="nft__button"
             >
               {nft.length > 1 ? "Approve all" : "Approve"}
             </button>
@@ -145,8 +146,8 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           {isApproved && (
             <button
               type="submit"
-              className={`nft__button ${!isValid && "disabled"}`}
-              disabled={!isValid}
+              className="nft__button"
+              // disabled={!isValid}
             >
               {nft.length > 1 ? "Rent all" : "Rent"}
             </button>
