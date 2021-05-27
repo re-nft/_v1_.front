@@ -43,7 +43,12 @@ export const useAllAvailableToRent = (): {
           .filter((v) => v != null)
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
-          .filter((l) => l.lenderAddress.toLowerCase() !== address)
+          .filter((l) => {
+            console.log(l);
+            const userNotLender = l.lenderAddress.toLowerCase() !== address;
+            const userNotRenter = ((l.renting?.renterAddress ?? "o_0").toLowerCase()) !== address;
+            return userNotLender && userNotRenter;
+          })
           .map((lending) => {
             return new Lending(lending, signer);
           });

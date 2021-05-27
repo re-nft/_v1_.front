@@ -3,11 +3,10 @@ import React, { useCallback, useMemo, useState } from "react";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
-import { Lending, Nft } from "../contexts/graph/classes";
+import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "../types";
 import { getUniqueID } from "../controller/batch-controller";
 import CommonInfo from "./common-info";
-import ActionButton from "../components/action-button";
 import { useStartRent } from "../hooks/useStartRent";
 
 type BatchRentModalProps = {
