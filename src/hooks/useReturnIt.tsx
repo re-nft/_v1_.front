@@ -64,7 +64,6 @@ export const useReturnIt = (
 
   const returnIt = useCallback(async () => {
     if (!renft) return;
-    console.log(nfts)
     if(nfts.length < 1) return;
     const tx = await renft.returnIt(
       nfts.map((nft) => nft.address),

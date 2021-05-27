@@ -32,7 +32,6 @@ const AvailableToRent: React.FC = () => {
     handleReset: handleBatchReset,
     onCheckboxChange,
   } = useContext(BatchContext);
-  const [signer] = useContext(SignerContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
   const {
@@ -45,20 +44,6 @@ const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const [_, fetchNfts] = useContext(NFTMetaContext);
-  const [nfts, setNfts] = useState([])
-
-  // const nfts = useMemo(() => {
-  //   return checkedLendingItems.map((nft) => ({
-  //     address: nft.address,
-  //     tokenId: nft.tokenId,
-  //     amount: nft.lending.lentAmount,
-  //     lendingId: nft.lending.id,
-  //     // TODO
-  //     rentDuration: "1",
-  //     paymentToken: nft.lending.paymentToken,
-  //   }))
-  // }, [checkedLendingItems])
-  const {startRent, isApproved, handleApproveAll } = useStartRent(nfts);
 
   useEffect(() => {
     onChangePage(allAvailableToRent);
@@ -82,12 +67,12 @@ const AvailableToRent: React.FC = () => {
     setOpenBatchModel(true);
   }, []);
 
- 
-
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
+
+
 
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)

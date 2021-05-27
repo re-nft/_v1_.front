@@ -50,12 +50,12 @@ export const useStartRent = (
     for (const token of tokens.values()) {
       promiseTokenAddresses.push(resolver.getPaymentToken(token));
     }
+    setApproved(false);
     Promise.all(promiseTokenAddresses).then((tokenAddresses) => {
       const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
 
-      const promiseTokenAllowances: Promise<BigNumber>[] = tokenAddresses.map(
-        (_, ix) =>
-          erc20s[ix].allowance(currentAddress, CONTRACT_ADDRESS as string)
+      const promiseTokenAllowances: Promise<BigNumber>[] = erc20s.map((erc20) =>
+        erc20.allowance(currentAddress, CONTRACT_ADDRESS as string)
       );
       return Promise.all(promiseTokenAllowances).then(
         (tokenAllowances: BigNumber[]) => {
@@ -65,7 +65,7 @@ export const useStartRent = (
               return erc20s[ix];
             });
           setApprovals(approvals);
-          if(approvals.length < 1) setApproved(true)
+          if (approvals.length < 1) setApproved(true);
         }
       );
     });
@@ -77,7 +77,7 @@ export const useStartRent = (
         approvals.map((approval) =>
           approval.approve(CONTRACT_ADDRESS as string, MAX_UINT256)
         )
-      ).then(()=>{
+      ).then(() => {
         setApproved(true);
       });
     }
@@ -94,8 +94,14 @@ export const useStartRent = (
 
     debug("addresses", addresses);
     debug("amounts", amounts);
-    debug("tokenIds", tokenIds.map(t => t.toHexString()));
-    debug("lendingIds", lendingIds.map(t => t.toHexString()));
+    debug(
+      "tokenIds",
+      tokenIds.map((t) => t.toHexString())
+    );
+    debug(
+      "lendingIds",
+      lendingIds.map((t) => t.toHexString())
+    );
     debug("rentDurations", rentDurations);
 
     return await renft

@@ -54,7 +54,7 @@ const defaultBatchContext = {
 
 export const BatchContext =
   createContext<BatchContextType>(defaultBatchContext);
-
+// TODO this should be just a useBatcher
 export const BatchProvider: React.FC = ({ children }) => {
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]

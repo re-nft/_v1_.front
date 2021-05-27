@@ -32,12 +32,12 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       lendingId: nft.lending.id,
       rentDuration: duration[nft.tokenId],
       paymentToken: nft.lending.paymentToken,
-    }))
-  }, [nft, duration])
+    }));
+  }, [nft, duration]);
 
-  const {startRent, isApproved, handleApproveAll } = useStartRent(nfts);
-  
-  const handleChange = useCallback(
+  const { startRent, isApproved, handleApproveAll } = useStartRent(nfts);
+
+  const handleDurationChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const [address, tokenId] = e.target.name.split(
         RENFT_SUBGRAPH_ID_SEPARATOR
@@ -46,29 +46,42 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       const lendingItem = nft.find(
         (x) => x.tokenId === tokenId && x.address === address
       );
-      const nftPrice =
+      const rent =
         (lendingItem?.lending.nftPrice || 0) +
-        (lendingItem?.lending.dailyRentPrice || 0);
+        (lendingItem?.lending.dailyRentPrice || 0) * Number(value);
       setDuration({
         ...duration,
         [tokenId]: value,
       });
       setTotalRent({
         ...totalRent,
-        [tokenId]: Number(nftPrice) * Number(value),
+        [tokenId]: rent,
       });
     },
-    [duration, setDuration, totalRent, setTotalRent, nft]
+    [nft, duration, totalRent]
   );
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if(isApproved) startRent();
-    if(!isApproved) handleApproveAll();
-  }, [handleApproveAll, isApproved, startRent]);
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (isApproved) {
+        startRent();
+        handleClose();
+      }
+      if (!isApproved) handleApproveAll();
+    },
+    [handleApproveAll, handleClose, isApproved, startRent]
+  );
 
-  const isValid = nft.length === Object.values(duration).length;
+  const isValid = useMemo(
+    () => nft.length === Object.values(duration).length,
+    [duration, nft]
+  );
 
+  console.log(isValid, 'isvalid', duration, nft)
+
+  // TODO close modal when transaction done
+  // TODO fix the disabled button, when invalid it should be disabled
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
@@ -89,7 +102,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                 variant="outlined"
                 type="number"
                 name={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}`}
-                onChange={handleChange}
+                onChange={handleDurationChange}
               />
               <div className="nft__meta_row">
                 <div className="nft__meta_title">Daily rent price</div>
@@ -112,9 +125,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                 <div className="nft__meta_dot"></div>
                 <div className="nft__meta_value">
                   {dailyRentPrice}
-                  {` x ${
-                    !duration[item.tokenId] ? "?" : duration[item.tokenId]
-                  } days + ${nftPrice} = ${
+                  {`x ${duration[item.tokenId] || 0} days + ${nftPrice} = ${
                     totalRent[item.tokenId] ? totalRent[item.tokenId] : "? "
                   }`}
                   {` ${paymentToken}`}
@@ -127,6 +138,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           {!isApproved && (
             <button
               type="submit"
+              disabled={!isValid}
               className={`nft__button ${!isValid && "disabled"}`}
             >
               {nft.length > 1 ? "Approve all" : "Approve"}
@@ -136,6 +148,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
             <button
               type="submit"
               className={`nft__button ${!isValid && "disabled"}`}
+              disabled={!isValid}
             >
               {nft.length > 1 ? "Rent all" : "Rent"}
             </button>

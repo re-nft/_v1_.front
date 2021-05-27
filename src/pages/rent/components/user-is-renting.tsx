@@ -80,6 +80,7 @@ const UserRentings: React.FC = () => {
     }));
   }, [checkedRentingItems]);
 
+  
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
@@ -106,6 +107,7 @@ const UserRentings: React.FC = () => {
         */}
         {currentPage.length > 0 &&
           currentPage
+          // it's with page change, lending is still there
             .filter((r) => r.renting)
             .map((nft: Renting) => {
               const id = getUniqueID(

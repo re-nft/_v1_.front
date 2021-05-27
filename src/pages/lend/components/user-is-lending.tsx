@@ -74,6 +74,7 @@ const UserCurrentlyLending: React.FC = () => {
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
+
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You are not lending anything yet</div>;

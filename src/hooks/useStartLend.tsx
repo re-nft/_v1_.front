@@ -57,7 +57,6 @@ export const useStartLend = (): ((
           return v;
         })
         .catch((e) => {
-          console.log(e)
           console.warn("could not start lend");
           return;
         });

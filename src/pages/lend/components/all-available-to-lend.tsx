@@ -57,8 +57,6 @@ const Lendings: React.FC = () => {
     onChangePage(allAvailableToLend);
   }, [allAvailableToLend, onChangePage]);
 
-  //TODO have to substract NFT that we actually lending from the graph local
-
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);

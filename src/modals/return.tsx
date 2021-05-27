@@ -18,9 +18,6 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const [nft] = nfts;
   const {isApproved, approveAll, returnIt} = useReturnIt(nfts);
 
-  useEffect(()=>{
-    console.log(nfts)
-  },[nfts])
   const handleReturnNft = useCallback(async () => {
     const isSuccess = await returnIt();
     if (isSuccess) {
