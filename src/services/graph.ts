@@ -15,8 +15,13 @@ import {
   LendingRaw,
   NftRaw,
   NftToken,
+  RentingRaw,
 } from "../contexts/graph/types";
 import { timeItAsync } from "../utils";
+import createDebugger from "debug";
+import { parseLending } from "../contexts/graph/utils";
+
+const debug = createDebugger("app:request:graph");
 
 export enum FetchType {
   ERC721,
@@ -129,7 +134,7 @@ export const fetchRenftsAll = async (
     "Pulled All Renft Nfts",
     async () =>
       await request(subgraphURI, query).catch((e) => {
-        return {};
+        debug("Error fetching renft nfts", e);
       })
   );
 
@@ -141,10 +146,14 @@ export const fetchRenftsAll = async (
     lending?.forEach((l) => {
       _allRenftsLending[id] = new Lending(l, signer);
     });
-    // TODO: -1
-    renting?.forEach((r) => {
-      // @ts-ignore
-      _allRenftsRenting[id] = new Renting(address, tokenId, "-1", signer, r);
+    renting?.forEach((r: RentingRaw) => {
+      _allRenftsRenting[id] = new Renting(
+        address,
+        tokenId,
+        parseLending(r.lending),
+        r,
+        signer
+      );
     });
   });
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext, useEffect } from "react";
+import React, { useCallback, useState, useContext, useEffect, useMemo } from "react";
 
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -45,7 +45,20 @@ const AvailableToRent: React.FC = () => {
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const [_, fetchNfts] = useContext(NFTMetaContext);
-  const startRent = useStartRent();
+  const [nfts, setNfts] = useState([])
+
+  // const nfts = useMemo(() => {
+  //   return checkedLendingItems.map((nft) => ({
+  //     address: nft.address,
+  //     tokenId: nft.tokenId,
+  //     amount: nft.lending.lentAmount,
+  //     lendingId: nft.lending.id,
+  //     // TODO
+  //     rentDuration: "1",
+  //     paymentToken: nft.lending.paymentToken,
+  //   }))
+  // }, [checkedLendingItems])
+  const {startRent, isApproved, handleApproveAll } = useStartRent(nfts);
 
   useEffect(() => {
     onChangePage(allAvailableToRent);
@@ -64,21 +77,12 @@ const AvailableToRent: React.FC = () => {
     [setOpenBatchModel, onCheckboxChange]
   );
 
+  
   const handleBatchRent = useCallback(() => {
-    // ! resolver here might have a different address than in the sdk
     setOpenBatchModel(true);
-    startRent(
-      checkedLendingItems.map((nft) => ({
-        address: nft.address,
-        tokenId: nft.tokenId,
-        amount: nft.lending.lentAmount,
-        lendingId: nft.lending.id,
-        // TODO
-        rentDuration: "1",
-        paymentToken: nft.lending.paymentToken,
-      }))
-    );
-  }, [startRent, checkedLendingItems]);
+  }, []);
+
+ 
 
   //Prefetch metadata
   useEffect(() => {
@@ -94,10 +98,6 @@ const AvailableToRent: React.FC = () => {
       <BatchRentModal
         nft={checkedLendingItems}
         open={isOpenBatchModel}
-        // TODO
-        onSubmit={() => {
-          console.warn("TODO");
-        }}
         handleClose={handleBatchModalClose}
       />
       <ItemWrapper>

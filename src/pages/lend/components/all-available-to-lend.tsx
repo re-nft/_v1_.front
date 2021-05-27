@@ -34,6 +34,7 @@ const Lendings: React.FC = () => {
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
+  const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -61,7 +62,6 @@ const Lendings: React.FC = () => {
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
-    //TODO:eniko fetch next page
   }, [currentPage, fetchNfts]);
 
   if (isLoading && currentPage.length === 0) {
