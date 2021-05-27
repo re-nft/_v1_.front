@@ -33,10 +33,10 @@ const ROUTES = [
     path: "/dashboard",
     name: "My Dashboard",
   },
-  {
-    path: "/favourites",
-    name: "My Favourites",
-  },
+  // {
+  //   path: "/favourites",
+  //   name: "My Favourites",
+  // },
   // {
   //   path: "/leaderboard",
   //   name: "Leaderboard",

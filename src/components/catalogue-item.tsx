@@ -138,20 +138,20 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {imageIsReady && (
         <>
           <div className="nft__overlay">
-            {!isAlreadyFavourited && (
+            {/* {!isAlreadyFavourited && (
               <div
                 className={`nft__favourites ${
                   addedToFavorites ? "nft__favourites-on" : ""
                 }`}
                 onClick={addOrRemoveFavorite}
               />
-            )}
-            <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
+            )} */}
+            {/* <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
               <span className="icon-plus" />+{nftVote?.upvote || "?"}
             </div>
             <div className="nft__vote nft__vote-minus" onClick={handleDownVote}>
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
-            </div>
+            </div> */}
             <div className="spacer" />
             <div className="nft__checkbox">
               <div
