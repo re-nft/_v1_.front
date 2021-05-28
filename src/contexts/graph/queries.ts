@@ -192,12 +192,12 @@ export const queryUserLendingRenft = (user: string): string => {
 
 export const queryUserRentingRenft = (user: string): string => {
   return `{
-    user(where: {id: "${user.toString().toLowerCase()}"}) {
+    users(where: {id: "${user.toString().toLowerCase()}"}) {
       renting {
+        id
         renterAddress
         rentDuration
         rentedAt
-        id
         lending {
           id
           nftAddress
