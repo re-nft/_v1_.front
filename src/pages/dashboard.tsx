@@ -1,36 +1,29 @@
-import React, {
-  useState,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useState, useCallback, useContext, useMemo } from "react";
 import moment from "moment";
 
 import { Lending, Renting } from "../contexts/graph/classes";
 import {
   BatchContext,
   getUniqueID,
+  isClaimable,
+  useCheckedClaims,
   useCheckedLendingItems,
   useCheckedRentingItems,
 } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { advanceTime, short } from "../utils";
+import { short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
-import ReturnModal from "../modals/return";
-import { ReturnNft } from "../hooks/useReturnIt";
-import { useContractAddress } from "../contexts/StateProvider";
-
-const returnBy = (rentedAt: number, rentDuration: number) => {
-  return moment.unix(rentedAt).add(rentDuration, "days");
-};
+import { useReturnIt } from "../hooks/useReturnIt";
+import { useClaimColleteral } from "../hooks/useClaimColleteral";
+import { IRenting } from "../contexts/graph/types";
+import MultipleBatchBar from "../components/multiple-batch-bar";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -41,9 +34,19 @@ type CheckboxProps = {
   onCheckboxClick: (nft: Lending | Renting) => void;
   nft: Lending | Renting;
 };
+type ClaimCheckboxProps = {
+  onChange: (nft: Record<string, Lending>) => void;
+  nft: Lending | Renting;
+  checkedItems: Record<string, Lending>;
+};
 
 type StopLendButtonProps = {
   handleStopLend: (lending: Lending[]) => void;
+  lend: Lending;
+};
+
+type ClaimColleteralButtonProps = {
+  claimColleteral: (lending: Lending[]) => void;
   lend: Lending;
 };
 
@@ -60,9 +63,9 @@ const ReturnNftButton: React.FC<ReturnNftButtonProps> = ({
     return handleReturnNft([rent]);
   }, [handleReturnNft, rent]);
   return (
-    <span className="nft__button small" onClick={handleClick}>
+    <button className="nft__button small" onClick={handleClick}>
       Return It
-    </span>
+    </button>
   );
 };
 
@@ -74,9 +77,31 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
     return handleStopLend([lend]);
   }, [handleStopLend, lend]);
   return (
-    <span className="nft__button small" onClick={handleClick}>
+    <button className="nft__button small" onClick={handleClick}>
       Stop lend
-    </span>
+    </button>
+  );
+};
+
+const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
+  claimColleteral,
+  lend,
+}) => {
+  const claimable = useMemo(
+    () => lend.renting && isClaimable(lend.renting),
+    [lend]
+  );
+  const handleClick = useCallback(() => {
+    if (!claimable) return;
+    return claimColleteral([lend]);
+  }, [claimColleteral, lend, claimable]);
+  return (
+    <button
+      className={`nft__button small ${claimable ? "" : "disabled"}`}
+      onClick={handleClick}
+    >
+      Claim
+    </button>
   );
 };
 
@@ -115,36 +140,33 @@ export const Dashboard: React.FC = () => {
   } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
+  const checkedClaims = useCheckedClaims()
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
     useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
-  const _now = moment();
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
   const stopLending = useStopLend();
-  const [rentModalOpen, setRentModalOpen] = useState(false);
-  const contractAddress = useContractAddress()
+  const claim = useClaimColleteral();
 
-  //TODO:eniko
-  // const handleClaimCollateral = useCallback(
-  //   async (lending: Lending) => {
-  //     if (!renft) return;
-  //     const tx = await claimCollateral(renft, contractAddress,  [
-  //       {
-  //         address: lending.address,
-  //         tokenId: lending.tokenId,
-  //         lendingId: lending.id,
-  //         amount: lending.lentAmount
-  //       },
-  //     ]);
-  //     await setHash(tx.hash);
-  //     handleRefresh();
-  //   },
-  //   [renft, setHash, handleRefresh]
-  // );
+  const claimCollateral = useCallback(
+    async () => {
+      const claims = checkedClaims.map((lending) => ({
+        address: lending.address,
+        tokenId: lending.tokenId,
+        lendingId: lending.id,
+        amount: lending.amount,
+      }));
+      claim(claims).then((tx) => {
+        if (tx) setHash(tx.hash);
+        handleResetLending();
+      });
+    },
+    [checkedClaims, claim, handleResetLending, setHash]
+  );
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
@@ -169,15 +191,6 @@ export const Dashboard: React.FC = () => {
     [stopLending, setHash, handleResetLending]
   );
 
-  const _returnBy = (renting: Renting) =>
-    returnBy(renting.renting?.rentedAt, renting.renting?.rentDuration);
-
-  const _claim = (renting: Renting) => _now.isAfter(_returnBy(renting));
-
-  const handleBatchModalOpen = useCallback(() => {
-    setRentModalOpen(true);
-  }, [setRentModalOpen]);
-
   const onCheckboxClick = useCallback(
     (lending: Lending | Renting) => {
       onCheckboxChange(lending);
@@ -186,14 +199,6 @@ export const Dashboard: React.FC = () => {
   );
 
   const isLoading = userLendingLoading || userRentingLoading;
-
-  const handleReturnNft = useCallback(
-    (nft) => {
-      onCheckboxChange(nft);
-      setRentModalOpen(true);
-    },
-    [onCheckboxChange]
-  );
 
   const returnItems = useMemo(() => {
     return checkedRentingItems.map((item) => ({
@@ -205,13 +210,17 @@ export const Dashboard: React.FC = () => {
       contract: item.contract,
     }));
   }, [checkedRentingItems]);
+  const returnIt = useReturnIt(returnItems);
+  const handleStopLendAll = useCallback(()=>{
+    return handleStopLend(lendingItems)
+  }, [handleStopLend, lendingItems])
 
-  const handleCloseModal = useCallback(
-    (nfts?: ReturnNft[]) => {
-      handleResetRenting(nfts?.map((i) => i.id));
-      setRentModalOpen(false);
+  const handleReturnNft = useCallback(
+    (nft) => {
+      onCheckboxChange(nft);
+      returnIt();
     },
-    [handleResetRenting]
+    [onCheckboxChange, returnIt]
   );
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
@@ -225,21 +234,14 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div>
-      {rentModalOpen && (
-        <ReturnModal
-          open={rentModalOpen}
-          nfts={returnItems}
-          onClose={handleCloseModal}
-        />
-      )}
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
               <h3 style={{ color: "white", marginBottom: "1em" }}>
-                  Here you will find the NFTs that you are lending. These can also
-                  be found in the Lending tab after you toggle the view.
+                Here you will find the NFTs that you are lending. These can also
+                be found in the Lending tab after you toggle the view.
               </h3>
               <table className="list">
                 <thead>
@@ -279,6 +281,12 @@ export const Dashboard: React.FC = () => {
                           <Checkbox
                             onCheckboxClick={onCheckboxClick}
                             nft={lend}
+                          />
+                        </td>
+                        <td className="action-column">
+                          <ClaimCollateralButton
+                            claimColleteral={claimCollateral}
+                            lend={lend}
                           />
                         </td>
                         <td className="action-column">
@@ -371,32 +379,15 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       )}
-      {
-        // TODO: should not be able to check some in lending and some in renting. Only one or the other
-        // TODO: potential solution: just show the batchbar for one or the other at a time
-        // TODO: force them to de-select in one or the other
-        // TODO: best solution: show two batch bars stacked on top of each other
-        // TODO: one for lending and one for renting
-      }
-      {checkedLendingItems.length > 1 && (
-        <BatchBar
-          title={`Selected ${checkedLendingItems.length} items`}
-          actionTitle="Stop Lend All"
-          onCancel={handleReset}
-          onClick={() => handleStopLend(checkedLendingItems)}
-        />
-      )}
-      {checkedRentingItems.length > 1 && (
-        <BatchBar
-          title={`Selected ${checkedRentingItems.length} items`}
-          actionTitle="Return All"
-          onCancel={handleReset}
-          onClick={handleBatchModalOpen}
-        />
-      )}
-      {
-        // TODO: claim collateral all
-      }
+      <MultipleBatchBar
+        title={`Selected ${checkedLendingItems.length} items`}
+        claimsNumber={checkedClaims.length}
+        rentingNumber={checkedRentingItems.length}
+        lendingNumber={checkedLendingItems.length}
+        onClaim={claimCollateral}
+        onStopRent={returnIt}
+        onStopLend={handleStopLendAll}
+      />
     </div>
   );
 };

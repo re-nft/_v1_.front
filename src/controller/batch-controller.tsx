@@ -17,6 +17,8 @@ import {
 } from "../contexts/graph/classes";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { THROWS } from "../utils";
+import moment from "moment";
+import { IRenting } from "../contexts/graph/types";
 
 // nftAddress::tokenId::{lendingId,0}
 type UniqueID = string;
@@ -167,6 +169,25 @@ export const useCheckedLendingItems = (): Lending[] => {
     return Object.values(checkedItems).filter(isLending);
   }, [checkedItems]);
   return lendingItems;
+};
+
+export const isClaimable = (renting: IRenting): boolean => {
+  const returnBy = (rentedAt: number, rentDuration: number) => {
+    return moment.unix(rentedAt).add(rentDuration, "days");
+  };
+  const _returnBy = (renting: IRenting) =>
+    returnBy(renting.rentedAt, renting.rentDuration);
+  const _now = moment();
+  return _now.isAfter(_returnBy(renting));
+};
+
+export const useCheckedClaims = (): Lending[] => {
+  const checkedLendigItems = useCheckedLendingItems();
+  const claimable = useCallback(isClaimable, []);
+
+  return useMemo(() => {
+    return checkedLendigItems.filter((l) => l.renting && claimable(l.renting));
+  }, [checkedLendigItems, claimable]);
 };
 
 export const useCheckedRentingItems = (): Renting[] => {

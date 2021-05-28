@@ -29,7 +29,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
   const [signer] = useContext(SignerContext);
-  const [currAddress] = useContext(CurrentAddressWrapper);
+  const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
 
   const fetchRenting = useCallback(() => {
@@ -42,11 +42,20 @@ export const UserRentingProvider: React.FC = ({ children }) => {
       .then((usersRenting) => {
         if (usersRenting) {
           const { users } = usersRenting;
-          if (!users) return;
-          if(users.length < 1) return;
+          if (!users) {
+            setRentings([]);
+            return;
+          };
+          if(users.length < 1) {
+            setRentings([])
+            return;
+          };
           const firstMatch = users[0];
           const { renting } = firstMatch;
-          if (!renting) return;
+          if (!renting) {
+            setRentings([]);
+            return;
+          };
           const _renting: Renting[] = [];
           renting.forEach((r) => {
             _renting.push(new Renting(r.lending.nftAddress, r.lending.tokenId, parseLending(r.lending), r, signer));
@@ -64,7 +73,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
     fetchRenting();
   }, [fetchRenting]);
 
-  usePoller(fetchRenting, 5_000);
+  usePoller(fetchRenting, 5000);
 
   return (
     <UserRentingContext.Provider
