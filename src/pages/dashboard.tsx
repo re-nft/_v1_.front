@@ -137,6 +137,7 @@ export const Dashboard: React.FC = () => {
   //         address: lending.address,
   //         tokenId: lending.tokenId,
   //         lendingId: lending.id,
+  //         amount: lending.lentAmount
   //       },
   //     ]);
   //     await setHash(tx.hash);

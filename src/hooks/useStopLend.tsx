@@ -13,6 +13,7 @@ export const useStopLend = (): ((
     address: string;
     tokenId: string;
     lendingId: string;
+    amount: string
   }[]
 ) => Promise<void | ContractTransaction>) => {
   const [signer]= useContext(SignerContext);
@@ -29,12 +30,14 @@ export const useStopLend = (): ((
         address: string;
         tokenId: string;
         lendingId: string;
+        amount: string
       }[]
     ) => {
       if (!renft) return Promise.resolve();
-      const arr: [string[], BigNumber[], BigNumber[]] = [
+      const arr: [string[], BigNumber[], number[], BigNumber[]] = [
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
+        nfts.map((nft) => Number(nft.amount)),
         nfts.map((nft) => BigNumber.from(nft.lendingId)),
       ];
       return renft.stopLending(...arr).catch(() => {

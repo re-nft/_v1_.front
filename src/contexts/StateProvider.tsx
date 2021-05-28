@@ -1,5 +1,6 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
 import React, { useContext } from "react";
+import Loader from "../components/loader";
 import { IS_PROD } from "../consts";
 import { ReNFTContext, Symfoni } from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
