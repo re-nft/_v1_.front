@@ -1,31 +1,42 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "../types";
-import { getLendingPriceByCurreny } from "../utils";
 import { getUniqueID } from "../controller/batch-controller";
 import CommonInfo from "./common-info";
+import { useStartRent } from "../hooks/useStartRent";
 
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
   nft: Lending[];
-  onSubmit(nft: Lending[], options: { rentDuration: string[] }): void;
 };
 
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   open,
   handleClose,
   nft,
-  onSubmit,
 }) => {
   const [duration, setDuration] = useState<Record<string, string>>({});
   const [totalRent, setTotalRent] = useState<Record<string, number>>({});
 
-  const handleChange = useCallback(
+  const nfts = useMemo(() => {
+    return nft.map((nft) => ({
+      address: nft.address,
+      tokenId: nft.tokenId,
+      amount: nft.lending.lentAmount,
+      lendingId: nft.lending.id,
+      rentDuration: duration[nft.tokenId],
+      paymentToken: nft.lending.paymentToken,
+    }));
+  }, [nft, duration]);
+
+  const { startRent, isApproved, handleApproveAll } = useStartRent(nfts);
+
+  const handleDurationChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const [address, tokenId] = e.target.name.split(
         RENFT_SUBGRAPH_ID_SEPARATOR
@@ -34,46 +45,49 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       const lendingItem = nft.find(
         (x) => x.tokenId === tokenId && x.address === address
       );
-      const nftPrice =
+      const rent =
         (lendingItem?.lending.nftPrice || 0) +
-        (lendingItem?.lending.dailyRentPrice || 0);
+        (lendingItem?.lending.dailyRentPrice || 0) * Number(value);
       setDuration({
         ...duration,
         [tokenId]: value,
       });
       setTotalRent({
         ...totalRent,
-        [tokenId]: Number(nftPrice) * Number(value),
+        [tokenId]: rent,
       });
     },
-    [duration, setDuration, totalRent, setTotalRent, nft]
+    [nft, duration, totalRent]
   );
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    (e: React.FormEvent) => {
       e.preventDefault();
-      const rentDuration = Object.values(duration);
-      onSubmit(nft, { rentDuration });
+      if (isApproved) {
+        startRent();
+        handleClose();
+      }
+      if (!isApproved) handleApproveAll();
     },
-    [nft, duration, onSubmit]
+    [handleApproveAll, handleClose, isApproved, startRent]
   );
 
-  const isValid = nft.length === Object.values(duration).length;
+  // todo: something wrong in here
+  // const isValid = useMemo(
+  //   () => nft.length === Object.values(duration).length,
+  //   [duration, nft]
+  // );
 
+  // TODO close modal when transaction done
+  // TODO fix the disabled button, when invalid it should be disabled
   return (
     <Modal open={open} handleClose={handleClose}>
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         {nft.map((item: Lending, ix: number) => {
           const token = item.lending.paymentToken;
           const paymentToken = PaymentToken[token];
-          const dailyRentPrice = getLendingPriceByCurreny(
-            item.lending.dailyRentPrice,
-            token
-          );
-          const nftPrice = getLendingPriceByCurreny(
-            item.lending.nftPrice,
-            token
-          );
+          const dailyRentPrice = item.lending.dailyRentPrice;
+          const nftPrice = item.lending.nftPrice;
           return (
             <CommonInfo
               nft={item}
@@ -86,7 +100,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                 variant="outlined"
                 type="number"
                 name={`${item.address}${RENFT_SUBGRAPH_ID_SEPARATOR}${item.tokenId}`}
-                onChange={handleChange}
+                onChange={handleDurationChange}
               />
               <div className="nft__meta_row">
                 <div className="nft__meta_title">Daily rent price</div>
@@ -109,12 +123,8 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
                 <div className="nft__meta_dot"></div>
                 <div className="nft__meta_value">
                   {dailyRentPrice}
-                  {` x ${
-                    !duration[item.tokenId] ? "?" : duration[item.tokenId]
-                  } days + ${nftPrice} = ${
-                    totalRent[item.tokenId]
-                      ? getLendingPriceByCurreny(totalRent[item.tokenId], token)
-                      : "? "
+                  {` x ${duration[item.tokenId] || 0} days + ${nftPrice} = ${
+                    totalRent[item.tokenId] ? totalRent[item.tokenId] : "? "
                   }`}
                   {` ${paymentToken}`}
                 </div>
@@ -123,12 +133,24 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
           );
         })}
         <div className="modal-dialog-button">
-          <button
-            type="submit"
-            className={`nft__button ${!isValid && "disabled"}`}
-          >
-            {nft.length > 1 ? "Rent all" : "Rent"}
-          </button>
+          {!isApproved && (
+            <button
+              type="submit"
+              // disabled={!isValid}
+              className="nft__button"
+            >
+              {nft.length > 1 ? "Approve all" : "Approve"}
+            </button>
+          )}
+          {isApproved && (
+            <button
+              type="submit"
+              className="nft__button"
+              // disabled={!isValid}
+            >
+              {nft.length > 1 ? "Rent all" : "Rent"}
+            </button>
+          )}
         </div>
       </form>
     </Modal>

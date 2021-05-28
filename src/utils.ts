@@ -1,14 +1,15 @@
-import { ethers, BigNumber, BigNumberish } from "ethers";
+import { ethers, BigNumber, BigNumberish, providers, Signer } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
-import fetch from 'cross-fetch'
+import fetch from "cross-fetch";
 import createDebugger from "debug";
+import { IS_PROD } from "./consts";
+import { RENFT_ADDRESS } from "@renft/sdk";
 
-createDebugger.enable('TIMER')
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
-const debug = createDebugger("TIMER");
+const debug = createDebugger("app:timer");
 
 const PRICE_BITSIZE = 32;
 
@@ -128,6 +129,7 @@ export const decimalToPaddedHexString = (
   );
 };
 
+//TODO:eniko do we need this
 export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
@@ -170,18 +172,6 @@ export const packPrice = (price: number): string => {
   return res;
 };
 
-export const getLendingPriceByCurreny = (
-  price: number,
-  token: PaymentToken
-): string => {
-  switch (token) {
-    case PaymentToken.DAI:
-      return String(parseInt(String(price * 10000), 10));
-    default:
-      return String(price);
-  }
-};
-
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
   switch (tkn) {
@@ -214,10 +204,10 @@ export const timeItAsync = async <T>(
   msg: string,
   callable: CallableFunction
 ): Promise<T> => {
-  const start = Date.now()
+  const start = Date.now();
   const res: T = await callable();
   const end = Date.now();
-  debug(`${msg} ${end-start}ms` )
+  debug(`${msg} ${end - start}ms`);
   return res;
 };
 
@@ -271,3 +261,18 @@ export const toDataURLFromURL = (
 const bundleNfts = () => {
   true;
 };
+
+/**
+ * Helps advance time on test blockhain to test claimColletaral and similar
+ * @param seconds
+ */
+export const advanceTime = async (seconds: number): Promise<void> => {
+  try {
+    const provider = new providers.JsonRpcProvider("http://localhost:8545");
+    await provider.send("evm_increaseTime", [seconds]);
+    await provider.send("evm_mine", []);
+  } catch (e) {
+    Promise.reject(e);
+  }
+};
+

@@ -2,11 +2,11 @@ import React, { createContext, useState, useCallback, useContext } from "react";
 // TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
-import { ProviderContext } from "../hardhat/SymfoniContext";
 import { TransactionHash, TransactionStateEnum } from "../types";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 
 import { sleep } from "../utils";
+import { ProviderContext } from "../hardhat/SymfoniContext";
 
 type TransactionStateType = {
   isActive: boolean; // on if there is an active transaction;
@@ -27,13 +27,14 @@ const TransactionStateDefault: TransactionStateType = {
 export const TransactionStateContext = createContext<TransactionStateType>(
   TransactionStateDefault
 );
+TransactionStateContext.displayName = "TransactionStateContext";
 
 // * this implementation does not guard against the developer forgetting
 // * to set back the transaction to inactive for example,
 // * or using state or hash when the transaction is inactive.
 // * these things ideally should be corrected
 export const TransactionStateProvider: React.FC = ({ children }) => {
-  const [provider] = useContext(ProviderContext);
+  const [provider]= useContext(ProviderContext);
   const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
   const [txnState, setTxnState] = useState<TransactionStateEnum>(
     TransactionStateEnum.PENDING

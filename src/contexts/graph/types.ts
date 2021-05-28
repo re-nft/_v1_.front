@@ -4,9 +4,9 @@ export type NftTokenMeta = {
   name?: string;
   image?: string;
   description?: string;
-}
+};
 
-export interface NftTokenMetaWithId extends NftTokenMeta{
+export interface NftTokenMetaWithId extends NftTokenMeta {
   id: string;
 }
 

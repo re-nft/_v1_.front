@@ -10,8 +10,7 @@ import { decimalToPaddedHexString } from "../../utils";
 import createDebugger from "debug";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
-const debug = createDebugger("FETCH_TOKENURI");
-
+const debug = createDebugger("app:fetch");
 
 enum NftType {
   Nft,
@@ -64,6 +63,7 @@ class Nft {
     this.nftAddress = nftAddress;
     this.tokenId = tokenId.toString();
     this.amount = amount.toString();
+
     this.signer = signer;
     this.isERC721 = isERC721;
 
@@ -82,7 +82,7 @@ class Nft {
           this._tokenURI = this._parseTokenURI(d);
         })
         .catch((e: any) => {
-          debug(e)
+          debug(e);
           debug(
             "could not fetch tokenURI",
             this.address,
@@ -199,6 +199,10 @@ class Lending extends Nft {
   lending: ILending;
   renting?: IRenting;
   id: string;
+
+  loadAmount = async (address?: string): Promise<string> => {
+    return this.amount;
+  };
 }
 
 class Renting extends Nft {
@@ -228,6 +232,10 @@ class Renting extends Nft {
   lending: ILending;
   renting: IRenting;
   id: string;
+
+  loadAmount = async (address?: string): Promise<string> => {
+    return this.amount;
+  };
 }
 
 export { Nft, Lending, Renting };

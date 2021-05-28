@@ -1,7 +1,6 @@
 import React from "react";
 import NumericField from "./numeric-field";
 import { PaymentToken } from "../types";
-import { getLendingPriceByCurreny } from "../utils";
 import { Lending } from "../contexts/graph/classes";
 
 const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
@@ -9,10 +8,7 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
     <>
       <NumericField
         text="Daily price"
-        value={getLendingPriceByCurreny(
-          nft.lending.dailyRentPrice,
-          nft.lending.paymentToken
-        )}
+        value={nft.lending.paymentToken.toString()}
         unit={PaymentToken[nft.lending.paymentToken]}
       />
       <NumericField
@@ -22,10 +18,7 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
       />
       <NumericField
         text="Collateral"
-        value={getLendingPriceByCurreny(
-          nft.lending.nftPrice,
-          nft.lending.paymentToken
-        )}
+        value={nft.lending.nftPrice.toString()}
         unit={PaymentToken[nft.lending.paymentToken]}
       />
     </>

@@ -105,4 +105,5 @@ export const snakeCaseToCamelCase = (
   }, initialVal);
 };
 
-export const arrayToURI = (name: string, array: Array<string>): string => `${array.map((item: string) => `${name}=${item}`).join("&")}`;
+export const arrayToURI = (name: string, array: Array<string>): string =>
+  `${array.map((item: string) => `${name}=${item}`).join("&")}`;

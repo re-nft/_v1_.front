@@ -1,6 +1,4 @@
-import React, {
-  createContext,
-} from "react";
+import React, { createContext } from "react";
 
 /* eslint-disable-next-line */
 type Props = {};
@@ -46,6 +44,7 @@ class PageProvider<T> extends React.Component<Props, State<T>> {
 
   handleReset = (): void => this.setState(defaultSate);
 
+  //TODO this has nothing to do with changePage, but initial setItems
   onChangePage = (pageItems: T[]): void => {
     const totalItems = pageItems.length || 0;
     const totalPages = Math.ceil(totalItems / PAGE_SIZE);
@@ -96,6 +95,5 @@ class PageProvider<T> extends React.Component<Props, State<T>> {
     );
   }
 }
-
 
 export default PageProvider;

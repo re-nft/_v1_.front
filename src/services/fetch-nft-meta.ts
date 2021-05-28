@@ -14,7 +14,7 @@ import {
 export type NftMetaWithId = NftToken["meta"] & { id: string };
 export type NftError = { id: string; error: string };
 
- export interface Asset {
+export interface Asset {
   tokenId: string | null;
   tokenAddress: string;
   // schemaName?: WyvernSchemaName;
@@ -33,7 +33,7 @@ export interface OpenSeaFees {
 /**
  * Annotated asset contract with OpenSea metadata
  */
- export interface OpenSeaAssetContract extends OpenSeaFees {
+export interface OpenSeaAssetContract extends OpenSeaFees {
   name: string;
   address: string;
   // type: AssetContractType;
@@ -52,7 +52,7 @@ export interface OpenSeaFees {
 /**
  * Annotated asset spec with OpenSea metadata
  */
- export interface OpenSeaAsset extends Asset {
+export interface OpenSeaAsset extends Asset {
   assetContract: OpenSeaAssetContract;
   // collection: OpenSeaCollection;
   name: string;
@@ -116,35 +116,37 @@ export const fetchNFTFromOtherSource = async (
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
-  return fetchWithTimeout(transformedUri, {
-    headers,
-  })
-    .then((r) => r.json())
-    // @ts-ignore
-    .then((data) => {
-      const imageIsIPFS_URL = matchIPFS_URL(data?.image);
-
-      if (!imageIsIPFS_URL && data?.image?.startsWith("ipfs://ipfs/")) {
-        console.warn(
-          "is not IPFS URL, but we are downloading meta as if it is O_O",
-          data
-        );
-        return { id: key, error: "non-ipfs url" };
-      }
-      const image = imageIsIPFS_URL
-        ? buildStaticIPFS_URL(imageIsIPFS_URL)
-        : data?.image;
-
-      return {
-        image: image,
-        description: data?.description,
-        name: data?.name,
-        id: key,
-      };
+  return (
+    fetchWithTimeout(transformedUri, {
+      headers,
     })
-    .catch(() => {
-      return { id: key, error: "unknown error" };
-    });
+      .then((r) => r.json())
+      // @ts-ignore
+      .then((data) => {
+        const imageIsIPFS_URL = matchIPFS_URL(data?.image);
+
+        if (!imageIsIPFS_URL && data?.image?.startsWith("ipfs://ipfs/")) {
+          console.warn(
+            "is not IPFS URL, but we are downloading meta as if it is O_O",
+            data
+          );
+          return { id: key, error: "non-ipfs url" };
+        }
+        const image = imageIsIPFS_URL
+          ? buildStaticIPFS_URL(imageIsIPFS_URL)
+          : data?.image;
+
+        return {
+          image: image,
+          description: data?.description,
+          name: data?.name,
+          id: key,
+        };
+      })
+      .catch(() => {
+        return { id: key, error: "unknown error" };
+      })
+  );
 };
 
 export const fetchNFTsFromOpenSea = async (

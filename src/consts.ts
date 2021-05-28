@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { RENFT_ADDRESS , RESOLVER_ADDRESS as ResolverAddress } from "@renft/sdk";
 
 export const SECOND_IN_MILLISECONDS = 1_000;
 
@@ -11,3 +12,5 @@ export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 
 export const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
+
+

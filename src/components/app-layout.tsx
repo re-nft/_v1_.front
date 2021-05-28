@@ -17,8 +17,9 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short } from "../utils";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { advanceTime, short } from "../utils";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { IS_PROD } from "../consts";
 
 const ROUTES = [
   {
@@ -33,10 +34,10 @@ const ROUTES = [
     path: "/dashboard",
     name: "My Dashboard",
   },
-  {
-    path: "/favourites",
-    name: "My Favourites",
-  },
+  // {
+  //   path: "/favourites",
+  //   name: "My Favourites",
+  // },
   // {
   //   path: "/leaderboard",
   //   name: "Leaderboard",
@@ -48,7 +49,7 @@ const ROUTES = [
 ];
 
 const App: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
   const [username, setUsername] = useState<string>();
 
@@ -88,6 +89,17 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
+          {!IS_PROD && (
+            <button
+              className="menu__item"
+              onClick={() => {
+                const day = 24 * 60 * 60;
+                advanceTime(day);
+              }}
+            >
+              Advance time
+            </button>
+          )}
         </div>
         {/* CONTENT */}
         <div className="content-wrapper main-content mb-l">

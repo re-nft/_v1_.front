@@ -13,7 +13,7 @@ import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 
 export type CatalogueItemProps = {
@@ -40,10 +40,9 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
-  const isVisible = entry && entry.isIntersecting;
 
   const { onCheckboxChange } = useContext(BatchContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);
@@ -139,20 +138,20 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {imageIsReady && (
         <>
           <div className="nft__overlay">
-            {!isAlreadyFavourited && (
+            {/* {!isAlreadyFavourited && (
               <div
                 className={`nft__favourites ${
                   addedToFavorites ? "nft__favourites-on" : ""
                 }`}
                 onClick={addOrRemoveFavorite}
               />
-            )}
-            <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
+            )} */}
+            {/* <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
               <span className="icon-plus" />+{nftVote?.upvote || "?"}
             </div>
             <div className="nft__vote nft__vote-minus" onClick={handleDownVote}>
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
-            </div>
+            </div> */}
             <div className="spacer" />
             <div className="nft__checkbox">
               <div

@@ -1,13 +1,10 @@
-import React, { useContext, useCallback, useState, useEffect } from "react";
+import React, { useContext, useCallback, useEffect } from "react";
 
-import { ReNFTContext } from "../../../hardhat/SymfoniContext";
-import GraphContext from "../../../contexts/graph";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
-import stopLend from "../../../services/stop-lend";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
@@ -17,60 +14,47 @@ import {
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
+import { useStopLend } from "../../../hooks/useStopLend";
+import createCancellablePromise from "../../../contexts/create-cancellable-promise";
+import { UserLendingContext } from "../../../contexts/UserLending";
 
 const UserCurrentlyLending: React.FC = () => {
-  const { checkedItems, handleReset: batchHandleReset } = useContext(
-    BatchContext
-  );
+  const { checkedItems, handleReset: batchHandleReset } =
+    useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const {
     totalPages,
     currentPageNumber,
     currentPage,
     onSetPage,
-    onResetPage,
     onChangePage,
   } = useContext(PageContext);
-  const { getUserLending } = useContext(GraphContext);
-  const { instance: renft } = useContext(ReNFTContext);
+  const { userLending, isLoading } = useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-
-  const handleReset = useCallback(() => {
-    getUserLending()
-      .then((userLnding: Lending[] | undefined) => {
-        onChangePage(userLnding || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not handle reset");
-      });
-  }, [getUserLending, onChangePage, setIsLoading]);
+  const stopLending = useStopLend();
 
   const handleStopLend = useCallback(
     async (nfts: Lending[]) => {
-      if (!renft) return;
-
-      const tx = await stopLend(
-        renft,
-        nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }))
+      const transaction = createCancellablePromise(
+        stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
 
-      await setHash(tx.hash);
+      transaction.promise.then((tx) => {
+        if (tx) setHash(tx.hash);
+        batchHandleReset();
+      });
 
-      batchHandleReset();
-      handleReset();
+      return transaction.cancel;
     },
 
-    [renft, setHash, handleReset, batchHandleReset]
+    [stopLending, setHash, batchHandleReset]
   );
 
   const handleClickNft = useCallback(
-    async (nft: Lending) => {
+    (nft: Lending) => {
       handleStopLend([nft]);
     },
     [handleStopLend]
@@ -81,32 +65,17 @@ const UserCurrentlyLending: React.FC = () => {
   }, [handleStopLend, checkedLendingItems]);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    const getUserLendingRequest = createCancellablePromise(getUserLending());
-
-    getUserLendingRequest.promise
-      .then((lendings) => {
-        onChangePage(lendings || []);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not get user Lending request");
-      });
-
-    return () => {
-      onResetPage();
-      return getUserLendingRequest.cancel();
-    };
-  }, [getUserLending, onChangePage, onResetPage]);
+    onChangePage(userLending);
+  }, [onChangePage, userLending]);
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
-  if (isLoading) return <CatalogueLoader />;
+
+  if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You dont have any lend anything yet</div>;
+    return <div className="center">You are not lending anything yet</div>;
 
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (

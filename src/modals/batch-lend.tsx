@@ -1,25 +1,30 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
-import { ProviderContext } from "../hardhat/SymfoniContext";
 import { PaymentToken, TransactionHash } from "../types";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import CommonInfo from "./common-info";
 import MinimalSelect from "../components/select";
-import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
-import startLend from "../services/start-lend";
 import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
 import ActionButton from "../components/action-button";
 import { getUniqueID } from "../controller/batch-controller";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { useStartLend } from "../hooks/useStartLend";
+import { BigNumber } from "@ethersproject/bignumber";
+import { ProviderContext } from "../hardhat/SymfoniContext";
+import { useContractAddress } from "../contexts/StateProvider";
 
 type LendOneInputs = {
   [key: string]: {
-    [key: string]: string;
+    lendAmount: number;
+    maxDuration: number;
+    borrowPrice: number;
+    nftPrice: number;
   };
 };
 
@@ -34,74 +39,109 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { instance: renft } = useContext(ReNFTContext);
-  const { isActive, setHash } = useContext(TransactionStateContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const { isActive, setHash, hash } = useContext(TransactionStateContext);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
   const [provider] = useContext(ProviderContext);
-  const [isApproved, setIsApproved] = useState<boolean>();
+  const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nft] = nfts;
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
+  const startLend = useStartLend();
+  const contractAddress = useContractAddress()
 
   const handleLend = useCallback(
-    async (e: React.FormEvent) => {
+    (e: React.FormEvent) => {
       e.preventDefault();
+      if (!startLend) return;
+      if (!isApproved) return;
+      if (isActive) return;
 
-      if (!renft || isActive) return;
-
-      const lendAmountsValues: string[] = [];
-      const maxDurationsValues: string[] = [];
-      const borrowPriceValues: string[] = [];
-      const nftPriceValues: string[] = [];
-
-      const lendOneInputsValues = Object.values(lendOneInputs);
-
-      for (let i = 0; i < lendOneInputsValues.length; i++) {
-        const item = lendOneInputsValues[i];
-        lendAmountsValues.push(item["lendAmount"]);
-        maxDurationsValues.push(item["maxDuration"]);
-        borrowPriceValues.push(item["borrowPrice"]);
-        nftPriceValues.push(item["nftPrice"]);
-      }
-
+      const lendAmountsValues: number[] = [];
+      const maxDurationsValues: number[] = [];
+      const borrowPriceValues: number[] = [];
+      const nftPriceValues: number[] = [];
+      const addresses: string[] = [];
+      const tokenIds: BigNumber[] = [];
       const pmtTokens = Object.values(pmtToken);
-      const tx = await startLend(
-        renft,
-        nfts,
-        lendAmountsValues,
-        maxDurationsValues,
-        borrowPriceValues,
-        nftPriceValues,
-        pmtTokens
+
+      Object.values(lendOneInputs).forEach((item) => {
+        lendAmountsValues.push(item.lendAmount);
+        maxDurationsValues.push(item.maxDuration);
+        borrowPriceValues.push(item.borrowPrice);
+        nftPriceValues.push(item.nftPrice);
+      });
+      nfts.forEach(({ address, tokenId }) => {
+        addresses.push(address);
+        tokenIds.push(BigNumber.from(tokenId));
+      });
+
+      const transaction = createCancellablePromise(
+        startLend(
+          addresses,
+          tokenIds,
+          lendAmountsValues,
+          maxDurationsValues,
+          borrowPriceValues,
+          nftPriceValues,
+          pmtTokens
+        )
       );
+      transaction.promise.then((tx) => {
+        onClose();
+        if (tx) setHash(tx.hash);
+      });
 
-      if (tx) setHash(tx.hash);
-
-      onClose();
+      return transaction.cancel;
     },
 
-    [renft, isActive, lendOneInputs, pmtToken, nfts, setHash, onClose]
+    [
+      startLend,
+      isApproved,
+      isActive,
+      pmtToken,
+      lendOneInputs,
+      nfts,
+      onClose,
+      setHash,
+    ]
   );
 
-  const handleApproveAll = useCallback(async () => {
-    if (!currentAddress || !renft || isActive || !provider) return;
+  useEffect(() => {
+    if (!provider) return;
+    if (!hash) return;
+    const fetchRequest = createCancellablePromise(
+      provider.getTransactionReceipt(hash)
+    );
 
-    const [tx] = await setApprovalForAll(renft, nfts).catch(() => {
-      console.warn("issue approving all in batch lend");
-      return [undefined];
-    });
+    fetchRequest.promise
+      .then((receipt) => {
+        const status = receipt?.status ?? 0;
+        if (status === 1) setIsApproved(true);
+      })
+      .catch(() => {
+        console.warn("issue pulling txn receipt in batch lend");
+        return undefined;
+      });
+    return fetchRequest.cancel;
+  }, [hash, provider]);
 
-    if (!tx) return;
+  const handleApproveAll = useCallback(() => {
+    if (!provider) return;
+    const transaction = createCancellablePromise(setApprovalForAll(nfts, contractAddress));
+    transaction.promise
+      .then(([tx]) => {
+        if (!tx) return;
+        setHash(tx.hash);
+      })
+      .catch(() => {
+        console.warn("issue approving all in batch lend");
+        return [undefined];
+      });
 
-    setHash(tx.hash);
-    const receipt = await provider.getTransactionReceipt(tx.hash).catch(() => {
-      console.warn("issue pulling txn receipt in batch lend");
-      return undefined;
-    });
-
-    const status = receipt?.status ?? 0;
-    if (status === 1) setIsApproved(true);
-  }, [currentAddress, renft, isActive, setHash, provider, setIsApproved, nfts]);
+    return () => {
+      transaction.cancel();
+    };
+  }, [contractAddress, nfts, provider, setHash]);
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {
@@ -137,15 +177,19 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   );
 
   useEffect(() => {
-    if (!renft || !currentAddress) return;
-    isApprovalForAll(renft, nfts, currentAddress)
+    if (!currentAddress) return;
+    const transaction = createCancellablePromise(
+      isApprovalForAll(nfts, currentAddress, contractAddress)
+    );
+    transaction.promise
       .then((isApproved) => {
         setIsApproved(isApproved);
       })
       .catch(() => {
         console.warn("batch lend issue with is approval for all");
       });
-  }, [nfts, currentAddress, setIsApproved, renft]);
+    return transaction.cancel;
+  }, [nfts, currentAddress, setIsApproved, contractAddress]);
 
   return (
     <Modal open={open} handleClose={onClose}>

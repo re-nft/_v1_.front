@@ -3,13 +3,13 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import { getUniqueID } from "../controller/batch-controller";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
+import { useAllAvailableToLend } from "../contexts/graph/hooks/useAllAvailableToLend";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -32,73 +32,46 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { getUserData, getAllAvailableToLend } = useContext(GraphContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const currentAddress = useContext(CurrentAddressWrapper);
+  const { allAvailableToLend, isLoading: allAvailableIsLoading } =
+    useAllAvailableToLend();
+  const {
+    userData,
+    isLoading: userDataIsLoading,
+    refreshUserData,
+  } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
-  const refreshState = useCallback(() => {
-    Promise.all([getAllAvailableToLend(), getUserData()])
-      .then(([nfts, userData]) => {
-        if (!nfts || !userData) return;
-
-        const items = myFavorites(userData, nfts);
-
-        setNftItems(items);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not refresh state");
-      });
-  }, [getAllAvailableToLend, getUserData, setNftItems, setIsLoading]);
-
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
-      setIsLoading(true);
-
       // todo: we need to stop doing this. you can just pass a single nft, and it will
       // todo: contain information for both the address and tokenID, and whatever else
       // todo: the function may need in the future
       addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
         .then(() => {
-          refreshState();
+          refreshUserData();
         })
         .catch(() => {
           console.warn("could not add or remove user favourite");
         });
     },
-    [setIsLoading, refreshState, currentAddress]
+    [currentAddress, refreshUserData]
   );
 
   useEffect(() => {
-    setIsLoading(true);
-
-    const dataRequest = createCancellablePromise(
-      Promise.all([getAllAvailableToLend(), getUserData()])
-    );
-
-    dataRequest.promise
-      .then(([nfts, userData]) => {
-        if (!nfts || !userData) return;
-
-        const items = myFavorites(userData, nfts);
-
-        setNftItems(items);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        console.warn("could not perform data request");
-      });
-
-    return dataRequest.cancel;
-  }, [getAllAvailableToLend, getUserData]);
+    if (!allAvailableToLend || !userData) return;
+    const items = myFavorites(userData, allAvailableToLend);
+    setNftItems(items);
+  }, [allAvailableToLend, userData]);
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(nftItems);
   }, [nftItems, fetchNfts]);
-  
+
+  const isLoading = userDataIsLoading || allAvailableIsLoading;
+
   if (isLoading) {
     return <CatalogueLoader />;
   }
