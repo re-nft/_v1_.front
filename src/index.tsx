@@ -12,10 +12,8 @@ if (process.env.REACT_APP_DEBUG) {
 }
 
 import App from "./components/app-layout";
-import { GraphProvider } from "./contexts/graph/index";
-import { TransactionStateProvider } from "./contexts/TransactionState";
-import { Symfoni } from "./hardhat/SymfoniContext";
 import { StateProvider } from "./contexts/StateProvider";
+import { UserProvider } from "./contexts/UserProvider";
 
 const theme = createMuiTheme({
   typography: {
@@ -30,12 +28,12 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <Symfoni>
+  <UserProvider>
     <StateProvider>
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>
     </StateProvider>
-  </Symfoni>,
+  </UserProvider>,
   document.getElementById("root")
 );

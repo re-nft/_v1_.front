@@ -42,7 +42,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [ref, { entry }] = useIntersectionObserver();
 
   const { onCheckboxChange } = useContext(BatchContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
   const [isChecked, setIsChecked] = useState<boolean>(checked || false);

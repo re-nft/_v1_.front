@@ -1,8 +1,8 @@
 import { useCallback, useContext, useMemo } from "react";
 import { ContractTransaction } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { getReNFT } from "../services/get-renft-instance";
+import UserContext from "../contexts/UserProvider";
 
 export const useStopLend = (): ((
   nfts: {
@@ -12,7 +12,7 @@ export const useStopLend = (): ((
     lendingId: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const renft = useMemo(() => {
     if (!signer) return;
     return getReNFT(signer);

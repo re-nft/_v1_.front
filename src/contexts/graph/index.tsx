@@ -54,7 +54,7 @@ const DefaultGraphContext: GraphContextType = {
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 export const GraphProvider: React.FC = ({ children }) => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);

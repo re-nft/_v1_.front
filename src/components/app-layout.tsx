@@ -49,7 +49,7 @@ const ROUTES = [
 ];
 
 const App: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const { userData } = useContext(GraphContext);
   const [username, setUsername] = useState<string>();
 

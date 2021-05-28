@@ -1,13 +1,11 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
-import { ProviderContext } from "../hardhat/SymfoniContext";
 import { PaymentToken, TransactionHash } from "../types";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import CommonInfo from "./common-info";
 import MinimalSelect from "../components/select";
-import { ReNFTContext } from "../hardhat/SymfoniContext";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
 import isApprovalForAll from "../services/is-approval-for-all";
@@ -18,6 +16,7 @@ import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextW
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { BigNumber } from "@ethersproject/bignumber";
+import UserContext from "../contexts/UserProvider";
 
 type LendOneInputs = {
   [key: string]: {
@@ -39,11 +38,10 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { instance: renft } = useContext(ReNFTContext);
   const { isActive, setHash, hash } = useContext(TransactionStateContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
-  const [provider] = useContext(ProviderContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nft] = nfts;
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
@@ -127,7 +125,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
-    if (!renft) return;
     const transaction = createCancellablePromise(setApprovalForAll(nfts));
     transaction.promise
       .then(([tx]) => {
@@ -142,7 +139,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     return () => {
       transaction.cancel();
     };
-  }, [nfts, provider, renft, setHash]);
+  }, [nfts, provider, setHash]);
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {
@@ -178,7 +175,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   );
 
   useEffect(() => {
-    if (!renft || !currentAddress) return;
+    if (!currentAddress) return;
     const transaction = createCancellablePromise(
       isApprovalForAll(nfts, currentAddress)
     );
@@ -190,7 +187,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         console.warn("batch lend issue with is approval for all");
       });
     return transaction.cancel;
-  }, [nfts, currentAddress, setIsApproved, renft]);
+  }, [nfts, currentAddress, setIsApproved]);
 
   return (
     <Modal open={open} handleClose={onClose}>

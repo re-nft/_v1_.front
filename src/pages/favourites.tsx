@@ -32,7 +32,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const { allAvailableToLend, isLoading: allAvailableIsLoading } =
     useAllAvailableToLend();
   const {

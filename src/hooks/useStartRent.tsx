@@ -1,13 +1,14 @@
 import { useCallback, useContext, useMemo, useState, useEffect } from "react";
-import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
-import { getE20 } from "../utils";
+import { getE20, getResolver } from "../utils";
 import { CONTRACT_ADDRESS, IS_PROD, MAX_UINT256 } from "../consts";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
+import UserContext from "../contexts/UserProvider";
+import { ResolverContext } from "../hardhat/SymfoniContext";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -27,19 +28,26 @@ export const useStartRent = (
   startRent: () => void;
   handleApproveAll: () => void;
 } => {
-  const [signer] = useContext(SignerContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { instance: resolver } = useContext(ResolverContext);
+  const { signer, web3Provider } = useContext(UserContext);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApproved, setApproved] = useState(false);
 
+  
   const renft = useMemo(() => {
     if (!signer) return;
     return getReNFT(signer);
   }, [signer]);
 
+  const resolver = useMemo(() => {
+    if (!signer) return;
+    if (!web3Provider) return;
+    return getResolver(web3Provider, signer);
+  }, [signer, web3Provider]);
+
   useEffect(() => {
     if (!resolver) return;
+    if (!currentAddress) return;
     if (!CONTRACT_ADDRESS)
       throw new Error(
         `Please specify contract address for ${process.env.REACT_APP_ENVIRONMENT}`

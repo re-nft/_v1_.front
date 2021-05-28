@@ -6,13 +6,13 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import usePoller from "../hooks/usePoller";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
+import UserContext from "./UserProvider";
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -26,7 +26,7 @@ export const UserLendingContext = createContext<UserLendingContextType>({
 UserLendingContext.displayName = "UserLendingContext";
 
 export const UserLendingProvider: React.FC = ({ children }) => {
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
 

@@ -105,7 +105,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const {
     onCheckboxChange,
     handleReset,

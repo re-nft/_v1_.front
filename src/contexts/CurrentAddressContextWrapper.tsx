@@ -5,30 +5,27 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
+import UserContext from "./UserProvider";
 
-export const CurrentAddressContextWrapper = createContext<
-  [string, React.Dispatch<React.SetStateAction<string>>]
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
->(["", () => {}]);
+export const CurrentAddressContextWrapper = createContext<string>("");
 
 CurrentAddressContextWrapper.displayName = "CurrentAddressContextWrapper";
 
 export const CurrentAddressContextWrapperProvider: React.FC = ({
   children,
 }) => {
-  const [currentAddress, setAddress] = useContext(CurrentAddressContext);
-  const [newAddress, setNewAddress] = useState(currentAddress);
+  const { address } = useContext(UserContext);
+  const [newAddress, setNewAddress] = useState(address);
   useEffect(() => {
     if (process.env.REACT_APP_ADDRESS) {
       setNewAddress(process.env.REACT_APP_ADDRESS);
     } else {
-      setNewAddress(currentAddress);
+      setNewAddress(address);
     }
-  }, [currentAddress]);
+  }, [address]);
 
   return (
-    <CurrentAddressContextWrapper.Provider value={[newAddress, setAddress]}>
+    <CurrentAddressContextWrapper.Provider value={address}>
       {children}
     </CurrentAddressContextWrapper.Provider>
   );

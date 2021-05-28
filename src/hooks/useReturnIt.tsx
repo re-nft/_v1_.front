@@ -2,11 +2,7 @@ import { BigNumber } from "ethers";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import TransactionStateContext from "../contexts/TransactionState";
-import {
-  ProviderContext,
-  ResolverContext,
-  SignerContext,
-} from "../hardhat/SymfoniContext";
+import UserContext from "../contexts/UserProvider";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { getReNFT } from "../services/get-renft-instance";
@@ -23,12 +19,8 @@ export type ReturnNft = {
 export const useReturnIt = (
   nfts: ReturnNft[]
 ): (() => Promise<void | boolean>) => {
-  const [signer] = useContext(SignerContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { instance: resolver } = useContext(ResolverContext);
-  const [isApproved, setIsApproved] = useState(false);
+  const {signer} = useContext(UserContext);
   const { setHash } = useContext(TransactionStateContext);
-  const [provider] = useContext(ProviderContext);
 
   const renft = useMemo(() => {
     if (!signer) return;

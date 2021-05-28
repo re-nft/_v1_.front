@@ -6,7 +6,7 @@ import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextW
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
 

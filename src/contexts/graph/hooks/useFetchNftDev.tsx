@@ -2,21 +2,18 @@ import { useContext, useEffect, useState } from "react";
 
 import { BigNumber, ethers } from "ethers";
 import { IS_PROD } from "../../../consts";
-import {
-  E721Context,
-  E1155Context,
-  SignerContext,
-} from "../../../hardhat/SymfoniContext";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
 import fetch from "cross-fetch";
+import UserContext from "../../UserProvider";
+import { E1155Context, E721Context } from "../../../hardhat/SymfoniContext";
 
 const BigNumZero = BigNumber.from("0");
 
 export const useFetchNftDev = (): Nft[] => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const [signer] = useContext(SignerContext);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const {signer} = useContext(UserContext);
   const { instance: e721 } = useContext(E721Context);
   const { instance: e1155 } = useContext(E1155Context);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);

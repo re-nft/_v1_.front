@@ -6,14 +6,11 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import usePoller from "../hooks/usePoller";
 import { fetchRenftsAll, ReturnReNftAll } from "../services/graph";
-import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
-import { CurrentAddressContextWrapper } from "./CurrentAddressContextWrapper";
 import { Lending, Renting } from "./graph/classes";
-import { queryUserLendingRenft } from "./graph/queries";
+import UserContext from "./UserProvider";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -30,7 +27,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
   const [isLoading, setLoading] = useState(false);
 
   const fetchRenting = useCallback(() => {

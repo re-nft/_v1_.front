@@ -1,10 +1,13 @@
-import { ethers, BigNumber, BigNumberish, providers } from "ethers";
+import { ethers, BigNumber, BigNumberish, providers, Signer } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
+import { Resolver__factory } from "./hardhat/typechain/factories/Resolver__factory";
+import { RESOLVER_ADDRESS } from "./consts";
+import { Resolver } from "./hardhat/typechain/Resolver";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -272,4 +275,14 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   } catch (e) {
     Promise.reject(e);
   }
+};
+
+export const getResolver = (_provider: providers.Provider, _signer?: Signer): Resolver => {
+  const contractAddress = RESOLVER_ADDRESS;
+  if (!contractAddress)
+    throw new Error("Please provide a REACT_APP_RESOLVER_ADDRESS");
+  const instance = _signer
+    ? Resolver__factory.connect(contractAddress, _signer)
+    : Resolver__factory.connect(contractAddress, _provider);
+  return instance;
 };

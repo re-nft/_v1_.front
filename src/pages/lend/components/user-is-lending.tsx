@@ -1,6 +1,5 @@
 import React, { useContext, useCallback, useEffect } from "react";
 
-import { SignerContext } from "../../../hardhat/SymfoniContext";
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";

@@ -1,9 +1,9 @@
 import { useCallback, useContext, useMemo } from "react";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
 import createDebugger from "debug";
+import UserContext from "../contexts/UserProvider";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
@@ -17,7 +17,7 @@ export const useStartLend = (): ((
   nftPrice: number[],
   tokens: PaymentToken[]
 ) => Promise<void | ContractTransaction>) => {
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
 
   const renft = useMemo(() => {
     if (!signer) return;

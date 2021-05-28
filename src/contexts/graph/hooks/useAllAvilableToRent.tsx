@@ -1,6 +1,5 @@
 import request from "graphql-request";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
 import { Lending, Nft } from "../classes";
 import { queryAllLendingRenft } from "../queries";
@@ -8,13 +7,14 @@ import { LendingRaw } from "../types";
 import { timeItAsync } from "../../../utils";
 import createCancellablePromise from "../../create-cancellable-promise";
 import usePoller from "../../../hooks/usePoller";
+import UserContext from "../../UserProvider";
 
 export const useAllAvailableToRent = (): {
   allAvailableToRent: Nft[];
   isLoading: boolean;
 } => {
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const [signer] = useContext(SignerContext);
+  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const {signer} = useContext(UserContext);
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);
 
@@ -44,7 +44,6 @@ export const useAllAvailableToRent = (): {
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
-            console.log(l);
             const userNotLender = l.lenderAddress.toLowerCase() !== address;
             const userNotRenter =
               (l.renting?.renterAddress ?? "o_0").toLowerCase() !== address;
