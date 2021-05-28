@@ -1,4 +1,3 @@
-import request from "graphql-request";
 import React, {
   createContext,
   useState,
@@ -6,11 +5,12 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { CurrentAddressContext, SignerContext } from "../hardhat/SymfoniContext";
 import usePoller from "../hooks/usePoller";
-import { fetchRenftsAll, ReturnReNftAll } from "../services/graph";
+import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
-import { Lending, Renting } from "./graph/classes";
-import UserContext from "./UserProvider";
+import { Renting } from "./graph/classes";
+import { parseLending } from "./graph/utils";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -27,30 +27,42 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const {signer} = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+  const [currAddress] = useContext(CurrentAddressContext);
   const [isLoading, setLoading] = useState(false);
 
   const fetchRenting = useCallback(() => {
-    if (!signer) return;
+    if (!currAddress || !signer) return;
     setLoading(true);
-    const fetchRequest = createCancellablePromise<ReturnReNftAll | undefined>(
-      fetchRenftsAll(signer)
+    const fetchRequest = createCancellablePromise<FetchUserRentingReturn | undefined>(
+      fetchUserRenting(currAddress)
     );
     fetchRequest.promise
-      .then((renftAll) => {
-        if (renftAll) setRentings(Object.values(renftAll.renting) || []);
+      .then((usersRenting) => {
+        if (usersRenting) {
+          const { users } = usersRenting;
+          if (!users) return;
+          const firstMatch = users[0];
+          const { renting } = firstMatch;
+          if (!renting) return;
+          const _renting: Renting[] = [];
+          renting.forEach((r) => {
+            _renting.push(new Renting(r.lending.nftAddress, r.lending.tokenId, parseLending(r.lending), r, signer));
+          });
+          setRentings(_renting);
+        }
       })
       .finally(() => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [signer]);
+  }, [currAddress, signer]);
 
   useEffect(() => {
     fetchRenting();
   }, [fetchRenting]);
 
-  usePoller(fetchRenting, 10000);
+  usePoller(fetchRenting, 5_000);
 
   return (
     <UserRentingContext.Provider

@@ -187,26 +187,24 @@ export const fetchUserLending = async (
   );
 };
 
-//TODO unused
+export type FetchUserRentingReturn = {
+    users?: {
+    renting?: RentingRaw[] | undefined;
+    }[] | undefined;
+} | undefined
+
 export const fetchUserRenting = async (
   currentAddress: string | undefined
-): Promise<string[] | undefined> => {
+): Promise<FetchUserRentingReturn> => {
   if (!currentAddress) return;
   const query = queryUserRentingRenft(currentAddress);
   if (!process.env.REACT_APP_RENFT_API) {
     throw new Error("RENFT_API is not defined");
   }
   const subgraphURI = process.env.REACT_APP_RENFT_API;
-  const response: {
-    user?: { renting?: { id: RentingId; lending: LendingRaw }[] };
-  } = await timeItAsync(
+  const response: FetchUserRentingReturn = await timeItAsync(
     "Pulled My Renft Renting Nfts",
     async () => await request(subgraphURI, query)
   );
-  return (
-    response.user?.renting?.map(
-      ({ lending }) =>
-        `${lending.nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${lending.id}`
-    ) ?? []
-  );
+  return response;
 };
