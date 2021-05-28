@@ -14,13 +14,11 @@ export default async function claimCollateral(
     address: string;
     tokenId: string;
     lendingId: string;
-    lendingAmount: string;
   }[]
 ): Promise<ContractTransaction> {
   return await getReNFT(signer).claimCollateral(
     nfts.map((nft) => nft.address),
     nfts.map((nft) => BigNumber.from(nft.tokenId)),
-    nfts.map((nft) => Number(nft.lendingAmount)),
     nfts.map((nft) => BigNumber.from(nft.lendingId))
   );
 }

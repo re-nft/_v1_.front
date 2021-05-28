@@ -12,7 +12,6 @@ export type ReturnNft = {
   address: string;
   tokenId: string;
   lendingId: string;
-  amount: string;
   contract: () => ERC721 | ERC1155;
 };
 
@@ -30,10 +29,10 @@ export const useReturnIt = (
   return useCallback(async () => {
     if (!renft) return;
     if (nfts.length < 1) return;
+
     const tx = await renft.returnIt(
       nfts.map((nft) => nft.address),
       nfts.map((nft) => BigNumber.from(nft.tokenId)),
-      nfts.map((nft) => Number(nft.amount)),
       nfts.map((nft) => BigNumber.from(nft.lendingId))
     );
     const isSuccess = await setHash(tx.hash);

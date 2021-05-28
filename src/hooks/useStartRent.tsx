@@ -15,7 +15,6 @@ const debug = createDebugger("app:contract:startRent");
 type SimpleNft = {
   address: string;
   tokenId: string;
-  amount: string;
   lendingId: string;
   rentDuration: string;
   paymentToken: PaymentToken;
@@ -96,12 +95,10 @@ export const useStartRent = (
 
     const addresses = nfts.map((nft) => nft.address);
     const tokenIds = nfts.map((nft) => BigNumber.from(nft.tokenId));
-    const amounts = nfts.map((nft) => Number(nft.amount));
     const lendingIds = nfts.map((nft) => BigNumber.from(nft.lendingId));
     const rentDurations = nfts.map((nft) => Number(nft.rentDuration));
 
     debug("addresses", addresses);
-    debug("amounts", amounts);
     debug(
       "tokenIds",
       tokenIds.map((t) => t.toHexString())
@@ -113,7 +110,7 @@ export const useStartRent = (
     debug("rentDurations", rentDurations);
 
     return await renft
-      .rent(addresses, tokenIds, amounts, lendingIds, rentDurations)
+      .rent(addresses, tokenIds, lendingIds, rentDurations)
       .catch((e) => {
         debug("Error with rent", e);
       });

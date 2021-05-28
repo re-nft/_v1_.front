@@ -3,12 +3,14 @@ import { ContractTransaction } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 import { getReNFT } from "../services/get-renft-instance";
 import UserContext from "../contexts/UserProvider";
+import createDebugger from "debug";
+
+const debug = createDebugger('app:contracts:usestoplend')
 
 export const useStopLend = (): ((
   nfts: {
     address: string;
     tokenId: string;
-    amount: string;
     lendingId: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
@@ -22,18 +24,17 @@ export const useStopLend = (): ((
       nfts: {
         address: string;
         tokenId: string;
-        amount: string;
         lendingId: string;
       }[]
     ) => {
       if (!renft) return Promise.resolve();
-      const arr: [string[], BigNumber[], number[], BigNumber[]] = [
+      const arr: [string[], BigNumber[], BigNumber[]] = [
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => Number(nft.amount)),
         nfts.map((nft) => BigNumber.from(nft.lendingId)),
       ];
-      return renft.stopLending(...arr).catch((e) => {
+      return renft.stopLending(...arr).catch(() => {
+        debug("could not stop lending. maybe someone is renting this nft.");
         return;
       });
     },
