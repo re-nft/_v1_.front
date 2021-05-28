@@ -4,7 +4,7 @@ import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
 import { getE20, getResolver } from "../utils";
 import { CONTRACT_ADDRESS, IS_PROD, MAX_UINT256 } from "../consts";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
 import UserContext from "../contexts/UserProvider";
@@ -29,7 +29,7 @@ export const useStartRent = (
   handleApproveAll: () => void;
 } => {
   const { signer, web3Provider } = useContext(UserContext);
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApproved, setApproved] = useState(false);
 

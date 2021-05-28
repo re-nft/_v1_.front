@@ -1,6 +1,6 @@
 import request from "graphql-request";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import { Lending, Nft } from "../classes";
 import { queryAllLendingRenft } from "../queries";
 import { LendingRaw } from "../types";
@@ -13,7 +13,7 @@ export const useAllAvailableToRent = (): {
   allAvailableToRent: Nft[];
   isLoading: boolean;
 } => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const {signer} = useContext(UserContext);
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);

@@ -18,7 +18,7 @@ import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { advanceTime, short } from "../utils";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { IS_PROD } from "../consts";
 
 const ROUTES = [
@@ -49,7 +49,7 @@ const ROUTES = [
 ];
 
 const App: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
   const [username, setUsername] = useState<string>();
 

@@ -4,7 +4,7 @@ import { BigNumber, ethers } from "ethers";
 import { IS_PROD } from "../../../consts";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
-import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import fetch from "cross-fetch";
 import UserContext from "../../UserProvider";
 import { E1155Context, E721Context } from "../../../hardhat/SymfoniContext";
@@ -12,7 +12,7 @@ import { E1155Context, E721Context } from "../../../hardhat/SymfoniContext";
 const BigNumZero = BigNumber.from("0");
 
 export const useFetchNftDev = (): Nft[] => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const {signer} = useContext(UserContext);
   const { instance: e721 } = useContext(E721Context);
   const { instance: e1155 } = useContext(E1155Context);

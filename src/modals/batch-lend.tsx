@@ -12,7 +12,7 @@ import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
 import ActionButton from "../components/action-button";
 import { getUniqueID } from "../controller/batch-controller";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -39,7 +39,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   onClose,
 }) => {
   const { isActive, setHash, hash } = useContext(TransactionStateContext);
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
   const { web3Provider: provider } = useContext(UserContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);

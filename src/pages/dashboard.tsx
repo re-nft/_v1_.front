@@ -19,7 +19,7 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { advanceTime, short } from "../utils";
 import BatchBar from "../components/batch-bar";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../contexts/UserLending";
@@ -105,7 +105,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: and pass components as children to the abstracted
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const {
     onCheckboxChange,
     handleReset,

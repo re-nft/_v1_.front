@@ -6,7 +6,7 @@ import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import { getUniqueID } from "../controller/batch-controller";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../contexts/graph/hooks/useAllAvailableToLend";
@@ -32,7 +32,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const { allAvailableToLend, isLoading: allAvailableIsLoading } =
     useAllAvailableToLend();
   const {

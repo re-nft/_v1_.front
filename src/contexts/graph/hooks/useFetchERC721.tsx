@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { FetchType, fetchUserProd721 } from "../../../services/graph";
 import createCancellablePromise from "../../create-cancellable-promise";
-import { CurrentAddressContextWrapper } from "../../CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import UserContext from "../../UserProvider";
 import { Nft } from "../classes";
 import { NftToken } from "../types";
 
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const {signer} = useContext(UserContext);
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);

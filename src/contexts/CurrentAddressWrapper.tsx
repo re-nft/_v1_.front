@@ -7,11 +7,11 @@ import React, {
 } from "react";
 import UserContext from "./UserProvider";
 
-export const CurrentAddressContextWrapper = createContext<string>("");
+export const CurrentAddressWrapper = createContext<string>("");
 
-CurrentAddressContextWrapper.displayName = "CurrentAddressContextWrapper";
+CurrentAddressWrapper.displayName = "CurrentAddressWrapper";
 
-export const CurrentAddressContextWrapperProvider: React.FC = ({
+export const CurrentAddressProvider: React.FC = ({
   children,
 }) => {
   const { address } = useContext(UserContext);
@@ -25,8 +25,8 @@ export const CurrentAddressContextWrapperProvider: React.FC = ({
   }, [address]);
 
   return (
-    <CurrentAddressContextWrapper.Provider value={address}>
+    <CurrentAddressWrapper.Provider value={address}>
       {children}
-    </CurrentAddressContextWrapper.Provider>
+    </CurrentAddressWrapper.Provider>
   );
 };

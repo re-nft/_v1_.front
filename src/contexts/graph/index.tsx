@@ -14,7 +14,7 @@ import {
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
 import { Nft, Lending, Renting } from "./classes";
-import { CurrentAddressContextWrapper } from "../CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../CurrentAddressWrapper";
 import { fetchRenftsAll, LendingId, RentingId } from "../../services/graph";
 import createCancellablePromise from "../create-cancellable-promise";
 
@@ -54,7 +54,7 @@ const DefaultGraphContext: GraphContextType = {
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
 
 export const GraphProvider: React.FC = ({ children }) => {
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
   const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);

@@ -1,5 +1,5 @@
 import React from "react";
-import { CurrentAddressContextWrapperProvider } from "./CurrentAddressContextWrapper";
+import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { NFTMetaProvider } from "./NftMetaState";
 import { TransactionStateProvider } from "./TransactionState";
@@ -8,7 +8,7 @@ import { UserRentingProvider } from "./UserRenting";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
-    <CurrentAddressContextWrapperProvider>
+    <CurrentAddressProvider>
       <GraphProvider>
         <TransactionStateProvider>
           <NFTMetaProvider>
@@ -18,6 +18,6 @@ export const StateProvider: React.FC = ({ children }) => {
           </NFTMetaProvider>
         </TransactionStateProvider>
       </GraphProvider>
-    </CurrentAddressContextWrapperProvider>
+    </CurrentAddressProvider>
   );
 };

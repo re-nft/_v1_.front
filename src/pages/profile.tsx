@@ -2,11 +2,11 @@ import React, { useContext, useCallback, useState, useEffect } from "react";
 import GraphContext from "../contexts/graph";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
-  const currentAddress = useContext(CurrentAddressContextWrapper);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
 

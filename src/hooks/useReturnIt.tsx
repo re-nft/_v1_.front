@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
