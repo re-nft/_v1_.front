@@ -1,4 +1,4 @@
-import { ethers, BigNumber, BigNumberish } from "ethers";
+import { ethers, BigNumber, BigNumberish, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
@@ -258,4 +258,18 @@ export const toDataURLFromURL = (
  */
 const bundleNfts = () => {
   true;
+};
+
+/**
+ * Helps advance time on test blockhain to test claimColletaral and similar
+ * @param seconds
+ */
+export const advanceTime = async (seconds: number): Promise<void> => {
+  try {
+    const provider = new providers.JsonRpcProvider("http://localhost:8545");
+    await provider.send("evm_increaseTime", [seconds]);
+    await provider.send("evm_mine", []);
+  } catch (e) {
+    Promise.reject(e);
+  }
 };

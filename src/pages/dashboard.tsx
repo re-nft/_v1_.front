@@ -17,7 +17,7 @@ import {
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { short } from "../utils";
+import { advanceTime, short } from "../utils";
 import BatchBar from "../components/batch-bar";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import { useStopLend } from "../hooks/useStopLend";
