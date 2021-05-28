@@ -3,12 +3,12 @@ import { ContractTransaction } from "@ethersproject/contracts";
 import { BigNumber } from "@ethersproject/bignumber";
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { getReNFT } from "../services/get-renft-instance";
+import debug from "debug";
 
 export const useStopLend = (): ((
   nfts: {
     address: string;
     tokenId: string;
-    amount: string;
     lendingId: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
@@ -22,18 +22,17 @@ export const useStopLend = (): ((
       nfts: {
         address: string;
         tokenId: string;
-        amount: string;
         lendingId: string;
       }[]
     ) => {
       if (!renft) return Promise.resolve();
-      const arr: [string[], BigNumber[], number[], BigNumber[]] = [
+      const arr: [string[], BigNumber[], BigNumber[]] = [
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => Number(nft.amount)),
         nfts.map((nft) => BigNumber.from(nft.lendingId)),
       ];
-      return renft.stopLending(...arr).catch((e) => {
+      return renft.stopLending(...arr).catch(() => {
+        debug("could not stop lending. maybe someone is renting this nft.");
         return;
       });
     },

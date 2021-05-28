@@ -1,10 +1,7 @@
 import { BigNumber } from "ethers";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
+import { useCallback, useContext, useMemo } from "react";
 import TransactionStateContext from "../contexts/TransactionState";
 import {
-  ProviderContext,
-  ResolverContext,
   SignerContext,
 } from "../hardhat/SymfoniContext";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
@@ -16,7 +13,6 @@ export type ReturnNft = {
   address: string;
   tokenId: string;
   lendingId: string;
-  amount: string;
   contract: () => ERC721 | ERC1155;
 };
 
@@ -24,11 +20,7 @@ export const useReturnIt = (
   nfts: ReturnNft[]
 ): (() => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
-  const [currentAddress] = useContext(CurrentAddressContextWrapper);
-  const { instance: resolver } = useContext(ResolverContext);
-  const [isApproved, setIsApproved] = useState(false);
   const { setHash } = useContext(TransactionStateContext);
-  const [provider] = useContext(ProviderContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -38,10 +30,10 @@ export const useReturnIt = (
   return useCallback(async () => {
     if (!renft) return;
     if (nfts.length < 1) return;
+
     const tx = await renft.returnIt(
       nfts.map((nft) => nft.address),
       nfts.map((nft) => BigNumber.from(nft.tokenId)),
-      nfts.map((nft) => Number(nft.amount)),
       nfts.map((nft) => BigNumber.from(nft.lendingId))
     );
     const isSuccess = await setHash(tx.hash);

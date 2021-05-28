@@ -2,9 +2,9 @@ import { useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber, ContractTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { getE20 } from "../utils";
-import { CONTRACT_ADDRESS, IS_PROD, MAX_UINT256 } from "../consts";
+import { CONTRACT_ADDRESS, MAX_UINT256 } from "../consts";
 import { CurrentAddressContextWrapper } from "../contexts/CurrentAddressContextWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
@@ -14,7 +14,6 @@ const debug = createDebugger("app:contract:startRent");
 type SimpleNft = {
   address: string;
   tokenId: string;
-  amount: string;
   lendingId: string;
   rentDuration: string;
   paymentToken: PaymentToken;
@@ -88,12 +87,10 @@ export const useStartRent = (
 
     const addresses = nfts.map((nft) => nft.address);
     const tokenIds = nfts.map((nft) => BigNumber.from(nft.tokenId));
-    const amounts = nfts.map((nft) => Number(nft.amount));
     const lendingIds = nfts.map((nft) => BigNumber.from(nft.lendingId));
     const rentDurations = nfts.map((nft) => Number(nft.rentDuration));
 
     debug("addresses", addresses);
-    debug("amounts", amounts);
     debug(
       "tokenIds",
       tokenIds.map((t) => t.toHexString())
@@ -105,7 +102,7 @@ export const useStartRent = (
     debug("rentDurations", rentDurations);
 
     return await renft
-      .rent(addresses, tokenIds, amounts, lendingIds, rentDurations)
+      .rent(addresses, tokenIds, lendingIds, rentDurations)
       .catch((e) => {
         debug("Error with rent", e);
       });
