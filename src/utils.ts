@@ -8,6 +8,10 @@ import createDebugger from "debug";
 import { Resolver__factory } from "./hardhat/typechain/factories/Resolver__factory";
 import { RESOLVER_ADDRESS } from "./consts";
 import { Resolver } from "./hardhat/typechain/Resolver";
+import { E721__factory } from "./hardhat/typechain/factories/E721__factory";
+import { E1155__factory } from "./hardhat/typechain/factories/E1155__factory";
+import { E721 } from "./hardhat/typechain/E721";
+import { E1155 } from "./hardhat/typechain/E1155";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -286,3 +290,4 @@ export const getResolver = (_provider: providers.Provider, _signer?: Signer): Re
     : Resolver__factory.connect(contractAddress, _provider);
   return instance;
 };
+

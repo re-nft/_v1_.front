@@ -1,22 +1,35 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, Signer } from "ethers";
 import { IS_PROD } from "../../../consts";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import fetch from "cross-fetch";
 import UserContext from "../../UserProvider";
-import { E1155Context, E721Context } from "../../../hardhat/SymfoniContext";
+import { E1155__factory } from "../../../hardhat/typechain/factories/E1155__factory";
+import { E721__factory } from "../../../hardhat/typechain/factories/E721__factory";
 
 const BigNumZero = BigNumber.from("0");
 
 export const useFetchNftDev = (): Nft[] => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {signer} = useContext(UserContext);
-  const { instance: e721 } = useContext(E721Context);
-  const { instance: e1155 } = useContext(E1155Context);
+  const { signer, web3Provider } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
+
+  const e721 = useMemo(() => {
+    if (!signer) return;
+    if (!web3Provider) return;
+
+    return getE721(web3Provider, signer);
+  }, [signer, web3Provider]);
+
+  const e1155 = useMemo(() => {
+    if (!signer) return;
+    if (!web3Provider) return;
+
+    return getE1155(web3Provider, signer);
+  }, [signer, web3Provider]);
 
   useEffect(() => {
     const fetchAsync = async () => {
@@ -85,6 +98,7 @@ export const useFetchNftDev = (): Nft[] => {
         });
         const amountBalance = await e1155.balanceOf(
           currentAddress,
+          // @ts-ignore
           erc1155Ids[i]
         );
 
@@ -112,4 +126,23 @@ export const useFetchNftDev = (): Nft[] => {
   return devNfts;
 };
 
+const getE1155 = (_provider: ethers.providers.Provider, _signer?: Signer) => {
+  if (IS_PROD) return;
+  if (!process.env.REACT_APP_E1155_ADDRESS)
+    throw new Error("Please provide REACT_APP_E1155_ADDRESS");
+  const contractAddress = process.env.REACT_APP_E1155_ADDRESS;
+  return _signer
+    ? E1155__factory.connect(contractAddress, _signer)
+    : E1155__factory.connect(contractAddress, _provider);
+};
+
+const getE721 = (_provider: ethers.providers.Provider, _signer?: Signer) => {
+  if (IS_PROD) return;
+  if (!process.env.REACT_APP_E721_ADDRESS)
+    throw new Error("Please provide REACT_APP_E721_ADDRESS");
+  const contractAddress = process.env.REACT_APP_E721_ADDRESS;
+  return _signer
+    ? E721__factory.connect(contractAddress, _signer)
+    : E721__factory.connect(contractAddress, _provider);
+};
 export default useFetchNftDev;
