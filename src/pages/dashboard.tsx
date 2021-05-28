@@ -26,6 +26,7 @@ import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import ReturnModal from "../modals/return";
 import { ReturnNft } from "../hooks/useReturnIt";
+import { useContractAddress } from "../contexts/StateProvider";
 
 const returnBy = (rentedAt: number, rentDuration: number) => {
   return moment.unix(rentedAt).add(rentDuration, "days");
@@ -125,12 +126,13 @@ export const Dashboard: React.FC = () => {
   );
   const stopLending = useStopLend();
   const [rentModalOpen, setRentModalOpen] = useState(false);
+  const contractAddress = useContractAddress()
 
   //TODO:eniko
   // const handleClaimCollateral = useCallback(
   //   async (lending: Lending) => {
   //     if (!renft) return;
-  //     const tx = await claimCollateral(renft, [
+  //     const tx = await claimCollateral(renft, contractAddress,  [
   //       {
   //         address: lending.address,
   //         tokenId: lending.tokenId,

@@ -16,7 +16,8 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { BigNumber } from "@ethersproject/bignumber";
-import UserContext from "../contexts/UserProvider";
+import { ProviderContext } from "../hardhat/SymfoniContext";
+import { useContractAddress } from "../contexts/StateProvider";
 
 type LendOneInputs = {
   [key: string]: {
@@ -41,11 +42,12 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const { isActive, setHash, hash } = useContext(TransactionStateContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
-  const { web3Provider: provider } = useContext(UserContext);
+  const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nft] = nfts;
   const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
   const startLend = useStartLend();
+  const contractAddress = useContractAddress()
 
   const handleLend = useCallback(
     (e: React.FormEvent) => {
@@ -125,7 +127,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
-    const transaction = createCancellablePromise(setApprovalForAll(nfts));
+    const transaction = createCancellablePromise(setApprovalForAll(nfts, contractAddress));
     transaction.promise
       .then(([tx]) => {
         if (!tx) return;
@@ -139,7 +141,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     return () => {
       transaction.cancel();
     };
-  }, [nfts, provider, setHash]);
+  }, [contractAddress, nfts, provider, setHash]);
 
   const handleStateChange = useCallback(
     (target: string, value: string) => {
@@ -177,7 +179,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   useEffect(() => {
     if (!currentAddress) return;
     const transaction = createCancellablePromise(
-      isApprovalForAll(nfts, currentAddress)
+      isApprovalForAll(nfts, currentAddress, contractAddress)
     );
     transaction.promise
       .then((isApproved) => {
@@ -187,7 +189,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         console.warn("batch lend issue with is approval for all");
       });
     return transaction.cancel;
-  }, [nfts, currentAddress, setIsApproved]);
+  }, [nfts, currentAddress, setIsApproved, contractAddress]);
 
   return (
     <Modal open={open} handleClose={onClose}>

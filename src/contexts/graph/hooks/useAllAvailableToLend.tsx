@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Nft } from "../classes";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
-import useFetchNftDev from "./useFetchNftDev";
+import { useFetchNftDev } from "./useFetchNftDev";
 
 export const useAllAvailableToLend = (): {
   allAvailableToLend: Nft[];

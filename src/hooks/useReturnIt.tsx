@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { useCallback, useContext, useMemo } from "react";
+import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
-import UserContext from "../contexts/UserProvider";
+import { SignerContext } from "../hardhat/SymfoniContext";
 import { ERC1155 } from "../hardhat/typechain/ERC1155";
 import { ERC721 } from "../hardhat/typechain/ERC721";
 import { getReNFT } from "../services/get-renft-instance";
@@ -18,13 +18,14 @@ export type ReturnNft = {
 export const useReturnIt = (
   nfts: ReturnNft[]
 ): (() => Promise<void | boolean>) => {
-  const {signer} = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+  const contractAddress = useContractAddress()
   const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
-    return getReNFT(signer);
-  }, [signer]);
+    return getReNFT(signer, contractAddress);
+  }, [contractAddress, signer]);
 
   return useCallback(async () => {
     if (!renft) return;

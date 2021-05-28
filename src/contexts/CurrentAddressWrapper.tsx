@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import UserContext from "./UserProvider";
+import { CurrentAddressContext } from "../hardhat/SymfoniContext";
 
 export const CurrentAddressWrapper = createContext<string>("");
 
@@ -14,7 +14,7 @@ CurrentAddressWrapper.displayName = "CurrentAddressWrapper";
 export const CurrentAddressProvider: React.FC = ({
   children,
 }) => {
-  const { address } = useContext(UserContext);
+  const [address] = useContext(CurrentAddressContext);
   const [newAddress, setNewAddress] = useState(address);
   useEffect(() => {
     if (process.env.REACT_APP_ADDRESS) {
@@ -25,7 +25,7 @@ export const CurrentAddressProvider: React.FC = ({
   }, [address]);
 
   return (
-    <CurrentAddressWrapper.Provider value={address}>
+    <CurrentAddressWrapper.Provider value={newAddress}>
       {children}
     </CurrentAddressWrapper.Provider>
   );

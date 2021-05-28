@@ -13,7 +13,6 @@ if (process.env.REACT_APP_DEBUG) {
 
 import App from "./components/app-layout";
 import { StateProvider } from "./contexts/StateProvider";
-import { UserProvider } from "./contexts/UserProvider";
 
 const theme = createMuiTheme({
   typography: {
@@ -28,12 +27,10 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <UserProvider>
     <StateProvider>
       <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>
-    </StateProvider>
-  </UserProvider>,
+    </StateProvider>,
   document.getElementById("root")
 );

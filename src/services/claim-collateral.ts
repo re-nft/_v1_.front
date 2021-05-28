@@ -10,13 +10,14 @@ import { getReNFT } from "./get-renft-instance";
  */
 export default async function claimCollateral(
   signer: Signer,
+  address: string,
   nfts: {
     address: string;
     tokenId: string;
     lendingId: string;
   }[]
 ): Promise<ContractTransaction> {
-  return await getReNFT(signer).claimCollateral(
+  return await getReNFT(signer, address).claimCollateral(
     nfts.map((nft) => nft.address),
     nfts.map((nft) => BigNumber.from(nft.tokenId)),
     nfts.map((nft) => BigNumber.from(nft.lendingId))

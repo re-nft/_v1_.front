@@ -1,14 +1,18 @@
 import { useCallback, useContext, useMemo, useState, useEffect } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber, ContractTransaction } from "ethers";
-import { getE20, getResolver } from "../utils";
-import { CONTRACT_ADDRESS, IS_PROD, MAX_UINT256 } from "../consts";
+import { BigNumber } from "ethers";
+import { getE20 } from "../utils";
+import {  MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
-import UserContext from "../contexts/UserProvider";
-import { ResolverContext } from "../hardhat/SymfoniContext";
+import {
+  ProviderContext,
+  ResolverContext,
+  SignerContext,
+} from "../hardhat/SymfoniContext";
+import { useContractAddress } from "../contexts/StateProvider";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -27,30 +31,23 @@ export const useStartRent = (
   startRent: () => void;
   handleApproveAll: () => void;
 } => {
-  const { signer, web3Provider } = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+  const { instance: resolver } = useContext(ResolverContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApproved, setApproved] = useState(false);
+  const contractAddress = useContractAddress()
 
-  
   const renft = useMemo(() => {
     if (!signer) return;
-    return getReNFT(signer);
-  }, [signer]);
-
-  const resolver = useMemo(() => {
-    if (!signer) return;
-    if (!web3Provider) return;
-    return getResolver(web3Provider, signer);
-  }, [signer, web3Provider]);
+    return getReNFT(signer, contractAddress);
+  }, [contractAddress, signer]);
 
   useEffect(() => {
     if (!resolver) return;
     if (!currentAddress) return;
-    if (!CONTRACT_ADDRESS)
-      throw new Error(
-        `Please specify contract address for ${process.env.REACT_APP_ENVIRONMENT}`
-      );
+    if(!contractAddress) return;
+
     const tokens = new Set<PaymentToken>();
     nfts.forEach((nft) => tokens.add(nft.paymentToken));
     const promiseTokenAddresses: Promise<string>[] = [];
@@ -62,7 +59,7 @@ export const useStartRent = (
       const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
 
       const promiseTokenAllowances: Promise<BigNumber>[] = erc20s.map((erc20) =>
-        erc20.allowance(currentAddress, CONTRACT_ADDRESS as string)
+        erc20.allowance(currentAddress, contractAddress)
       );
       return Promise.all(promiseTokenAllowances).then(
         (tokenAllowances: BigNumber[]) => {
@@ -76,19 +73,19 @@ export const useStartRent = (
         }
       );
     });
-  }, [currentAddress, nfts, resolver, signer]);
+  }, [contractAddress, currentAddress, nfts, resolver, signer]);
 
   const handleApproveAll = useCallback(() => {
     if (!isApproved && approvals && approvals.length > 0) {
       Promise.all(
         approvals.map((approval) =>
-          approval.approve(CONTRACT_ADDRESS as string, MAX_UINT256)
+          approval.approve(contractAddress, MAX_UINT256)
         )
       ).then(() => {
         setApproved(true);
       });
     }
-  }, [approvals, isApproved]);
+  }, [approvals, contractAddress, isApproved]);
 
   const startRent = useCallback(async () => {
     if (!renft) return Promise.resolve();

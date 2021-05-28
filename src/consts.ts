@@ -13,7 +13,4 @@ export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 export const IS_PROD =
   process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
 
-export const RESOLVER_ADDRESS = IS_PROD? ResolverAddress : process.env.REACT_APP_RESOLVER_ADDRESS;
-export const CONTRACT_ADDRESS = IS_PROD
-  ? RENFT_ADDRESS
-  : process.env.REACT_APP_CONTRACT_ADDRESS;
+

@@ -3,7 +3,8 @@ import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
 import createDebugger from "debug";
-import UserContext from "../contexts/UserProvider";
+import { SignerContext } from "../hardhat/SymfoniContext";
+import { useContractAddress } from "../contexts/StateProvider";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
@@ -17,12 +18,13 @@ export const useStartLend = (): ((
   nftPrice: number[],
   tokens: PaymentToken[]
 ) => Promise<void | ContractTransaction>) => {
-  const {signer} = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+  const contractAddress = useContractAddress()
 
   const renft = useMemo(() => {
     if (!signer) return;
-    return getReNFT(signer);
-  }, [signer]);
+    return getReNFT(signer, contractAddress);
+  }, [contractAddress, signer]);
 
   const startLend = useCallback(
     (

@@ -5,13 +5,8 @@ import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
-import { Resolver__factory } from "./hardhat/typechain/factories/Resolver__factory";
-import { RESOLVER_ADDRESS } from "./consts";
-import { Resolver } from "./hardhat/typechain/Resolver";
-import { E721__factory } from "./hardhat/typechain/factories/E721__factory";
-import { E1155__factory } from "./hardhat/typechain/factories/E1155__factory";
-import { E721 } from "./hardhat/typechain/E721";
-import { E1155 } from "./hardhat/typechain/E1155";
+import { IS_PROD } from "./consts";
+import { RENFT_ADDRESS } from "@renft/sdk";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -279,15 +274,5 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   } catch (e) {
     Promise.reject(e);
   }
-};
-
-export const getResolver = (_provider: providers.Provider, _signer?: Signer): Resolver => {
-  const contractAddress = RESOLVER_ADDRESS;
-  if (!contractAddress)
-    throw new Error("Please provide a REACT_APP_RESOLVER_ADDRESS");
-  const instance = _signer
-    ? Resolver__factory.connect(contractAddress, _signer)
-    : Resolver__factory.connect(contractAddress, _provider);
-  return instance;
 };
 

@@ -5,10 +5,11 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { CurrentAddressContext, SignerContext } from "../hardhat/SymfoniContext";
+import { SignerContext } from "../hardhat/SymfoniContext";
 import usePoller from "../hooks/usePoller";
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
+import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
 
@@ -28,7 +29,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
   const [signer] = useContext(SignerContext);
-  const [currAddress] = useContext(CurrentAddressContext);
+  const [currAddress] = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
 
   const fetchRenting = useCallback(() => {
@@ -42,6 +43,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
         if (usersRenting) {
           const { users } = usersRenting;
           if (!users) return;
+          if(users.length < 1) return;
           const firstMatch = users[0];
           const { renting } = firstMatch;
           if (!renting) return;

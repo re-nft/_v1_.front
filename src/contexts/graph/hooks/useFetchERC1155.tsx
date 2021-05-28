@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
+import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { FetchType, fetchUserProd1155 } from "../../../services/graph";
 import createCancellablePromise from "../../create-cancellable-promise";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import UserContext from "../../UserProvider";
 import { Nft } from "../classes";
 import { NftToken } from "../types";
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {signer} = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+
   // TODO:eniko use cacheProvider or similar
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);

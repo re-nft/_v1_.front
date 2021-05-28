@@ -7,14 +7,15 @@ import { LendingRaw } from "../types";
 import { timeItAsync } from "../../../utils";
 import createCancellablePromise from "../../create-cancellable-promise";
 import usePoller from "../../../hooks/usePoller";
-import UserContext from "../../UserProvider";
+import { SignerContext } from "../../../hardhat/SymfoniContext";
 
 export const useAllAvailableToRent = (): {
   allAvailableToRent: Nft[];
   isLoading: boolean;
 } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {signer} = useContext(UserContext);
+  const [signer] = useContext(SignerContext);
+
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(false);
 
