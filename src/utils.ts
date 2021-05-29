@@ -1,12 +1,10 @@
-import { ethers, BigNumber, BigNumberish, providers, Signer } from "ethers";
+import { ethers, BigNumber, BigNumberish, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
-import { IS_PROD } from "./consts";
-import { RENFT_ADDRESS } from "@renft/sdk";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -275,4 +273,3 @@ export const advanceTime = async (seconds: number): Promise<void> => {
     Promise.reject(e);
   }
 };
-

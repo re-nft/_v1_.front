@@ -12,7 +12,6 @@ import {
 import {
   ERC1155s,
   ERC721s,
-  LendingRaw,
   NftRaw,
   NftToken,
   RentingRaw,
@@ -187,11 +186,15 @@ export const fetchUserLending = async (
   );
 };
 
-export type FetchUserRentingReturn = {
-    users?: {
-    renting?: RentingRaw[] | undefined;
-    }[] | undefined;
-} | undefined
+export type FetchUserRentingReturn =
+  | {
+      users?:
+        | {
+            renting?: RentingRaw[] | undefined;
+          }[]
+        | undefined;
+    }
+  | undefined;
 
 export const fetchUserRenting = async (
   currentAddress: string | undefined

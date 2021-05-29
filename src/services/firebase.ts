@@ -137,7 +137,6 @@ export const getNftVote = async (
   tokenId: string
 ): Promise<UsersVote> => {
   const id = nftId(nftAddress, tokenId);
-  const voteRef = database.ref("vote/" + id + "/");
   return new Promise((resolve, reject) => {
     database
       .ref("vote/" + id + "/")

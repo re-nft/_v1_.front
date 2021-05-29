@@ -1,6 +1,5 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
 import React, { useContext } from "react";
-import Loader from "../components/loader";
 import { IS_PROD } from "../consts";
 import { ReNFTContext, Symfoni } from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
@@ -30,5 +29,5 @@ export const StateProvider: React.FC = ({ children }) => {
 
 export const useContractAddress = (): string => {
   const { instance } = useContext(ReNFTContext);
-  return IS_PROD ? RENFT_ADDRESS : instance ? instance.address : '';
+  return IS_PROD ? RENFT_ADDRESS : instance ? instance.address : "";
 };

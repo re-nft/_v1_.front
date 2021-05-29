@@ -12,7 +12,6 @@ import Lend from "../pages/lend";
 import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
-import Leaderboard from "../pages/leaderboard";
 import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";

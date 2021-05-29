@@ -81,7 +81,7 @@ class Nft {
         .then((d: string) => {
           this._tokenURI = this._parseTokenURI(d);
         })
-        .catch((e: any) => {
+        .catch((e: Error) => {
           debug(e);
           debug(
             "could not fetch tokenURI",
@@ -200,7 +200,7 @@ class Lending extends Nft {
   renting?: IRenting;
   id: string;
 
-  loadAmount = async (address?: string): Promise<string> => {
+  loadAmount = async (_address?: string): Promise<string> => {
     return this.amount;
   };
 }
@@ -233,7 +233,7 @@ class Renting extends Nft {
   renting: IRenting;
   id: string;
 
-  loadAmount = async (address?: string): Promise<string> => {
+  loadAmount = async (_address?: string): Promise<string> => {
     return this.amount;
   };
 }

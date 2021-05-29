@@ -9,20 +9,23 @@ import { PaymentToken } from "../../types";
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540
 
 type MinimalSelectProps = {
-  onSelect(value: number): void;
   selectedValue: number;
+  name: string;
+  handleChange: {
+    (e: React.ChangeEvent<unknown>): void;
+    <T = string | React.ChangeEvent<unknown>>(
+      field: T
+    ): T extends React.ChangeEvent<unknown>
+      ? void
+      : (e: string | React.ChangeEvent<unknown>) => void;
+  };
 };
 
 const MinimalSelect: React.FC<MinimalSelectProps> = ({
-  onSelect,
+  handleChange,
   selectedValue,
+  name,
 }) => {
-  //@ts-ignore
-  const handleChange = (event) => {
-    const value = event.target.value as PaymentToken;
-    onSelect(value);
-  };
-
   const minimalSelectClasses = useMinimalSelectStyles();
 
   //@ts-ignore
@@ -54,6 +57,7 @@ const MinimalSelect: React.FC<MinimalSelectProps> = ({
   return (
     <FormControl>
       <Select
+        name={name}
         disableUnderline
         classes={{ root: minimalSelectClasses.select }}
         //@ts-ignore

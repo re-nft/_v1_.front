@@ -14,7 +14,6 @@ import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { short } from "../utils";
-import BatchBar from "../components/batch-bar";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -22,7 +21,6 @@ import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import { useReturnIt } from "../hooks/useReturnIt";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
-import { IRenting } from "../contexts/graph/types";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 
 enum DashboardViewType {
@@ -33,11 +31,6 @@ enum DashboardViewType {
 type CheckboxProps = {
   onCheckboxClick: (nft: Lending | Renting) => void;
   nft: Lending | Renting;
-};
-type ClaimCheckboxProps = {
-  onChange: (nft: Record<string, Lending>) => void;
-  nft: Lending | Renting;
-  checkedItems: Record<string, Lending>;
 };
 
 type StopLendButtonProps = {
@@ -132,15 +125,10 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {
-    onCheckboxChange,
-    handleReset,
-    handleResetLending,
-    handleResetRenting,
-  } = useContext(BatchContext);
+  const { onCheckboxChange, handleResetLending } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
-  const checkedClaims = useCheckedClaims()
+  const checkedClaims = useCheckedClaims();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
@@ -152,21 +140,18 @@ export const Dashboard: React.FC = () => {
   const stopLending = useStopLend();
   const claim = useClaimColleteral();
 
-  const claimCollateral = useCallback(
-    async () => {
-      const claims = checkedClaims.map((lending) => ({
-        address: lending.address,
-        tokenId: lending.tokenId,
-        lendingId: lending.id,
-        amount: lending.amount,
-      }));
-      claim(claims).then((tx) => {
-        if (tx) setHash(tx.hash);
-        handleResetLending();
-      });
-    },
-    [checkedClaims, claim, handleResetLending, setHash]
-  );
+  const claimCollateral = useCallback(async () => {
+    const claims = checkedClaims.map((lending) => ({
+      address: lending.address,
+      tokenId: lending.tokenId,
+      lendingId: lending.id,
+      amount: lending.amount,
+    }));
+    claim(claims).then((tx) => {
+      if (tx) setHash(tx.hash);
+      handleResetLending();
+    });
+  }, [checkedClaims, claim, handleResetLending, setHash]);
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
@@ -211,9 +196,9 @@ export const Dashboard: React.FC = () => {
     }));
   }, [checkedRentingItems]);
   const returnIt = useReturnIt(returnItems);
-  const handleStopLendAll = useCallback(()=>{
-    return handleStopLend(lendingItems)
-  }, [handleStopLend, lendingItems])
+  const handleStopLendAll = useCallback(() => {
+    return handleStopLend(lendingItems);
+  }, [handleStopLend, lendingItems]);
 
   const handleReturnNft = useCallback(
     (nft) => {

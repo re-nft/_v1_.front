@@ -1,23 +1,19 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
-import { PaymentToken, TransactionHash } from "../types";
-import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
-import CommonInfo from "./common-info";
-import MinimalSelect from "../components/select";
+
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { Nft } from "../contexts/graph/classes";
 import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
-import ActionButton from "../components/action-button";
-import { getUniqueID } from "../controller/batch-controller";
+
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { BigNumber } from "@ethersproject/bignumber";
 import { ProviderContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
+import { LendForm, LendInputDefined } from "../forms/lend-form";
 
 type LendOneInputs = {
   [key: string]: {
@@ -39,36 +35,29 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { isActive, setHash, hash } = useContext(TransactionStateContext);
+  const { setHash, hash } = useContext(TransactionStateContext);
   const currentAddress = useContext(CurrentAddressWrapper);
-  const [pmtToken, setPmtToken] = useState<Record<string, PaymentToken>>({});
   const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [nft] = nfts;
-  const [lendOneInputs, setLendOneInputs] = useState<LendOneInputs>({});
   const startLend = useStartLend();
-  const contractAddress = useContractAddress()
+  const contractAddress = useContractAddress();
 
   const handleLend = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!startLend) return;
-      if (!isApproved) return;
-      if (isActive) return;
-
+    (lendingInputs: LendInputDefined[]) => {
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
       const borrowPriceValues: number[] = [];
       const nftPriceValues: number[] = [];
       const addresses: string[] = [];
       const tokenIds: BigNumber[] = [];
-      const pmtTokens = Object.values(pmtToken);
+      const pmtTokens: number[] = [];
 
-      Object.values(lendOneInputs).forEach((item) => {
+      Object.values(lendingInputs).forEach((item) => {
         lendAmountsValues.push(item.lendAmount);
         maxDurationsValues.push(item.maxDuration);
         borrowPriceValues.push(item.borrowPrice);
         nftPriceValues.push(item.nftPrice);
+        pmtTokens.push(item.pmToken);
       });
       nfts.forEach(({ address, tokenId }) => {
         addresses.push(address);
@@ -94,16 +83,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       return transaction.cancel;
     },
 
-    [
-      startLend,
-      isApproved,
-      isActive,
-      pmtToken,
-      lendOneInputs,
-      nfts,
-      onClose,
-      setHash,
-    ]
+    [startLend, nfts, onClose, setHash]
   );
 
   useEffect(() => {
@@ -127,7 +107,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
-    const transaction = createCancellablePromise(setApprovalForAll(nfts, contractAddress));
+    const transaction = createCancellablePromise(
+      setApprovalForAll(nfts, contractAddress)
+    );
     transaction.promise
       .then(([tx]) => {
         if (!tx) return;
@@ -142,39 +124,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       transaction.cancel();
     };
   }, [contractAddress, nfts, provider, setHash]);
-
-  const handleStateChange = useCallback(
-    (target: string, value: string) => {
-      const [id, name] = target.split(RENFT_SUBGRAPH_ID_SEPARATOR);
-      // todo: this is poor naming of the variable
-      setLendOneInputs({
-        ...lendOneInputs,
-        [id]: {
-          ...lendOneInputs[id],
-          [name]: value,
-        },
-      });
-    },
-    [lendOneInputs, setLendOneInputs]
-  );
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleStateChange(e.target.name, e.target.value);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    handleStateChange(e.target.name, e.target.value);
-  };
-
-  const onSelectPaymentToken = useCallback(
-    (value: number, tokenId) => {
-      setPmtToken({
-        ...pmtToken,
-        [tokenId]: value,
-      });
-    },
-    [pmtToken, setPmtToken]
-  );
 
   useEffect(() => {
     if (!currentAddress) return;
@@ -193,85 +142,12 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   return (
     <Modal open={open} handleClose={onClose}>
-      <form noValidate autoComplete="off" onSubmit={handleLend}>
-        {nfts.map((nft: Nft) => {
-          return (
-            <div
-              className="modal-dialog-section"
-              key={getUniqueID(nft.address, nft.tokenId)}
-            >
-              <CommonInfo nft={nft}>
-                {/* lendAmount for 721 is ignored */}
-                <CssTextField
-                  required
-                  label="Amount"
-                  // todo: this is not a unique name and will cause collisions
-                  id={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
-                  variant="outlined"
-                  value={lendOneInputs[nft.tokenId]?.lendAmount ?? ""}
-                  type="number"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  name={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}lendAmount`}
-                />
-                <CssTextField
-                  required
-                  label="Max lend duration"
-                  id={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}maxDuration`}
-                  variant="outlined"
-                  value={lendOneInputs[nft.tokenId]?.maxDuration ?? ""}
-                  type="number"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  name={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}maxDuration`}
-                />
-                <CssTextField
-                  required
-                  label="Borrow Price"
-                  id={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}borrowPrice`}
-                  variant="outlined"
-                  value={lendOneInputs[nft.tokenId]?.borrowPrice ?? ""}
-                  type="number"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  name={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}borrowPrice`}
-                />
-                <CssTextField
-                  required
-                  label="Collateral"
-                  id={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}nftPrice`}
-                  variant="outlined"
-                  value={lendOneInputs[nft.tokenId]?.nftPrice ?? ""}
-                  type="number"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  name={`${nft.tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}nftPrice`}
-                />
-                <MinimalSelect
-                  onSelect={(v) => onSelectPaymentToken(v, nft.tokenId)}
-                  selectedValue={pmtToken[nft.tokenId] ?? -1}
-                />
-              </CommonInfo>
-            </div>
-          );
-        })}
-        <div className="modal-dialog-button">
-          {!isApproved && (
-            <ActionButton<Nft>
-              title="Approve all"
-              nft={nft}
-              onClick={handleApproveAll}
-            />
-          )}
-          {isApproved && (
-            <div className="nft__control">
-              <button type="submit" className="nft__button">
-                {nfts.length > 1 ? "Lend all" : "Lend"}
-              </button>
-            </div>
-          )}
-        </div>
-      </form>
+      <LendForm
+        nfts={nfts}
+        isApproved={isApproved}
+        handleApproveAll={handleApproveAll}
+        handleSubmit={handleLend}
+      ></LendForm>
     </Modal>
   );
 };

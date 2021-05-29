@@ -6,31 +6,31 @@ import createDebugger from "debug";
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 
-const debug = createDebugger('app:contracts:usestoplend')
+const debug = createDebugger("app:contracts:usestoplend");
 
 export const useStopLend = (): ((
   nfts: {
     address: string;
     tokenId: string;
     lendingId: string;
-    amount: string
+    amount: string;
   }[]
 ) => Promise<void | ContractTransaction>) => {
-  const [signer]= useContext(SignerContext);
-  const contractAddress = useContractAddress()
+  const [signer] = useContext(SignerContext);
+  const contractAddress = useContractAddress();
 
   const renft = useMemo(() => {
     if (!signer) return;
     return getReNFT(signer, contractAddress);
   }, [signer, contractAddress]);
-  
+
   return useCallback(
     (
       nfts: {
         address: string;
         tokenId: string;
         lendingId: string;
-        amount: string
+        amount: string;
       }[]
     ) => {
       if (!renft) return Promise.resolve();

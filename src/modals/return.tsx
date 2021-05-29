@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import ActionButton from "../components/action-button";
-import { Renting } from "../contexts/graph/classes";
 import { ReturnNft, useReturnIt } from "../hooks/useReturnIt";
 import Modal from "./modal";
 

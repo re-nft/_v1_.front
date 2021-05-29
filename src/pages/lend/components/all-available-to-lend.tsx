@@ -28,13 +28,11 @@ const Lendings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onResetPage,
     onChangePage,
   } = useContext<PageContextType<Nft>>(PageContext);
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-  const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const handleClose = useCallback(() => {
     setModalOpen(false);

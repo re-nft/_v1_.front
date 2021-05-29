@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
@@ -78,7 +72,6 @@ const AvailableToRent: React.FC = () => {
   return (
     <>
       <BatchRentModal
-        nft={checkedLendingItems}
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
       />

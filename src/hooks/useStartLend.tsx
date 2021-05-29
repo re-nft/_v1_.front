@@ -19,7 +19,7 @@ export const useStartLend = (): ((
   tokens: PaymentToken[]
 ) => Promise<void | ContractTransaction>) => {
   const [signer] = useContext(SignerContext);
-  const contractAddress = useContractAddress()
+  const contractAddress = useContractAddress();
 
   const renft = useMemo(() => {
     if (!signer) return;

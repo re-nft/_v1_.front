@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
-import { FetchType, fetchUserProd721 } from "../../../services/graph";
+import { fetchUserProd721 } from "../../../services/graph";
 import createCancellablePromise from "../../create-cancellable-promise";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import { Nft } from "../classes";

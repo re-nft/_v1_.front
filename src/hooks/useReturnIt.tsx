@@ -12,7 +12,7 @@ export type ReturnNft = {
   address: string;
   tokenId: string;
   lendingId: string;
-  amount: string,
+  amount: string;
   contract: () => ERC721 | ERC1155;
 };
 
@@ -20,7 +20,7 @@ export const useReturnIt = (
   nfts: ReturnNft[]
 ): (() => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
-  const contractAddress = useContractAddress()
+  const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {

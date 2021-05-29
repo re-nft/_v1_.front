@@ -35,9 +35,9 @@ export const UserRentingProvider: React.FC = ({ children }) => {
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return;
     setLoading(true);
-    const fetchRequest = createCancellablePromise<FetchUserRentingReturn | undefined>(
-      fetchUserRenting(currAddress)
-    );
+    const fetchRequest = createCancellablePromise<
+      FetchUserRentingReturn | undefined
+    >(fetchUserRenting(currAddress));
     fetchRequest.promise
       .then((usersRenting) => {
         if (usersRenting) {
@@ -45,20 +45,28 @@ export const UserRentingProvider: React.FC = ({ children }) => {
           if (!users) {
             setRentings([]);
             return;
-          };
-          if(users.length < 1) {
-            setRentings([])
+          }
+          if (users.length < 1) {
+            setRentings([]);
             return;
-          };
+          }
           const firstMatch = users[0];
           const { renting } = firstMatch;
           if (!renting) {
             setRentings([]);
             return;
-          };
+          }
           const _renting: Renting[] = [];
           renting.forEach((r) => {
-            _renting.push(new Renting(r.lending.nftAddress, r.lending.tokenId, parseLending(r.lending), r, signer));
+            _renting.push(
+              new Renting(
+                r.lending.nftAddress,
+                r.lending.tokenId,
+                parseLending(r.lending),
+                r,
+                signer
+              )
+            );
           });
           setRentings(_renting);
         }

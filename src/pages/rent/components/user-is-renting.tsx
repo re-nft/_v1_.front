@@ -38,7 +38,6 @@ const UserRentings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onResetPage,
     onChangePage,
   } = useContext(PageContext);
   const { userRenting, isLoading } = useContext(UserRentingContext);
