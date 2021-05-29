@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { RENFT_ADDRESS , RESOLVER_ADDRESS as ResolverAddress } from "@renft/sdk";
 
 export const SECOND_IN_MILLISECONDS = 1_000;
 
