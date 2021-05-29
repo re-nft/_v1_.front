@@ -1,6 +1,6 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
-import { BigNumber, ethers, Signer } from "ethers";
+import { BigNumber } from "ethers";
 import { IS_PROD } from "../../../consts";
 import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";

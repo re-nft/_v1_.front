@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
-import { PaymentToken, TransactionHash } from "../types";
+import { PaymentToken } from "../types";
 import CssTextField from "../components/css-text-field";
 import Modal from "./modal";
 import CommonInfo from "./common-info";

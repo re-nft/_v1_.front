@@ -14,7 +14,6 @@ import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { short } from "../utils";
-import BatchBar from "../components/batch-bar";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
@@ -22,7 +21,6 @@ import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import { useReturnIt } from "../hooks/useReturnIt";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
-import { IRenting } from "../contexts/graph/types";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 
 enum DashboardViewType {
@@ -33,11 +31,6 @@ enum DashboardViewType {
 type CheckboxProps = {
   onCheckboxClick: (nft: Lending | Renting) => void;
   nft: Lending | Renting;
-};
-type ClaimCheckboxProps = {
-  onChange: (nft: Record<string, Lending>) => void;
-  nft: Lending | Renting;
-  checkedItems: Record<string, Lending>;
 };
 
 type StopLendButtonProps = {
@@ -134,9 +127,7 @@ export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const {
     onCheckboxChange,
-    handleReset,
     handleResetLending,
-    handleResetRenting,
   } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();

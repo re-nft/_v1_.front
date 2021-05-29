@@ -8,7 +8,6 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
 import {
-  ProviderContext,
   ResolverContext,
   SignerContext,
 } from "../hardhat/SymfoniContext";
@@ -65,7 +64,7 @@ export const useStartRent = (
       return Promise.all(promiseTokenAllowances).then(
         (tokenAllowances: BigNumber[]) => {
           const approvals: ERC20[] = tokenAllowances
-            .filter((allowance, ix) => allowance.lt(MAX_UINT256))
+            .filter((allowance) => allowance.lt(MAX_UINT256))
             .map((allowance, ix) => {
               return erc20s[ix];
             });

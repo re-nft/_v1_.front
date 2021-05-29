@@ -5,17 +5,14 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { request } from "graphql-request";
-
 import {
   getUserDataOrCrateNew,
   getAllUsersVote,
 } from "../../services/firebase";
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
-import { Nft, Lending, Renting } from "./classes";
 import { CurrentAddressWrapper } from "../CurrentAddressWrapper";
-import { fetchRenftsAll, LendingId, RentingId } from "../../services/graph";
+import { LendingId, RentingId } from "../../services/graph";
 import createCancellablePromise from "../create-cancellable-promise";
 
 /**

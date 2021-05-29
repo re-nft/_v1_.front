@@ -14,7 +14,7 @@ import { nftId } from "../services/firebase";
 import { Nft } from "./graph/classes";
 import { NftTokenMetaWithId } from "./graph/types";
 
-const fetchMetas = (items: Nft[]) => {
+const fetchMetas = (_items: Nft[]) => {
   // nothing
 };
 

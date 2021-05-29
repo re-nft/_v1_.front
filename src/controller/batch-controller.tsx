@@ -1,7 +1,6 @@
 import React, {
   createContext,
   useState,
-  useEffect,
   useMemo,
   useContext,
   useCallback,

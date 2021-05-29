@@ -3,7 +3,6 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useMemo,
 } from "react";
 
 import CatalogueItem from "../../../components/catalogue-item";

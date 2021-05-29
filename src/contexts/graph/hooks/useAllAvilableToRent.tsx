@@ -1,5 +1,5 @@
 import request from "graphql-request";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import { Lending, Nft } from "../classes";
 import { queryAllLendingRenft } from "../queries";
