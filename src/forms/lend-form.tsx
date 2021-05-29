@@ -12,7 +12,7 @@ type LendFormProps = {
   nfts: Nft[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg:LendInputDefined[]) => void;
+  handleSubmit: (arg: LendInputDefined[]) => void;
 };
 export type LendInput = {
   lendAmount: number | undefined;
@@ -46,7 +46,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       tokenId: nft.tokenId,
       nft: nft,
       key: getUniqueID(nft.address, nft.tokenId),
-      lendAmount: undefined,
+      lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,
@@ -74,16 +74,22 @@ export const LendForm: React.FC<LendFormProps> = ({
         error.maxDuration = "please specify lend duration";
       } else if (input.maxDuration < 1) {
         error.maxDuration = "lend duration must be greater than 0";
+      } else if (input.maxDuration > 255) {
+        error.maxDuration = "lend duration must be less or equal than 255";
       }
       if (typeof input.borrowPrice === "undefined") {
         error.borrowPrice = "please specify the borrow price";
       } else if (input.borrowPrice < 1) {
         error.borrowPrice = "borrow price must be greater than 0";
+      } else if (input.borrowPrice < 10000) {
+        error.borrowPrice = "borrow price must be less then 1000";
       }
       if (typeof input.nftPrice === "undefined") {
         error.nftPrice = "please specify collateral";
       } else if (input.nftPrice < 1) {
         error.nftPrice = "collateral must be greater than 0";
+      } else if (input.nftPrice < 10000) {
+        error.borrowPrice = "collateral must be less then 1000";
       }
       if (typeof input.pmToken === "undefined") {
         error.pmToken = "please specify payment token";
@@ -129,8 +135,6 @@ export const LendForm: React.FC<LendFormProps> = ({
                         handleBlur={handleBlur}
                         handleChange={handleChange}
                         touched={touched.inputs ? touched.inputs[index] : null}
-                        //touched={{ lendAmount: true }}
-                        //errors={{ lendAmount: "error" }}
                         errors={
                           errors.inputs
                             ? (errors.inputs[index] as FormikErrors<LendInput>)
@@ -167,7 +171,9 @@ export const LendForm: React.FC<LendFormProps> = ({
     </Formik>
   );
 };
-
+const voidFn = () => {
+  // do nothing func
+};
 const ModalDialogSection: React.FC<{
   lendingInput: LendInput;
   handleBlur: {
@@ -188,6 +194,8 @@ const ModalDialogSection: React.FC<{
   touched: FormikTouched<LendInput> | null;
   errors: FormikErrors<LendInput> | null;
 }> = ({ lendingInput, index, handleChange, handleBlur, errors, touched }) => {
+  const only1Item =
+    Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>
@@ -199,10 +207,11 @@ const ModalDialogSection: React.FC<{
           variant="outlined"
           value={lendingInput.lendAmount ?? ""}
           type="number"
-          onChange={handleChange}
-          onBlur={handleBlur}
+          onChange={only1Item ? voidFn : handleChange}
+          onBlur={only1Item ? voidFn : handleBlur}
           id={`inputs.${index}.lendAmount`}
           name={`inputs.${index}.lendAmount`}
+          disabled={only1Item}
           error={
             !!touched &&
             touched.lendAmount &&
