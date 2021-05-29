@@ -34,7 +34,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     })),
   };
   const onSubmit = (values: { inputs: LendingWithKey[] }) => {
-    console.log(values.inputs)
+    console.log(values.inputs);
     handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,

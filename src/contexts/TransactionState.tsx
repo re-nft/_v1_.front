@@ -34,7 +34,7 @@ TransactionStateContext.displayName = "TransactionStateContext";
 // * or using state or hash when the transaction is inactive.
 // * these things ideally should be corrected
 export const TransactionStateProvider: React.FC = ({ children }) => {
-  const [provider]= useContext(ProviderContext);
+  const [provider] = useContext(ProviderContext);
   const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
   const [txnState, setTxnState] = useState<TransactionStateEnum>(
     TransactionStateEnum.PENDING

@@ -125,13 +125,10 @@ const Checkbox: React.FC<CheckboxProps> = ({ onCheckboxClick, nft }) => {
 // TODO: so that we do not repeat this batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {
-    onCheckboxChange,
-    handleResetLending,
-  } = useContext(BatchContext);
+  const { onCheckboxChange, handleResetLending } = useContext(BatchContext);
   const checkedLendingItems = useCheckedLendingItems();
   const checkedRentingItems = useCheckedRentingItems();
-  const checkedClaims = useCheckedClaims()
+  const checkedClaims = useCheckedClaims();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
@@ -143,21 +140,18 @@ export const Dashboard: React.FC = () => {
   const stopLending = useStopLend();
   const claim = useClaimColleteral();
 
-  const claimCollateral = useCallback(
-    async () => {
-      const claims = checkedClaims.map((lending) => ({
-        address: lending.address,
-        tokenId: lending.tokenId,
-        lendingId: lending.id,
-        amount: lending.amount,
-      }));
-      claim(claims).then((tx) => {
-        if (tx) setHash(tx.hash);
-        handleResetLending();
-      });
-    },
-    [checkedClaims, claim, handleResetLending, setHash]
-  );
+  const claimCollateral = useCallback(async () => {
+    const claims = checkedClaims.map((lending) => ({
+      address: lending.address,
+      tokenId: lending.tokenId,
+      lendingId: lending.id,
+      amount: lending.amount,
+    }));
+    claim(claims).then((tx) => {
+      if (tx) setHash(tx.hash);
+      handleResetLending();
+    });
+  }, [checkedClaims, claim, handleResetLending, setHash]);
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
@@ -202,9 +196,9 @@ export const Dashboard: React.FC = () => {
     }));
   }, [checkedRentingItems]);
   const returnIt = useReturnIt(returnItems);
-  const handleStopLendAll = useCallback(()=>{
-    return handleStopLend(lendingItems)
-  }, [handleStopLend, lendingItems])
+  const handleStopLendAll = useCallback(() => {
+    return handleStopLend(lendingItems);
+  }, [handleStopLend, lendingItems]);
 
   const handleReturnNft = useCallback(
     (nft) => {

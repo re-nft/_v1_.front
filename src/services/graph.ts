@@ -186,11 +186,15 @@ export const fetchUserLending = async (
   );
 };
 
-export type FetchUserRentingReturn = {
-    users?: {
-    renting?: RentingRaw[] | undefined;
-    }[] | undefined;
-} | undefined
+export type FetchUserRentingReturn =
+  | {
+      users?:
+        | {
+            renting?: RentingRaw[] | undefined;
+          }[]
+        | undefined;
+    }
+  | undefined;
 
 export const fetchUserRenting = async (
   currentAddress: string | undefined

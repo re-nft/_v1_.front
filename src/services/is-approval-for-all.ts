@@ -6,7 +6,6 @@ export default async function isApprovalForAll(
   currentAddress: string,
   contractAddress: string
 ): Promise<boolean> {
-  
   const distinctItems = nft.filter(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index
@@ -15,10 +14,7 @@ export default async function isApprovalForAll(
   const result = await Promise.all(
     distinctItems.map((nft) => {
       const contract = nft.contract();
-      return contract.isApprovedForAll(
-        currentAddress,
-        contractAddress
-      );
+      return contract.isApprovedForAll(currentAddress, contractAddress);
     })
   );
 

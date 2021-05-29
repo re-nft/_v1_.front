@@ -29,5 +29,5 @@ export const StateProvider: React.FC = ({ children }) => {
 
 export const useContractAddress = (): string => {
   const { instance } = useContext(ReNFTContext);
-  return IS_PROD ? RENFT_ADDRESS : instance ? instance.address : '';
+  return IS_PROD ? RENFT_ADDRESS : instance ? instance.address : "";
 };

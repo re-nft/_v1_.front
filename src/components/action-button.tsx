@@ -14,7 +14,7 @@ const ActionButton = <T extends {}>(props: ActionButtonProps<T>) => {
   return (
     <div className="nft__control">
       <button
-        className={`nft__button ${props.disabled? "disabled": ''}`}
+        className={`nft__button ${props.disabled ? "disabled" : ""}`}
         onClick={onClickHandler}
         disabled={props.disabled}
         type="button"

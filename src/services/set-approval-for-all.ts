@@ -6,7 +6,6 @@ export default async function setApprovalForAll(
   nfts: { address: string; contract: () => ERC721 | ERC1155 }[],
   contractAddress: string
 ): Promise<ContractTransaction[]> {
-
   const distinctItems = nfts.filter(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index

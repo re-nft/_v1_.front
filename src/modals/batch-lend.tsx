@@ -35,7 +35,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const {setHash, hash } = useContext(TransactionStateContext);
+  const { setHash, hash } = useContext(TransactionStateContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -44,7 +44,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
-
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
       const borrowPriceValues: number[] = [];
@@ -125,7 +124,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       transaction.cancel();
     };
   }, [contractAddress, nfts, provider, setHash]);
-
 
   useEffect(() => {
     if (!currentAddress) return;

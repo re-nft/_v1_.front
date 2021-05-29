@@ -31,7 +31,6 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             {title}
           </div>
           <div className="column">
-          
             <span style={{ width: "24px", display: "inline-flex" }} />
             <button className="nft__button" onClick={onStopRent}>
               Stop rent
@@ -40,7 +39,10 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
         </div>
       )}
       {claimsNumber > 1 && (
-        <div className="batch__inner" style={{ paddingTop: rentingNumber > 1 ? "20px" : '' }}>
+        <div
+          className="batch__inner"
+          style={{ paddingTop: rentingNumber > 1 ? "20px" : "" }}
+        >
           <div
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
@@ -48,7 +50,6 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             {title}
           </div>
           <div className="column">
-        
             <span style={{ width: "24px", display: "inline-flex" }} />
             <button className="nft__button" onClick={onClaim}>
               Claim all
@@ -57,7 +58,10 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
         </div>
       )}
       {lendingNumber > 1 && (
-        <div className="batch__inner" style={{ paddingTop: claimsNumber > 1 ? "20px" : '' }}>
+        <div
+          className="batch__inner"
+          style={{ paddingTop: claimsNumber > 1 ? "20px" : "" }}
+        >
           <div
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}

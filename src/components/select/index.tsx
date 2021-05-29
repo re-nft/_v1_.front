@@ -24,9 +24,8 @@ type MinimalSelectProps = {
 const MinimalSelect: React.FC<MinimalSelectProps> = ({
   handleChange,
   selectedValue,
-  name
+  name,
 }) => {
-
   const minimalSelectClasses = useMinimalSelectStyles();
 
   //@ts-ignore

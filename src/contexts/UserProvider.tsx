@@ -14,7 +14,7 @@ const DefaultUser = {
   signer: undefined,
   provider: undefined,
   connect: THROWS,
-  web3Provider: undefined
+  web3Provider: undefined,
 };
 
 type UserContextType = {
@@ -22,7 +22,7 @@ type UserContextType = {
   connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
   provider: unknown;
   signer: Signer | undefined;
-  web3Provider: ethers.providers.Web3Provider | undefined
+  web3Provider: ethers.providers.Web3Provider | undefined;
 };
 
 const UserContext = createContext<UserContextType>(DefaultUser);
@@ -92,7 +92,9 @@ export const UserProvider: React.FC = ({ children }) => {
   }, [connect, provider]);
 
   return (
-    <UserContext.Provider value={{ connect, provider, signer, address, web3Provider }}>
+    <UserContext.Provider
+      value={{ connect, provider, signer, address, web3Provider }}
+    >
       {children}
     </UserContext.Provider>
   );
