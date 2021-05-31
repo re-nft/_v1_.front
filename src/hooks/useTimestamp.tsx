@@ -17,9 +17,7 @@ export const useTimestamp = (): number => {
       return provider
         .getBlock("latest")
         .then((block: Block) => {
-          console.log(new Date(block.timestamp));
-
-          if (timeStamp !== block.timestamp) setTimestamp(block.timestamp);
+          if (timeStamp !== block.timestamp * 1000) setTimestamp(block.timestamp * 1000);
         })
         .catch((e) => {
           if (e) debug(e);
