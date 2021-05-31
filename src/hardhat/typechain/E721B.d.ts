@@ -24,6 +24,7 @@ interface E721BInterface extends ethers.utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "award()": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "faucet()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "name()": FunctionFragment;
@@ -49,6 +50,7 @@ interface E721BInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "award", values?: undefined): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "faucet", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -109,6 +111,7 @@ interface E721BInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "award", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "faucet", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -243,6 +246,14 @@ export class E721B extends Contract {
       owner: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    faucet(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "faucet()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -431,6 +442,14 @@ export class E721B extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  faucet(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "faucet()"(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   getApproved(
     tokenId: BigNumberish,
     overrides?: CallOverrides
@@ -607,6 +626,10 @@ export class E721B extends Contract {
       owner: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    faucet(overrides?: CallOverrides): Promise<void>;
+
+    "faucet()"(overrides?: CallOverrides): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -820,6 +843,14 @@ export class E721B extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    faucet(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "faucet()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
@@ -1009,6 +1040,14 @@ export class E721B extends Contract {
     "balanceOf(address)"(
       owner: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    faucet(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "faucet()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getApproved(
