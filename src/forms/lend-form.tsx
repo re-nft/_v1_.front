@@ -81,14 +81,14 @@ export const LendForm: React.FC<LendFormProps> = ({
         error.borrowPrice = "please specify the borrow price";
       } else if (input.borrowPrice < 1) {
         error.borrowPrice = "borrow price must be greater than 0";
-      } else if (input.borrowPrice < 10000) {
+      } else if (input.borrowPrice > 9999.9999) {
         error.borrowPrice = "borrow price must be less then 1000";
       }
       if (typeof input.nftPrice === "undefined") {
         error.nftPrice = "please specify collateral";
       } else if (input.nftPrice < 1) {
         error.nftPrice = "collateral must be greater than 0";
-      } else if (input.nftPrice < 10000) {
+      } else if (input.nftPrice > 9999.9999) {
         error.borrowPrice = "collateral must be less then 1000";
       }
       if (typeof input.pmToken === "undefined") {

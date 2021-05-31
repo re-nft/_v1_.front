@@ -18,8 +18,8 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { THROWS } from "../utils";
 import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
+import { useTimestamp } from "../hooks/useTimestamp";
 
-// nftAddress::tokenId::{lendingId,0}
 type UniqueID = string;
 
 export const getUniqueID = (
@@ -170,23 +170,29 @@ export const useCheckedLendingItems = (): Lending[] => {
   return lendingItems;
 };
 
-export const isClaimable = (renting: IRenting): boolean => {
+export const isClaimable = (
+  renting: IRenting,
+  blockTimeStamp: number
+): boolean => {
   const returnBy = (rentedAt: number, rentDuration: number) => {
     return moment.unix(rentedAt).add(rentDuration, "days");
   };
   const _returnBy = (renting: IRenting) =>
     returnBy(renting.rentedAt, renting.rentDuration);
-  const _now = moment();
+  const _now = moment(blockTimeStamp);
   return _now.isAfter(_returnBy(renting));
 };
 
 export const useCheckedClaims = (): Lending[] => {
   const checkedLendigItems = useCheckedLendingItems();
+  const blockTimeStamp = useTimestamp();
   const claimable = useCallback(isClaimable, []);
 
   return useMemo(() => {
-    return checkedLendigItems.filter((l) => l.renting && claimable(l.renting));
-  }, [checkedLendigItems, claimable]);
+    return checkedLendigItems.filter(
+      (l) => l.renting && claimable(l.renting, blockTimeStamp)
+    );
+  }, [blockTimeStamp, checkedLendigItems, claimable]);
 };
 
 export const useCheckedRentingItems = (): Renting[] => {
