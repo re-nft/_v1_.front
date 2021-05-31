@@ -183,7 +183,7 @@ const _abi = [
       },
       {
         internalType: "uint256[]",
-        name: "_lentAmounts",
+        name: "_lendAmounts",
         type: "uint256[]",
       },
       {
@@ -366,7 +366,7 @@ const _abi = [
       },
       {
         internalType: "uint256[]",
-        name: "_lentAmounts",
+        name: "_lendAmounts",
         type: "uint256[]",
       },
       {
@@ -399,7 +399,7 @@ const _abi = [
       },
       {
         internalType: "uint256[]",
-        name: "_lentAmounts",
+        name: "_lendAmounts",
         type: "uint256[]",
       },
       {
@@ -427,7 +427,7 @@ const _abi = [
       },
       {
         internalType: "uint256[]",
-        name: "_lentAmounts",
+        name: "_lendAmounts",
         type: "uint256[]",
       },
       {
