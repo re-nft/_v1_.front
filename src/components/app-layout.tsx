@@ -18,7 +18,7 @@ import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { E721Context, E721BContext, E1155Context, E1155BContext } from "../hardhat/SymfoniContext"
+import { E721Context, E721BContext, E1155Context, E1155BContext, WETHContext, DAIContext, USDCContext, USDTContext, TUSDContext } from "../hardhat/SymfoniContext"
 import debug from "debug";
 
 const ROUTES = [
@@ -55,6 +55,11 @@ const App: React.FC = () => {
   const { instance: e721b } = useContext(E721BContext);
   const { instance: e1155 } = useContext(E1155Context);
   const { instance: e1155b } = useContext(E1155BContext);
+  const { instance: weth } = useContext(WETHContext);
+  const { instance: dai } = useContext(DAIContext);
+  const { instance: usdc } = useContext(USDCContext);
+  const { instance: usdt } = useContext(USDTContext);
+  const { instance: tusd } = useContext(TUSDContext);
   const [username, setUsername] = useState<string>();
 
   useEffect(() => {
@@ -86,6 +91,31 @@ const App: React.FC = () => {
         return
     }
   }, [e721, e721b, e1155, e1155b]);
+
+  const mintE20 = useCallback(async (e20: number) => {
+    switch (e20) {
+      case 1:
+        if (!weth) return;
+        await (await weth.faucet()).wait();
+        break;
+      case 2:
+        if (!dai) return;
+        await (await dai.faucet()).wait();
+        break;
+      case 3:
+        if (!usdc) return;
+        await (await usdc.faucet()).wait();
+        break;
+      case 4:
+        if (!usdt) return;
+        await (await usdt.faucet()).wait();
+        break;
+      case 5:
+        if (!tusd) return;
+        await (await tusd.faucet()).wait()
+        break;
+    }
+  }, []);
 
   return (
     <Layout>
@@ -121,6 +151,14 @@ const App: React.FC = () => {
           <button className="menu__item" onClick={() => mintNFT(1)}>Mint 721B</button>
           <button className="menu__item" onClick={() => mintNFT(2)}>Mint 1155A</button>
           <button className="menu__item" onClick={() => mintNFT(3)}>Mint 1155B</button>
+          {/* payment token faucets */}
+          <div>
+            <button className="menu__item" onClick={() => mintE20(1)}>Mint WETH</button>
+            <button className="menu__item" onClick={() => mintE20(2)}>Mint DAI</button>
+            <button className="menu__item" onClick={() => mintE20(3)}>Mint USDC</button>
+            <button className="menu__item" onClick={() => mintE20(4)}>Mint USDT</button>
+            <button className="menu__item" onClick={() => mintE20(5)}>Mint TUSD</button>
+          </div>
         </div>
         {/* CONTENT */}
         <div className="content-wrapper main-content mb-l">
