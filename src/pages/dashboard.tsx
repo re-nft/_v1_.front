@@ -32,14 +32,13 @@ enum DashboardViewType {
 type CheckboxProps = {
   onCheckboxClick: (nft: Lending | Renting) => void;
   nft: Lending | Renting;
-  checked: boolean
+  checked: boolean;
 };
 
 type StopLendButtonProps = {
   handleStopLend: (lending: Lending[]) => void;
   lend: Lending;
-  disabled?: boolean
-
+  disabled?: boolean;
 };
 
 type ClaimColleteralButtonProps = {
@@ -50,19 +49,23 @@ type ClaimColleteralButtonProps = {
 type ReturnNftButtonProps = {
   handleReturnNft: (renting: Renting[]) => void;
   rent: Renting;
-  disabled?: boolean
+  disabled?: boolean;
 };
 
 const ReturnNftButton: React.FC<ReturnNftButtonProps> = ({
   handleReturnNft,
   rent,
-  disabled
+  disabled,
 }) => {
   const handleClick = useCallback(() => {
     return handleReturnNft([rent]);
   }, [handleReturnNft, rent]);
   return (
-    <button className={`nft__button small ${disabled? "disabled": ""}`} onClick={handleClick} disabled={disabled}>
+    <button
+      className={`nft__button small ${disabled ? "disabled" : ""}`}
+      onClick={handleClick}
+      disabled={disabled}
+    >
       Return It
     </button>
   );
@@ -71,13 +74,17 @@ const ReturnNftButton: React.FC<ReturnNftButtonProps> = ({
 const StopLendButton: React.FC<StopLendButtonProps> = ({
   handleStopLend,
   lend,
-  disabled
+  disabled,
 }) => {
   const handleClick = useCallback(() => {
     return handleStopLend([lend]);
   }, [handleStopLend, lend]);
   return (
-    <button className={`nft__button small ${disabled? "disabled": ""}`} onClick={handleClick} disabled={disabled}>
+    <button
+      className={`nft__button small ${disabled ? "disabled" : ""}`}
+      onClick={handleClick}
+      disabled={disabled}
+    >
       Stop lend
     </button>
   );
@@ -112,7 +119,6 @@ const Checkbox: React.FC<CheckboxProps> = ({
   nft,
   checked,
 }) => {
-
   const handleClick = useCallback(() => {
     return onCheckboxClick(nft);
   }, [onCheckboxClick, nft]);
@@ -120,11 +126,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`checkbox ${
-        checked
-          ? "checked"
-          : ""
-      }`}
+      className={`checkbox ${checked ? "checked" : ""}`}
       style={{ margin: "auto", marginTop: "1em" }}
     />
   );
@@ -264,7 +266,7 @@ export const Dashboard: React.FC = () => {
                       !!checkedItems[
                         getUniqueID(lend.address, lend.tokenId, lending.id)
                       ];
-                    const hasRenting = !!lend.renting;  
+                    const hasRenting = !!lend.renting;
                     return (
                       <tr
                         key={getUniqueID(lend.address, lend.tokenId, lend.id)}
@@ -335,9 +337,9 @@ export const Dashboard: React.FC = () => {
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     const checked =
-                    !!checkedItems[
-                      getUniqueID(rent.address, rent.tokenId, renting.id)
-                    ];
+                      !!checkedItems[
+                        getUniqueID(rent.address, rent.tokenId, renting.id)
+                      ];
                     return (
                       <tr
                         key={getUniqueID(

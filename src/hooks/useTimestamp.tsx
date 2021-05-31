@@ -20,7 +20,6 @@ export const useTimestamp = (): number => {
           console.log(new Date(block.timestamp));
 
           if (timeStamp !== block.timestamp) setTimestamp(block.timestamp);
-
         })
         .catch((e) => {
           if (e) debug(e);
