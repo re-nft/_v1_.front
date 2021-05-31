@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,6 +18,8 @@ import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { E721Context, E721BContext, E1155Context, E1155BContext } from "../hardhat/SymfoniContext"
+import debug from "debug";
 
 const ROUTES = [
   {
@@ -49,6 +51,10 @@ const ROUTES = [
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
+  const { instance: e721 } = useContext(E721Context);
+  const { instance: e721b } = useContext(E721BContext);
+  const { instance: e1155 } = useContext(E1155Context);
+  const { instance: e1155b } = useContext(E1155BContext);
   const [username, setUsername] = useState<string>();
 
   useEffect(() => {
@@ -56,6 +62,30 @@ const App: React.FC = () => {
       setUsername(userData?.name);
     }
   }, [userData]);
+
+  const mintNFT = useCallback(async (nft: number) => {
+    switch (nft) {
+      case 0:
+        if (!e721) return;
+        await (await e721.faucet()).wait();
+        break;
+      case 1:
+        if (!e721b) return;
+        await (await e721b.faucet()).wait();
+        break;
+      case 2:
+        if (!e1155) return;
+        await (await e1155.faucet(10)).wait();
+        break;
+      case 3:
+        if (!e1155b) return;
+        await (await e1155b.faucet(10)).wait();
+        break;
+      default:
+        debug("unknown NFT");
+        return
+    }
+  }, [e721, e721b, e1155, e1155b]);
 
   return (
     <Layout>
@@ -87,17 +117,10 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          {/* {!IS_PROD && (
-            <button
-              className="menu__item"
-              onClick={() => {
-                const day = 24 * 60 * 60;
-                advanceTime(day);
-              }}
-            >
-              Advance time
-            </button>
-          )} */}
+          <button className="menu__item" onClick={() => mintNFT(0)}>Mint 721A</button>
+          <button className="menu__item" onClick={() => mintNFT(1)}>Mint 721B</button>
+          <button className="menu__item" onClick={() => mintNFT(2)}>Mint 1155A</button>
+          <button className="menu__item" onClick={() => mintNFT(3)}>Mint 1155B</button>
         </div>
         {/* CONTENT */}
         <div className="content-wrapper main-content mb-l">
