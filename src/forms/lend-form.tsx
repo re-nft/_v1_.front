@@ -64,18 +64,28 @@ export const LendForm: React.FC<LendFormProps> = ({
       const error: Record<string, string | undefined> = {};
       if (typeof input.lendAmount === "undefined") {
         error.lendAmount = "please specify amount";
-      } else if (input.lendAmount < 0.0001) {
-        error.lendAmount = "amount must be greater than 0";
+      } else if (input.lendAmount < 1) {
+        error.lendAmount = "amount must be greater than 1";
       } else if (input.lendAmount > Number(input.nft.amount)) {
         error.lendAmount =
           "amount must be less than equal then the total amount available";
+      } else if (
+        input.lendAmount !== parseInt(input.lendAmount.toString(), 10)
+      ) {
+        error.lendAmount =
+          "amount must be a whole number";
       }
       if (typeof input.maxDuration === "undefined") {
         error.maxDuration = "please specify lend duration";
-      } else if (input.maxDuration < 0.0001) {
-        error.maxDuration = "lend duration must be greater than 0";
+      } else if (input.maxDuration < 1) {
+        error.maxDuration = "lend duration must be greater than 1";
       } else if (input.maxDuration > 255) {
         error.maxDuration = "lend duration must be less or equal than 255";
+      } else if (
+        input.maxDuration !== parseInt(input.maxDuration.toString(), 10)
+      ) {
+        error.maxDuration =
+          "maxDuration must be a whole number";
       }
       if (typeof input.borrowPrice === "undefined") {
         error.borrowPrice = "please specify the borrow price";
