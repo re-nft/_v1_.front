@@ -180,10 +180,12 @@ export const parsePaymentToken = (tkn: string): PaymentToken => {
     case "2":
       return PaymentToken.DAI;
     case "3":
+    // 6 decimals
       return PaymentToken.USDC;
     case "4":
       return PaymentToken.USDT;
     case "5":
+    // 6 decimals
       return PaymentToken.TUSD;
     default:
       console.warn("unknown token type passed");

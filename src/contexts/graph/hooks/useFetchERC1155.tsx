@@ -48,7 +48,6 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             tokenURI: nft.tokenURI,
           });
         });
-
       if (usersNfts1155.length > 0) {
         setNfts([...usersNfts1155, ...nfts]);
       }

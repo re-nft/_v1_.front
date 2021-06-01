@@ -2,12 +2,12 @@ import { useCallback, useContext, useMemo } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
-import createDebugger from "debug";
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
-const debug = createDebugger("app:contract");
+// const debug = createDebugger("app:contract");
+const debug = console.log;
 
 export const useStartLend = (): ((
   addresses: string[],
