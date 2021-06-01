@@ -24,6 +24,7 @@ import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 import { useTimestamp } from "../hooks/useTimestamp";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import { Address } from "../components/address";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -274,7 +275,9 @@ export const Dashboard: React.FC = () => {
                       <Tr
                         key={getUniqueID(lend.address, lend.tokenId, lend.id)}
                       >
-                        <Td className="column">{short(lending.nftAddress)}</Td>
+                        <Td className="column">
+                          <Address address={lending.nftAddress}></Address>
+                        </Td>
                         <Td className="column">{lend.tokenId}</Td>
                         <Td className="column">{lend.amount}</Td>
                         <Td className="column">
