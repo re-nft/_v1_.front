@@ -14,8 +14,8 @@ const fancyStyle = {
       color: "#fff",
       fontWeight: "400",
       fontSize: "24px",
-      padding: '0',
-      textAlign: 'end'
+      padding: "0",
+      textAlign: "end",
     },
     "& label.Mui-focused": {
       color: "#fff",

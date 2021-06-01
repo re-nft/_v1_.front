@@ -5542,7 +5542,7 @@ eslint-plugin-testing-library@^3.9.2:
   dependencies:
     "@typescript-eslint/experimental-utils" "^3.10.1"
 
-eslint-plugin-unused-imports@^1.1.1:
+eslint-plugin-unused-imports@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-1.1.1.tgz#a5433f8b394461201129a246d8d92d9613e69597"
   integrity sha512-EApvRx9Q3XQI96Tg7xPPqY6OuOy95wWMXAtc8RrwdIRk9bv8vkJKwOVoE4HeWJOQhHeHcI8lUbOqmup/PxjfOw==
@@ -10605,7 +10605,7 @@ react-dom@^16.8.6:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
-react-error-boundary@^3.1.3:
+react-error-boundary@3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/react-error-boundary/-/react-error-boundary-3.1.3.tgz#276bfa05de8ac17b863587c9e0647522c25e2a0b"
   integrity sha512-A+F9HHy9fvt9t8SNDlonq01prnU8AmkjvGKV4kk8seB9kU3xMEO8J/PQlLVmoOIDODl5U2kufSBs4vrWIqhsAA==
@@ -10751,6 +10751,11 @@ react-side-effect@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-2.1.1.tgz#66c5701c3e7560ab4822a4ee2742dee215d72eb3"
   integrity sha512-2FoTQzRNTncBVtnzxFOk2mCpcfxQpenBMbk5kSVBg5UcPqV9fRbgY2zhb7GTWWOlpFmAxhClBDlIq8Rsubz1yQ==
+
+react-super-responsive-table@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/react-super-responsive-table/-/react-super-responsive-table-5.2.0.tgz#5357c928f7bca7851b3ae3f2e8e7550f7acf5c7d"
+  integrity sha512-gC6QX/+HNt7d5QDvhp83Q8AV8/44mbeRo4Z4UQ9KfBbY9dyHkQZUXRbaWPFp6CHmfSyVlJaRseTHzwMKmJjRKA==
 
 react-transition-group@^4.4.0:
   version "4.4.1"

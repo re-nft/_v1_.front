@@ -28,26 +28,29 @@ const Pagination: React.FC<PaginationProps> = ({
     () => onSetPage(currentPageNumber - 1),
     [currentPageNumber, onSetPage]
   );
-  const onChange = useCallback((e) => {
-    const number = e.target.value;
-    let debounce: NodeJS.Timeout | null;
-    if (number < 1) {
-      setError("Please choose a valid page number!");
-    } else if (number > totalPages) {
-      setError(`Please select a page number less then ${totalPages}!`);
-    } else {
-      setError("");
-      debounce = setTimeout(()=>{
-        onSetPage(number)
-      }, 1000)
-    }
-    setShadowPageNumber(number);
-    () => {
-      if(debounce){
-        clearTimeout(debounce)
+  const onChange = useCallback(
+    (e) => {
+      const number = e.target.value;
+      let debounce: NodeJS.Timeout | null;
+      if (number < 1) {
+        setError("Please choose a valid page number!");
+      } else if (number > totalPages) {
+        setError(`Please select a page number less then ${totalPages}!`);
+      } else {
+        setError("");
+        debounce = setTimeout(() => {
+          onSetPage(number);
+        }, 1000);
       }
-    }
-  }, [totalPages]);
+      setShadowPageNumber(number);
+      () => {
+        if (debounce) {
+          clearTimeout(debounce);
+        }
+      };
+    },
+    [totalPages]
+  );
   return (
     <>
       <ul className="pagination">
