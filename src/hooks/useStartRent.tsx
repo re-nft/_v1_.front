@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber } from "ethers";
+import { BigNumber, ContractTransaction } from "ethers";
 import { getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
@@ -9,6 +9,7 @@ import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
 import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
+import TransactionStateContext from "../contexts/TransactionState";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -23,7 +24,7 @@ export type StartRentNft = {
 
 export const useStartRent = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => void;
+  startRent: (nfts: StartRentNft[]) => Promise<void | ContractTransaction>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
 } => {
@@ -33,6 +34,7 @@ export const useStartRent = (): {
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
+  const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -88,11 +90,13 @@ export const useStartRent = (): {
         approvals.map((approval) =>
           approval.approve(contractAddress, MAX_UINT256)
         )
-      ).then(() => {
+      //TODO this is wrong, all transactions needs to be tracked
+      ).then(([tx]) => {
+        if(tx) setHash(tx.hash)
         setApprovals([]);
       });
     }
-  }, [approvals, contractAddress]);
+  }, [approvals, contractAddress, setHash]);
 
   const startRent = useCallback(
     async (nfts: StartRentNft[]) => {

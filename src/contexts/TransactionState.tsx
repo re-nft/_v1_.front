@@ -76,7 +76,6 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         confirmations,
         timeout
       );
-
       if (!receipt.status) {
         console.warn("could not fetch the transaction status");
         return false;

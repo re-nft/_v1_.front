@@ -15,14 +15,6 @@ import { ProviderContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 
-type LendOneInputs = {
-  [key: string]: {
-    lendAmount: number;
-    maxDuration: number;
-    borrowPrice: number;
-    nftPrice: number;
-  };
-};
 
 type LendModalProps = {
   nfts: Nft[];
@@ -41,6 +33,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const startLend = useStartLend();
   const contractAddress = useContractAddress();
+
 
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
@@ -76,8 +69,10 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         )
       );
       transaction.promise.then((tx) => {
-        onClose();
-        if (tx) setHash(tx.hash);
+        if (tx) return setHash(tx.hash);
+        Promise.resolve(false)
+      }).then((status) =>{
+        if(status) onClose()
       });
 
       return transaction.cancel;
@@ -92,11 +87,12 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     const fetchRequest = createCancellablePromise(
       provider.getTransactionReceipt(hash)
     );
-
+    setIsApproved(false);
     fetchRequest.promise
       .then((receipt) => {
         const status = receipt?.status ?? 0;
         if (status === 1) setIsApproved(true);
+
       })
       .catch(() => {
         console.warn("issue pulling txn receipt in batch lend");
@@ -110,12 +106,18 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     const transaction = createCancellablePromise(
       setApprovalForAll(nfts, contractAddress)
     );
+    setIsApproved(false);
     transaction.promise
+      //TODO this is wrong, all transactions needs to be tracked
       .then(([tx]) => {
-        if (!tx) return;
-        setHash(tx.hash);
+        if (!tx) return Promise.resolve(false);
+        return setHash(tx.hash);
       })
-      .catch(() => {
+      .then((status)=>{
+        setIsApproved(status)
+      })
+      .catch((e) => {
+        console.log(e)
         console.warn("issue approving all in batch lend");
         return [undefined];
       });
@@ -127,6 +129,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   useEffect(() => {
     if (!currentAddress) return;
+    setIsApproved(false);
     const transaction = createCancellablePromise(
       isApprovalForAll(nfts, currentAddress, contractAddress)
     );

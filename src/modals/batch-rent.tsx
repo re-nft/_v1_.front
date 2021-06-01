@@ -37,8 +37,9 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   const handleSubmit = useCallback(
     (items: StartRentNft[]) => {
       if (isApproved) {
-        startRent(items);
-        handleClose();
+        startRent(items).then(() =>{
+          handleClose()
+        });
       }
     },
     [handleClose, isApproved, startRent]
