@@ -10,6 +10,25 @@ if (process.env.REACT_APP_DEBUG) {
   console.log("debug enabled", process.env.REACT_APP_DEBUG);
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
+// throw error if required env variable isn't provided
+[
+  "REACT_APP_RENFT_API",
+  "REACT_APP_CORS_PROXY",
+  "REACT_APP_OPENSEA_API",
+  "REACT_APP_EIP721_API",
+  "REACT_APP_EIP1155_API",
+  "REACT_APP_FIREBASE_API_KEY",
+  "REACT_APP_FIREBASE_AUTH_DOMAIN",
+  "REACT_APP_FIREBASE_DATABASE_URL",
+  "REACT_APP_FIREBASE_PROJECT_ID",
+  "REACT_APP_FIREBASE_STORAGE_BUCKET",
+  "REACT_APP_FIREBASE_MESSAGING_SENDERID",
+  "REACT_APP_FIREBASE_APP_ID",
+].forEach((name) => {
+  if (!process.env[name]) {
+    throw Error(`Please provide a value for ${name} variable`);
+  }
+});
 
 import App from "./components/app-layout";
 import { StateProvider } from "./contexts/StateProvider";
