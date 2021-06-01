@@ -10,6 +10,9 @@ if (process.env.REACT_APP_DEBUG) {
   console.log("debug enabled", process.env.REACT_APP_DEBUG);
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
+if(IS_PROD && process.env.REACT_APP_ADDRESS){
+  throw Error('Please do not use ADDRESS in PRODUCTION env!')
+}
 // throw error if required env variable isn't provided
 [
   "REACT_APP_RENFT_API",
@@ -34,6 +37,7 @@ import App from "./components/app-layout";
 import { StateProvider } from "./contexts/StateProvider";
 
 import { ErrorBoundary } from "react-error-boundary";
+import { IS_PROD } from "./consts";
 
 const ErrorFallback: React.FC<{
   error: Error;
