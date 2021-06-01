@@ -40,6 +40,12 @@ const fancyStyle = {
       fontSize: "24px",
       color: "#fff",
     },
+  
+  },
+  '@media (max-width: 580px)': {
+    root: {
+      width: '80px'
+    },
   },
 };
 
