@@ -47,7 +47,6 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
             tokenURI: nft.tokenURI,
           });
         });
-      console.log("usersNfts721", result.length, usersNfts721.length);
 
       if (usersNfts721.length > 0) {
         setNfts([...usersNfts721, ...nfts]);
