@@ -130,10 +130,10 @@ const UserRentings: React.FC = () => {
                 >
                   <NumericField
                     text="Daily price"
-                    value="0"
+                    value={nft.lending.dailyRentPrice.toString()}
                     unit={PaymentToken[PaymentToken.DAI]}
                   />
-                  <NumericField text="Rent Duration" value="0" unit="days" />
+                  <NumericField text="Rent Duration" value={nft.renting.rentDuration.toString()} unit="days" />
                   <ActionButton<Nft>
                     title="Return It"
                     nft={nft}
