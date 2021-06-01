@@ -41,7 +41,6 @@ export const useStartRent = (): {
 
   const checkApprovals = useCallback(
     (nfts: StartRentNft[]) => {
-      console.log("check for approvals");
       if (!resolver) return;
       if (!currentAddress) return;
       if (!contractAddress) return;
@@ -60,7 +59,6 @@ export const useStartRent = (): {
         );
         Promise.all(promiseTokenAllowances).then(
           (tokenAllowances: BigNumber[]) => {
-            console.log(tokenAllowances, "tokenallowence");
             const approvals: ERC20[] = tokenAllowances
               .filter((allowance) => allowance.lt(MAX_UINT256))
               .map((allowance, ix) => {
