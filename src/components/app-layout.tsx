@@ -16,9 +16,8 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { advanceTime, short } from "../utils";
+import { short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { IS_PROD } from "../consts";
 
 const ROUTES = [
   {
@@ -88,7 +87,7 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          {!IS_PROD && (
+          {/* {!IS_PROD && (
             <button
               className="menu__item"
               onClick={() => {
@@ -98,7 +97,7 @@ const App: React.FC = () => {
             >
               Advance time
             </button>
-          )}
+          )} */}
         </div>
         {/* CONTENT */}
         <div className="content-wrapper main-content mb-l">
