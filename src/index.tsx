@@ -10,8 +10,8 @@ if (process.env.REACT_APP_DEBUG) {
   console.log("debug enabled", process.env.REACT_APP_DEBUG);
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
-if(IS_PROD && process.env.REACT_APP_ADDRESS){
-  throw Error('Please do not use ADDRESS in PRODUCTION env!')
+if (IS_PROD && process.env.REACT_APP_ADDRESS) {
+  throw Error("Please do not use ADDRESS in PRODUCTION env!");
 }
 // throw error if required env variable isn't provided
 [

@@ -18,7 +18,9 @@ const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
         <div className="label">{nft.isERC721 ? "721" : "1155"}</div>
       </div>
       <div className="modal-dialog-for">
-        <div className="label"><Address address={nft.address}></Address></div>
+        <div className="label">
+          <Address address={nft.address}></Address>
+        </div>
       </div>
       <div className="modal-dialog-for">
         <div className="label">Token Id</div>

@@ -72,8 +72,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       } else if (
         input.lendAmount !== parseInt(input.lendAmount.toString(), 10)
       ) {
-        error.lendAmount =
-          "amount must be a whole number";
+        error.lendAmount = "amount must be a whole number";
       }
       if (typeof input.maxDuration === "undefined") {
         error.maxDuration = "please specify lend duration";
@@ -84,8 +83,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       } else if (
         input.maxDuration !== parseInt(input.maxDuration.toString(), 10)
       ) {
-        error.maxDuration =
-          "maxDuration must be a whole number";
+        error.maxDuration = "maxDuration must be a whole number";
       }
       if (typeof input.borrowPrice === "undefined") {
         error.borrowPrice = "please specify the borrow price";
