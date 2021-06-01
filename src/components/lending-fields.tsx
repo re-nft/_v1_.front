@@ -8,7 +8,7 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
     <>
       <NumericField
         text="Daily price"
-        value={nft.lending.paymentToken.toString()}
+        value={nft.lending.dailyRentPrice.toString()}
         unit={PaymentToken[nft.lending.paymentToken]}
       />
       <NumericField

@@ -78,21 +78,24 @@ const Lendings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft) => (
-          <CatalogueItem
-            key={getUniqueID(nft.address, nft.tokenId)}
-            nft={nft}
-            checked={
-              !!checkedItems[getUniqueID(nft.address, nft.tokenId)] || false
-            }
-          >
-            <ActionButton<Nft>
+        {currentPage.map((nft) => {
+          const checked = !!checkedItems[getUniqueID(nft.address, nft.tokenId)];
+
+          return (
+            <CatalogueItem
+              key={getUniqueID(nft.address, nft.tokenId)}
               nft={nft}
-              title="Lend now"
-              onClick={handleStartLend}
-            />
-          </CatalogueItem>
-        ))}
+              checked={checked}
+            >
+              <ActionButton<Nft>
+                nft={nft}
+                title="Lend now"
+                onClick={handleStartLend}
+                disabled={checked}
+              />
+            </CatalogueItem>
+          );
+        })}
       </ItemWrapper>
       <Pagination
         totalPages={totalPages}

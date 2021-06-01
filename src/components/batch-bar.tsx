@@ -22,13 +22,13 @@ const BatchBar: React.FC<BatchBarProps> = ({
         {title}
       </div>
       <div className="column">
-        <span className="nft__button red" onClick={onCancel}>
+        <button className="nft__button red" onClick={onCancel}>
           Cancel
-        </span>
+        </button>
         <span style={{ width: "24px", display: "inline-flex" }} />
-        <span className="nft__button" onClick={onClick}>
+        <button className="nft__button" onClick={onClick}>
           {actionTitle}
-        </span>
+        </button>
       </div>
     </div>
   </div>

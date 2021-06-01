@@ -78,21 +78,22 @@ const AvailableToRent: React.FC = () => {
       <ItemWrapper>
         {currentPage.map((nft: Lending | Nft) => {
           if (isLending(nft)) {
+            const isChecked =
+              !!checkedItems[
+                getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+              ];
             return (
               <CatalogueItem
                 key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
                 nft={nft}
-                checked={
-                  !!checkedItems[
-                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
-                  ]
-                }
+                checked={isChecked}
               >
                 <LendingFields nft={nft} />
                 <ActionButton<Lending>
                   onClick={handleBatchModalOpen}
                   nft={nft}
                   title="Rent Now"
+                  disabled={isChecked}
                 />
               </CatalogueItem>
             );

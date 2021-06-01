@@ -1,4 +1,5 @@
 import React from "react";
+import { Address } from "../components/address";
 
 import { Nft } from "../contexts/graph/classes";
 import { getUniqueID } from "../controller/batch-controller";
@@ -17,7 +18,9 @@ const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
         <div className="label">{nft.isERC721 ? "721" : "1155"}</div>
       </div>
       <div className="modal-dialog-for">
-        <div className="label">{nft.address}</div>
+        <div className="label">
+          <Address address={nft.address}></Address>
+        </div>
       </div>
       <div className="modal-dialog-for">
         <div className="label">Token Id</div>

@@ -56,6 +56,8 @@ export const RentForm: React.FC<LendFormProps> = ({
       } else if (input.duration > input.lending.maxRentDuration) {
         error.duration =
           "the duration cannot be greater then the max rent duration";
+      } else if (input.duration !== parseInt(input.duration.toString(), 10)) {
+        error.duration = "maxDuration must be a whole number";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });
@@ -116,7 +118,7 @@ export const RentForm: React.FC<LendFormProps> = ({
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={!isValid || isSubmitting}
+                  disabled={isSubmitting}
                 />
               )}
               {isApproved && (
@@ -162,6 +164,15 @@ const ModalDialogSection: React.FC<{
   const totalRent =
     (item.lending.nftPrice || 0) +
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
+
+  const renderItem = () => {
+    return (
+      <span>
+        <span>Rent duration </span>
+        <span>(max {item.lending.maxRentDuration} days)</span>
+      </span>
+    );
+  };
   return (
     <CommonInfo
       nft={item}
@@ -169,7 +180,7 @@ const ModalDialogSection: React.FC<{
     >
       <CssTextField
         required
-        label={`Rent duration (max duration ${item.lending.maxRentDuration} days)`}
+        label={renderItem()}
         variant="outlined"
         type="number"
         name={`inputs.${index}.duration`}
