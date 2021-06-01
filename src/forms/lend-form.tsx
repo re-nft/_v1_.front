@@ -64,7 +64,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       const error: Record<string, string | undefined> = {};
       if (typeof input.lendAmount === "undefined") {
         error.lendAmount = "please specify amount";
-      } else if (input.lendAmount < 1) {
+      } else if (input.lendAmount < 0.0001) {
         error.lendAmount = "amount must be greater than 0";
       } else if (input.lendAmount > Number(input.nft.amount)) {
         error.lendAmount =
@@ -72,21 +72,21 @@ export const LendForm: React.FC<LendFormProps> = ({
       }
       if (typeof input.maxDuration === "undefined") {
         error.maxDuration = "please specify lend duration";
-      } else if (input.maxDuration < 1) {
+      } else if (input.maxDuration < 0.0001) {
         error.maxDuration = "lend duration must be greater than 0";
       } else if (input.maxDuration > 255) {
         error.maxDuration = "lend duration must be less or equal than 255";
       }
       if (typeof input.borrowPrice === "undefined") {
         error.borrowPrice = "please specify the borrow price";
-      } else if (input.borrowPrice < 1) {
+      } else if (input.borrowPrice < 0.0001) {
         error.borrowPrice = "borrow price must be greater than 0";
       } else if (input.borrowPrice > 9999.9999) {
         error.borrowPrice = "borrow price must be less then 1000";
       }
       if (typeof input.nftPrice === "undefined") {
         error.nftPrice = "please specify collateral";
-      } else if (input.nftPrice < 1) {
+      } else if (input.nftPrice < 0.0001) {
         error.nftPrice = "collateral must be greater than 0";
       } else if (input.nftPrice > 9999.9999) {
         error.borrowPrice = "collateral must be less then 1000";
@@ -153,7 +153,7 @@ export const LendForm: React.FC<LendFormProps> = ({
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={!isValid || isSubmitting}
+                  disabled={isSubmitting}
                 />
               )}
               {isApproved && (
