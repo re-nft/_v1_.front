@@ -16,6 +16,7 @@ export const CurrentAddressProvider: React.FC = ({ children }) => {
     }
   }, [address]);
 
+
   return (
     <CurrentAddressWrapper.Provider value={newAddress}>
       {children}
