@@ -66,4 +66,18 @@
     .batch__inner {
         flex-direction: column;
     }
+    .dashboard-list-view {
+        .checkbox__dashboard {
+            margin: 5px;
+        }
+        .nft__button {
+            margin: 5px;
+        }
+    }
+
+    .pagination {
+        li {
+            margin: 0 4px;
+        }
+    }
 }
