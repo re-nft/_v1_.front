@@ -66,6 +66,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     values: FormProps,
     { setSubmitting }: FormikBag<FormProps, unknown>
   ) => {
+    setSubmitting(true);
     handleSubmit(values.inputs as LendInputDefined[]).finally(() => {
       setSubmitting(false);
     });

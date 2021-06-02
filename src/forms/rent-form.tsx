@@ -46,6 +46,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     values: FormProps,
     { setSubmitting }: FormikBag<FormProps, unknown>
   ) => {
+    setSubmitting(true);
     handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
