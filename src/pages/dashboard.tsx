@@ -211,13 +211,6 @@ export const Dashboard: React.FC = () => {
     },
     [onCheckboxChange]
   );
-  const checkboxChanged = useCallback(
-    (id: string) => {
-      return !!checkedItems[id];
-    },
-    [checkedItems]
-  );
-
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
 
@@ -261,12 +254,12 @@ export const Dashboard: React.FC = () => {
                   {lendingItems.map((lend: Lending) => {
                     const id = getUniqueCheckboxId(lend);
                     const hasRenting = !!lend.renting;
+                    const checked = !!checkedItems[id];
                     return (
                       <LendingRow
                         key={id}
-                        id={id}
                         hasRenting={hasRenting}
-                        checkboxChanged={checkboxChanged}
+                        checked={checked}
                         lend={lend}
                         claimCollateral={claimCollateral}
                         handleStopLend={handleStopLend}
@@ -367,24 +360,20 @@ export const Dashboard: React.FC = () => {
 export const LendingRow: React.FC<{
   lend: Lending;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
-  checkboxChanged: (id: string) => boolean;
-  id: string;
+  checked: boolean,
   hasRenting: boolean;
   handleStopLend: (lending: Lending[]) => void;
   claimCollateral: () => void;
 }> = ({
   lend,
   checkBoxChangeWrapped,
-  checkboxChanged,
-  id,
+  checked,
   hasRenting,
   handleStopLend,
   claimCollateral,
 }) => {
   const lending = lend.lending;
-  const checked = useMemo(() => {
-    return checkboxChanged(id);
-  }, [checkboxChanged, id]);
+  
   return (
     <Tr>
       <Td className="column">
