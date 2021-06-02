@@ -1,5 +1,5 @@
 import { InputAdornment } from "@material-ui/core";
-import React, { useCallback, useState, useRef, useMemo } from "react";
+import React, { useCallback, useState, useRef, useMemo, useEffect } from "react";
 import PaginationTextField from "./pagination-textfield";
 
 type PaginationProps = {
@@ -38,7 +38,6 @@ const Pagination: React.FC<PaginationProps> = ({
       } else if (num > totalPages) {
         setError(`Please select a page number less then ${totalPages}!`);
       } else {
-        console.log("valid number", num);
         setError("");
         ref.current = setTimeout(() => {
           if (num !== currentPageNumber) {
@@ -61,6 +60,10 @@ const Pagination: React.FC<PaginationProps> = ({
   const isLastpage = useMemo(() => {
     return currentPageNumber === totalPages;
   }, [currentPageNumber, totalPages]);
+
+  useEffect(() => {
+    setShadowPageNumber(currentPageNumber)
+  }, [currentPageNumber])
   return (
     <>
       <ul className="pagination">
