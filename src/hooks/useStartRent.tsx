@@ -57,16 +57,22 @@ export const useStartRent = (): {
       Promise.all(promiseTokenAddresses).then((tokenAddresses) => {
         const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
 
-        const promiseTokenAllowances: Promise<BigNumber>[] = erc20s.map(
-          (erc20) => erc20.allowance(currentAddress, contractAddress)
-        );
+        const promiseTokenAllowances: Promise<[BigNumber, ERC20]>[] =
+          erc20s.map((erc20) => {
+            return new Promise((resolve, reject) => {
+              erc20
+                .allowance(currentAddress, contractAddress)
+                .then((allowance: BigNumber) => {
+                  resolve([allowance, erc20]);
+                })
+                .catch((e) => reject([e, erc20]));
+            });
+          });
         Promise.all(promiseTokenAllowances).then(
-          (tokenAllowances: BigNumber[]) => {
+          (tokenAllowances: [BigNumber, ERC20][]) => {
             const approvals: ERC20[] = tokenAllowances
-              .filter((allowance) => allowance.lt(MAX_UINT256))
-              .map((allowance, ix) => {
-                return erc20s[ix];
-              });
+              .filter(([allowance]) => allowance.lt(MAX_UINT256))
+              .map(([_, erc20]) => erc20);
             setApprovalLoading(false);
             setApprovals(approvals);
           }
