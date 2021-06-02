@@ -159,15 +159,15 @@ export const LendForm: React.FC<LendFormProps> = ({
             </FieldArray>
 
             <div className="modal-dialog-button">
-              {!isApproved && (
+              {!isApproved && !isSubmitting && (
                 <ActionButton<Nft>
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={isApprovalLoading || isSubmitting}
+                  disabled={isApprovalLoading}
                 />
               )}
-              {isApproved && (
+              {isApproved || isSubmitting && (
                 <ActionButton<Nft>
                   title={nfts.length > 1 ? "Lend all" : "Lend"}
                   nft={nft}

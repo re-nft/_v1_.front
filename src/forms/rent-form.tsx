@@ -115,7 +115,7 @@ export const RentForm: React.FC<LendFormProps> = ({
             </FieldArray>
 
             <div className="modal-dialog-button">
-              {!isApproved && (
+              {!isApproved && !isSubmitting && (
                 <ActionButton<Nft>
                   title="Approve all"
                   nft={nft}
@@ -123,7 +123,7 @@ export const RentForm: React.FC<LendFormProps> = ({
                   disabled={isApprovalLoading || isSubmitting}
                 />
               )}
-              {isApproved && (
+              {isApproved || isSubmitting && (
                 <ActionButton<Nft>
                   title={nfts.length > 1 ? "Rent all" : "Rent"}
                   nft={nft}
