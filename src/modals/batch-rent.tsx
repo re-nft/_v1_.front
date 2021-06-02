@@ -27,7 +27,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     }));
   }, [nft]);
 
-  const { startRent, isApproved, handleApproveAll, checkApprovals } =
+  const { startRent, isApproved, handleApproveAll, checkApprovals, isApprovalLoading } =
     useStartRent();
 
   useEffect(() => {
@@ -37,9 +37,11 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   const handleSubmit = useCallback(
     (items: StartRentNft[]) => {
       if (isApproved) {
-        startRent(items);
-        handleClose();
+        return startRent(items).then(() =>{
+          handleClose()
+        });
       }
+      return Promise.reject();
     },
     [handleClose, isApproved, startRent]
   );
@@ -51,6 +53,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
         handleApproveAll={handleApproveAll}
         isApproved={isApproved}
         handleSubmit={handleSubmit}
+        isApprovalLoading={isApprovalLoading}
       ></RentForm>
     </Modal>
   );

@@ -43,8 +43,10 @@ const UserCurrentlyLending: React.FC = () => {
       );
 
       transaction.promise.then((tx) => {
-        if (tx) setHash(tx.hash);
-        batchHandleReset();
+        if (tx) return setHash(tx.hash);
+        return Promise.resolve(false)
+      }).then((status)=>{
+        if(status) batchHandleReset();
       });
 
       return transaction.cancel;

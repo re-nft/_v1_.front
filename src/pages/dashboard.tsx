@@ -163,10 +163,15 @@ export const Dashboard: React.FC = () => {
       lendingId: lending.id,
       amount: lending.amount,
     }));
-    claim(claims).then((tx) => {
-      if (tx) setHash(tx.hash);
-      handleResetLending();
-    });
+    claim(claims)
+      // @ts-ignore
+      .then((tx) => {
+        if (tx) return setHash(tx.hash);
+        return Promise.resolve();
+      })
+      .then(() => {
+        handleResetLending();
+      });
   }, [checkedClaims, claim, handleResetLending, setHash]);
 
   const handleStopLend = useCallback(
@@ -184,10 +189,14 @@ export const Dashboard: React.FC = () => {
         )
       );
 
-      Transaction.promise.then((tx) => {
-        if (tx) setHash(tx.hash);
-        handleResetLending(lending.map((m) => m.id));
-      });
+      Transaction.promise
+        .then((tx) => {
+          if (tx) setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (status) handleResetLending(lending.map((m) => m.id));
+        });
     },
     [stopLending, setHash, handleResetLending]
   );

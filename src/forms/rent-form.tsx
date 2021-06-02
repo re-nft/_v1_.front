@@ -5,7 +5,13 @@ import { getUniqueID } from "../controller/batch-controller";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
-import { Formik, FormikErrors, FormikTouched, FieldArray } from "formik";
+import {
+  Formik,
+  FormikErrors,
+  FormikTouched,
+  FieldArray,
+  FormikBag,
+} from "formik";
 import { PaymentToken } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
 
@@ -13,27 +19,33 @@ type LendFormProps = {
   nfts: Lending[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: StartRentNft[]) => void;
+  handleSubmit: (arg: StartRentNft[]) => Promise<void>;
+  isApprovalLoading: boolean;
 };
 interface LendingWithKey extends Lending {
   key: string;
   duration: number | undefined;
 }
+type FormProps = { inputs: LendingWithKey[] };
 export const RentForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
   handleApproveAll,
   handleSubmit,
+  isApprovalLoading,
 }) => {
   const [nft] = nfts;
-  const initialValues = {
+  const initialValues: FormProps = {
     inputs: nfts.map<LendingWithKey>((nft) => ({
       key: getUniqueID(nft.address, nft.tokenId),
       duration: undefined,
       ...nft,
     })),
   };
-  const onSubmit = (values: { inputs: LendingWithKey[] }) => {
+  const onSubmit = (
+    values: FormProps,
+    { setSubmitting }: FormikBag<FormProps, unknown>
+  ) => {
     handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
@@ -43,7 +55,9 @@ export const RentForm: React.FC<LendFormProps> = ({
         rentDuration: (nft.duration as number).toString(),
         paymentToken: nft.lending.paymentToken,
       }))
-    );
+    ).finally(() => {
+      setSubmitting(false);
+    });
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
@@ -67,6 +81,8 @@ export const RentForm: React.FC<LendFormProps> = ({
   };
   return (
     <Formik
+      // TODO remove this
+      // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
       validate={validate}
@@ -113,15 +129,15 @@ export const RentForm: React.FC<LendFormProps> = ({
             </FieldArray>
 
             <div className="modal-dialog-button">
-              {!isApproved && (
+              {!isApproved && !isSubmitting && (
                 <ActionButton<Nft>
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={isSubmitting}
+                  disabled={isApprovalLoading || isSubmitting}
                 />
               )}
-              {isApproved && (
+              {(isApproved || isSubmitting) && (
                 <ActionButton<Nft>
                   title={nfts.length > 1 ? "Rent all" : "Rent"}
                   nft={nft}
