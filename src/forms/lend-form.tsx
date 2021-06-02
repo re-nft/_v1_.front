@@ -1,7 +1,7 @@
 import CssTextField from "../components/css-text-field";
 
 import ActionButton from "../components/action-button";
-import { getUniqueID } from "../controller/batch-controller";
+import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
@@ -54,7 +54,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     inputs: nfts.map<LendInput>((nft) => ({
       tokenId: nft.tokenId,
       nft: nft,
-      key: getUniqueID(nft.address, nft.tokenId),
+      key: getUniqueCheckboxId(nft),
       lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
       maxDuration: undefined,
       borrowPrice: undefined,
