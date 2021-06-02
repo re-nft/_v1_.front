@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber } from "ethers";
+import { BigNumber, ContractTransaction } from "ethers";
 import { getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
@@ -9,6 +9,7 @@ import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
 import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
+import TransactionStateContext from "../contexts/TransactionState";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -23,9 +24,10 @@ export type StartRentNft = {
 
 export const useStartRent = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => void;
+  startRent: (nfts: StartRentNft[]) => Promise<void | ContractTransaction>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
+  isApprovalLoading: boolean
 } => {
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
@@ -33,6 +35,7 @@ export const useStartRent = (): {
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
+  const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -54,16 +57,22 @@ export const useStartRent = (): {
       Promise.all(promiseTokenAddresses).then((tokenAddresses) => {
         const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
 
-        const promiseTokenAllowances: Promise<BigNumber>[] = erc20s.map(
-          (erc20) => erc20.allowance(currentAddress, contractAddress)
-        );
+        const promiseTokenAllowances: Promise<[BigNumber, ERC20]>[] =
+          erc20s.map((erc20) => {
+            return new Promise((resolve, reject) => {
+              erc20
+                .allowance(currentAddress, contractAddress)
+                .then((allowance: BigNumber) => {
+                  resolve([allowance, erc20]);
+                })
+                .catch((e) => reject([e, erc20]));
+            });
+          });
         Promise.all(promiseTokenAllowances).then(
-          (tokenAllowances: BigNumber[]) => {
+          (tokenAllowances: [BigNumber, ERC20][]) => {
             const approvals: ERC20[] = tokenAllowances
-              .filter((allowance) => allowance.lt(MAX_UINT256))
-              .map((allowance, ix) => {
-                return erc20s[ix];
-              });
+              .filter(([allowance]) => allowance.lt(MAX_UINT256))
+              .map(([_, erc20]) => erc20);
             setApprovalLoading(false);
             setApprovals(approvals);
           }
@@ -88,11 +97,13 @@ export const useStartRent = (): {
         approvals.map((approval) =>
           approval.approve(contractAddress, MAX_UINT256)
         )
-      ).then(() => {
+      //TODO this is wrong, all transactions needs to be tracked
+      ).then(([tx]) => {
+        if(tx) setHash(tx.hash)
         setApprovals([]);
       });
     }
-  }, [approvals, contractAddress]);
+  }, [approvals, contractAddress, setHash]);
 
   const startRent = useCallback(
     async (nfts: StartRentNft[]) => {
@@ -129,5 +140,6 @@ export const useStartRent = (): {
     checkApprovals,
     handleApproveAll,
     isApproved,
+    isApprovalLoading
   };
 };

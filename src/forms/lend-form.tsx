@@ -5,14 +5,21 @@ import { getUniqueID } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
-import { Formik, FormikErrors, FormikTouched, FieldArray } from "formik";
+import {
+  Formik,
+  FormikErrors,
+  FormikTouched,
+  FieldArray,
+  FormikBag,
+} from "formik";
 import MinimalSelect from "../components/select";
 
 type LendFormProps = {
   nfts: Nft[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: LendInputDefined[]) => void;
+  handleSubmit: (arg: LendInputDefined[]) => Promise<void>;
+  isApprovalLoading: boolean;
 };
 export type LendInput = {
   lendAmount: number | undefined;
@@ -34,11 +41,13 @@ export type LendInputDefined = {
   key: string;
   nft: Nft;
 };
+type FormProps = { inputs: LendInput[] };
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
   handleApproveAll,
   handleSubmit,
+  isApprovalLoading,
 }) => {
   const [nft] = nfts;
   const initialValues = {
@@ -53,10 +62,16 @@ export const LendForm: React.FC<LendFormProps> = ({
       pmToken: undefined,
     })),
   };
-  const onSubmit = (values: { inputs: LendInput[] }) => {
-    handleSubmit(values.inputs as LendInputDefined[]);
+  const onSubmit = (
+    values: FormProps,
+    { setSubmitting }: FormikBag<FormProps, unknown>
+  ) => {
+    handleSubmit(values.inputs as LendInputDefined[]).finally(() => {
+      setSubmitting(false);
+    });
   };
-  const validate = (values: { inputs: LendInput[] }) => {
+
+  const validate = (values: FormProps) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
       values.inputs.length
     );
@@ -112,6 +127,8 @@ export const LendForm: React.FC<LendFormProps> = ({
   };
   return (
     <Formik
+      // TODO remove this
+      // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
       validate={validate}
@@ -156,15 +173,15 @@ export const LendForm: React.FC<LendFormProps> = ({
             </FieldArray>
 
             <div className="modal-dialog-button">
-              {!isApproved && (
+              {!isApproved && !isSubmitting && (
                 <ActionButton<Nft>
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={isSubmitting}
+                  disabled={isApprovalLoading}
                 />
               )}
-              {isApproved && (
+              {(isApproved || isSubmitting) && (
                 <ActionButton<Nft>
                   title={nfts.length > 1 ? "Lend all" : "Lend"}
                   nft={nft}

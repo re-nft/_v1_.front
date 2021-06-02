@@ -10,7 +10,6 @@ export default async function setApprovalForAll(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index
   );
-
   return await Promise.all(
     distinctItems.map((nft) => {
       const contract = nft.contract();

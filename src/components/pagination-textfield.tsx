@@ -14,8 +14,8 @@ const fancyStyle = {
       color: "#fff",
       fontWeight: "400",
       fontSize: "24px",
-      padding: '0',
-      textAlign: 'end'
+      padding: "0",
+      textAlign: "end",
     },
     "& label.Mui-focused": {
       color: "#fff",
@@ -39,6 +39,12 @@ const fancyStyle = {
     "& .MuiInputAdornment-root": {
       fontSize: "24px",
       color: "#fff",
+    },
+  
+  },
+  '@media (max-width: 580px)': {
+    root: {
+      width: '80px'
     },
   },
 };

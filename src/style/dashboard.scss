@@ -45,7 +45,7 @@
     }
 
     th.action-column {
-      min-width: 200px;
+      width: 200px;
     }
 
     td.action-column {
@@ -58,4 +58,9 @@
     text-align: left;
     padding: 0 24px;
   }
+
+  .checkbox.checkbox__dashboard{
+    margin: 0.5rem auto auto;
+  }
+
 }

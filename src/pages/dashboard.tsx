@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useMemo } from "react";
 import moment from "moment";
-
+import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import { Lending, Renting } from "../contexts/graph/classes";
 import {
   BatchContext,
@@ -23,6 +23,8 @@ import { useReturnIt } from "../hooks/useReturnIt";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 import { useTimestamp } from "../hooks/useTimestamp";
+import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import { Address } from "../components/address";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -126,17 +128,16 @@ const Checkbox: React.FC<CheckboxProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`checkbox ${checked ? "checked" : ""}`}
-      style={{ margin: "auto", marginTop: "1em" }}
+      className={`checkbox__dashboard checkbox ${checked ? "checked" : ""}`}
     />
   );
 };
 
-// TODO: this code is not DRY
-// TODO: lendings has this batch architecture too
-// TODO: it would be good to abstract batching
-// TODO: and pass components as children to the abstracted
-// TODO: so that we do not repeat this batch code everywhere
+// TODO: This code is not DRY
+// TODO: lendings has This batch architecture too
+// TODO: it would be good to absTract batching
+// TODO: and pass components as children to The absTracted
+// TODO: so That we do not repeat This batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { onCheckboxChange, handleResetLending, checkedItems } =
@@ -162,17 +163,22 @@ export const Dashboard: React.FC = () => {
       lendingId: lending.id,
       amount: lending.amount,
     }));
-    claim(claims).then((tx) => {
-      if (tx) setHash(tx.hash);
-      handleResetLending();
-    });
+    claim(claims)
+      // @ts-ignore
+      .then((tx) => {
+        if (tx) return setHash(tx.hash);
+        return Promise.resolve();
+      })
+      .then(() => {
+        handleResetLending();
+      });
   }, [checkedClaims, claim, handleResetLending, setHash]);
 
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
       // ! eniko: don't know if it is good to refresh so quickly in stop lend
-      // ! eniko: there is no update on the front that transaction is pending at all
-      const transaction = createCancellablePromise(
+      // ! eniko: There is no update on The front That Transaction is pending at all
+      const Transaction = createCancellablePromise(
         stopLending(
           lending.map((l) => ({
             address: l.address,
@@ -183,10 +189,14 @@ export const Dashboard: React.FC = () => {
         )
       );
 
-      transaction.promise.then((tx) => {
-        if (tx) setHash(tx.hash);
-        handleResetLending(lending.map((m) => m.id));
-      });
+      Transaction.promise
+        .then((tx) => {
+          if (tx) setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (status) handleResetLending(lending.map((m) => m.id));
+        });
     },
     [stopLending, setHash, handleResetLending]
   );
@@ -228,7 +238,7 @@ export const Dashboard: React.FC = () => {
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center">You aren&apos;t lending or renting anything</div>
+      <div className="center">You aren&apos;t lending or renting anyThing</div>
     );
   }
 
@@ -240,26 +250,29 @@ export const Dashboard: React.FC = () => {
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
               <h3 style={{ color: "white", marginBottom: "1em" }}>
-                Here you will find the NFTs that you are lending. These can also
-                be found in the Lending tab after you toggle the view.
+                Here you will find The NFTs That you are lending. These can also
+                be found in The Lending tab after you toggle The view.
               </h3>
-              <table className="list">
-                <thead>
-                  <tr>
-                    <th style={{ width: "15%" }}>Address</th>
-                    <th style={{ width: "7%" }}>ID</th>
-                    <th style={{ width: "5%" }}>Amount</th>
-                    <th style={{ width: "5%" }}>Pmt in</th>
-                    <th style={{ width: "11%" }}>Collateral</th>
-                    <th style={{ width: "7%" }}>Rent</th>
-                    <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "7%" }}>Batch Select</th>
-                    <th style={{ width: "20%" }} className="action-column">
+              <Table className="list">
+                <Thead>
+                  <Tr>
+                    <Th style={{ widTh: "15%" }}>Address</Th>
+                    <Th style={{ widTh: "7%" }}>ID</Th>
+                    <Th style={{ widTh: "5%" }}>Amount</Th>
+                    <Th style={{ widTh: "5%" }}>Pmt in</Th>
+                    <Th style={{ widTh: "11%" }}>Collateral</Th>
+                    <Th style={{ widTh: "7%" }}>Rent</Th>
+                    <Th style={{ widTh: "7%" }}>Duration</Th>
+                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
+                    <Th style={{ widTh: "10%" }} className="action-column">
                       &nbsp;
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Th>
+                    <Th style={{ widTh: "10%" }} className="action-column">
+                      &nbsp;
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {lendingItems.map((lend: Lending) => {
                     const lending = lend.lending;
                     const checked =
@@ -268,72 +281,74 @@ export const Dashboard: React.FC = () => {
                       ];
                     const hasRenting = !!lend.renting;
                     return (
-                      <tr
+                      <Tr
                         key={getUniqueID(lend.address, lend.tokenId, lend.id)}
                       >
-                        <td className="column">{short(lending.nftAddress)}</td>
-                        <td className="column">{lend.tokenId}</td>
-                        <td className="column">{lend.amount}</td>
-                        <td className="column">
+                        <Td className="column">
+                          <Address address={lending.nftAddress}></Address>
+                        </Td>
+                        <Td className="column">{lend.tokenId}</Td>
+                        <Td className="column">{lend.amount}</Td>
+                        <Td className="column">
                           {PaymentToken[lending.paymentToken ?? 0]}
-                        </td>
-                        <td className="column">{lending.nftPrice}</td>
-                        <td className="column">{lending.dailyRentPrice}</td>
-                        <td className="column">
+                        </Td>
+                        <Td className="column">{lending.nftPrice}</Td>
+                        <Td className="column">{lending.dailyRentPrice}</Td>
+                        <Td className="column">
                           {lending.maxRentDuration} days
-                        </td>
-                        <td className="action-column">
+                        </Td>
+                        <Td className="action-column">
                           <Checkbox
                             onCheckboxClick={onCheckboxClick}
                             nft={lend}
                             checked={checked}
                           />
-                        </td>
-                        <td className="action-column">
+                        </Td>
+                        <Td className="action-column">
                           <ClaimCollateralButton
                             claimColleteral={claimCollateral}
                             lend={lend}
                           />
-                        </td>
-                        <td className="action-column">
+                        </Td>
+                        <Td className="action-column">
                           <StopLendButton
                             handleStopLend={handleStopLend}
                             lend={lend}
                             disabled={checked || hasRenting}
                           />
-                        </td>
-                      </tr>
+                        </Td>
+                      </Tr>
                     );
                   })}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </div>
           )}
           {rentingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="renting">Renting</h2>
               <h3 style={{ color: "white", marginBottom: "1em" }}>
-                Here you will find the NFTs that you are renting. These can also
-                be found in the renting tab, after you toggle the view.
+                Here you will find The NFTs That you are renting. These can also
+                be found in The renting tab, after you toggle The view.
               </h3>
-              <table className="list">
-                <thead>
-                  <tr>
-                    <th style={{ width: "15%" }}>Address</th>
-                    <th style={{ width: "5%" }}>ID</th>
-                    <th style={{ width: "5%" }}>Amount</th>
-                    <th style={{ width: "7%" }}>Pmt in</th>
-                    <th style={{ width: "7%" }}>Collateral</th>
-                    <th style={{ width: "11%" }}>Rented On</th>
-                    <th style={{ width: "7%" }}>Duration</th>
-                    <th style={{ width: "7%" }}>Due Date</th>
-                    <th style={{ width: "7%" }}>Batch Select</th>
-                    <th style={{ width: "20%" }} className="action-column">
+              <Table className="list">
+                <Thead>
+                  <Tr>
+                    <Th style={{ widTh: "15%" }}>Address</Th>
+                    <Th style={{ widTh: "5%" }}>ID</Th>
+                    <Th style={{ widTh: "5%" }}>Amount</Th>
+                    <Th style={{ widTh: "7%" }}>Pmt in</Th>
+                    <Th style={{ widTh: "7%" }}>Collateral</Th>
+                    <Th style={{ widTh: "11%" }}>Rented On</Th>
+                    <Th style={{ widTh: "7%" }}>Duration</Th>
+                    <Th style={{ widTh: "7%" }}>Due Date</Th>
+                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
+                    <Th style={{ widTh: "20%" }} className="action-column">
                       &nbsp;
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
                     const checked =
@@ -341,39 +356,39 @@ export const Dashboard: React.FC = () => {
                         getUniqueID(rent.address, rent.tokenId, renting.id)
                       ];
                     return (
-                      <tr
+                      <Tr
                         key={getUniqueID(
                           rent.lending.nftAddress,
                           rent.lending.tokenId,
                           renting.lendingId
                         )}
                       >
-                        <td className="column">
+                        <Td className="column">
                           {short(renting.lending.nftAddress)}
-                        </td>
-                        <td className="column">{rent.tokenId}</td>
-                        <td className="column">{renting.lending.lentAmount}</td>
-                        <td className="column">
+                        </Td>
+                        <Td className="column">{rent.tokenId}</Td>
+                        <Td className="column">{renting.lending.lentAmount}</Td>
+                        <Td className="column">
                           {PaymentToken[renting.lending.paymentToken ?? 0]}
-                        </td>
-                        <td className="column">{renting.rentDuration} days</td>
-                        <td className="column">
+                        </Td>
+                        <Td className="column">{renting.rentDuration} days</Td>
+                        <Td className="column">
                           {moment(Number(renting.rentedAt) * 1000).format(
                             "MM/D/YY hh:mm"
                           )}
-                        </td>
-                        <td className="column">{renting.rentDuration} days</td>
-                        <td className="column">
+                        </Td>
+                        <Td className="column">{renting.rentDuration} days</Td>
+                        <Td className="column">
                           {renting.lending.dailyRentPrice}
-                        </td>
-                        <td className="action-column">
+                        </Td>
+                        <Td className="action-column">
                           <Checkbox
                             onCheckboxClick={onCheckboxClick}
                             nft={rent}
                             checked={checked}
                           />
-                        </td>
-                        <td className="action-column">
+                        </Td>
+                        <Td className="action-column">
                           {renting.lending.lenderAddress !==
                             currentAddress.toLowerCase() && (
                             <ReturnNftButton
@@ -382,12 +397,12 @@ export const Dashboard: React.FC = () => {
                               disabled={checked}
                             />
                           )}
-                        </td>
-                      </tr>
+                        </Td>
+                      </Tr>
                     );
                   })}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </div>
           )}
         </div>

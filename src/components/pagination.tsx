@@ -1,5 +1,5 @@
 import { InputAdornment } from "@material-ui/core";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef, useMemo, useEffect } from "react";
 import PaginationTextField from "./pagination-textfield";
 
 type PaginationProps = {
@@ -28,34 +28,48 @@ const Pagination: React.FC<PaginationProps> = ({
     () => onSetPage(currentPageNumber - 1),
     [currentPageNumber, onSetPage]
   );
-  const onChange = useCallback((e) => {
-    const number = e.target.value;
-    let debounce: NodeJS.Timeout | null;
-    if (number < 1) {
-      setError("Please choose a valid page number!");
-    } else if (number > totalPages) {
-      setError(`Please select a page number less then ${totalPages}!`);
-    } else {
-      setError("");
-      debounce = setTimeout(()=>{
-        onSetPage(number)
-      }, 1000)
-    }
-    setShadowPageNumber(number);
-    () => {
-      if(debounce){
-        clearTimeout(debounce)
+  const ref = useRef<NodeJS.Timeout | null>();
+  const onChange = useCallback(
+    (e) => {
+      const num = Number(e.target.value);
+      if (ref.current) clearTimeout(ref.current);
+      if (num < 1) {
+        setError("Please choose a valid page number!");
+      } else if (num > totalPages) {
+        setError(`Please select a page number less then ${totalPages}!`);
+      } else {
+        setError("");
+        ref.current = setTimeout(() => {
+          if (num !== currentPageNumber) {
+            onSetPage(num);
+          }
+        }, 1000);
       }
-    }
-  }, [totalPages]);
+      setShadowPageNumber(num);
+      () => {
+        if (ref.current) {
+          clearTimeout(ref.current);
+        }
+      };
+    },
+    [currentPageNumber, onSetPage, totalPages]
+  );
+  const isFirstPage = useMemo(() => {
+    return currentPageNumber === 1;
+  }, [currentPageNumber]);
+  const isLastpage = useMemo(() => {
+    return currentPageNumber === totalPages;
+  }, [currentPageNumber, totalPages]);
+
+  useEffect(() => {
+    setShadowPageNumber(currentPageNumber)
+  }, [currentPageNumber])
   return (
     <>
       <ul className="pagination">
         <li>
           <button
-            className={`nft__button ${
-              currentPageNumber === 1 ? "disabled" : ""
-            }`}
+            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
             onClick={onSetFirstPage}
           >
             {`<<`}
@@ -63,9 +77,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </li>
         <li>
           <button
-            className={`nft__button ${
-              currentPageNumber === 1 ? "disabled" : ""
-            }`}
+            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
             onClick={onSetPrevPage}
           >
             {`<`}
@@ -90,9 +102,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </li>
         <li>
           <button
-            className={`nft__button ${
-              currentPageNumber === totalPages ? "disabled" : ""
-            }`}
+            className={`nft__button ${isLastpage ? "disabled" : ""}`}
             onClick={onSetNextPage}
           >
             {`>`}
@@ -100,9 +110,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </li>
         <li>
           <button
-            className={`nft__button ${
-              currentPageNumber === totalPages ? "disabled" : ""
-            }`}
+            className={`nft__button ${isLastpage ? "disabled" : ""}`}
             onClick={onSetLastPage}
           >
             {`>>`}
