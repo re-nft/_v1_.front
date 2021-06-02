@@ -48,7 +48,17 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             tokenURI: nft.tokenURI,
           });
         });
-      if (usersNfts1155.length > 0) {
+      const items: Nft[] = [];
+      const resultIds = new Set();
+      usersNfts1155.forEach((nft) => {
+        const id = getUniqueID(nft.address, nft.tokenId);
+        if (!resultIds.has(id)) {
+          items.push(nft);
+          resultIds.add(id);
+        }
+      });
+
+      if (items.length > 0) {
         setNfts([...usersNfts1155, ...nfts]);
       }
       setLoading(false);

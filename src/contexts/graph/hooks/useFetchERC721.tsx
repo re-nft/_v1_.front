@@ -47,9 +47,18 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
             tokenURI: nft.tokenURI,
           });
         });
+      const items: Nft[] = [];
+      const resultIds = new Set();
+      usersNfts721.forEach((nft) => {
+        const id = getUniqueID(nft.address, nft.tokenId);
+        if (!resultIds.has(id)) {
+          items.push(nft);
+          resultIds.add(id);
+        }
+      });
 
-      if (usersNfts721.length > 0) {
-        setNfts([...usersNfts721, ...nfts]);
+      if (items.length > 0) {
+        setNfts([...items, ...nfts]);
       }
       setLoading(false);
     }
