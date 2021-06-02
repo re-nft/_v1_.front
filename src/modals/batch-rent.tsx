@@ -27,7 +27,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     }));
   }, [nft]);
 
-  const { startRent, isApproved, handleApproveAll, checkApprovals } =
+  const { startRent, isApproved, handleApproveAll, checkApprovals, isApprovalLoading } =
     useStartRent();
 
   useEffect(() => {
@@ -52,6 +52,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
         handleApproveAll={handleApproveAll}
         isApproved={isApproved}
         handleSubmit={handleSubmit}
+        isApprovalLoading={isApprovalLoading}
       ></RentForm>
     </Modal>
   );

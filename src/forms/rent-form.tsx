@@ -14,6 +14,7 @@ type LendFormProps = {
   isApproved: boolean;
   handleApproveAll: () => void;
   handleSubmit: (arg: StartRentNft[]) => void;
+  isApprovalLoading: boolean;
 };
 interface LendingWithKey extends Lending {
   key: string;
@@ -24,6 +25,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   isApproved,
   handleApproveAll,
   handleSubmit,
+  isApprovalLoading
 }) => {
   const [nft] = nfts;
   const initialValues = {
@@ -118,7 +120,7 @@ export const RentForm: React.FC<LendFormProps> = ({
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={isSubmitting}
+                  disabled={isApprovalLoading || isSubmitting}
                 />
               )}
               {isApproved && (

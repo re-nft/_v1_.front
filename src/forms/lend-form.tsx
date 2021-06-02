@@ -13,6 +13,7 @@ type LendFormProps = {
   isApproved: boolean;
   handleApproveAll: () => void;
   handleSubmit: (arg: LendInputDefined[]) => void;
+  isApprovalLoading: boolean;
 };
 export type LendInput = {
   lendAmount: number | undefined;
@@ -39,6 +40,7 @@ export const LendForm: React.FC<LendFormProps> = ({
   isApproved,
   handleApproveAll,
   handleSubmit,
+  isApprovalLoading
 }) => {
   const [nft] = nfts;
   const initialValues = {
@@ -56,6 +58,7 @@ export const LendForm: React.FC<LendFormProps> = ({
   const onSubmit = (values: { inputs: LendInput[] }) => {
     handleSubmit(values.inputs as LendInputDefined[]);
   };
+  
   const validate = (values: { inputs: LendInput[] }) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
       values.inputs.length
@@ -127,7 +130,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         handleBlur,
         isValid,
         isSubmitting,
-        submitForm,
+        submitForm
       }) => {
         return (
           <form onSubmit={handleSubmit}>
@@ -161,7 +164,7 @@ export const LendForm: React.FC<LendFormProps> = ({
                   title="Approve all"
                   nft={nft}
                   onClick={handleApproveAll}
-                  disabled={isSubmitting}
+                  disabled={isApprovalLoading || isSubmitting}
                 />
               )}
               {isApproved && (

@@ -27,6 +27,7 @@ export const useStartRent = (): {
   startRent: (nfts: StartRentNft[]) => Promise<void | ContractTransaction>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
+  isApprovalLoading: boolean
 } => {
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
@@ -133,5 +134,6 @@ export const useStartRent = (): {
     checkApprovals,
     handleApproveAll,
     isApproved,
+    isApprovalLoading
   };
 };

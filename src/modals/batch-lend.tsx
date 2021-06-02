@@ -31,6 +31,8 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const currentAddress = useContext(CurrentAddressWrapper);
   const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
+  const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const startLend = useStartLend();
   const contractAddress = useContractAddress();
 
@@ -104,9 +106,10 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
     const transaction = createCancellablePromise(
-      setApprovalForAll(nfts, contractAddress)
+      setApprovalForAll(nonApprovedNft, contractAddress)
     );
     setIsApproved(false);
+    setIsApprovalLoading(true);
     transaction.promise
       //TODO this is wrong, all transactions needs to be tracked
       .then(([tx]) => {
@@ -115,17 +118,19 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       })
       .then((status)=>{
         setIsApproved(status)
+        setIsApprovalLoading(false);
       })
       .catch((e) => {
         console.log(e)
         console.warn("issue approving all in batch lend");
+        setIsApprovalLoading(false);
         return [undefined];
       });
 
     return () => {
       transaction.cancel();
     };
-  }, [contractAddress, nfts, provider, setHash]);
+  }, [contractAddress, nonApprovedNft, provider, setHash]);
 
   useEffect(() => {
     if (!currentAddress) return;
@@ -134,8 +139,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       isApprovalForAll(nfts, currentAddress, contractAddress)
     );
     transaction.promise
-      .then((isApproved) => {
-        setIsApproved(isApproved);
+      .then(([isApproved, nonApproved]) => {
+        if(isApproved) setIsApproved(isApproved);
+        setNonApprovedNfts(nonApproved);
       })
       .catch(() => {
         console.warn("batch lend issue with is approval for all");
@@ -150,6 +156,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         isApproved={isApproved}
         handleApproveAll={handleApproveAll}
         handleSubmit={handleLend}
+        isApprovalLoading={isApprovalLoading}
       ></LendForm>
     </Modal>
   );
