@@ -7,9 +7,8 @@ import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
-  BatchContext,
-  getUniqueID,
-  useCheckedNftItems,
+  getUniqueCheckboxId,
+  useBatchItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import {
@@ -20,9 +19,8 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
 
 const Lendings: React.FC = () => {
-  const { checkedItems, handleReset, onCheckboxChange } =
-    useContext(BatchContext);
-  const checkedNftItems = useCheckedNftItems();
+  const { checkedItems, handleReset, onCheckboxChange, checkedNftItems } =
+    useBatchItems();
   const {
     totalPages,
     currentPageNumber,
@@ -59,6 +57,12 @@ const Lendings: React.FC = () => {
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
+  
+  const checkBoxChangeWrapped = useCallback((nft) => {
+    return () => {
+      onCheckboxChange(nft);
+    };
+  }, [onCheckboxChange]);
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
@@ -79,13 +83,14 @@ const Lendings: React.FC = () => {
       )}
       <ItemWrapper>
         {currentPage.map((nft) => {
-          const checked = !!checkedItems[getUniqueID(nft.address, nft.tokenId)];
+          const checked = !!checkedItems[getUniqueCheckboxId(nft)];
 
           return (
             <CatalogueItem
-              key={getUniqueID(nft.address, nft.tokenId)}
+              key={getUniqueCheckboxId(nft)}
               nft={nft}
               checked={checked}
+              onCheckboxChange={checkBoxChangeWrapped(nft)}
             >
               <ActionButton<Nft>
                 nft={nft}

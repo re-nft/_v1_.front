@@ -8,10 +8,8 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import {
-  BatchContext,
-  getUniqueID,
-  useCheckedLendingItems,
-  useCheckedRentingItems,
+  getUniqueCheckboxId,
+  useBatchItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
@@ -25,9 +23,9 @@ const AvailableToRent: React.FC = () => {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-  } = useContext(BatchContext);
-  const checkedLendingItems = useCheckedLendingItems();
-  const checkedRentingItems = useCheckedRentingItems();
+    checkedLendingItems,
+    checkedRentingItems,
+  } = useBatchItems();
   const {
     totalPages,
     currentPageNumber,
@@ -65,6 +63,12 @@ const AvailableToRent: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
+  const checkBoxChangeWrapped = useCallback((nft) => {
+    return () => {
+      onCheckboxChange(nft);
+    };
+  }, [onCheckboxChange]);
+
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You cant rent anything yet</div>;
@@ -74,19 +78,21 @@ const AvailableToRent: React.FC = () => {
       <BatchRentModal
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
+        nft={checkedLendingItems}
       />
       <ItemWrapper>
         {currentPage.map((nft: Lending | Nft) => {
           if (isLending(nft)) {
             const isChecked =
               !!checkedItems[
-                getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+                getUniqueCheckboxId(nft)
               ];
             return (
               <CatalogueItem
-                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
+                key={getUniqueCheckboxId(nft)}
                 nft={nft}
                 checked={isChecked}
+                onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
                 <LendingFields nft={nft} />
                 <ActionButton<Lending>
