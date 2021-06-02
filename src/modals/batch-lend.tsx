@@ -70,14 +70,12 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
           pmtTokens
         )
       );
-      transaction.promise.then((tx) => {
+      return transaction.promise.then((tx) => {
         if (tx) return setHash(tx.hash);
         Promise.resolve(false)
       }).then((status) =>{
         if(status) onClose()
       });
-
-      return transaction.cancel;
     },
 
     [startLend, nfts, onClose, setHash]
