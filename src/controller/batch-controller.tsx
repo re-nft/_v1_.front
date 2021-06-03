@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useMemo,
-  useContext,
-  useCallback,
-} from "react";
+import { useState, useMemo, useCallback } from "react";
 
 import {
   Nft,
@@ -22,7 +16,7 @@ import { useTimestamp } from "../hooks/useTimestamp";
 
 type UniqueID = string;
 
-export const getUniqueID = (
+const getUniqueID = (
   nftAddress: string,
   tokenId: string,
   lendingId?: string
@@ -30,6 +24,19 @@ export const getUniqueID = (
   return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
     lendingId ?? 0
   }`;
+};
+
+const getLendingId = (item: Nft): string => {
+  let lendingID = "0";
+  if (isLending(item)) lendingID = item.lending.id;
+  else if (isRenting(item))
+    lendingID = item.renting.lendingId
+      .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
+      .concat("renting");
+  return lendingID;
+};
+export const getUniqueCheckboxId = (item: Nft): string => {
+  return getUniqueID(item.address, item.tokenId, getLendingId(item));
 };
 
 export type BatchContextType = {
@@ -40,6 +47,10 @@ export type BatchContextType = {
   // if there is a lending id, then the id becomes
   // nftAddress::tokenId:lendingId
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedNftItems: Nft[];
+  checkedLendingItems: Lending[];
+  checkedClaims: Lending[];
+  checkedRentingItems: Renting[];
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
 
   handleReset(): void;
@@ -87,10 +98,7 @@ const filter = (
   }, {});
 };
 
-export const BatchContext =
-  createContext<BatchContextType>(defaultBatchContext);
-// TODO this should be just a useBatcher
-export const BatchProvider: React.FC = ({ children }) => {
+export const useBatchItems: () => BatchContextType = () => {
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]
   >(defaultBatchContext.checkedItems);
@@ -117,57 +125,54 @@ export const BatchProvider: React.FC = ({ children }) => {
     [checkedItems]
   );
 
-  const onCheckboxChange: BatchContextType["onCheckboxChange"] = (item) => {
-    let lendingID = "0";
-    if (isLending(item)) lendingID = item.lending.id;
-    else if (isRenting(item))
-      lendingID = item.renting.lendingId
-        .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
-        .concat("renting");
-
-    const uniqueID = getUniqueID(item.address, item.tokenId, lendingID);
-    setCheckedItems((prev) => {
+  const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
+    (item) => {
+      const uniqueID = getUniqueCheckboxId(item);
+      let newState = {};
       // if contained in prev, remove
-      if (uniqueID in prev) {
-        const state = { ...prev };
+      if (uniqueID in checkedItems) {
+        const state = { ...checkedItems };
         delete state[uniqueID];
-        return state;
+        newState = state;
         // if not, add
       } else {
-        return { ...prev, [uniqueID]: item };
+        newState = { ...checkedItems, [uniqueID]: item };
       }
-    });
-  };
-
-  return (
-    <BatchContext.Provider
-      value={{
-        checkedItems,
-        handleReset,
-        onCheckboxChange,
-        handleResetLending,
-        handleResetRenting,
-      }}
-    >
-      {children}
-    </BatchContext.Provider>
+      setCheckedItems(newState);
+    },
+    [checkedItems]
   );
-};
-// This hooks helps with no additional rerender as one of this changes would rerender all the usage
-export const useCheckedNftItems = (): Nft[] => {
-  const { checkedItems } = useContext(BatchContext);
-  const nftItems: Nft[] = useMemo(() => {
+  const checkedNftItems: Nft[] = useMemo(() => {
     return Object.values(checkedItems).filter(isNft);
   }, [checkedItems]);
-  return nftItems;
-};
-
-export const useCheckedLendingItems = (): Lending[] => {
-  const { checkedItems } = useContext(BatchContext);
-  const lendingItems: Lending[] = useMemo(() => {
+  const checkedLendingItems: Lending[] = useMemo(() => {
     return Object.values(checkedItems).filter(isLending);
   }, [checkedItems]);
-  return lendingItems;
+
+  const blockTimeStamp = useTimestamp();
+  const claimable = useCallback(isClaimable, []);
+
+  const checkedClaims = useMemo(() => {
+    return checkedLendingItems.filter(
+      (l) => l.renting && claimable(l.renting, blockTimeStamp)
+    );
+  }, [blockTimeStamp, checkedLendingItems, claimable]);
+
+  const checkedRentingItems: Renting[] = useMemo(() => {
+    return Object.values(checkedItems).filter(isRenting);
+  }, [checkedItems]);
+
+  return {
+    checkedItems,
+    checkedNftItems,
+    checkedLendingItems,
+    checkedClaims,
+    handleReset,
+    onCheckboxChange,
+    handleResetLending,
+    handleResetRenting,
+    checkedRentingItems,
+  };
 };
 
 export const isClaimable = (
@@ -182,25 +187,3 @@ export const isClaimable = (
   const _now = moment(blockTimeStamp);
   return _now.isAfter(_returnBy(renting));
 };
-
-export const useCheckedClaims = (): Lending[] => {
-  const checkedLendigItems = useCheckedLendingItems();
-  const blockTimeStamp = useTimestamp();
-  const claimable = useCallback(isClaimable, []);
-
-  return useMemo(() => {
-    return checkedLendigItems.filter(
-      (l) => l.renting && claimable(l.renting, blockTimeStamp)
-    );
-  }, [blockTimeStamp, checkedLendigItems, claimable]);
-};
-
-export const useCheckedRentingItems = (): Renting[] => {
-  const { checkedItems } = useContext(BatchContext);
-  const rentingItems: Renting[] = useMemo(() => {
-    return Object.values(checkedItems).filter(isRenting);
-  }, [checkedItems]);
-  return rentingItems;
-};
-
-export default BatchProvider;

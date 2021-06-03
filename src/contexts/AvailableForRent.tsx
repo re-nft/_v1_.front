@@ -1,23 +1,32 @@
 import request from "graphql-request";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import { Lending, Nft } from "../classes";
-import { queryAllLendingRenft } from "../queries";
-import { LendingRaw } from "../types";
-import { timeItAsync } from "../../../utils";
-import createCancellablePromise from "../../create-cancellable-promise";
-import usePoller from "../../../hooks/usePoller";
-import { SignerContext } from "../../../hardhat/SymfoniContext";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
+import { Lending, Nft } from "./graph/classes";
+import { queryAllLendingRenft } from "./graph/queries";
+import { LendingRaw } from "./graph/types";
+import { timeItAsync } from "../utils";
+import createCancellablePromise from "./create-cancellable-promise";
+import usePoller from "../hooks/usePoller";
+import { SignerContext } from "../hardhat/SymfoniContext";
 
-export const useAllAvailableToRent = (): {
-  allAvailableToRent: Nft[];
+
+export const AvailableForRentContext = createContext<{
   isLoading: boolean;
-} => {
+  allAvailableToRent: Nft[];
+}>({ isLoading: true, allAvailableToRent: [] });
+
+export const AvailableForRentProvider: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const [signer] = useContext(SignerContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   const fetchRentings = useCallback(() => {
     if (!signer || !currentAddress) return;
@@ -66,9 +75,14 @@ export const useAllAvailableToRent = (): {
   }, [fetchRentings]);
 
   usePoller(fetchRentings, 10000);
-
-  return {
-    allAvailableToRent: nfts,
-    isLoading,
-  };
+  return (
+    <AvailableForRentContext.Provider
+      value={{
+        allAvailableToRent: nfts,
+        isLoading,
+      }}
+    >
+      {children}
+    </AvailableForRentContext.Provider>
+  );
 };

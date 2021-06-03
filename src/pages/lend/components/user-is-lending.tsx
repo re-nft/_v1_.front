@@ -1,19 +1,18 @@
 import React, { useContext, useCallback, useEffect } from "react";
 
 import ItemWrapper from "../../../components/items-wrapper";
-import { Lending, Nft, isLending } from "../../../contexts/graph/classes";
+import { Lending, isLending } from "../../../contexts/graph/classes";
 import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
-  BatchContext,
-  getUniqueID,
-  useCheckedLendingItems,
+  getUniqueCheckboxId,
+  useBatchItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
-import { PageContext } from "../../../controller/page-controller";
+import { usePageController } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useStopLend } from "../../../hooks/useStopLend";
@@ -21,16 +20,19 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import { UserLendingContext } from "../../../contexts/UserLending";
 
 const UserCurrentlyLending: React.FC = () => {
-  const { checkedItems, handleReset: batchHandleReset } =
-    useContext(BatchContext);
-  const checkedLendingItems = useCheckedLendingItems();
+  const {
+    checkedItems,
+    handleReset: batchHandleReset,
+    checkedLendingItems,
+    onCheckboxChange,
+  } = useBatchItems();
   const {
     totalPages,
     currentPageNumber,
     currentPage,
     onSetPage,
-    onChangePage,
-  } = useContext(PageContext);
+    onPageControllerInit,
+  } = usePageController<Lending>();
   const { userLending, isLoading } = useContext(UserLendingContext);
   const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -42,12 +44,14 @@ const UserCurrentlyLending: React.FC = () => {
         stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
 
-      transaction.promise.then((tx) => {
-        if (tx) return setHash(tx.hash);
-        return Promise.resolve(false)
-      }).then((status)=>{
-        if(status) batchHandleReset();
-      });
+      transaction.promise
+        .then((tx) => {
+          if (tx) return setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (status) batchHandleReset();
+        });
 
       return transaction.cancel;
     },
@@ -67,14 +71,22 @@ const UserCurrentlyLending: React.FC = () => {
   }, [handleStopLend, checkedLendingItems]);
 
   useEffect(() => {
-    onChangePage(userLending);
-  }, [onChangePage, userLending]);
+    onPageControllerInit(userLending.filter(isLending));
+  }, [onPageControllerInit, userLending]);
 
   //Prefetch metadata
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You are not lending anything yet</div>;
@@ -83,30 +95,22 @@ const UserCurrentlyLending: React.FC = () => {
   return (
     <>
       <ItemWrapper>
-        {/* 
-          TODO: how the f is currentPage  any !?
-        */}
-        {currentPage.map((nft: Nft | Lending) => {
-          if (isLending(nft)) {
-            return (
-              <CatalogueItem
-                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
-                checked={
-                  !!checkedItems[
-                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
-                  ]
-                }
+        {currentPage.map((nft: Lending) => {
+          return (
+            <CatalogueItem
+              key={getUniqueCheckboxId(nft)}
+              checked={!!checkedItems[getUniqueCheckboxId(nft)]}
+              nft={nft}
+              onCheckboxChange={checkBoxChangeWrapped(nft)}
+            >
+              <LendingFields nft={nft} />
+              <ActionButton<Lending>
                 nft={nft}
-              >
-                <LendingFields nft={nft} />
-                <ActionButton<Lending>
-                  nft={nft}
-                  title="Stop Lending"
-                  onClick={handleClickNft}
-                />
-              </CatalogueItem>
-            );
-          }
+                title="Stop Lending"
+                onClick={handleClickNft}
+              />
+            </CatalogueItem>
+          );
         })}
       </ItemWrapper>
       <Pagination

@@ -5,7 +5,10 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { getUniqueID } from "../controller/batch-controller";
+import {
+  getUniqueCheckboxId,
+  useBatchItems,
+} from "../controller/batch-controller";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
@@ -42,7 +45,11 @@ export const MyFavorites: React.FC = () => {
   } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-
+  const {
+    // TODO deal with checkedItems state on favorites
+    checkedItems,
+    onCheckboxChange,
+  } = useBatchItems();
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
       // todo: we need to stop doing this. you can just pass a single nft, and it will
@@ -70,6 +77,15 @@ export const MyFavorites: React.FC = () => {
     fetchNfts(nftItems);
   }, [nftItems, fetchNfts]);
 
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
+
   const isLoading = userDataIsLoading || allAvailableIsLoading;
 
   if (isLoading) {
@@ -85,9 +101,10 @@ export const MyFavorites: React.FC = () => {
       <div className="content__row content__items">
         {nftItems.map((nft) => (
           <CatalogueItem
-            key={getUniqueID(nft.address, nft.tokenId)}
+            key={getUniqueCheckboxId(nft)}
             nft={nft}
             isAlreadyFavourited
+            onCheckboxChange={checkBoxChangeWrapped(nft)}
           >
             <div className="nft__control">
               <RemoveButton

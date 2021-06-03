@@ -1,117 +1,144 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { IS_PROD } from "../../../consts";
-import { NftToken } from "../../graph/types";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import fetch from "cross-fetch";
 import {
   E1155Context,
   E721Context,
+  E1155BContext,
+  E721BContext,
   SignerContext,
 } from "../../../hardhat/SymfoniContext";
+import createCancellablePromise from "../../create-cancellable-promise";
 
 const BigNumZero = BigNumber.from("0");
 
-export const useFetchNftDev = (): Nft[] => {
+function range(start: number, stop: number, step: number) {
+  const a = [start];
+  let b = start;
+  while (b < stop) {
+    a.push((b += step || 1));
+  }
+  return a;
+}
+
+export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { instance: e721 } = useContext(E721Context);
   const { instance: e1155 } = useContext(E1155Context);
+  const { instance: e721b } = useContext(E721BContext);
+  const { instance: e1155b } = useContext(E1155BContext);
   const [signer] = useContext(SignerContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const fetchAsync = useCallback(async () => {
+    if (IS_PROD) {
+      if (isLoading) setIsLoading(false);
+      return;
+    }
+    if (!e1155 || !e721 || !e721b || !e1155b || !signer || !currentAddress)
+      return [];
+
+    const usersNfts: Nft[] = [];
+    const e1155IDs = range(0, 1005, 1);
+
+    const num721s = await e721
+      .balanceOf(currentAddress)
+      .catch(() => BigNumZero);
+
+    const num721bs = await e721b
+      .balanceOf(currentAddress)
+      .catch(() => BigNumZero);
+
+    const num1155s = await e1155
+      .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
+      .catch(() => []);
+
+    const num1155bs = await e1155b
+      .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
+      .catch(() => []);
+
+    for (let i = 0; i < num721s.toNumber(); i++) {
+      try {
+        const tokenId = await e721.tokenOfOwnerByIndex(
+          currentAddress,
+          String(i)
+        );
+        usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer));
+      } catch (e) {
+        console.debug(
+          "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
+        );
+      }
+    }
+
+    for (let i = 0; i < num721bs.toNumber(); i++) {
+      try {
+        const tokenId = await e721b.tokenOfOwnerByIndex(
+          currentAddress,
+          String(i)
+        );
+        usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer));
+      } catch (e) {
+        console.debug(
+          "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
+        );
+      }
+    }
+
+    let amountBalance = await e1155.balanceOfBatch(
+      Array(e1155IDs.length).fill(currentAddress),
+      e1155IDs
+    );
+
+    for (let i = 0; i < num1155s.length; i++) {
+      if (amountBalance[i].toNumber() > 0) {
+        usersNfts.push(
+          new Nft(
+            e1155.address,
+            e1155IDs[i].toString(),
+            amountBalance[i],
+            false,
+            signer
+          )
+        );
+      }
+    }
+
+    amountBalance = await e1155b.balanceOfBatch(
+      Array(e1155IDs.length).fill(currentAddress),
+      e1155IDs
+    );
+
+    for (let i = 0; i < num1155bs.length; i++) {
+      if (amountBalance[i].toNumber() > 0) {
+        usersNfts.push(
+          new Nft(
+            e1155b.address,
+            e1155IDs[i].toString(),
+            amountBalance[i],
+            false,
+            signer
+          )
+        );
+      }
+    }
+    setDevNfts(usersNfts);
+    setIsLoading(false);
+  }, [e1155, e721, e721b, e1155b, signer, currentAddress, isLoading]);
 
   useEffect(() => {
-    const fetchAsync = async () => {
-      if (IS_PROD) return;
-      if (!e1155 || !e721 || !signer || !currentAddress) return [];
+    const fetchRequest = createCancellablePromise(fetchAsync());
+    return fetchRequest.cancel;
+  }, [fetchAsync]);
 
-      const toFetch: Promise<Response>[] = [];
-      const tokenIds: string[] = [];
-      const usersNfts: Omit<NftToken, "tokenURI">[] = [];
-      const erc1155Ids = [1000, 1001, 1002, 1003, 1004];
+  // usePoller(()=>{
+  //   const fetchRequest = createCancellablePromise(fetchAsync());
+  //   return fetchRequest.cancel;
+  // }, 5_000)
 
-      const num721s = await e721
-        .balanceOf(currentAddress)
-        .catch(() => BigNumZero);
-      const num1155s = await e1155
-        .balanceOfBatch(
-          Array(erc1155Ids.length).fill(currentAddress),
-          erc1155Ids
-        )
-        .catch(() => []);
-
-      for (let i = 0; i < num721s.toNumber(); i++) {
-        try {
-          const tokenId = await e721.tokenOfOwnerByIndex(
-            currentAddress,
-            String(i)
-          );
-          const metaURI = await e721.tokenURI(tokenId.toString());
-
-          usersNfts.push({
-            address: e721.address,
-            tokenId: tokenId.toString(),
-            isERC721: true,
-          });
-
-          tokenIds.push(tokenId.toString());
-          const fetched = fetch(metaURI).then(async (d) => await d.json());
-          toFetch.push(fetched);
-        } catch (e) {
-          console.debug(
-            "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
-          );
-        }
-      }
-
-      // TODO: fix all the ts-ignores
-      const _meta = await Promise.all(toFetch);
-
-      const usersDevNfts: Nft[] = [];
-      const isERC721 = true;
-      for (let i = 0; i < _meta.length; i++) {
-        usersDevNfts.push(
-          new Nft(e721.address, tokenIds[i], "1", isERC721, signer, {
-            // @ts-ignore
-            mediaURI: _meta[i]?.["image"] ?? "",
-            // @ts-ignore
-            name: _meta[i]?.["name"] ?? "",
-          })
-        );
-      }
-
-      for (let i = 0; i < num1155s.length; i++) {
-        const tokenURI = await e1155.uri(erc1155Ids[i]).catch(() => {
-          console.warn("could not fetch user dev 1155 tokenURI");
-          return "";
-        });
-        const amountBalance = await e1155.balanceOf(
-          currentAddress,
-          // @ts-ignore
-          erc1155Ids[i]
-        );
-
-        if (num1155s[i].toNumber() > 0) {
-          usersDevNfts.push(
-            new Nft(
-              e1155.address,
-              erc1155Ids[i].toString(),
-              amountBalance,
-              !isERC721,
-              signer,
-              {
-                tokenURI: `${tokenURI}${i + 10}`,
-              }
-            )
-          );
-        }
-      }
-      // TODO:eniko optimization
-      setDevNfts(usersDevNfts);
-    };
-    fetchAsync();
-  }, [currentAddress, e721, e1155, signer]);
-
-  return devNfts;
+  return { devNfts, isLoading };
 };

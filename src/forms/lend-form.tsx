@@ -1,7 +1,7 @@
 import CssTextField from "../components/css-text-field";
 
 import ActionButton from "../components/action-button";
-import { getUniqueID } from "../controller/batch-controller";
+import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
@@ -42,6 +42,15 @@ export type LendInputDefined = {
   nft: Nft;
 };
 type FormProps = { inputs: LendInput[] };
+
+const isInteger = (field: string | number): boolean => {
+  try {
+    return field !== parseInt(field.toString(), 10);
+  } catch(_) {
+    return false;
+  }
+};
+
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -54,7 +63,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     inputs: nfts.map<LendInput>((nft) => ({
       tokenId: nft.tokenId,
       nft: nft,
-      key: getUniqueID(nft.address, nft.tokenId),
+      key: getUniqueCheckboxId(nft),
       lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
       maxDuration: undefined,
       borrowPrice: undefined,
@@ -66,6 +75,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     values: FormProps,
     { setSubmitting }: FormikBag<FormProps, unknown>
   ) => {
+    setSubmitting(true);
     handleSubmit(values.inputs as LendInputDefined[]).finally(() => {
       setSubmitting(false);
     });
@@ -77,47 +87,60 @@ export const LendForm: React.FC<LendFormProps> = ({
     );
     values.inputs.forEach((input: LendInput, index: number) => {
       const error: Record<string, string | undefined> = {};
-      if (typeof input.lendAmount === "undefined") {
-        error.lendAmount = "please specify amount";
-      } else if (input.lendAmount < 1) {
-        error.lendAmount = "amount must be greater than 1";
-      } else if (input.lendAmount > Number(input.nft.amount)) {
-        error.lendAmount =
+      let fieldName: keyof typeof input = "lendAmount";
+      let field = input[fieldName];
+      if (typeof field === "undefined") {
+        error[fieldName] = "please specify amount";
+      } else if (field < 1) {
+        error[fieldName] = "amount must be greater than 1";
+      } else if (field > Number(input.nft.amount)) {
+        error[fieldName] =
           "amount must be less than equal then the total amount available";
+      } else if (isInteger(field)) {
+        error[fieldName] = "amount must be a whole number";
+      }
+
+
+      fieldName = "maxDuration";
+      field = input[fieldName];
+      if (typeof field === "undefined") {
+        error[fieldName] = "please specify lend duration";
+      } else if (field < 1) {
+        error[fieldName] = "lend duration must be greater than 1";
+      } else if (field > 255) {
+        error[fieldName] = "lend duration must be less or equal than 255";
       } else if (
-        input.lendAmount !== parseInt(input.lendAmount.toString(), 10)
+        isInteger(field)
       ) {
-        error.lendAmount = "amount must be a whole number";
+        error[fieldName] = "maxDuration must be a whole number";
       }
-      if (typeof input.maxDuration === "undefined") {
-        error.maxDuration = "please specify lend duration";
-      } else if (input.maxDuration < 1) {
-        error.maxDuration = "lend duration must be greater than 1";
-      } else if (input.maxDuration > 255) {
-        error.maxDuration = "lend duration must be less or equal than 255";
-      } else if (
-        input.maxDuration !== parseInt(input.maxDuration.toString(), 10)
-      ) {
-        error.maxDuration = "maxDuration must be a whole number";
+
+      fieldName = "borrowPrice";
+      field = input[fieldName];
+      if (typeof field === "undefined") {
+        error[fieldName] = "please specify the borrow price";
+      } else if (field < 0.0001) {
+        error[fieldName] = "borrow price must be greater than 0";
+      } else if (field > 9999.9999) {
+        error[fieldName] = "borrow price must be less then 1000";
       }
-      if (typeof input.borrowPrice === "undefined") {
-        error.borrowPrice = "please specify the borrow price";
-      } else if (input.borrowPrice < 0.0001) {
-        error.borrowPrice = "borrow price must be greater than 0";
-      } else if (input.borrowPrice > 9999.9999) {
-        error.borrowPrice = "borrow price must be less then 1000";
+
+      fieldName = "nftPrice";
+      field = input[fieldName];
+      if (typeof field === "undefined") {
+        error[fieldName] = "please specify collateral";
+      } else if (field < 0.0001) {
+        error[fieldName] = "collateral must be greater than 0";
+      } else if (field > 9999.9999) {
+        error[fieldName] = "collateral must be less then 1000";
       }
-      if (typeof input.nftPrice === "undefined") {
-        error.nftPrice = "please specify collateral";
-      } else if (input.nftPrice < 0.0001) {
-        error.nftPrice = "collateral must be greater than 0";
-      } else if (input.nftPrice > 9999.9999) {
-        error.borrowPrice = "collateral must be less then 1000";
-      }
-      if (typeof input.pmToken === "undefined") {
-        error.pmToken = "please specify payment token";
-      } else if (input.pmToken < 0 || input.pmToken > 5) {
-        error.pmToken = "please specify payment token";
+      
+      fieldName = "pmToken";
+      field = input[fieldName];
+      if (typeof field=== "undefined") {
+        error[fieldName] = "please specify payment token";
+      } else if (field< 0 || field> 5) {
+        error[fieldName] = "please specify payment token";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });
@@ -134,6 +157,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       validate={validate}
       validateOnMount
       validateOnBlur
+      validateOnChange
     >
       {({
         values,

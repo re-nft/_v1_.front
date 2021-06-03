@@ -1,5 +1,11 @@
 import { InputAdornment } from "@material-ui/core";
-import React, { useCallback, useState, useRef, useMemo, useEffect } from "react";
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  useMemo,
+  useEffect,
+} from "react";
 import PaginationTextField from "./pagination-textfield";
 
 type PaginationProps = {
@@ -62,8 +68,12 @@ const Pagination: React.FC<PaginationProps> = ({
   }, [currentPageNumber, totalPages]);
 
   useEffect(() => {
-    setShadowPageNumber(currentPageNumber)
-  }, [currentPageNumber])
+    setShadowPageNumber(currentPageNumber);
+  }, [currentPageNumber]);
+
+  // hide pagination if page number less than 2
+  if(totalPages < 2) return null;
+
   return (
     <>
       <ul className="pagination">

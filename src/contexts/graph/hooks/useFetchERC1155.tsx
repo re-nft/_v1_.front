@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { getUniqueID } from "../../../controller/batch-controller";
+import { getUniqueCheckboxId } from "../../../controller/batch-controller";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { fetchUserProd1155 } from "../../../services/graph";
 import createCancellablePromise from "../../create-cancellable-promise";
@@ -13,10 +13,10 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
 
   // TODO:eniko use cacheProvider or similar
   const [nfts, setNfts] = useState<Nft[]>([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   const ids = useMemo(() => {
-    return new Set(nfts.map((nft) => getUniqueID(nft.nftAddress, nft.tokenId)));
+    return new Set(nfts.map((nft) => getUniqueCheckboxId(nft as Nft)));
   }, [nfts]);
 
   useEffect(() => {
@@ -39,9 +39,8 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           return acc;
         }, []);
       });
-
       const usersNfts1155 = result // filter out duplicates
-        .filter((nft) => !ids.has(getUniqueID(nft.address, nft.tokenId)))
+        .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
             meta: nft.meta,
@@ -49,17 +48,16 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           });
         });
       const items: Nft[] = [];
-      const resultIds = new Set();
+      const resultIds = new Set<string>();
       usersNfts1155.forEach((nft) => {
-        const id = getUniqueID(nft.address, nft.tokenId);
+        const id = getUniqueCheckboxId(nft as Nft);
         if (!resultIds.has(id)) {
           items.push(nft);
           resultIds.add(id);
         }
       });
-
       if (items.length > 0) {
-        setNfts([...usersNfts1155, ...nfts]);
+        setNfts([...items, ...nfts]);
       }
       setLoading(false);
     }

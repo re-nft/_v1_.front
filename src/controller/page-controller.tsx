@@ -1,13 +1,4 @@
-import React, { createContext } from "react";
-
-/* eslint-disable-next-line */
-type Props = {};
-type State<T> = {
-  pageItems: T[];
-  currentPage: T[];
-  currentPageNumber: number;
-  totalPages: number;
-};
+import { useCallback, useEffect, useState } from "react";
 
 const defaultSate = {
   pageItems: [],
@@ -16,84 +7,96 @@ const defaultSate = {
   totalPages: 1,
 };
 
-export type PageContextType<T> = {
+type State<T> = {
+  pageItems: T[];
   currentPage: T[];
   currentPageNumber: number;
   totalPages: number;
-  onSetPage(pageNumber: number): void;
-  onChangePage(items: T[]): void;
-  onResetPage(): void;
 };
-
-const defaultPageContext = {
-  currentPage: [],
-  currentPageNumber: 1,
-  totalPages: 1,
-  onSetPage: () => true,
-  onChangePage: () => true,
-  onResetPage: () => true,
-};
-
-export const PageContext =
-  createContext<PageContextType<any>>(defaultPageContext);
 
 const PAGE_SIZE = 20;
 
-class PageProvider<T> extends React.Component<Props, State<T>> {
-  state: State<T> = defaultSate;
+export const usePageController = <T extends unknown>(): {
+  handleReset: () => void;
+  onPageControllerInit: (pageItems: T[]) => void;
+  onSetPage: (pageNumber: number) => void;
+  currentPage: T[];
+  currentPageNumber: number;
+  totalPages: number;
+} => {
+  const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
+    useState<State<T>>(defaultSate);
+  const handleReset = useCallback(() => {
+    setState(defaultSate);
+  }, []);
+  const [newState, setNewState] = useState<State<T>>(defaultSate)
 
-  handleReset = (): void => this.setState(defaultSate);
+  const getCurrentPage = useCallback(
+    (pageNumber: number, totalPages: number, pageItems: T[]) => {
+      const items = [...pageItems];
+      if (pageNumber < 1 || pageNumber > totalPages) {
+        return [];
+      }
+      const totalItems = pageItems.length || 0;
+      const startIndex = (pageNumber - 1) * PAGE_SIZE;
+      const endIndex = Math.min(startIndex + PAGE_SIZE, totalItems);
 
-  //TODO this has nothing to do with changePage, but initial setItems
-  onChangePage = (pageItems: T[]): void => {
-    const totalItems = pageItems.length || 0;
-    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-    this.setState({ pageItems, totalPages }, () => this.onSetPage(1));
+      const currentPage = items.slice(startIndex, endIndex);
+      return currentPage;
+    },
+    []
+  );
+
+  const onSetPage = useCallback(
+    (pageNumber: number): void => {
+      const currentPageNumber = pageNumber || 1;
+      const currentPage = getCurrentPage(pageNumber, totalPages, pageItems);
+      setState((prevState) => ({
+        ...prevState,
+        currentPageNumber,
+        currentPage,
+      }));
+    },
+    [getCurrentPage, pageItems, totalPages]
+  );
+
+  // only modify the state if there are changes
+  useEffect(
+    () => {
+      if (pageItems.length === 0 && newState.pageItems.length === 0) return;
+      if (pageItems.length == newState.pageItems.length) {
+        const arr1 = pageItems.sort();
+        const arr2 = newState.pageItems.sort();
+        if (JSON.stringify(arr1) === JSON.stringify(arr2)) {
+          return;
+        }
+      }
+      setState((prevState)=>({
+        ...prevState,
+        ...newState
+      }))
+    },
+    [pageItems, newState],
+  )
+  const onPageControllerInit = useCallback(
+    (newItems: T[]): void => {
+      const totalItems = newItems.length || 0;
+      const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+      setNewState({
+        pageItems: newItems,
+        totalPages,
+        currentPageNumber: 1,
+        currentPage: getCurrentPage(1, totalPages, newItems),
+      });
+    },
+    [getCurrentPage]
+  );
+  return {
+    handleReset,
+    onPageControllerInit,
+    onSetPage,
+    currentPage,
+    currentPageNumber,
+    totalPages,
   };
-
-  onSetPage = (pageNumber: number): void => {
-    const { totalPages, pageItems } = this.state;
-    const items = pageItems.slice(0);
-
-    if (pageNumber < 1 || pageNumber > totalPages) {
-      return;
-    }
-
-    const currentPageNumber = pageNumber || 1;
-    const totalItems = pageItems.length - 1 || 0;
-    const startIndex = (pageNumber - 1) * PAGE_SIZE;
-    const endIndex = Math.min(startIndex + PAGE_SIZE - 1, totalItems - 1);
-
-    const currentPage = items.slice(startIndex, endIndex + 1);
-
-    if (items.length < PAGE_SIZE - 1) {
-      this.setState({ currentPageNumber, currentPage: items });
-    } else {
-      this.setState({ currentPageNumber, currentPage });
-    }
-  };
-
-  componentWillUnmount(): void {
-    this.handleReset();
-  }
-
-  render(): JSX.Element {
-    const { currentPage, currentPageNumber, totalPages } = this.state;
-    const contextValues: PageContextType<T> = {
-      currentPage,
-      currentPageNumber,
-      totalPages,
-      onSetPage: this.onSetPage,
-      onResetPage: this.handleReset,
-      onChangePage: this.onChangePage,
-    };
-
-    return (
-      <PageContext.Provider value={contextValues}>
-        {this.props.children}
-      </PageContext.Provider>
-    );
-  }
-}
-
-export default PageProvider;
+};

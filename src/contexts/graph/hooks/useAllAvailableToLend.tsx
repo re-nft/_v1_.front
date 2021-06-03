@@ -8,7 +8,7 @@ export const useAllAvailableToLend = (): {
   allAvailableToLend: Nft[];
   isLoading: boolean;
 } => {
-  const devNfts = useFetchNftDev();
+  const {devNfts, isLoading: devIsLoading} = useFetchNftDev();
   const { ERC721, isLoading: erc721Loading } = useFetchERC721();
   const { ERC1155, isLoading: erc1155Loading } = useFetchERC1155();
 
@@ -16,8 +16,8 @@ export const useAllAvailableToLend = (): {
     return [...devNfts, ...ERC1155, ...ERC721];
   }, [ERC1155, ERC721, devNfts]);
   const isLoading = useMemo(() => {
-    return erc1155Loading || erc721Loading;
-  }, [erc721Loading, erc1155Loading]);
+    return erc1155Loading || erc721Loading || devIsLoading;
+  }, [erc1155Loading, erc721Loading, devIsLoading]);
 
   return { allAvailableToLend, isLoading };
 };

@@ -191,7 +191,7 @@ export class ReNFT extends Contract {
     claimCollateral(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -199,7 +199,7 @@ export class ReNFT extends Contract {
     "claimCollateral(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -281,7 +281,7 @@ export class ReNFT extends Contract {
     rent(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -290,7 +290,7 @@ export class ReNFT extends Contract {
     "rent(address[],uint256[],uint256[],uint256[],uint8[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -303,7 +303,7 @@ export class ReNFT extends Contract {
     returnIt(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -311,7 +311,7 @@ export class ReNFT extends Contract {
     "returnIt(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -339,7 +339,7 @@ export class ReNFT extends Contract {
     stopLending(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -347,7 +347,7 @@ export class ReNFT extends Contract {
     "stopLending(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -366,7 +366,7 @@ export class ReNFT extends Contract {
   claimCollateral(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -374,7 +374,7 @@ export class ReNFT extends Contract {
   "claimCollateral(address[],uint256[],uint256[],uint256[])"(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -456,7 +456,7 @@ export class ReNFT extends Contract {
   rent(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     _rentDurations: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -465,7 +465,7 @@ export class ReNFT extends Contract {
   "rent(address[],uint256[],uint256[],uint256[],uint8[])"(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     _rentDurations: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -478,7 +478,7 @@ export class ReNFT extends Contract {
   returnIt(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -486,7 +486,7 @@ export class ReNFT extends Contract {
   "returnIt(address[],uint256[],uint256[],uint256[])"(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -514,7 +514,7 @@ export class ReNFT extends Contract {
   stopLending(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -522,7 +522,7 @@ export class ReNFT extends Contract {
   "stopLending(address[],uint256[],uint256[],uint256[])"(
     _nfts: string[],
     _tokenIds: BigNumberish[],
-    _lentAmounts: BigNumberish[],
+    _lendAmounts: BigNumberish[],
     _lendingIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -541,7 +541,7 @@ export class ReNFT extends Contract {
     claimCollateral(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -549,7 +549,7 @@ export class ReNFT extends Contract {
     "claimCollateral(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -631,7 +631,7 @@ export class ReNFT extends Contract {
     rent(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: CallOverrides
@@ -640,7 +640,7 @@ export class ReNFT extends Contract {
     "rent(address[],uint256[],uint256[],uint256[],uint8[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: CallOverrides
@@ -653,7 +653,7 @@ export class ReNFT extends Contract {
     returnIt(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -661,7 +661,7 @@ export class ReNFT extends Contract {
     "returnIt(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -689,7 +689,7 @@ export class ReNFT extends Contract {
     stopLending(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -697,7 +697,7 @@ export class ReNFT extends Contract {
     "stopLending(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -796,7 +796,7 @@ export class ReNFT extends Contract {
     claimCollateral(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -804,7 +804,7 @@ export class ReNFT extends Contract {
     "claimCollateral(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -886,7 +886,7 @@ export class ReNFT extends Contract {
     rent(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -895,7 +895,7 @@ export class ReNFT extends Contract {
     "rent(address[],uint256[],uint256[],uint256[],uint8[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -908,7 +908,7 @@ export class ReNFT extends Contract {
     returnIt(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -916,7 +916,7 @@ export class ReNFT extends Contract {
     "returnIt(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -944,7 +944,7 @@ export class ReNFT extends Contract {
     stopLending(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -952,7 +952,7 @@ export class ReNFT extends Contract {
     "stopLending(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -972,7 +972,7 @@ export class ReNFT extends Contract {
     claimCollateral(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -980,7 +980,7 @@ export class ReNFT extends Contract {
     "claimCollateral(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1062,7 +1062,7 @@ export class ReNFT extends Contract {
     rent(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1071,7 +1071,7 @@ export class ReNFT extends Contract {
     "rent(address[],uint256[],uint256[],uint256[],uint8[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       _rentDurations: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1084,7 +1084,7 @@ export class ReNFT extends Contract {
     returnIt(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1092,7 +1092,7 @@ export class ReNFT extends Contract {
     "returnIt(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1120,7 +1120,7 @@ export class ReNFT extends Contract {
     stopLending(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1128,7 +1128,7 @@ export class ReNFT extends Contract {
     "stopLending(address[],uint256[],uint256[],uint256[])"(
       _nfts: string[],
       _tokenIds: BigNumberish[],
-      _lentAmounts: BigNumberish[],
+      _lendAmounts: BigNumberish[],
       _lendingIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

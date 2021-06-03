@@ -3,19 +3,19 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import Modal from "./modal";
 import { StartRentNft, useStartRent } from "../hooks/useStartRent";
 import { RentForm } from "../forms/rent-form";
-import { useCheckedLendingItems } from "../controller/batch-controller";
+import { Lending } from "../contexts/graph/classes";
 
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
+  nft: Lending[];
 };
 
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   open,
   handleClose,
+  nft,
 }) => {
-  const nft = useCheckedLendingItems();
-
   const nfts = useMemo(() => {
     return nft.map<StartRentNft>((nft) => ({
       address: nft.address,
@@ -27,8 +27,13 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     }));
   }, [nft]);
 
-  const { startRent, isApproved, handleApproveAll, checkApprovals, isApprovalLoading } =
-    useStartRent();
+  const {
+    startRent,
+    isApproved,
+    handleApproveAll,
+    checkApprovals,
+    isApprovalLoading,
+  } = useStartRent();
 
   useEffect(() => {
     checkApprovals(nfts);
@@ -37,8 +42,8 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   const handleSubmit = useCallback(
     (items: StartRentNft[]) => {
       if (isApproved) {
-        return startRent(items).then(() =>{
-          handleClose()
+        return startRent(items).then(() => {
+          handleClose();
         });
       }
       return Promise.reject();
