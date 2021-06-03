@@ -11,9 +11,7 @@ import {
   useBatchItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
-import {
-  usePageController,
-} from "../../../controller/page-controller";
+import { usePageController } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
 
@@ -56,12 +54,15 @@ const Lendings: React.FC = () => {
   useEffect(() => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
-  
-  const checkBoxChangeWrapped = useCallback((nft) => {
-    return () => {
-      onCheckboxChange(nft);
-    };
-  }, [onCheckboxChange]);
+
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;

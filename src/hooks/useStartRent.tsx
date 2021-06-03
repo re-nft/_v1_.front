@@ -27,7 +27,7 @@ export const useStartRent = (): {
   startRent: (nfts: StartRentNft[]) => Promise<void | ContractTransaction>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
-  isApprovalLoading: boolean
+  isApprovalLoading: boolean;
 } => {
   const [signer] = useContext(SignerContext);
   const { instance: resolver } = useContext(ResolverContext);
@@ -97,9 +97,9 @@ export const useStartRent = (): {
         approvals.map((approval) =>
           approval.approve(contractAddress, MAX_UINT256)
         )
-      //TODO this is wrong, all transactions needs to be tracked
+        //TODO this is wrong, all transactions needs to be tracked
       ).then(([tx]) => {
-        if(tx) setHash(tx.hash)
+        if (tx) setHash(tx.hash);
         setApprovals([]);
       });
     }
@@ -140,6 +140,6 @@ export const useStartRent = (): {
     checkApprovals,
     handleApproveAll,
     isApproved,
-    isApprovalLoading
+    isApprovalLoading,
   };
 };

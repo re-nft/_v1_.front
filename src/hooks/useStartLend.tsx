@@ -4,10 +4,10 @@ import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
-import createDebugger from 'debug'
+import createDebugger from "debug";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
- const debug = createDebugger("app:contract");
+const debug = createDebugger("app:contract");
 //const debug = console.log;
 
 export const useStartLend = (): ((

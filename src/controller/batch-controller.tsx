@@ -34,10 +34,10 @@ const getLendingId = (item: Nft): string => {
       .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
       .concat("renting");
   return lendingID;
-}
+};
 export const getUniqueCheckboxId = (item: Nft): string => {
-  return getUniqueID(item.address, item.tokenId, getLendingId(item))
-}
+  return getUniqueID(item.address, item.tokenId, getLendingId(item));
+};
 
 export type BatchContextType = {
   // needs to be a hashmap because we need to check the presence in O(1) time
@@ -125,7 +125,6 @@ export const useBatchItems: () => BatchContextType = () => {
     [checkedItems]
   );
 
-  
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
     (item) => {
       const uniqueID = getUniqueCheckboxId(item);

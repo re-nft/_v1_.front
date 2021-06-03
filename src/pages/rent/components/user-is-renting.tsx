@@ -79,12 +79,15 @@ const UserRentings: React.FC = () => {
     }));
   }, [checkedRentingItems]);
 
-  const checkBoxChangeWrapped = useCallback((nft) => {
-    return () => {
-      onCheckboxChange(nft);
-    };
-  }, [onCheckboxChange]);
-  
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
+
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
@@ -104,39 +107,34 @@ const UserRentings: React.FC = () => {
       )}
       <ItemWrapper>
         {currentPage.length > 0 &&
-          currentPage
-            .map((nft: Renting) => {
-              const id = getUniqueCheckboxId(
-                nft
-              );
-              const checked =   !!checkedItems[
-                id
-              ];
-              return (
-                <CatalogueItem
-                  key={id}
+          currentPage.map((nft: Renting) => {
+            const id = getUniqueCheckboxId(nft);
+            const checked = !!checkedItems[id];
+            return (
+              <CatalogueItem
+                key={id}
+                nft={nft}
+                checked={checked}
+                onCheckboxChange={checkBoxChangeWrapped(nft)}
+              >
+                <NumericField
+                  text="Daily price"
+                  value={nft.lending.dailyRentPrice.toString()}
+                  unit={PaymentToken[PaymentToken.DAI]}
+                />
+                <NumericField
+                  text="Rent Duration"
+                  value={nft.renting.rentDuration.toString()}
+                  unit="days"
+                />
+                <ActionButton<Nft>
+                  title="Return It"
                   nft={nft}
-                  checked={checked}
-                  onCheckboxChange={checkBoxChangeWrapped(nft)}
-                >
-                  <NumericField
-                    text="Daily price"
-                    value={nft.lending.dailyRentPrice.toString()}
-                    unit={PaymentToken[PaymentToken.DAI]}
-                  />
-                  <NumericField
-                    text="Rent Duration"
-                    value={nft.renting.rentDuration.toString()}
-                    unit="days"
-                  />
-                  <ActionButton<Nft>
-                    title="Return It"
-                    nft={nft}
-                    onClick={() => handleReturnNft(nft)}
-                  />
-                </CatalogueItem>
-              );
-            })}
+                  onClick={() => handleReturnNft(nft)}
+                />
+              </CatalogueItem>
+            );
+          })}
       </ItemWrapper>
       <Pagination
         totalPages={totalPages}

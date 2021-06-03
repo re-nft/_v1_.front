@@ -12,10 +12,7 @@ const style = {
 };
 // const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
-const Checkbox: React.FC<CheckboxProps> = ({
-  checked,
-  handleClick
-}) => {
+const Checkbox: React.FC<CheckboxProps> = ({ checked, handleClick }) => {
   return (
     <>
       <div

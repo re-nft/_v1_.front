@@ -191,10 +191,7 @@ const ModalDialogSection: React.FC<{
     );
   };
   return (
-    <CommonInfo
-      nft={item}
-      key={getUniqueCheckboxId(item)}
-    >
+    <CommonInfo nft={item} key={getUniqueCheckboxId(item)}>
       <CssTextField
         required
         label={renderItem()}

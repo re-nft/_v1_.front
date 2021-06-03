@@ -360,7 +360,7 @@ export const Dashboard: React.FC = () => {
 export const LendingRow: React.FC<{
   lend: Lending;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
-  checked: boolean,
+  checked: boolean;
   hasRenting: boolean;
   handleStopLend: (lending: Lending[]) => void;
   claimCollateral: () => void;
@@ -373,7 +373,7 @@ export const LendingRow: React.FC<{
   claimCollateral,
 }) => {
   const lending = lend.lending;
-  
+
   return (
     <Tr>
       <Td className="column">

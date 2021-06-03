@@ -15,12 +15,12 @@ import {
 const BigNumZero = BigNumber.from("0");
 
 function range(start: number, stop: number, step: number) {
-    const a = [start];
-    let b = start;
-    while (b < stop) {
-        a.push(b += step || 1);
-    }
-    return a;
+  const a = [start];
+  let b = start;
+  while (b < stop) {
+    a.push((b += step || 1));
+  }
+  return a;
 }
 
 export const useFetchNftDev = (): Nft[] => {
@@ -35,7 +35,8 @@ export const useFetchNftDev = (): Nft[] => {
   useEffect(() => {
     const fetchAsync = async () => {
       if (IS_PROD) return;
-      if (!e1155 || !e721 || !e721b || !e1155b || !signer || !currentAddress) return [];
+      if (!e1155 || !e721 || !e721b || !e1155b || !signer || !currentAddress)
+        return [];
 
       const usersNfts: Nft[] = [];
       const e1155IDs = range(0, 1005, 1);
@@ -43,32 +44,26 @@ export const useFetchNftDev = (): Nft[] => {
       const num721s = await e721
         .balanceOf(currentAddress)
         .catch(() => BigNumZero);
-      
+
       const num721bs = await e721b
         .balanceOf(currentAddress)
         .catch(() => BigNumZero);
-  
+
       const num1155s = await e1155
-        .balanceOfBatch(
-          Array(e1155IDs.length).fill(currentAddress),
-          e1155IDs
-        )
+        .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
         .catch(() => []);
-  
+
       const num1155bs = await e1155b
-        .balanceOfBatch(
-          Array(e1155IDs.length).fill(currentAddress),
-          e1155IDs
-        )
+        .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
         .catch(() => []);
-          
+
       for (let i = 0; i < num721s.toNumber(); i++) {
         try {
           const tokenId = await e721.tokenOfOwnerByIndex(
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer))
+          usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -82,7 +77,7 @@ export const useFetchNftDev = (): Nft[] => {
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer))
+          usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"

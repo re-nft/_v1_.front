@@ -38,7 +38,6 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
           return acc;
         }, []);
       });
-      // TODO update if renting/lending changed
       // filter out duplicates
       const usersNfts721 = result
         .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))

@@ -15,7 +15,6 @@ import { ProviderContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 
-
 type LendModalProps = {
   nfts: Nft[];
   open: boolean;
@@ -35,7 +34,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const startLend = useStartLend();
   const contractAddress = useContractAddress();
-
 
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
@@ -70,12 +68,14 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
           pmtTokens
         )
       );
-      return transaction.promise.then((tx) => {
-        if (tx) return setHash(tx.hash);
-        Promise.resolve(false)
-      }).then((status) =>{
-        if(status) onClose()
-      });
+      return transaction.promise
+        .then((tx) => {
+          if (tx) return setHash(tx.hash);
+          Promise.resolve(false);
+        })
+        .then((status) => {
+          if (status) onClose();
+        });
     },
 
     [startLend, nfts, onClose, setHash]
@@ -92,7 +92,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       .then((receipt) => {
         const status = receipt?.status ?? 0;
         if (status === 1) setIsApproved(true);
-
       })
       .catch(() => {
         console.warn("issue pulling txn receipt in batch lend");
@@ -114,12 +113,12 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         if (!tx) return Promise.resolve(false);
         return setHash(tx.hash);
       })
-      .then((status)=>{
-        setIsApproved(status)
+      .then((status) => {
+        setIsApproved(status);
         setIsApprovalLoading(false);
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
         console.warn("issue approving all in batch lend");
         setIsApprovalLoading(false);
         return [undefined];
@@ -138,7 +137,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     );
     transaction.promise
       .then(([isApproved, nonApproved]) => {
-        if(isApproved) setIsApproved(isApproved);
+        if (isApproved) setIsApproved(isApproved);
         setNonApprovedNfts(nonApproved);
       })
       .catch(() => {

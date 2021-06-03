@@ -19,7 +19,7 @@ export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
-  onCheckboxChange: () => void
+  onCheckboxChange: () => void;
 };
 const Skeleton = () => {
   return (

@@ -5,7 +5,10 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
-import { getUniqueCheckboxId, useBatchItems } from "../controller/batch-controller";
+import {
+  getUniqueCheckboxId,
+  useBatchItems,
+} from "../controller/batch-controller";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
@@ -74,11 +77,14 @@ export const MyFavorites: React.FC = () => {
     fetchNfts(nftItems);
   }, [nftItems, fetchNfts]);
 
-  const checkBoxChangeWrapped = useCallback((nft) => {
-    return () => {
-      onCheckboxChange(nft);
-    };
-  }, [onCheckboxChange]);
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
 
   const isLoading = userDataIsLoading || allAvailableIsLoading;
 
