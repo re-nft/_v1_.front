@@ -13,6 +13,7 @@ import {
   FormikBag,
 } from "formik";
 import MinimalSelect from "../components/select";
+import Loader from "../components/loader";
 
 type LendFormProps = {
   nfts: Nft[];
@@ -46,7 +47,7 @@ type FormProps = { inputs: LendInput[] };
 const isInteger = (field: string | number): boolean => {
   try {
     return field !== parseInt(field.toString(), 10);
-  } catch(_) {
+  } catch (_) {
     return false;
   }
 };
@@ -100,7 +101,6 @@ export const LendForm: React.FC<LendFormProps> = ({
         error[fieldName] = "amount must be a whole number";
       }
 
-
       fieldName = "maxDuration";
       field = input[fieldName];
       if (typeof field === "undefined") {
@@ -109,9 +109,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         error[fieldName] = "lend duration must be greater than 1";
       } else if (field > 255) {
         error[fieldName] = "lend duration must be less or equal than 255";
-      } else if (
-        isInteger(field)
-      ) {
+      } else if (isInteger(field)) {
         error[fieldName] = "maxDuration must be a whole number";
       }
 
@@ -134,12 +132,12 @@ export const LendForm: React.FC<LendFormProps> = ({
       } else if (field > 9999.9999) {
         error[fieldName] = "collateral must be less then 1000";
       }
-      
+
       fieldName = "pmToken";
       field = input[fieldName];
-      if (typeof field=== "undefined") {
+      if (typeof field === "undefined") {
         error[fieldName] = "please specify payment token";
-      } else if (field< 0 || field> 5) {
+      } else if (field < 0 || field > 5) {
         error[fieldName] = "please specify payment token";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
@@ -198,20 +196,26 @@ export const LendForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <ActionButton<Nft>
-                  title="Approve all"
-                  nft={nft}
-                  onClick={handleApproveAll}
-                  disabled={isApprovalLoading}
-                />
+                <>
+                  <ActionButton<Nft>
+                    title="Approve all"
+                    nft={nft}
+                    onClick={handleApproveAll}
+                    disabled={isApprovalLoading}
+                  />
+                  {isApprovalLoading && <Loader />}
+                </>
               )}
               {(isApproved || isSubmitting) && (
-                <ActionButton<Nft>
-                  title={nfts.length > 1 ? "Lend all" : "Lend"}
-                  nft={nft}
-                  onClick={submitForm}
-                  disabled={!isValid || isSubmitting}
-                />
+                <>
+                  <ActionButton<Nft>
+                    title={nfts.length > 1 ? "Lend all" : "Lend"}
+                    nft={nft}
+                    onClick={submitForm}
+                    disabled={!isValid || isSubmitting}
+                  />
+                  {isSubmitting && <Loader />}
+                </>
               )}
             </div>
           </form>

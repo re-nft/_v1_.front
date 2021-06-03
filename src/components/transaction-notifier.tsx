@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import Slide from "@material-ui/core/Slide";
 
-import Loader from "./loader";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import { TransactionStateEnum } from "../types";
 
@@ -16,7 +15,7 @@ export const TransactionNotifier: React.FC = () => {
   return (
     <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>
       <div className="notifier">
-        {txnState === TransactionStateEnum.PENDING && <Loader />}
+        {/* {txnState === TransactionStateEnum.PENDING && <Loader />} */}
         {txnState === TransactionStateEnum.FAILED && (
           <div className="notifier-failed"></div>
         )}

@@ -26,7 +26,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   open,
   onClose,
 }) => {
-  const { setHash, hash } = useContext(TransactionStateContext);
+  const { setHash } = useContext(TransactionStateContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [provider] = useContext(ProviderContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -80,25 +80,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
     [startLend, nfts, onClose, setHash]
   );
-
-  useEffect(() => {
-    if (!provider) return;
-    if (!hash) return;
-    const fetchRequest = createCancellablePromise(
-      provider.getTransactionReceipt(hash)
-    );
-    setIsApproved(false);
-    fetchRequest.promise
-      .then((receipt) => {
-        const status = receipt?.status ?? 0;
-        if (status === 1) setIsApproved(true);
-      })
-      .catch(() => {
-        console.warn("issue pulling txn receipt in batch lend");
-        return undefined;
-      });
-    return fetchRequest.cancel;
-  }, [hash, provider]);
 
   const handleApproveAll = useCallback(() => {
     if (!provider) return;

@@ -16,7 +16,7 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short } from "../utils";
+import { advanceTime, short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import {
   E721Context,
@@ -188,6 +188,9 @@ const App: React.FC = () => {
             </button>
             <button className="menu__item" onClick={() => mintE20(5)}>
               Mint TUSD
+            </button>
+            <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
+              Advance time
             </button>
           </div>
         </div>
