@@ -70,6 +70,10 @@ const Pagination: React.FC<PaginationProps> = ({
   useEffect(() => {
     setShadowPageNumber(currentPageNumber);
   }, [currentPageNumber]);
+
+  // hide pagination if page number less than 2
+  if(totalPages < 2) return null;
+
   return (
     <>
       <ul className="pagination">
