@@ -4,6 +4,7 @@ import { IS_PROD } from "../consts";
 import { ReNFTContext, Symfoni } from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
+import { AvailableForRentProvider } from "./AvailableForRent";
 import { NFTMetaProvider } from "./NftMetaState";
 import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
@@ -17,7 +18,11 @@ export const StateProvider: React.FC = ({ children }) => {
           <TransactionStateProvider>
             <NFTMetaProvider>
               <UserLendingProvider>
-                <UserRentingProvider>{children}</UserRentingProvider>
+                <UserRentingProvider>
+                  <AvailableForRentProvider>
+                    {children}
+                  </AvailableForRentProvider>
+                </UserRentingProvider>
               </UserLendingProvider>
             </NFTMetaProvider>
           </TransactionStateProvider>

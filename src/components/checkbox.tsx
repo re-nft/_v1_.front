@@ -1,6 +1,7 @@
-// import { Checkbox as CheckboxMaterial } from "@material-ui/core";
-// import { withStyles } from "@material-ui/core/styles";
+import { Checkbox as CheckboxMaterial } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import React from "react";
+import { CheckedIcon, CheckIcon } from "./checkbox-icon";
 
 type CheckboxProps = {
   handleClick: () => void;
@@ -10,16 +11,23 @@ type CheckboxProps = {
 const style = {
   root: {},
 };
-// const StyledCheckbox = withStyles(style)(CheckboxMaterial);
+const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
-const Checkbox: React.FC<CheckboxProps> = ({ checked, handleClick }) => {
+const Checkbox: React.FC<CheckboxProps> = ({
+  checked,
+  handleClick,
+  disabled,
+}) => {
   return (
     <>
-      <div
-        onClick={handleClick}
-        className={`checkbox__dashboard checkbox ${checked ? "checked" : ""}`}
+      <StyledCheckbox
+        checked={checked}
+        checkedIcon={<CheckedIcon/>}
+        icon={<CheckIcon/>}
+        onChange={handleClick}
+        disableRipple
+        disabled={disabled}
       />
-      {/* <StyledCheckbox checked={checked} onChange={handleClick} disableRipple /> */}
     </>
   );
 };

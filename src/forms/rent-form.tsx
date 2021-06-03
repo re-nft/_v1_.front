@@ -89,6 +89,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       validate={validate}
       validateOnMount
       validateOnBlur
+      validateOnChange
     >
       {({
         values,

@@ -63,11 +63,12 @@ const reducer = (state: State, action: Action) => {
     case "SET_FETCH_READY": {
       const fetchReady: MetaLoading[] = [];
       let hasChange = false;
+      const metas: Record<string, MetaLoading> = {...state.metas};
       action.payload.forEach((nft) => {
         const id = nftId(nft.address, nft.tokenId);
         if (!state.metas[id]) {
           hasChange = true;
-          state.metas[id] = {
+          metas[id] = {
             id: id,
             // @ts-ignore
             loading: true,
@@ -76,47 +77,49 @@ const reducer = (state: State, action: Action) => {
         }
       });
       if (!hasChange) return state;
-      state.nfts = [...state.nfts, ...action.payload];
-      state.fetchReadyOpenSea = [...fetchReady, ...state.fetchReadyOpenSea];
-      return { ...state };
+      const nfts = [...state.nfts, ...action.payload];
+      const fetchReadyOpenSea = [...fetchReady, ...state.fetchReadyOpenSea];
+      return { ...state, nfts, fetchReadyOpenSea, metas };
     }
     case "SET_FETCHING_OPENSEA": {
       if (action.payload.length < 1) return state;
-      state.fetchingOpenSea = [...state.fetchingOpenSea, ...action.payload];
-      state.fetchReadyOpenSea = [];
-      return { ...state };
+      const fetchingOpenSea = [...state.fetchingOpenSea, ...action.payload];
+      const fetchReadyOpenSea: MetaLoading[] = [];
+      return { ...state, fetchingOpenSea, fetchReadyOpenSea };
     }
     case "SET_FETCHING_IPFS": {
       if (action.payload.length < 1) return state;
-      state.fetchingIPFS = [...state.fetchingIPFS, ...action.payload];
-      state.fetchReadyIPFS = [];
-      return { ...state };
+      const fetchingIPFS = [...state.fetchingIPFS, ...action.payload];
+      const fetchReadyIPFS: MetaLoading[] = [];
+      return { ...state, fetchingIPFS, fetchReadyIPFS };
     }
     case "SET_OPENSEA_RESULT": {
       const { founds, notFounds } = action.payload;
       if (founds.length < 1 && notFounds.length < 1) return state;
       const foundSet = new Set(founds.map((f) => f.id));
+      const metas: Record<string, MetaLoading> = { ...state.metas };
       founds.map((meta) => {
-        state.metas[meta.id] = {
+        metas[meta.id] = {
           ...meta,
           loading: false,
         };
       });
-      state.fetchingOpenSea = state.fetchReadyOpenSea.filter(
+      const fetchingOpenSea = state.fetchReadyOpenSea.filter(
         (n) => !foundSet.has(n.id)
       );
-      state.fetchReadyIPFS = [...state.fetchReadyIPFS, ...notFounds];
-      return { ...state };
+      const fetchReadyIPFS = [...state.fetchReadyIPFS, ...notFounds];
+      return { ...state, fetchingOpenSea, fetchReadyIPFS, metas };
     }
     case "SET_IPFS_RESULT": {
-      state.metas[action.payload.id] = {
+      const metas = {...state.metas};
+      metas[action.payload.id] = {
         ...action.payload,
         loading: false,
       };
-      state.fetchingIPFS = state.fetchReadyOpenSea.filter(
+      const fetchingIPFS = state.fetchReadyOpenSea.filter(
         (n) => action.payload.id !== n.id
       );
-      return { ...state };
+      return { ...state, metas, fetchingIPFS};
     }
   }
 };
@@ -186,7 +189,7 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
     if (fetchReady.length < 1) return;
-    const fetchSet = new Set(fetchReadyIPFS.map((v) => v.id));
+    const fetchSet = new Set(fetchReadyIPFS.map((v: MetaLoading) => v.id));
     const fetchNfts = nfts.filter((nft) =>
       fetchSet.has(nftId(nft.address, nft.tokenId))
     );

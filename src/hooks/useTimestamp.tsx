@@ -24,7 +24,7 @@ export const useTimestamp = (): number => {
           if (e) debug(e);
         });
     }
-    return Promise.reject();
+    return Promise.resolve();
   }, [provider, timeStamp]);
 
   useEffect(() => {

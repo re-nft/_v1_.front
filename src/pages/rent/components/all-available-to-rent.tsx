@@ -14,11 +14,12 @@ import {
 import Pagination from "../../../components/pagination";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useAllAvailableToRent } from "../../../contexts/graph/hooks/useAllAvilableToRent";
 import { usePageController } from "../../../controller/page-controller";
+import {AvailableForRentContext} from "../../../contexts/AvailableForRent"
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
+  const { allAvailableToRent, isLoading } = useContext(AvailableForRentContext);
   const {
     checkedItems,
     handleReset: handleBatchReset,
@@ -34,7 +35,6 @@ const AvailableToRent: React.FC = () => {
     onPageControllerInit,
   } = usePageController<Lending>();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const { allAvailableToRent, isLoading } = useAllAvailableToRent();
   const [_, fetchNfts] = useContext(NFTMetaContext);
 
   useEffect(() => {
@@ -130,3 +130,4 @@ const AvailableToRent: React.FC = () => {
 };
 
 export default React.memo(AvailableToRent);
+
