@@ -12,8 +12,7 @@ import {
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import {
-  PageContext,
-  PageContextType,
+  usePageController,
 } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
@@ -26,8 +25,8 @@ const Lendings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onChangePage,
-  } = useContext<PageContextType<Nft>>(PageContext);
+    onPageControllerInit,
+  } = usePageController<Nft>();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -50,8 +49,8 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    onChangePage(allAvailableToLend);
-  }, [allAvailableToLend, onChangePage]);
+    onPageControllerInit(allAvailableToLend);
+  }, [allAvailableToLend, onPageControllerInit]);
 
   //Prefetch metadata
   useEffect(() => {

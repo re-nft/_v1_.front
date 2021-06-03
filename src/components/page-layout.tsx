@@ -1,5 +1,4 @@
 import React from "react";
-import PageProvider from "../controller/page-controller";
 
 type PageLayoutProps = {
   onSwitch?: () => void;
@@ -28,7 +27,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
         </div>
       )}
       {!title && <div style={{ height: "4em" }} />}
-      <PageProvider>{children}</PageProvider>
+      {children}
     </div>
   );
 };

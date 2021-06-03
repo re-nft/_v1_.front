@@ -21,9 +21,9 @@ import {
 } from "../../../controller/batch-controller";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
-import { PageContext } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { UserRentingContext } from "../../../contexts/UserRenting";
+import { usePageController } from "../../../controller/page-controller";
 
 const UserRentings: React.FC = () => {
   const {
@@ -37,8 +37,8 @@ const UserRentings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onChangePage,
-  } = useContext(PageContext);
+    onPageControllerInit,
+  } = usePageController<Renting>();
   const { userRenting, isLoading } = useContext(UserRentingContext);
   const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -60,8 +60,8 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    onChangePage(userRenting);
-  }, [onChangePage, userRenting]);
+    onPageControllerInit(userRenting.filter((nft) => nft.renting));
+  }, [onPageControllerInit, userRenting]);
 
   //Prefetch metadata
   useEffect(() => {
@@ -93,9 +93,6 @@ const UserRentings: React.FC = () => {
     return <div className="center">You are not renting anything yet</div>;
   }
 
-  //TODO:eniko after returning the nft it returns is as Lending not REnting
-  //TODO remove the filter bellow
-  // TODO: remove all the anys
   return (
     <>
       {modalOpen && (
@@ -106,13 +103,8 @@ const UserRentings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {/* 
-          TODO: this is wild, this should not be any (about currentPage)
-        */}
         {currentPage.length > 0 &&
           currentPage
-            // it's with page change, lending is still there
-            .filter((r) => r.renting)
             .map((nft: Renting) => {
               const id = getUniqueCheckboxId(
                 nft

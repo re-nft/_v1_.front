@@ -12,7 +12,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const [signer] = useContext(SignerContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   const ids = useMemo(() => {
     return new Set(nfts.map((nft) => getUniqueCheckboxId(nft)));
@@ -38,6 +38,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
           return acc;
         }, []);
       });
+      // TODO update if renting/lending changed
       // filter out duplicates
       const usersNfts721 = result
         .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))

@@ -13,7 +13,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
 
   // TODO:eniko use cacheProvider or similar
   const [nfts, setNfts] = useState<Nft[]>([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   const ids = useMemo(() => {
     return new Set(nfts.map((nft) => getUniqueCheckboxId(nft as Nft)));
@@ -39,7 +39,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           return acc;
         }, []);
       });
-
+      // TODO update if renting/lending changed
       const usersNfts1155 = result // filter out duplicates
         .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))
         .map((nft) => {
