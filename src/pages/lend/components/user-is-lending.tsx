@@ -8,9 +8,7 @@ import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
-  BatchContext,
-  getUniqueID,
-  useCheckedLendingItems,
+  getUniqueCheckboxId, useBatchItems,
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { PageContext } from "../../../controller/page-controller";
@@ -21,9 +19,8 @@ import createCancellablePromise from "../../../contexts/create-cancellable-promi
 import { UserLendingContext } from "../../../contexts/UserLending";
 
 const UserCurrentlyLending: React.FC = () => {
-  const { checkedItems, handleReset: batchHandleReset } =
-    useContext(BatchContext);
-  const checkedLendingItems = useCheckedLendingItems();
+  const { checkedItems, handleReset: batchHandleReset, checkedLendingItems, onCheckboxChange } =
+    useBatchItems();
   const {
     totalPages,
     currentPageNumber,
@@ -75,6 +72,12 @@ const UserCurrentlyLending: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
+  const checkBoxChangeWrapped = useCallback((nft) => {
+    return () => {
+      onCheckboxChange(nft);
+    };
+  }, [onCheckboxChange]);
+
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You are not lending anything yet</div>;
@@ -90,13 +93,14 @@ const UserCurrentlyLending: React.FC = () => {
           if (isLending(nft)) {
             return (
               <CatalogueItem
-                key={getUniqueID(nft.address, nft.tokenId, nft.lending.id)}
+                key={getUniqueCheckboxId(nft)}
                 checked={
                   !!checkedItems[
-                    getUniqueID(nft.address, nft.tokenId, nft.lending.id)
+                    getUniqueCheckboxId(nft)
                   ]
                 }
                 nft={nft}
+                onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
                 <LendingFields nft={nft} />
                 <ActionButton<Lending>

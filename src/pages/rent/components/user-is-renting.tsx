@@ -16,9 +16,8 @@ import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
-  BatchContext,
-  getUniqueID,
-  useCheckedRentingItems,
+  getUniqueCheckboxId,
+  useBatchItems,
 } from "../../../controller/batch-controller";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/pagination";
@@ -31,8 +30,8 @@ const UserRentings: React.FC = () => {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-  } = useContext(BatchContext);
-  const checkedRentingItems = useCheckedRentingItems();
+    checkedRentingItems,
+  } = useBatchItems();
   const {
     totalPages,
     currentPageNumber,
@@ -80,6 +79,12 @@ const UserRentings: React.FC = () => {
     }));
   }, [checkedRentingItems]);
 
+  const checkBoxChangeWrapped = useCallback((nft) => {
+    return () => {
+      onCheckboxChange(nft);
+    };
+  }, [onCheckboxChange]);
+  
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
@@ -109,24 +114,18 @@ const UserRentings: React.FC = () => {
             // it's with page change, lending is still there
             .filter((r) => r.renting)
             .map((nft: Renting) => {
-              const id = getUniqueID(
-                nft.address,
-                nft.tokenId,
-                nft.renting.lendingId
+              const id = getUniqueCheckboxId(
+                nft
               );
+              const checked =   !!checkedItems[
+                id
+              ];
               return (
                 <CatalogueItem
                   key={id}
                   nft={nft}
-                  checked={
-                    !!checkedItems[
-                      getUniqueID(
-                        nft.address,
-                        nft.tokenId,
-                        nft.renting.lendingId
-                      )
-                    ]
-                  }
+                  checked={checked}
+                  onCheckboxChange={checkBoxChangeWrapped(nft)}
                 >
                   <NumericField
                     text="Daily price"

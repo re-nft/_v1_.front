@@ -1,7 +1,7 @@
 import CssTextField from "../components/css-text-field";
 
 import ActionButton from "../components/action-button";
-import { getUniqueID } from "../controller/batch-controller";
+import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
@@ -37,7 +37,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   const [nft] = nfts;
   const initialValues: FormProps = {
     inputs: nfts.map<LendingWithKey>((nft) => ({
-      key: getUniqueID(nft.address, nft.tokenId),
+      key: getUniqueCheckboxId(nft),
       duration: undefined,
       ...nft,
     })),
@@ -46,6 +46,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     values: FormProps,
     { setSubmitting }: FormikBag<FormProps, unknown>
   ) => {
+    setSubmitting(true);
     handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
@@ -192,7 +193,7 @@ const ModalDialogSection: React.FC<{
   return (
     <CommonInfo
       nft={item}
-      key={getUniqueID(item.address, item.tokenId, item.lending.id)}
+      key={getUniqueCheckboxId(item)}
     >
       <CssTextField
         required

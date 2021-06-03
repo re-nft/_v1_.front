@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { getUniqueID } from "../../../controller/batch-controller";
+import { getUniqueCheckboxId } from "../../../controller/batch-controller";
 import { SignerContext } from "../../../hardhat/SymfoniContext";
 import { fetchUserProd721 } from "../../../services/graph";
 import createCancellablePromise from "../../create-cancellable-promise";
@@ -15,7 +15,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const [isLoading, setLoading] = useState(false);
 
   const ids = useMemo(() => {
-    return new Set(nfts.map((nft) => getUniqueID(nft.nftAddress, nft.tokenId)));
+    return new Set(nfts.map((nft) => getUniqueCheckboxId(nft)));
   }, [nfts]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
       });
       // filter out duplicates
       const usersNfts721 = result
-        .filter((nft) => !ids.has(getUniqueID(nft.address, nft.tokenId)))
+        .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, signer, {
             meta: nft.meta,
@@ -50,7 +50,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
       const items: Nft[] = [];
       const resultIds = new Set();
       usersNfts721.forEach((nft) => {
-        const id = getUniqueID(nft.address, nft.tokenId);
+        const id = getUniqueCheckboxId(nft);
         if (!resultIds.has(id)) {
           items.push(nft);
           resultIds.add(id);

@@ -1,14 +1,11 @@
 import React, { useState, useCallback, useContext, useMemo } from "react";
 import moment from "moment";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import { Lending, Renting } from "../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../contexts/graph/classes";
 import {
-  BatchContext,
-  getUniqueID,
+  getUniqueCheckboxId,
   isClaimable,
-  useCheckedClaims,
-  useCheckedLendingItems,
-  useCheckedRentingItems,
+  useBatchItems,
 } from "../controller/batch-controller";
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
@@ -25,17 +22,12 @@ import MultipleBatchBar from "../components/multiple-batch-bar";
 import { useTimestamp } from "../hooks/useTimestamp";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Address } from "../components/address";
+import Checkbox from "../components/checkbox";
 
 enum DashboardViewType {
   LIST_VIEW,
   MINIATURE_VIEW,
 }
-
-type CheckboxProps = {
-  onCheckboxClick: (nft: Lending | Renting) => void;
-  nft: Lending | Renting;
-  checked: boolean;
-};
 
 type StopLendButtonProps = {
   handleStopLend: (lending: Lending[]) => void;
@@ -116,23 +108,6 @@ const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
   );
 };
 
-const Checkbox: React.FC<CheckboxProps> = ({
-  onCheckboxClick,
-  nft,
-  checked,
-}) => {
-  const handleClick = useCallback(() => {
-    return onCheckboxClick(nft);
-  }, [onCheckboxClick, nft]);
-
-  return (
-    <div
-      onClick={handleClick}
-      className={`checkbox__dashboard checkbox ${checked ? "checked" : ""}`}
-    />
-  );
-};
-
 // TODO: This code is not DRY
 // TODO: lendings has This batch architecture too
 // TODO: it would be good to absTract batching
@@ -140,11 +115,14 @@ const Checkbox: React.FC<CheckboxProps> = ({
 // TODO: so That we do not repeat This batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { onCheckboxChange, handleResetLending, checkedItems } =
-    useContext(BatchContext);
-  const checkedLendingItems = useCheckedLendingItems();
-  const checkedRentingItems = useCheckedRentingItems();
-  const checkedClaims = useCheckedClaims();
+  const {
+    onCheckboxChange,
+    handleResetLending,
+    checkedItems,
+    checkedLendingItems,
+    checkedRentingItems,
+    checkedClaims,
+  } = useBatchItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
@@ -200,14 +178,6 @@ export const Dashboard: React.FC = () => {
     },
     [stopLending, setHash, handleResetLending]
   );
-
-  const onCheckboxClick = useCallback(
-    (lending: Lending | Renting) => {
-      onCheckboxChange(lending);
-    },
-    [onCheckboxChange]
-  );
-
   const isLoading = userLendingLoading || userRentingLoading;
 
   const returnItems = useMemo(() => {
@@ -233,6 +203,14 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange, returnIt]
   );
 
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
 
@@ -274,50 +252,19 @@ export const Dashboard: React.FC = () => {
                 </Thead>
                 <Tbody>
                   {lendingItems.map((lend: Lending) => {
-                    const lending = lend.lending;
-                    const checked =
-                      !!checkedItems[
-                        getUniqueID(lend.address, lend.tokenId, lending.id)
-                      ];
+                    const id = getUniqueCheckboxId(lend);
                     const hasRenting = !!lend.renting;
+                    const checked = !!checkedItems[id];
                     return (
-                      <Tr
-                        key={getUniqueID(lend.address, lend.tokenId, lend.id)}
-                      >
-                        <Td className="column">
-                          <Address address={lending.nftAddress}></Address>
-                        </Td>
-                        <Td className="column">{lend.tokenId}</Td>
-                        <Td className="column">{lend.amount}</Td>
-                        <Td className="column">
-                          {PaymentToken[lending.paymentToken ?? 0]}
-                        </Td>
-                        <Td className="column">{lending.nftPrice}</Td>
-                        <Td className="column">{lending.dailyRentPrice}</Td>
-                        <Td className="column">
-                          {lending.maxRentDuration} days
-                        </Td>
-                        <Td className="action-column">
-                          <Checkbox
-                            onCheckboxClick={onCheckboxClick}
-                            nft={lend}
-                            checked={checked}
-                          />
-                        </Td>
-                        <Td className="action-column">
-                          <ClaimCollateralButton
-                            claimColleteral={claimCollateral}
-                            lend={lend}
-                          />
-                        </Td>
-                        <Td className="action-column">
-                          <StopLendButton
-                            handleStopLend={handleStopLend}
-                            lend={lend}
-                            disabled={checked || hasRenting}
-                          />
-                        </Td>
-                      </Tr>
+                      <LendingRow
+                        key={id}
+                        hasRenting={hasRenting}
+                        checked={checked}
+                        lend={lend}
+                        claimCollateral={claimCollateral}
+                        handleStopLend={handleStopLend}
+                        checkBoxChangeWrapped={checkBoxChangeWrapped}
+                      ></LendingRow>
                     );
                   })}
                 </Tbody>
@@ -351,18 +298,9 @@ export const Dashboard: React.FC = () => {
                 <Tbody>
                   {rentingItems.map((rent: Renting) => {
                     const renting = rent.renting;
-                    const checked =
-                      !!checkedItems[
-                        getUniqueID(rent.address, rent.tokenId, renting.id)
-                      ];
+                    const checked = !!checkedItems[getUniqueCheckboxId(rent)];
                     return (
-                      <Tr
-                        key={getUniqueID(
-                          rent.lending.nftAddress,
-                          rent.lending.tokenId,
-                          renting.lendingId
-                        )}
-                      >
+                      <Tr key={getUniqueCheckboxId(rent)}>
                         <Td className="column">
                           {short(renting.lending.nftAddress)}
                         </Td>
@@ -383,8 +321,7 @@ export const Dashboard: React.FC = () => {
                         </Td>
                         <Td className="action-column">
                           <Checkbox
-                            onCheckboxClick={onCheckboxClick}
-                            nft={rent}
+                            handleClick={checkBoxChangeWrapped(rent)}
                             checked={checked}
                           />
                         </Td>
@@ -417,6 +354,51 @@ export const Dashboard: React.FC = () => {
         onStopLend={handleStopLendAll}
       />
     </div>
+  );
+};
+
+export const LendingRow: React.FC<{
+  lend: Lending;
+  checkBoxChangeWrapped: (nft: Nft) => () => void;
+  checked: boolean,
+  hasRenting: boolean;
+  handleStopLend: (lending: Lending[]) => void;
+  claimCollateral: () => void;
+}> = ({
+  lend,
+  checkBoxChangeWrapped,
+  checked,
+  hasRenting,
+  handleStopLend,
+  claimCollateral,
+}) => {
+  const lending = lend.lending;
+  
+  return (
+    <Tr>
+      <Td className="column">
+        <Address address={lending.nftAddress}></Address>
+      </Td>
+      <Td className="column">{lend.tokenId}</Td>
+      <Td className="column">{lend.amount}</Td>
+      <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
+      <Td className="column">{lending.nftPrice}</Td>
+      <Td className="column">{lending.dailyRentPrice}</Td>
+      <Td className="column">{lending.maxRentDuration} days</Td>
+      <Td className="action-column">
+        <Checkbox handleClick={checkBoxChangeWrapped(lend)} checked={checked} />
+      </Td>
+      <Td className="action-column">
+        <ClaimCollateralButton claimColleteral={claimCollateral} lend={lend} />
+      </Td>
+      <Td className="action-column">
+        <StopLendButton
+          handleStopLend={handleStopLend}
+          lend={lend}
+          disabled={checked || hasRenting}
+        />
+      </Td>
+    </Tr>
   );
 };
 

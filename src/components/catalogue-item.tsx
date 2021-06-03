@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 
-import { BatchContext } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import GraphContext from "../contexts/graph";
 import {
@@ -20,6 +19,7 @@ export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
+  onCheckboxChange: () => void
 };
 const Skeleton = () => {
   return (
@@ -37,11 +37,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
   isAlreadyFavourited,
+  onCheckboxChange,
   children,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
-
-  const { onCheckboxChange } = useContext(BatchContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
@@ -61,8 +60,8 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     setIsChecked(!isChecked);
     // ! either pass a type as the id, or do not assume that the id must have a certain
     // ! format inside of the onCheckboxChange
-    onCheckboxChange(nft);
-  }, [nft, isChecked, onCheckboxChange]);
+    onCheckboxChange();
+  }, [isChecked, onCheckboxChange]);
 
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
