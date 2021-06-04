@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback , useContext} from "react";
 
 import {
   Nft,
@@ -12,7 +12,7 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { THROWS } from "../utils";
 import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
-import { useTimestamp } from "../hooks/useTimestamp";
+import { TimestampContext } from "../contexts/TimestampProvider";
 
 type UniqueID = string;
 
@@ -73,11 +73,9 @@ const shouldDelete =
   (item: Renting | Lending | Nft) => {
     const keys = new Set(items);
     if (keys && keys.size > 0) {
-      // TODO this is always works, not sure why not in this project
-      // @ts-ignore
-      if (item.id) {
-        // @ts-ignore
-        return keys.has(item.id);
+      const id = getUniqueCheckboxId(item);
+      if (id) {
+        return keys.has(id);
       }
     }
     return isrentcheck ? isRenting(item) : isLending(item);
@@ -99,6 +97,8 @@ const filter = (
 };
 
 export const useBatchItems: () => BatchContextType = () => {
+  //TODO:eniko the memory usage bug
+  const blockTimeStamp = useContext(TimestampContext);
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]
   >(defaultBatchContext.checkedItems);
@@ -119,8 +119,12 @@ export const useBatchItems: () => BatchContextType = () => {
   // remove provided items or all the lendings
   const handleResetLending = useCallback(
     (lending?: string[]) => {
-      if (Object.keys(checkedItems).length > 0)
-        setCheckedItems(filter(checkedItems, lending, false));
+      if (Object.keys(checkedItems).length > 0){
+        const items = filter(checkedItems, lending, false)
+        console.log('items', items)
+        setCheckedItems(items);
+
+      }
     },
     [checkedItems]
   );
@@ -149,12 +153,14 @@ export const useBatchItems: () => BatchContextType = () => {
     return Object.values(checkedItems).filter(isLending);
   }, [checkedItems]);
 
-  const blockTimeStamp = useTimestamp();
   const claimable = useCallback(isClaimable, []);
 
   const checkedClaims = useMemo(() => {
     return checkedLendingItems.filter(
-      (l) => l.renting && claimable(l.renting, blockTimeStamp)
+      (l) =>
+        l.renting &&
+        claimable(l.renting, blockTimeStamp) &&
+        !l.lending.collateralClaimed
     );
   }, [blockTimeStamp, checkedLendingItems, claimable]);
 

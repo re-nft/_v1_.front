@@ -10,6 +10,14 @@ export const parseLending = (
   parsedRenting?: IRenting
 ): ILending => {
   const paymentToken = parsePaymentToken(lending.paymentToken);
+  const number =
+    paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
+      ? DP9
+      : DP18;
+  const precision =
+    paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
+      ? 10e9
+      : 10e18;
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
@@ -17,18 +25,8 @@ export const parseLending = (
     lentAmount: lending.lentAmount,
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
-    dailyRentPrice: unpackPrice(
-      lending.dailyRentPrice,
-      paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-        ? DP9
-        : DP18
-    ),
-    nftPrice: unpackPrice(
-      lending.nftPrice,
-      paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-        ? DP9
-        : DP18
-    ),
+    dailyRentPrice: unpackPrice(lending.dailyRentPrice, number, precision),
+    nftPrice: unpackPrice(lending.nftPrice, number, precision),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,

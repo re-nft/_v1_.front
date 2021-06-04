@@ -179,6 +179,7 @@ export const queryUserLendingRenft = (user: string): string => {
         lenderAddress
         maxRentDuration
         isERC721
+        collateralClaimed
         renting {
           id
           renterAddress

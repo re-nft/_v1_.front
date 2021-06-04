@@ -13,6 +13,7 @@ import createCancellablePromise from "./create-cancellable-promise";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
+import { diffJson } from "diff";
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -66,14 +67,26 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             .map((lending) => {
               return new Lending(lending, signer);
             });
-          setLendings(lendings);
+
+          const normalizedLendings = lending.map((lending) => lending.toJSON());
+          const normalizedLendingNew = lendings.map((lending) => lending.toJSON());
+
+          const difference = diffJson(
+            normalizedLendings,
+            normalizedLendingNew,
+            { ignoreWhitespace: true }
+          );
+          //const difference = true;
+          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+            setLendings(lendings);
+          }
         }
       })
       .finally(() => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [signer]);
+  }, [lending, signer]);
 
   useEffect(() => {
     fetchLending();

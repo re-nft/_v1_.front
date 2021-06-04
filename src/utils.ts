@@ -128,7 +128,7 @@ export const decimalToPaddedHexString = (
 };
 
 //TODO:eniko do we need this
-export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
+export const unpackPrice = (price: BigNumberish, scale: BigNumber, divide: number): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
     2
@@ -141,7 +141,7 @@ export const unpackPrice = (price: BigNumberish, scale: BigNumber): number => {
   const d = BigNumber.from(decimal).mul(scale.div(10_000));
   const _price = w.add(d);
   // * think of a neat way to divide by 1e18
-  return Number(_price) / 1000000 / 1000000 / 1000000;
+  return Number(_price) / divide;
 };
 
 export const packPrice = (price: number): string => {
