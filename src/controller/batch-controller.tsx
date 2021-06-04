@@ -73,11 +73,9 @@ const shouldDelete =
   (item: Renting | Lending | Nft) => {
     const keys = new Set(items);
     if (keys && keys.size > 0) {
-      // TODO this is always works, not sure why not in this project
-      // @ts-ignore
-      if (item.id) {
-        // @ts-ignore
-        return keys.has(item.id);
+      const id = getUniqueCheckboxId(item);
+      if (id) {
+        return keys.has(id);
       }
     }
     return isrentcheck ? isRenting(item) : isLending(item);
@@ -121,8 +119,12 @@ export const useBatchItems: () => BatchContextType = () => {
   // remove provided items or all the lendings
   const handleResetLending = useCallback(
     (lending?: string[]) => {
-      if (Object.keys(checkedItems).length > 0)
-        setCheckedItems(filter(checkedItems, lending, false));
+      if (Object.keys(checkedItems).length > 0){
+        const items = filter(checkedItems, lending, false)
+        console.log('items', items)
+        setCheckedItems(items);
+
+      }
     },
     [checkedItems]
   );

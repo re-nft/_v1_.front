@@ -13,7 +13,6 @@ import { PaymentToken } from "../types";
 import { short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import { useReturnIt } from "../hooks/useReturnIt";
@@ -30,7 +29,6 @@ enum DashboardViewType {
   MINIATURE_VIEW,
 }
 
-
 // TODO: This code is not DRY
 // TODO: lendings has This batch architecture too
 // TODO: it would be good to absTract batching
@@ -41,6 +39,7 @@ export const Dashboard: React.FC = () => {
   const {
     onCheckboxChange,
     handleResetLending,
+    handleResetRenting,
     checkedItems,
     checkedLendingItems,
     checkedRentingItems,
@@ -71,8 +70,9 @@ export const Dashboard: React.FC = () => {
           if (tx) return setHash(tx.hash);
           return Promise.resolve();
         })
-        .then(() => {
-          handleResetLending();
+        .then((status) => {
+          if (status)
+            handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
         });
     },
     [claim, handleResetLending, setHash]
@@ -83,24 +83,21 @@ export const Dashboard: React.FC = () => {
   }, [checkedLendingItems, claimCollateral]);
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
-      const Transaction = createCancellablePromise(
-        stopLending(
-          lending.map((l) => ({
-            address: l.address,
-            amount: l.amount,
-            lendingId: l.lending.id,
-            tokenId: l.tokenId,
-          }))
-        )
-      );
-
-      Transaction.promise
+      stopLending(
+        lending.map((l) => ({
+          address: l.address,
+          amount: l.amount,
+          lendingId: l.lending.id,
+          tokenId: l.tokenId,
+        }))
+      )
         .then((tx) => {
-          if (tx) setHash(tx.hash);
+          if (tx) return setHash(tx.hash);
           return Promise.resolve(false);
         })
         .then((status) => {
-          if (status) handleResetLending(lending.map((m) => m.id));
+          if (status)
+            handleResetLending(lending.map((i) => getUniqueCheckboxId(i)));
         });
     },
     [stopLending, setHash, handleResetLending]
@@ -126,9 +123,11 @@ export const Dashboard: React.FC = () => {
           lendingId: item.renting.lendingId,
           amount: item.renting.lending.lentAmount,
         }))
-      );
+      ).then((status) => {
+        if (status) handleResetRenting(nfts.map((i) => getUniqueCheckboxId(i)));
+      });
     },
-    [returnIt]
+    [handleResetRenting, returnIt]
   );
 
   const handleReturnAll = useCallback(() => {
@@ -143,6 +142,15 @@ export const Dashboard: React.FC = () => {
     },
     [onCheckboxChange]
   );
+  const checkedClaimsLength = useMemo(()=>{
+    return checkedClaims.length;
+  }, [checkedClaims])
+  const checkedRentingLength = useMemo(()=>{
+    return checkedRentingItems.length;
+  }, [checkedRentingItems])
+  const lendinItemsStopLendableLength = useMemo(()=>{
+    return lendinItemsStopLendable.length;
+  }, [lendinItemsStopLendable])
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
 
@@ -248,9 +256,9 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
       <MultipleBatchBar
-        claimsNumber={checkedClaims.length}
-        rentingNumber={checkedRentingItems.length}
-        lendingNumber={lendinItemsStopLendable.length}
+        claimsNumber={checkedClaimsLength}
+        rentingNumber={checkedRentingLength}
+        lendingNumber={lendinItemsStopLendableLength}
         onClaim={claimCollateralAll}
         onStopRent={handleReturnAll}
         onStopLend={handleStopLendAll}
