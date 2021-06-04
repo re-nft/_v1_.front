@@ -23,89 +23,13 @@ import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Address } from "../components/address";
 import Checkbox from "../components/checkbox";
 import { TimestampContext } from "../contexts/TimestampProvider";
+import { Button } from "../components/button";
 
 enum DashboardViewType {
   LIST_VIEW,
   MINIATURE_VIEW,
 }
 
-type StopLendButtonProps = {
-  handleStopLend: (lending: Lending[]) => void;
-  lend: Lending;
-  disabled?: boolean;
-};
-
-type ClaimColleteralButtonProps = {
-  claimColleteral: (lending: Lending[]) => void;
-  lend: Lending;
-  disabled?: boolean;
-  claimable: boolean;
-};
-
-type ReturnNftButtonProps = {
-  handleReturnNft: (renting: Renting[]) => void;
-  rent: Renting;
-  disabled?: boolean;
-};
-
-const ReturnNftButton: React.FC<ReturnNftButtonProps> = ({
-  handleReturnNft,
-  rent,
-  disabled,
-}) => {
-  const handleClick = useCallback(() => {
-    return handleReturnNft([rent]);
-  }, [handleReturnNft, rent]);
-  return (
-    <button
-      className={`nft__button small ${disabled ? "disabled" : ""}`}
-      onClick={handleClick}
-      disabled={disabled}
-    >
-      Return It
-    </button>
-  );
-};
-
-const StopLendButton: React.FC<StopLendButtonProps> = ({
-  handleStopLend,
-  lend,
-  disabled,
-}) => {
-  const handleClick = useCallback(() => {
-    return handleStopLend([lend]);
-  }, [handleStopLend, lend]);
-  return (
-    <button
-      className={`nft__button small ${disabled ? "disabled" : ""}`}
-      onClick={handleClick}
-      disabled={disabled}
-    >
-      Stop lend
-    </button>
-  );
-};
-
-const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
-  claimColleteral,
-  lend,
-  disabled,
-  claimable,
-}) => {
-  const handleClick = useCallback(() => {
-    if (!claimable) return;
-    return claimColleteral([lend]);
-  }, [claimColleteral, lend, claimable]);
-  return (
-    <button
-      className={`nft__button small ${claimable ? "" : "disabled"}`}
-      disabled={disabled}
-      onClick={handleClick}
-    >
-      Claim
-    </button>
-  );
-};
 
 // TODO: This code is not DRY
 // TODO: lendings has This batch architecture too
@@ -132,7 +56,7 @@ export const Dashboard: React.FC = () => {
   );
   const stopLending = useStopLend();
   const claim = useClaimColleteral();
-  
+
   const claimCollateral = useCallback(
     async (items: Lending[]) => {
       const claims = items.map((lending) => ({
@@ -183,32 +107,33 @@ export const Dashboard: React.FC = () => {
   );
   const isLoading = userLendingLoading || userRentingLoading;
 
-  const returnItems = useMemo(() => {
-    return checkedRentingItems.map((item) => ({
-      id: item.id,
-      address: item.address,
-      tokenId: item.tokenId,
-      lendingId: item.renting.lendingId,
-      amount: item.renting.lending.lentAmount,
-      contract: item.contract,
-    }));
-  }, [checkedRentingItems]);
-
   const lendinItemsStopLendable = useMemo(() => {
     return checkedLendingItems.filter((v) => !v.renting);
   }, [checkedLendingItems]);
-  const returnIt = useReturnIt(returnItems);
+  const returnIt = useReturnIt();
+
   const handleStopLendAll = useCallback(() => {
     return handleStopLend(lendinItemsStopLendable);
   }, [handleStopLend, lendinItemsStopLendable]);
 
-  const handleReturnNft = useCallback(
-    (nft) => {
-      onCheckboxChange(nft);
-      returnIt();
+  const handleReturn = useCallback(
+    (nfts: Renting[]) => {
+      returnIt(
+        nfts.map((item) => ({
+          id: item.id,
+          address: item.address,
+          tokenId: item.tokenId,
+          lendingId: item.renting.lendingId,
+          amount: item.renting.lending.lentAmount,
+        }))
+      );
     },
-    [onCheckboxChange, returnIt]
+    [returnIt]
   );
+
+  const handleReturnAll = useCallback(() => {
+    handleReturn(checkedRentingItems);
+  }, [checkedRentingItems, handleReturn]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -304,45 +229,16 @@ export const Dashboard: React.FC = () => {
                 </Thead>
                 <Tbody>
                   {rentingItems.map((rent: Renting) => {
-                    const renting = rent.renting;
                     const checked = !!checkedItems[getUniqueCheckboxId(rent)];
                     return (
-                      <Tr key={getUniqueCheckboxId(rent)}>
-                        <Td className="column">
-                          {short(renting.lending.nftAddress)}
-                        </Td>
-                        <Td className="column">{rent.tokenId}</Td>
-                        <Td className="column">{renting.lending.lentAmount}</Td>
-                        <Td className="column">
-                          {PaymentToken[renting.lending.paymentToken ?? 0]}
-                        </Td>
-                        <Td className="column">{renting.rentDuration} days</Td>
-                        <Td className="column">
-                          {moment(Number(renting.rentedAt) * 1000).format(
-                            "MM/D/YY hh:mm"
-                          )}
-                        </Td>
-                        <Td className="column">{renting.rentDuration} days</Td>
-                        <Td className="column">
-                          {renting.lending.dailyRentPrice}
-                        </Td>
-                        <Td className="action-column">
-                          <Checkbox
-                            handleClick={checkBoxChangeWrapped(rent)}
-                            checked={checked}
-                          />
-                        </Td>
-                        <Td className="action-column">
-                          {renting.lending.lenderAddress !==
-                            currentAddress.toLowerCase() && (
-                            <ReturnNftButton
-                              handleReturnNft={handleReturnNft}
-                              rent={rent}
-                              disabled={checked}
-                            />
-                          )}
-                        </Td>
-                      </Tr>
+                      <RentingRow
+                        checked={checked}
+                        rent={rent}
+                        key={getUniqueCheckboxId(rent)}
+                        handleReturn={handleReturn}
+                        currentAddress={currentAddress}
+                        checkBoxChangeWrapped={checkBoxChangeWrapped}
+                      ></RentingRow>
                     );
                   })}
                 </Tbody>
@@ -356,10 +252,57 @@ export const Dashboard: React.FC = () => {
         rentingNumber={checkedRentingItems.length}
         lendingNumber={lendinItemsStopLendable.length}
         onClaim={claimCollateralAll}
-        onStopRent={returnIt}
+        onStopRent={handleReturnAll}
         onStopLend={handleStopLendAll}
       />
     </div>
+  );
+};
+
+const RentingRow: React.FC<{
+  checked: boolean;
+  rent: Renting;
+  handleReturn: (nft: Renting[]) => void;
+  currentAddress: string;
+  checkBoxChangeWrapped: (nft: Renting) => () => void;
+}> = ({
+  checked,
+  rent,
+  handleReturn,
+  checkBoxChangeWrapped,
+  currentAddress,
+}) => {
+  const renting = rent.renting;
+  const handleClick = useCallback(() => {
+    return handleReturn([rent]);
+  }, [handleReturn, rent]);
+  return (
+    <Tr>
+      <Td className="column">{short(renting.lending.nftAddress)}</Td>
+      <Td className="column">{rent.tokenId}</Td>
+      <Td className="column">{renting.lending.lentAmount}</Td>
+      <Td className="column">
+        {PaymentToken[renting.lending.paymentToken ?? 0]}
+      </Td>
+      <Td className="column">{renting.rentDuration} days</Td>
+      <Td className="column">
+        {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
+      </Td>
+      <Td className="column">{renting.rentDuration} days</Td>
+      <Td className="column">{renting.lending.dailyRentPrice}</Td>
+      <Td className="action-column">
+        <Checkbox handleClick={checkBoxChangeWrapped(rent)} checked={checked} />
+      </Td>
+      <Td className="action-column">
+        {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
+          <Button
+            handleClick={handleClick}
+            disabled={checked}
+            description="Return it"
+          />
+        )}
+      </Td>
+    </Tr>
   );
 };
 
@@ -390,6 +333,14 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
+  const handleClick = useCallback(() => {
+    if (!claimable) return;
+    return claimCollateral([lend]);
+  }, [claimCollateral, lend, claimable]);
+
+  const handleClickLend = useCallback(() => {
+    return handleStopLend([lend]);
+  }, [handleStopLend, lend]);
   return (
     <Tr>
       <Td className="column">
@@ -409,18 +360,17 @@ export const LendingRow: React.FC<{
         />
       </Td>
       <Td className="action-column">
-        <ClaimCollateralButton
-          claimColleteral={claimCollateral}
-          lend={lend}
-          claimable={claimable}
-          disabled={checked}
+        <Button
+          handleClick={handleClick}
+          disabled={checked || !claimable}
+          description="Claim"
         />
       </Td>
       <Td className="action-column">
-        <StopLendButton
-          handleStopLend={handleStopLend}
-          lend={lend}
+        <Button
+          handleClick={handleClickLend}
           disabled={checked || hasRenting}
+          description="Stop lend"
         />
       </Td>
     </Tr>

@@ -126,7 +126,9 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         );
       }
     }
-    setDevNfts(usersNfts);
+    if(usersNfts.length > 1){
+      setDevNfts(usersNfts);
+    }
     setIsLoading(false);
   }, [e1155, e721, e721b, e1155b, signer, currentAddress, isLoading]);
 
