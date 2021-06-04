@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -29,7 +29,6 @@ import {
   USDTContext,
   TUSDContext,
 } from "../hardhat/SymfoniContext";
-import debug from "debug";
 
 const ROUTES = [
   {
@@ -78,57 +77,57 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintNFT = useCallback(
-    async (nft: number) => {
-      switch (nft) {
-        case 0:
-          if (!e721) return;
-          await (await e721.faucet()).wait();
-          break;
-        case 1:
-          if (!e721b) return;
-          await (await e721b.faucet()).wait();
-          break;
-        case 2:
-          if (!e1155) return;
-          await (await e1155.faucet(10)).wait();
-          break;
-        case 3:
-          if (!e1155b) return;
-          await (await e1155b.faucet(10)).wait();
-          break;
-        default:
-          debug("unknown NFT");
-          return;
-      }
-    },
-    [e721, e721b, e1155, e1155b]
-  );
+  // const mintNFT = useCallback(
+  //   async (nft: number) => {
+  //     switch (nft) {
+  //       case 0:
+  //         if (!e721) return;
+  //         await (await e721.faucet()).wait();
+  //         break;
+  //       case 1:
+  //         if (!e721b) return;
+  //         await (await e721b.faucet()).wait();
+  //         break;
+  //       case 2:
+  //         if (!e1155) return;
+  //         await (await e1155.faucet('10')).wait();
+  //         break;
+  //       case 3:
+  //         if (!e1155b) return;
+  //         await (await e1155b.faucet('10')).wait();
+  //         break;
+  //       default:
+  //         debug("unknown NFT");
+  //         return;
+  //     }
+  //   },
+  //   [e721, e721b, e1155, e1155b]
+  // );
 
-  const mintE20 = useCallback(async (e20: number) => {
-    switch (e20) {
-      case 1:
-        if (!weth) return;
-        await (await weth.faucet()).wait();
-        break;
-      case 2:
-        if (!dai) return;
-        await (await dai.faucet()).wait();
-        break;
-      case 3:
-        if (!usdc) return;
-        await (await usdc.faucet()).wait();
-        break;
-      case 4:
-        if (!usdt) return;
-        await (await usdt.faucet()).wait();
-        break;
-      case 5:
-        if (!tusd) return;
-        await (await tusd.faucet()).wait();
-        break;
-    }
-  }, []);
+  // const mintE20 = useCallback(async (e20: number) => {
+  //   switch (e20) {
+  //     case 1:
+  //       if (!weth) return;
+  //       await (await weth.faucet()).wait();
+  //       break;
+  //     case 2:
+  //       if (!dai) return;
+  //       await (await dai.faucet()).wait();
+  //       break;
+  //     case 3:
+  //       if (!usdc) return;
+  //       await (await usdc.faucet()).wait();
+  //       break;
+  //     case 4:
+  //       if (!usdt) return;
+  //       await (await usdt.faucet()).wait();
+  //       break;
+  //     case 5:
+  //       if (!tusd) return;
+  //       await (await tusd.faucet()).wait();
+  //       break;
+  //   }
+  // }, []);
 
   return (
     <Layout>
@@ -160,7 +159,7 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          <button className="menu__item" onClick={() => mintNFT(0)}>
+          {/* <button className="menu__item" onClick={() => mintNFT(0)}>
             Mint 721A
           </button>
           <button className="menu__item" onClick={() => mintNFT(1)}>
@@ -171,10 +170,10 @@ const App: React.FC = () => {
           </button>
           <button className="menu__item" onClick={() => mintNFT(3)}>
             Mint 1155B
-          </button>
+          </button> */}
           {/* payment token faucets */}
           <div>
-            <button className="menu__item" onClick={() => mintE20(1)}>
+            {/* <button className="menu__item" onClick={() => mintE20(1)}>
               Mint WETH
             </button>
             <button className="menu__item" onClick={() => mintE20(2)}>
@@ -188,7 +187,7 @@ const App: React.FC = () => {
             </button>
             <button className="menu__item" onClick={() => mintE20(5)}>
               Mint TUSD
-            </button>
+            </button> */}
             <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
               Advance time
             </button>

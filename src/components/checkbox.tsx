@@ -9,7 +9,16 @@ type CheckboxProps = {
   disabled?: boolean;
 };
 const style = {
-  root: {},
+  root: {
+    '& input:disabled + .MuiSvgIcon-root': {
+      '& .front': {
+        fill: '#9CA3AF'
+      },
+      '& .shadow': {
+        fill: '#4B5563'
+      }
+    }
+  },
 };
 const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 

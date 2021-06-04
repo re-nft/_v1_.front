@@ -19,7 +19,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
   lendingNumber,
   rentingNumber,
 }) => {
-  if (rentingNumber < 2 && lendingNumber < 2) return null;
+  if (rentingNumber < 2 && lendingNumber < 2 && claimsNumber < 2) return null;
   return (
     <div className="batch">
       {rentingNumber > 1 && (

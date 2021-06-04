@@ -38,6 +38,8 @@ type StopLendButtonProps = {
 type ClaimColleteralButtonProps = {
   claimColleteral: (lending: Lending[]) => void;
   lend: Lending;
+  disabled?: boolean;
+  claimable: boolean;
 };
 
 type ReturnNftButtonProps = {
@@ -87,13 +89,10 @@ const StopLendButton: React.FC<StopLendButtonProps> = ({
 const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
   claimColleteral,
   lend,
+  disabled,
+  claimable
 }) => {
-  const blockTimeStamp = useTimestamp();
-
-  const claimable = useMemo(
-    () => lend.renting && isClaimable(lend.renting, blockTimeStamp),
-    [lend, blockTimeStamp]
-  );
+  
   const handleClick = useCallback(() => {
     if (!claimable) return;
     return claimColleteral([lend]);
@@ -101,6 +100,7 @@ const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
   return (
     <button
       className={`nft__button small ${claimable ? "" : "disabled"}`}
+      disabled={disabled}
       onClick={handleClick}
     >
       Claim
@@ -190,10 +190,14 @@ export const Dashboard: React.FC = () => {
       contract: item.contract,
     }));
   }, [checkedRentingItems]);
+
+  const lendinItemsStopLendable = useMemo(() => {
+    return checkedLendingItems.filter(v => !v.lending);
+  }, [checkedLendingItems]);
   const returnIt = useReturnIt(returnItems);
   const handleStopLendAll = useCallback(() => {
-    return handleStopLend(lendingItems);
-  }, [handleStopLend, lendingItems]);
+    return handleStopLend(lendinItemsStopLendable);
+  }, [handleStopLend, lendinItemsStopLendable]);
 
   const handleReturnNft = useCallback(
     (nft) => {
@@ -220,6 +224,14 @@ export const Dashboard: React.FC = () => {
     );
   }
 
+  const arr = [];
+  if(checkedClaims.length > 0){
+    arr.push(`Selected ${checkedClaims.length} items to claim`)
+  }
+  if(lendinItemsStopLendable.length > 0){
+    arr.push(`Selected ${lendinItemsStopLendable.length} items to stop lend`)
+  }
+  const batchBarTitle = arr.join('\n');
   return (
     <div>
       {viewType === DashboardViewType.LIST_VIEW && (
@@ -345,10 +357,10 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
       <MultipleBatchBar
-        title={`Selected ${checkedLendingItems.length} items`}
+        title={batchBarTitle}
         claimsNumber={checkedClaims.length}
         rentingNumber={checkedRentingItems.length}
-        lendingNumber={checkedLendingItems.length}
+        lendingNumber={lendinItemsStopLendable.length}
         onClaim={claimCollateral}
         onStopRent={returnIt}
         onStopLend={handleStopLendAll}
@@ -373,7 +385,12 @@ export const LendingRow: React.FC<{
   claimCollateral,
 }) => {
   const lending = lend.lending;
+  const blockTimeStamp = useTimestamp();
 
+  const claimable = useMemo(
+    () => !!(lend.renting && isClaimable(lend.renting, blockTimeStamp)),
+    [lend, blockTimeStamp]
+  );
   return (
     <Tr>
       <Td className="column">
@@ -386,10 +403,15 @@ export const LendingRow: React.FC<{
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="action-column">
-        <Checkbox handleClick={checkBoxChangeWrapped(lend)} checked={checked} />
+        <Checkbox handleClick={checkBoxChangeWrapped(lend)} checked={checked} disabled={hasRenting && !claimable} />
       </Td>
       <Td className="action-column">
-        <ClaimCollateralButton claimColleteral={claimCollateral} lend={lend} />
+        <ClaimCollateralButton
+          claimColleteral={claimCollateral}
+          lend={lend}
+          claimable={claimable}
+          disabled={checked}
+        />
       </Td>
       <Td className="action-column">
         <StopLendButton

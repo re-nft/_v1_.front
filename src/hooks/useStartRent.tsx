@@ -93,6 +93,7 @@ export const useStartRent = (): {
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
+      setApprovalLoading(true);
       Promise.all(
         approvals.map((approval) =>
           approval.approve(contractAddress, MAX_UINT256)
@@ -100,6 +101,7 @@ export const useStartRent = (): {
         //TODO this is wrong, all transactions needs to be tracked
       ).then(([tx]) => {
         if (tx) setHash(tx.hash);
+        setApprovalLoading(false);
         setApprovals([]);
       });
     }
