@@ -1,7 +1,6 @@
 import React from "react";
 
 type BatchBarProps = {
-  title: string;
   onClaim(): void;
   onStopRent(): void;
   onStopLend(): void;
@@ -11,7 +10,6 @@ type BatchBarProps = {
 };
 
 export const MultipleBatchBar: React.FC<BatchBarProps> = ({
-  title,
   onClaim,
   onStopRent,
   onStopLend,
@@ -28,7 +26,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${rentingNumber} items to rent`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
@@ -47,7 +45,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${claimsNumber} items to claim`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
@@ -60,13 +58,18 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
       {lendingNumber > 1 && (
         <div
           className="batch__inner"
-          style={{ paddingTop: claimsNumber > 1 ? "20px" : "" }}
+          style={{
+            paddingTop:
+              claimsNumber > 1 || (claimsNumber < 2 && rentingNumber > 1)
+                ? "20px"
+                : "",
+          }}
         >
           <div
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${lendingNumber} items to lend`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />

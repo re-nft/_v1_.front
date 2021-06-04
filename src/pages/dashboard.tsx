@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useContext, useMemo } from "react";
 import moment from "moment";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
@@ -195,7 +195,7 @@ export const Dashboard: React.FC = () => {
   }, [checkedRentingItems]);
 
   const lendinItemsStopLendable = useMemo(() => {
-    return checkedLendingItems.filter((v) => !v.lending);
+    return checkedLendingItems.filter((v) => !v.renting);
   }, [checkedLendingItems]);
   const returnIt = useReturnIt(returnItems);
   const handleStopLendAll = useCallback(() => {
@@ -227,14 +227,6 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  const arr = [];
-  if (checkedClaims.length > 0) {
-    arr.push(`Selected ${checkedClaims.length} items to claim`);
-  }
-  if (lendinItemsStopLendable.length > 0) {
-    arr.push(`Selected ${lendinItemsStopLendable.length} items to stop lend`);
-  }
-  const batchBarTitle = arr.join("\n");
   return (
     <div>
       {viewType === DashboardViewType.LIST_VIEW && (
@@ -360,7 +352,6 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
       <MultipleBatchBar
-        title={batchBarTitle}
         claimsNumber={checkedClaims.length}
         rentingNumber={checkedRentingItems.length}
         lendingNumber={lendinItemsStopLendable.length}
@@ -399,9 +390,6 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
-  useEffect(() =>{
-    console.log('claimable', lend.id, claimable, lend.lending.collateralClaimed, blockTimeStamp)
-  }, [blockTimeStamp, claimable, lend.id, lend.lending.collateralClaimed])
   return (
     <Tr>
       <Td className="column">
