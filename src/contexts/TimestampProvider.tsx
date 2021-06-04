@@ -29,7 +29,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
         .catch((e) => {
           if (e) debug(e);
         });
-      return request.cancel;  
+      return request.cancel;
     }
     return;
   }, [provider, timeStamp]);
