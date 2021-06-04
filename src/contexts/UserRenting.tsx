@@ -12,6 +12,7 @@ import createCancellablePromise from "./create-cancellable-promise";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
+import { diffJson } from "diff";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -51,13 +52,13 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             return;
           }
           const firstMatch = users[0];
-          const { renting } = firstMatch;
-          if (!renting) {
+          const { renting:r } = firstMatch;
+          if (!r) {
             setRentings([]);
             return;
           }
           const _renting: Renting[] = [];
-          renting.forEach((r) => {
+          r.forEach((r) => {
             _renting.push(
               new Renting(
                 r.lending.nftAddress,
@@ -68,14 +69,25 @@ export const UserRentingProvider: React.FC = ({ children }) => {
               )
             );
           });
-          setRentings(_renting);
+          const normalizedLendings = renting.map((lending) => lending.toJSON());
+          const normalizedLendingNew = _renting.map((lending) => lending.toJSON());
+
+          const difference = diffJson(
+            normalizedLendings,
+            normalizedLendingNew,
+            { ignoreWhitespace: true }
+          );
+          //const difference = true;
+          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+            setRentings(_renting);
+          }
         }
       })
       .finally(() => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currAddress, signer]);
+  }, [currAddress, renting, signer]);
 
   useEffect(() => {
     fetchRenting();

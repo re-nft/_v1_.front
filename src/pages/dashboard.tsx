@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useCallback, useContext, useMemo, useEffect } from "react";
 import moment from "moment";
 import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
@@ -90,9 +90,8 @@ const ClaimCollateralButton: React.FC<ClaimColleteralButtonProps> = ({
   claimColleteral,
   lend,
   disabled,
-  claimable
+  claimable,
 }) => {
-  
   const handleClick = useCallback(() => {
     if (!claimable) return;
     return claimColleteral([lend]);
@@ -134,28 +133,41 @@ export const Dashboard: React.FC = () => {
   const stopLending = useStopLend();
   const claim = useClaimColleteral();
 
-  const claimCollateral = useCallback(async () => {
-    const claims = checkedClaims.map((lending) => ({
-      address: lending.address,
-      tokenId: lending.tokenId,
-      lendingId: lending.id,
-      amount: lending.amount,
-    }));
-    claim(claims)
-      // @ts-ignore
-      .then((tx) => {
-        if (tx) return setHash(tx.hash);
-        return Promise.resolve();
-      })
-      .then(() => {
-        handleResetLending();
-      });
-  }, [checkedClaims, claim, handleResetLending, setHash]);
+  useEffect(() => {
+    console.log('rerendering lending', lendingItems)
+  }, [lendingItems])
+  useEffect(() => {
+    console.log('rerendering renting', rentingItems)
+  }, [rentingItems])
+  useEffect(() => {
+    console.log('rerendering checkedItems', checkedItems)
+  }, [checkedItems])
+  const claimCollateral = useCallback(
+    async (items: Lending[]) => {
+      const claims = items.map((lending) => ({
+        address: lending.address,
+        tokenId: lending.tokenId,
+        lendingId: lending.id,
+        amount: lending.amount,
+      }));
+      claim(claims)
+        // @ts-ignore
+        .then((tx) => {
+          if (tx) return setHash(tx.hash);
+          return Promise.resolve();
+        })
+        .then(() => {
+          handleResetLending();
+        });
+    },
+    [claim, handleResetLending, setHash]
+  );
 
+  const claimCollateralAll = useCallback(() => {
+    claimCollateral(checkedLendingItems);
+  }, [checkedLendingItems, claimCollateral]);
   const handleStopLend = useCallback(
     (lending: Lending[]) => {
-      // ! eniko: don't know if it is good to refresh so quickly in stop lend
-      // ! eniko: There is no update on The front That Transaction is pending at all
       const Transaction = createCancellablePromise(
         stopLending(
           lending.map((l) => ({
@@ -192,7 +204,7 @@ export const Dashboard: React.FC = () => {
   }, [checkedRentingItems]);
 
   const lendinItemsStopLendable = useMemo(() => {
-    return checkedLendingItems.filter(v => !v.lending);
+    return checkedLendingItems.filter((v) => !v.lending);
   }, [checkedLendingItems]);
   const returnIt = useReturnIt(returnItems);
   const handleStopLendAll = useCallback(() => {
@@ -225,13 +237,13 @@ export const Dashboard: React.FC = () => {
   }
 
   const arr = [];
-  if(checkedClaims.length > 0){
-    arr.push(`Selected ${checkedClaims.length} items to claim`)
+  if (checkedClaims.length > 0) {
+    arr.push(`Selected ${checkedClaims.length} items to claim`);
   }
-  if(lendinItemsStopLendable.length > 0){
-    arr.push(`Selected ${lendinItemsStopLendable.length} items to stop lend`)
+  if (lendinItemsStopLendable.length > 0) {
+    arr.push(`Selected ${lendinItemsStopLendable.length} items to stop lend`);
   }
-  const batchBarTitle = arr.join('\n');
+  const batchBarTitle = arr.join("\n");
   return (
     <div>
       {viewType === DashboardViewType.LIST_VIEW && (
@@ -361,7 +373,7 @@ export const Dashboard: React.FC = () => {
         claimsNumber={checkedClaims.length}
         rentingNumber={checkedRentingItems.length}
         lendingNumber={lendinItemsStopLendable.length}
-        onClaim={claimCollateral}
+        onClaim={claimCollateralAll}
         onStopRent={returnIt}
         onStopLend={handleStopLendAll}
       />
@@ -369,13 +381,14 @@ export const Dashboard: React.FC = () => {
   );
 };
 
+// this keeps rerendering
 export const LendingRow: React.FC<{
   lend: Lending;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   checked: boolean;
   hasRenting: boolean;
   handleStopLend: (lending: Lending[]) => void;
-  claimCollateral: () => void;
+  claimCollateral: (lending: Lending[]) => void;
 }> = ({
   lend,
   checkBoxChangeWrapped,
@@ -388,9 +401,15 @@ export const LendingRow: React.FC<{
   const blockTimeStamp = useTimestamp();
 
   const claimable = useMemo(
-    () => !!(lend.renting && isClaimable(lend.renting, blockTimeStamp)),
+    () =>
+      !!(
+        lend.renting &&
+        isClaimable(lend.renting, blockTimeStamp) &&
+        !lend.lending.collateralClaimed
+      ),
     [lend, blockTimeStamp]
   );
+  console.log('claimable',lend.id, claimable, lend.lending.collateralClaimed)
   return (
     <Tr>
       <Td className="column">
@@ -403,7 +422,11 @@ export const LendingRow: React.FC<{
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="action-column">
-        <Checkbox handleClick={checkBoxChangeWrapped(lend)} checked={checked} disabled={hasRenting && !claimable} />
+        <Checkbox
+          handleClick={checkBoxChangeWrapped(lend)}
+          checked={checked}
+          disabled={hasRenting && !claimable}
+        />
       </Td>
       <Td className="action-column">
         <ClaimCollateralButton

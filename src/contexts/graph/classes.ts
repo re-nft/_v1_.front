@@ -170,6 +170,17 @@ class Nft {
     }
     return uri;
   };
+
+  toJSON = (): Record<string, unknown> => {
+    return {
+      type : this.type,
+      nftAddress: this.nftAddress,
+      address: this.address,
+      tokenId: this.tokenId,
+      amount: this.amount,
+      isERC721: this.isERC721,
+    }
+  }
 }
 
 class Lending extends Nft {
@@ -203,6 +214,20 @@ class Lending extends Nft {
   loadAmount = async (_address?: string): Promise<string> => {
     return this.amount;
   };
+
+  toJSON = (): Record<string, unknown> => {
+    return {
+      type : this.type,
+      nftAddress: this.nftAddress,
+      address: this.address,
+      tokenId: this.tokenId,
+      amount: this.amount,
+      isERC721: this.isERC721,
+      id: this.id,
+      lending: this.lending,
+      renting: this.renting,
+    }
+  }
 }
 
 class Renting extends Nft {
@@ -236,6 +261,21 @@ class Renting extends Nft {
   loadAmount = async (_address?: string): Promise<string> => {
     return this.amount;
   };
+
+
+  toJSON = (): Record<string, unknown> => {
+    return {
+      type : this.type,
+      nftAddress: this.nftAddress,
+      address: this.address,
+      tokenId: this.tokenId,
+      amount: this.amount,
+      isERC721: this.isERC721,
+      id: this.id,
+      lending: this.lending,
+      renting: this.renting,
+    }
+  }
 }
 
 export { Nft, Lending, Renting };

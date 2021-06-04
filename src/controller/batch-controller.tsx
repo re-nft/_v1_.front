@@ -154,7 +154,7 @@ export const useBatchItems: () => BatchContextType = () => {
 
   const checkedClaims = useMemo(() => {
     return checkedLendingItems.filter(
-      (l) => l.renting && claimable(l.renting, blockTimeStamp)
+      (l) => l.renting && claimable(l.renting, blockTimeStamp) && !l.lending.collateralClaimed
     );
   }, [blockTimeStamp, checkedLendingItems, claimable]);
 
