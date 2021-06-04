@@ -19,10 +19,10 @@ import { UserRentingContext } from "../contexts/UserRenting";
 import { useReturnIt } from "../hooks/useReturnIt";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import MultipleBatchBar from "../components/multiple-batch-bar";
-import { useTimestamp } from "../hooks/useTimestamp";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { Address } from "../components/address";
 import Checkbox from "../components/checkbox";
+import { TimestampContext } from "../contexts/TimestampProvider";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -132,16 +132,7 @@ export const Dashboard: React.FC = () => {
   );
   const stopLending = useStopLend();
   const claim = useClaimColleteral();
-
-  useEffect(() => {
-    console.log('rerendering lending', lendingItems)
-  }, [lendingItems])
-  useEffect(() => {
-    console.log('rerendering renting', rentingItems)
-  }, [rentingItems])
-  useEffect(() => {
-    console.log('rerendering checkedItems', checkedItems)
-  }, [checkedItems])
+  
   const claimCollateral = useCallback(
     async (items: Lending[]) => {
       const claims = items.map((lending) => ({
@@ -398,8 +389,7 @@ export const LendingRow: React.FC<{
   claimCollateral,
 }) => {
   const lending = lend.lending;
-  const blockTimeStamp = useTimestamp();
-
+  const blockTimeStamp = useContext(TimestampContext);
   const claimable = useMemo(
     () =>
       !!(
@@ -409,7 +399,9 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
-  console.log('claimable',lend.id, claimable, lend.lending.collateralClaimed)
+  useEffect(() =>{
+    console.log('claimable', lend.id, claimable, lend.lending.collateralClaimed, blockTimeStamp)
+  }, [blockTimeStamp, claimable, lend.id, lend.lending.collateralClaimed])
   return (
     <Tr>
       <Td className="column">

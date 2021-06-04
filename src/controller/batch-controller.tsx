@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback , useContext} from "react";
 
 import {
   Nft,
@@ -12,7 +12,7 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { THROWS } from "../utils";
 import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
-import { useTimestamp } from "../hooks/useTimestamp";
+import { TimestampContext } from "../contexts/TimestampProvider";
 
 type UniqueID = string;
 
@@ -99,6 +99,8 @@ const filter = (
 };
 
 export const useBatchItems: () => BatchContextType = () => {
+  //TODO:eniko the memory usage bug
+  const blockTimeStamp = useContext(TimestampContext);
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]
   >(defaultBatchContext.checkedItems);
@@ -149,12 +151,14 @@ export const useBatchItems: () => BatchContextType = () => {
     return Object.values(checkedItems).filter(isLending);
   }, [checkedItems]);
 
-  const blockTimeStamp = useTimestamp();
   const claimable = useCallback(isClaimable, []);
 
   const checkedClaims = useMemo(() => {
     return checkedLendingItems.filter(
-      (l) => l.renting && claimable(l.renting, blockTimeStamp) && !l.lending.collateralClaimed
+      (l) =>
+        l.renting &&
+        claimable(l.renting, blockTimeStamp) &&
+        !l.lending.collateralClaimed
     );
   }, [blockTimeStamp, checkedLendingItems, claimable]);
 
