@@ -262,6 +262,7 @@ export const Dashboard: React.FC = () => {
         onClaim={claimCollateralAll}
         onStopRent={handleReturnAll}
         onStopLend={handleStopLendAll}
+        checkedRenting={checkedRentingItems}
       />
     </div>
   );
