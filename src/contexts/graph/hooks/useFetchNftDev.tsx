@@ -141,7 +141,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   usePoller(()=>{
     const fetchRequest = createCancellablePromise(fetchAsync());
     return fetchRequest.cancel;
-  }, 5_000)
+  }, 3000)
 
   return { devNfts, isLoading };
 };
