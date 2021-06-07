@@ -190,10 +190,6 @@ const App: React.FC = () => {
               Advance time
             </button> */}
           </div>
-          <button className="menu__item" onClick={() => mintNFT(0)}>Mint 721A</button>
-          <button className="menu__item" onClick={() => mintNFT(1)}>Mint 721B</button>
-          <button className="menu__item" onClick={() => mintNFT(2)}>Mint 1155A</button>
-          <button className="menu__item" onClick={() => mintNFT(3)}>Mint 1155B</button>
         </div>
         {/* CONTENT */}
         <div className="content-wrapper main-content mb-l">
