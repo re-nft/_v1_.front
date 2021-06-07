@@ -12,6 +12,7 @@ import {
   SignerContext,
 } from "../../../hardhat/SymfoniContext";
 import createCancellablePromise from "../../create-cancellable-promise";
+import usePoller from "../../../hooks/usePoller";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -137,10 +138,10 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     return fetchRequest.cancel;
   }, [fetchAsync]);
 
-  // usePoller(()=>{
-  //   const fetchRequest = createCancellablePromise(fetchAsync());
-  //   return fetchRequest.cancel;
-  // }, 5_000)
+  usePoller(()=>{
+    const fetchRequest = createCancellablePromise(fetchAsync());
+    return fetchRequest.cancel;
+  }, 5_000)
 
   return { devNfts, isLoading };
 };
