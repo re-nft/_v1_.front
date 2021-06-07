@@ -9,8 +9,8 @@ export const CurrentAddressProvider: React.FC = ({ children }) => {
   const [address] = useContext(CurrentAddressContext);
   const [newAddress, setNewAddress] = useState(address);
   useEffect(() => {
-    if (process.env.REACT_APP_ADDRESS) {
-      setNewAddress(process.env.REACT_APP_ADDRESS);
+    if (process.env.NEXT_PUBLIC_ADDRESS) {
+      setNewAddress(process.env.NEXT_PUBLIC_ADDRESS);
     } else {
       setNewAddress(address);
     }

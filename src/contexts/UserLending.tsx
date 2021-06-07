@@ -27,11 +27,11 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
   const fetchLending = useCallback(async () => {
     if (!signer) return;
-    if (!process.env.REACT_APP_RENFT_API) {
+    if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
 
-    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
     setLoading(true);
     const address = await signer.getAddress();
     const fetchRequest = createCancellablePromise<{

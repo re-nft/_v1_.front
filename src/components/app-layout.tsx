@@ -1,19 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  NavLink,
-} from "react-router-dom";
 import Layout from "./layout";
-import Rent from "../pages/rent";
-import Lend from "../pages/lend";
-import Faq from "../pages/faq";
-import Dashboard from "../pages/dashboard";
-import MyFavorites from "../pages/favourites";
-import Profile from "../pages/profile";
-import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { short } from "../utils";
@@ -29,9 +15,10 @@ import {
   USDTContext,
   TUSDContext,
 } from "../hardhat/SymfoniContext";
-import createDebugger from 'debug';
+import createDebugger from "debug";
+import Link from "next/link";
 
-const debug = createDebugger('app:layout')
+const debug = createDebugger("app:layout");
 const ROUTES = [
   {
     path: "/",
@@ -59,7 +46,7 @@ const ROUTES = [
   },
 ];
 
-const App: React.FC = () => {
+const AppLayout: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
   const { instance: e721 } = useContext(E721Context);
@@ -79,147 +66,151 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintE20 = useCallback(async (e20: number) => {
-    switch (e20) {
-      case 1:
-        if (!weth) return;
-        await (await weth.faucet()).wait();
-        break;
-      case 2:
-        if (!dai) return;
-        await (await dai.faucet()).wait();
-        break;
-      case 3:
-        if (!usdc) return;
-        await (await usdc.faucet()).wait();
-        break;
-      case 4:
-        if (!usdt) return;
-        await (await usdt.faucet()).wait();
-        break;
-      case 5:
-        if (!tusd) return;
-        await (await tusd.faucet()).wait();
-        break;
-    }
-  }, [dai, tusd, usdc, usdt, weth]);
-  const mintNFT = useCallback(async (nft: number) => {
-    switch (nft) {
-      case 0:
-        if (!e721) return;
-        await (await e721.faucet()).wait();
-        break;
-      case 1:
-        if (!e721b) return;
-        await (await e721b.faucet()).wait();
-        break;
-      case 2:
-        if (!e1155) return;
-        await (await e1155.faucet(10)).wait();
-        break;
-      case 3:
-        if (!e1155b) return;
-        await (await e1155b.faucet(10)).wait();
-        break;
-      default:
-        debug("unknown NFT");
-        return
-    }
-  }, [e721, e721b, e1155, e1155b]);
+  const mintE20 = useCallback(
+    async (e20: number) => {
+      switch (e20) {
+        case 1:
+          if (!weth) return;
+          await (await weth.faucet()).wait();
+          break;
+        case 2:
+          if (!dai) return;
+          await (await dai.faucet()).wait();
+          break;
+        case 3:
+          if (!usdc) return;
+          await (await usdc.faucet()).wait();
+          break;
+        case 4:
+          if (!usdt) return;
+          await (await usdt.faucet()).wait();
+          break;
+        case 5:
+          if (!tusd) return;
+          await (await tusd.faucet()).wait();
+          break;
+      }
+    },
+    [dai, tusd, usdc, usdt, weth]
+  );
+  const mintNFT = useCallback(
+    async (nft: number) => {
+      switch (nft) {
+        case 0:
+          if (!e721) return;
+          await (await e721.faucet()).wait();
+          break;
+        case 1:
+          if (!e721b) return;
+          await (await e721b.faucet()).wait();
+          break;
+        case 2:
+          if (!e1155) return;
+          await (await e1155.faucet(10)).wait();
+          break;
+        case 3:
+          if (!e1155b) return;
+          await (await e1155b.faucet(10)).wait();
+          break;
+        default:
+          debug("unknown NFT");
+          return;
+      }
+    },
+    [e721, e721b, e1155, e1155b]
+  );
 
   return (
     <Layout>
-      <Router>
-        <div className="content-wrapper mb-l">
-          <div className="header">
-            <div className="header__logo"></div>
-            <div className="header__user">
-              <Link className="" to="/profile">
-                {username || short(currentAddress)}
-              </Link>
-            </div>
+      <div className="content-wrapper mb-l">
+        <div className="header">
+          <div className="header__logo"></div>
+          <div className="header__user">
+            <Link href="/profile">{username || short(currentAddress)}</Link>
           </div>
         </div>
-        <div className="content-wrapper mb-l">
-          <div className="menu">
-            {ROUTES.map((route) => (
-              <NavLink
-                key={route.path}
+      </div>
+      <div className="content-wrapper mb-l">
+        <div className="menu">
+          {ROUTES.map((route) => (
+            <Link
+              key={route.path}
+              href={route.path}
+              // isActive={(_, location) => {
+              //   if (location.pathname === route.path) return true;
+              //   return false;
+              // }}
+            >
+              <a
                 className="menu__item"
-                activeClassName="menu__item-active"
-                to={route.path}
-                isActive={(_, location) => {
-                  if (location.pathname === route.path) return true;
-                  return false;
-                }}
+                //activeClassName="menu__item-active"
               >
                 {route.name}
-              </NavLink>
-            ))}
-          </div>
-          <button className="menu__item" onClick={() => mintNFT(0)}>
-            Mint 721A
+              </a>
+            </Link>
+          ))}
+        </div>
+        <button className="menu__item" onClick={() => mintNFT(0)}>
+          Mint 721A
+        </button>
+        <button className="menu__item" onClick={() => mintNFT(1)}>
+          Mint 721B
+        </button>
+        <button className="menu__item" onClick={() => mintNFT(2)}>
+          Mint 1155A
+        </button>
+        <button className="menu__item" onClick={() => mintNFT(3)}>
+          Mint 1155B
+        </button>
+        {/* payment token faucets */}
+        <div>
+          <button className="menu__item" onClick={() => mintE20(1)}>
+            Mint WETH
           </button>
-          <button className="menu__item" onClick={() => mintNFT(1)}>
-            Mint 721B
+          <button className="menu__item" onClick={() => mintE20(2)}>
+            Mint DAI
           </button>
-          <button className="menu__item" onClick={() => mintNFT(2)}>
-            Mint 1155A
+          <button className="menu__item" onClick={() => mintE20(3)}>
+            Mint USDC
           </button>
-          <button className="menu__item" onClick={() => mintNFT(3)}>
-            Mint 1155B
+          <button className="menu__item" onClick={() => mintE20(4)}>
+            Mint USDT
           </button>
-          {/* payment token faucets */}
-          <div>
-            <button className="menu__item" onClick={() => mintE20(1)}>
-              Mint WETH
-            </button>
-            <button className="menu__item" onClick={() => mintE20(2)}>
-              Mint DAI
-            </button>
-            <button className="menu__item" onClick={() => mintE20(3)}>
-              Mint USDC
-            </button>
-            <button className="menu__item" onClick={() => mintE20(4)}>
-              Mint USDT
-            </button>
-            <button className="menu__item" onClick={() => mintE20(5)}>
-              Mint TUSD
-            </button>
-            {/* <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
+          <button className="menu__item" onClick={() => mintE20(5)}>
+            Mint TUSD
+          </button>
+          {/* <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
               Advance time
             </button> */}
-          </div>
         </div>
-        {/* CONTENT */}
-        <div className="content-wrapper main-content mb-l">
-          <Switch>
-            <Route exact path="/">
-              <Rent />
-            </Route>
-            <Route exact path="/lend">
-              <Lend />
-            </Route>
-            <Route exact path="/dashboard">
-              <PageLayout>
-                <Dashboard />
-              </PageLayout>
-            </Route>
-            <Route exact path="/favourites">
-              <MyFavorites />
-            </Route>
-            {/* <Route exact path="/leaderboard">
+      </div>
+      {/* CONTENT */}
+      <div className="content-wrapper main-content mb-l">
+        {children}
+        {/* <Route exact path="/">
+            <Rent />
+          </Route>
+          <Route exact path="/lend">
+            <Lend />
+          </Route>
+          <Route exact path="/dashboard">
+            <PageLayout>
+              <Dashboard />
+            </PageLayout>
+          </Route>
+          <Route exact path="/favourites">
+            <MyFavorites />
+          </Route> */}
+        {/* <Route exact path="/leaderboard">
               <Leaderboard />
             </Route> */}
-            <Route exact path="/faq">
-              <Faq />
-            </Route>
-            <Route exact path="/profile">
-              <Profile />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+        {/* <Route exact path="/faq">
+            <Faq />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
+          </Route> */}
+      </div>
       {/* FOOTER */}
       <div className="content-wrapper footer-content">
         <div className="copy">2021 ReNFT</div>
@@ -245,4 +236,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AppLayout;

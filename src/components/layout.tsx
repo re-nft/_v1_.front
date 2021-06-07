@@ -1,7 +1,6 @@
 import React from "react";
 import Helmet from "react-helmet";
 
-import "../style/index.scss";
 
 const Layout: React.FC = ({ children }) => {
   return (

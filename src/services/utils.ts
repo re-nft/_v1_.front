@@ -74,11 +74,11 @@ export const buildURI = (tokenURI: string): string => {
     isJoyWorld(tokenURI) ||
     isNftBoxes(tokenURI) ||
     isGftAuthentic(tokenURI);
-  if (!process.env.REACT_APP_CORS_PROXY) {
+  if (!process.env.NEXT_PUBLIC_CORS_PROXY) {
     throw new Error("CORS_PROXY is not defined");
   }
   const fetchThis = isProxyable
-    ? `${process.env.REACT_APP_CORS_PROXY}${tokenURI}`
+    ? `${process.env.NEXT_PUBLIC_CORS_PROXY}${tokenURI}`
     : tokenURI;
   return fetchThis;
 };

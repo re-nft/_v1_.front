@@ -31,12 +31,12 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
 
   const fetchRentings = useCallback(() => {
     if (!signer || !currentAddress) return;
-    if (!process.env.REACT_APP_RENFT_API) {
+    if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
     setLoading(true);
 
-    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
     const fetchRequest = createCancellablePromise<{ lendings: LendingRaw[] }>(
       timeItAsync(
         "Pulled All ReNFT Lendings",
