@@ -76,15 +76,6 @@ const UserRentings: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const checkBoxChangeWrapped = useCallback(
-    (nft) => {
-      return () => {
-        onCheckboxChange(nft);
-      };
-    },
-    [onCheckboxChange]
-  );
-
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }

@@ -1,24 +1,18 @@
-import { Signer } from "ethers/lib/ethers";
 import request from "graphql-request";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 import { Lending, Renting } from "../contexts/graph/classes";
 import {
-  queryAllRenft,
   queryMyERC1155s,
   queryMyERC721s,
-  queryUserLendingRenft,
   queryUserRentingRenft,
 } from "../contexts/graph/queries";
 import {
   ERC1155s,
   ERC721s,
-  NftRaw,
   NftToken,
   RentingRaw,
 } from "../contexts/graph/types";
 import { timeItAsync } from "../utils";
 import createDebugger from "debug";
-import { parseLending } from "../contexts/graph/utils";
 
 const debug = createDebugger("app:request:graph");
 
@@ -118,73 +112,74 @@ export const fetchUserProd1155 = async (
   return tokens;
 };
 
-export const fetchRenftsAll = async (
-  signer: Signer
-): Promise<ReturnReNftAll | undefined> => {
-  if (!signer) return;
-  const query = queryAllRenft();
+// TODO nothing uses it
+// export const fetchRenftsAll = async (
+//   signer: Signer
+// ): Promise<ReturnReNftAll | undefined> => {
+//   if (!signer) return;
+//   const query = queryAllRenft();
 
-  if (!process.env.REACT_APP_RENFT_API) {
-    throw new Error("RENFT_API is not defined");
-  }
-  const subgraphURI = process.env.REACT_APP_RENFT_API;
+//   if (!process.env.REACT_APP_RENFT_API) {
+//     throw new Error("RENFT_API is not defined");
+//   }
+//   const subgraphURI = process.env.REACT_APP_RENFT_API;
 
-  const response: NftRaw = await timeItAsync(
-    "Pulled All Renft Nfts",
-    async () =>
-      await request(subgraphURI, query).catch((e) => {
-        debug("Error fetching renft nfts", e);
-      })
-  );
+//   const response: NftRaw = await timeItAsync(
+//     "Pulled All Renft Nfts",
+//     async () =>
+//       await request(subgraphURI, query).catch((e) => {
+//         debug("Error fetching renft nfts", e);
+//       })
+//   );
 
-  const _allRenftsLending: { [key: string]: Lending } = {};
-  const _allRenftsRenting: { [key: string]: Renting } = {};
+//   const _allRenftsLending: { [key: string]: Lending } = {};
+//   const _allRenftsRenting: { [key: string]: Renting } = {};
 
-  response?.nfts?.forEach(({ id, lending, renting }) => {
-    const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
-    lending?.forEach((l) => {
-      _allRenftsLending[id] = new Lending(l, signer);
-    });
-    renting?.forEach((r: RentingRaw) => {
-      _allRenftsRenting[id] = new Renting(
-        address,
-        tokenId,
-        parseLending(r.lending),
-        r,
-        signer
-      );
-    });
-  });
+//   response?.nfts?.forEach(({ id, lending, renting }) => {
+//     const [address, tokenId] = id.split(RENFT_SUBGRAPH_ID_SEPARATOR);
+//     lending?.forEach((l) => {
+//       _allRenftsLending[id] = new Lending(l, signer);
+//     });
+//     renting?.forEach((r: RentingRaw) => {
+//       _allRenftsRenting[id] = new Renting(
+//         address,
+//         tokenId,
+//         parseLending(r.lending),
+//         r,
+//         signer
+//       );
+//     });
+//   });
 
-  return { lending: _allRenftsLending, renting: _allRenftsRenting };
-};
+//   return { lending: _allRenftsLending, renting: _allRenftsRenting };
+// };
 
 //TODO unused
-export const fetchUserLending = async (
-  currentAddress: string | undefined
-): Promise<string[] | undefined> => {
-  if (!currentAddress) return;
-  const query = queryUserLendingRenft(currentAddress);
+// export const fetchUserLending = async (
+//   currentAddress: string | undefined
+// ): Promise<string[] | undefined> => {
+//   if (!currentAddress) return;
+//   const query = queryUserLendingRenft(currentAddress);
 
-  if (!process.env.REACT_APP_RENFT_API) {
-    throw new Error("RENFT_API is not defined");
-  }
+//   if (!process.env.REACT_APP_RENFT_API) {
+//     throw new Error("RENFT_API is not defined");
+//   }
 
-  const subgraphURI = process.env.REACT_APP_RENFT_API;
-  const response: {
-    user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
-  } = await timeItAsync(
-    "Pulled My Renft Lending Nfts",
-    async () => await request(subgraphURI, query)
-  );
+//   const subgraphURI = process.env.REACT_APP_RENFT_API;
+//   const response: {
+//     user?: { lending?: { tokenId: LendingId; nftAddress: string }[] };
+//   } = await timeItAsync(
+//     "Pulled My Renft Lending Nfts",
+//     async () => await request(subgraphURI, query)
+//   );
 
-  return (
-    response.user?.lending?.map(
-      ({ tokenId, nftAddress }) =>
-        `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`
-    ) ?? []
-  );
-};
+//   return (
+//     response.user?.lending?.map(
+//       ({ tokenId, nftAddress }) =>
+//         `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`
+//     ) ?? []
+//   );
+// };
 
 export type FetchUserRentingReturn =
   | {

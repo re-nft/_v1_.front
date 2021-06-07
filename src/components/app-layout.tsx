@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -29,8 +29,9 @@ import {
   USDTContext,
   TUSDContext,
 } from "../hardhat/SymfoniContext";
-import debug from "debug";
+import createDebugger from 'debug';
 
+const debug = createDebugger('app:layout')
 const ROUTES = [
   {
     path: "/",

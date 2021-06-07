@@ -1,19 +1,13 @@
 import request from "graphql-request";
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
 import { SignerContext } from "../hardhat/SymfoniContext";
-import usePoller from "../hooks/usePoller";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
 import { diffJson } from "diff";
+import usePoller from "../hooks/usePoller";
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -69,7 +63,9 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             });
 
           const normalizedLendings = lending.map((lending) => lending.toJSON());
-          const normalizedLendingNew = lendings.map((lending) => lending.toJSON());
+          const normalizedLendingNew = lendings.map((lending) =>
+            lending.toJSON()
+          );
 
           const difference = diffJson(
             normalizedLendings,
@@ -77,7 +73,11 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             { ignoreWhitespace: true }
           );
           //const difference = true;
-          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+          if (
+            difference &&
+            difference[1] &&
+            (difference[1].added || difference[1].removed)
+          ) {
             setLendings(lendings);
           }
         }
