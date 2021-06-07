@@ -3,7 +3,6 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useMemo,
 } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
@@ -11,7 +10,7 @@ import { PaymentToken } from "../../../types";
 import NumericField from "../../../components/numeric-field";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/items-wrapper";
-import ReturnModal from "../../../modals/return";
+import ReturnModal from "../../../modals/return-modal";
 import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
@@ -68,16 +67,14 @@ const UserRentings: React.FC = () => {
     fetchNfts(currentPage);
   }, [currentPage, fetchNfts]);
 
-  const returnItems = useMemo(() => {
-    return checkedRentingItems.map((item) => ({
-      id: item.id,
-      address: item.address,
-      tokenId: item.tokenId,
-      lendingId: item.renting.lendingId,
-      amount: item.renting.lending.lentAmount,
-      contract: item.contract,
-    }));
-  }, [checkedRentingItems]);
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft);
+      };
+    },
+    [onCheckboxChange]
+  );
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -101,7 +98,7 @@ const UserRentings: React.FC = () => {
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          nfts={returnItems}
+          nfts={checkedRentingItems}
           onClose={handleCloseModal}
         />
       )}

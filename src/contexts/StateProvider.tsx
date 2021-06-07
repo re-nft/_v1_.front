@@ -9,6 +9,7 @@ import { NFTMetaProvider } from "./NftMetaState";
 import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
+import { TimestampProvider } from "./TimestampProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
@@ -20,7 +21,7 @@ export const StateProvider: React.FC = ({ children }) => {
               <UserLendingProvider>
                 <UserRentingProvider>
                   <AvailableForRentProvider>
-                    {children}
+                    <TimestampProvider>{children}</TimestampProvider>
                   </AvailableForRentProvider>
                 </UserRentingProvider>
               </UserLendingProvider>

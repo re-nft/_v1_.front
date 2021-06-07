@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { diffJson } from "diff";
+import { Nft } from "../contexts/graph/classes";
 
 const defaultSate = {
   pageItems: [],
@@ -16,7 +18,7 @@ type State<T> = {
 
 const PAGE_SIZE = 20;
 
-export const usePageController = <T extends unknown>(): {
+export const usePageController = <T extends Nft>(): {
   handleReset: () => void;
   onPageControllerInit: (pageItems: T[]) => void;
   onSetPage: (pageNumber: number) => void;
@@ -64,17 +66,20 @@ export const usePageController = <T extends unknown>(): {
   useEffect(
     () => {
       if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-      if (pageItems.length == newState.pageItems.length) {
-        const arr1 = pageItems.sort();
-        const arr2 = newState.pageItems.sort();
-        if (JSON.stringify(arr1) === JSON.stringify(arr2)) {
-          return;
-        }
+      const oldStateNormalized = pageItems.map((l) => l.toJSON());
+      const newStateNormalized = newState.pageItems.map((l) => l.toJSON());
+      const difference = diffJson(
+        oldStateNormalized,
+        newStateNormalized,
+        { ignoreWhitespace: true }
+      );
+      //const difference = true;
+      if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+        setState((prevState)=>({
+          ...prevState,
+          ...newState
+        }))
       }
-      setState((prevState)=>({
-        ...prevState,
-        ...newState
-      }))
     },
     [pageItems, newState],
   )

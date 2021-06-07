@@ -1,25 +1,90 @@
-import React from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { Nft, Renting } from "../contexts/graph/classes";
+import { useContractAddress } from "../contexts/StateProvider";
+import TransactionStateContext from "../contexts/TransactionState";
+import { ProviderContext } from "../hardhat/SymfoniContext";
+import isApprovalForAll from "../services/is-approval-for-all";
+import setApprovalForAll from "../services/set-approval-for-all";
+import { Button } from "./button";
 
 type BatchBarProps = {
-  title: string;
   onClaim(): void;
   onStopRent(): void;
   onStopLend(): void;
   claimsNumber: number;
   lendingNumber: number;
   rentingNumber: number;
+  checkedRenting: Renting[];
 };
 
 export const MultipleBatchBar: React.FC<BatchBarProps> = ({
-  title,
   onClaim,
   onStopRent,
   onStopLend,
   claimsNumber,
   lendingNumber,
   rentingNumber,
+  checkedRenting,
 }) => {
-  if (rentingNumber < 2 && lendingNumber < 2) return null;
+  const { setHash } = useContext(TransactionStateContext);
+  const contractAddress = useContractAddress();
+  const currentAddress = useContext(CurrentAddressWrapper);
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
+  const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
+  const [provider] = useContext(ProviderContext);
+
+  useEffect(() => {
+    if (!currentAddress) return;
+    setIsApproved(false);
+    const transaction = createCancellablePromise(
+      isApprovalForAll(checkedRenting, currentAddress, contractAddress)
+    );
+    transaction.promise
+      .then(([isApproved, nonApproved]) => {
+        if (isApproved) setIsApproved(isApproved);
+        setNonApprovedNfts(nonApproved);
+      })
+      .catch(() => {
+        console.warn("batch lend issue with is approval for all");
+      });
+    return transaction.cancel;
+  }, [currentAddress, setIsApproved, contractAddress, checkedRenting]);
+
+  const handleApproveAll = useCallback(() => {
+    console.log("handle approve all");
+    if (!provider) return;
+    console.log(nonApprovedNft, "nonApprovedNft");
+    const transaction = createCancellablePromise(
+      setApprovalForAll(nonApprovedNft, contractAddress)
+    );
+    setIsApproved(false);
+    setIsApprovalLoading(true);
+    transaction.promise
+      //TODO this is wrong, all transactions needs to be tracked
+      .then(([tx]) => {
+        if (!tx) return Promise.resolve(false);
+        return setHash(tx.hash);
+      })
+      .then((status) => {
+        setIsApproved(status);
+        setIsApprovalLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        console.warn("issue approving all in batch lend");
+        setIsApprovalLoading(false);
+        return [undefined];
+      });
+
+    return () => {
+      transaction.cancel();
+    };
+  }, [contractAddress, nonApprovedNft, provider, setHash]);
+
+  if (rentingNumber < 2 && lendingNumber < 2 && claimsNumber < 2) return null;
   return (
     <div className="batch">
       {rentingNumber > 1 && (
@@ -28,13 +93,20 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${rentingNumber} items to rent`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <button className="nft__button" onClick={onStopRent}>
-              Stop rent
-            </button>
+            {!isApproved && (
+              <Button
+                handleClick={handleApproveAll}
+                description="Approve return"
+                disabled={isApprovalLoading}
+              ></Button>
+            )}
+            {isApproved && (
+              <Button handleClick={onStopRent} description="Stop rent"></Button>
+            )}
           </div>
         </div>
       )}
@@ -47,32 +119,37 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${claimsNumber} items to claim`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <button className="nft__button" onClick={onClaim}>
-              Claim all
-            </button>
+            <Button
+              handleClick={onClaim}
+              disabled={isApprovalLoading}
+              description="Claim all"
+            ></Button>
           </div>
         </div>
       )}
       {lendingNumber > 1 && (
         <div
           className="batch__inner"
-          style={{ paddingTop: claimsNumber > 1 ? "20px" : "" }}
+          style={{
+            paddingTop:
+              claimsNumber > 1 || (claimsNumber < 2 && rentingNumber > 1)
+                ? "20px"
+                : "",
+          }}
         >
           <div
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {title}
+            {`Selected ${lendingNumber} items to lend`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <button className="nft__button" onClick={onStopLend}>
-              Stop lend
-            </button>
+            <Button handleClick={onStopLend} description="Claim all"></Button>
           </div>
         </div>
       )}

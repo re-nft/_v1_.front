@@ -1,23 +1,30 @@
 import { useEffect, useRef } from "react";
 
-export const usePoller = (callback: CallableFunction, delay: number): void => {
-  const savedCallback = useRef<CallableFunction>();
-  // Remember the latest callback
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
+const usePoller = (fn: () => void, delay: number, extraWatch?: any): void => {
+  const savedCallback = useRef<() => void>();
 
-  // Set up the interval
-  useEffect(() => {
+  // Remember the latest fn.
+  useEffect((): void => {
+    savedCallback.current = fn;
+  }, [fn]);
+
+  // Set up the interval.
+  useEffect((): void | (() => void) => {
     function tick() {
-      //@ts-ignore
-      savedCallback.current();
+      if (savedCallback.current) savedCallback.current();
     }
-    const id = setInterval(tick, delay);
-    return () => {
-      clearInterval(id);
-    };
-  }, [callback, delay]);
+
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+
+  // run at start too
+  useEffect(() => {
+    fn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extraWatch]);
 };
 
 export default usePoller;

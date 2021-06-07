@@ -14,6 +14,7 @@ import {
 } from "formik";
 import { PaymentToken } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
+import Loader from "../components/loader";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -132,20 +133,26 @@ export const RentForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <ActionButton<Nft>
-                  title="Approve all"
-                  nft={nft}
-                  onClick={handleApproveAll}
-                  disabled={isApprovalLoading || isSubmitting}
-                />
+                <>
+                  <ActionButton<Nft>
+                    title="Approve all"
+                    nft={nft}
+                    onClick={handleApproveAll}
+                    disabled={isApprovalLoading || isSubmitting}
+                  />
+                  {isApprovalLoading && <Loader />}
+                </>
               )}
               {(isApproved || isSubmitting) && (
-                <ActionButton<Nft>
-                  title={nfts.length > 1 ? "Rent all" : "Rent"}
-                  nft={nft}
-                  onClick={submitForm}
-                  disabled={!isValid || isSubmitting}
-                />
+                <>
+                  <ActionButton<Nft>
+                    title={nfts.length > 1 ? "Rent all" : "Rent"}
+                    nft={nft}
+                    onClick={submitForm}
+                    disabled={!isValid || isSubmitting}
+                  />
+                  {isSubmitting && <Loader />}
+                </>
               )}
             </div>
           </form>
