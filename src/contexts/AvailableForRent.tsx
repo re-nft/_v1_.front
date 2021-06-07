@@ -12,8 +12,9 @@ import { queryAllLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
-import usePoller from "../hooks/usePoller";
 import { SignerContext } from "../hardhat/SymfoniContext";
+import { diffJson } from "diff";
+import usePoller from "../hooks/usePoller";
 
 
 export const AvailableForRentContext = createContext<{
@@ -62,19 +63,33 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           .map((lending) => {
             return new Lending(lending, signer);
           });
-        setNfts(lendingsReNFT);
+        // TODO only update if changed
+
+        const normalizedLendings = nfts.map((l) => l.toJSON());
+          const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
+
+          const difference = diffJson(
+            normalizedLendings,
+            normalizedLendingNew,
+            { ignoreWhitespace: true }
+          );
+          //const difference = true;
+          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+            setNfts(lendingsReNFT);
+          }
       })
       .finally(() => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currentAddress, signer]);
+  }, [currentAddress, nfts, signer]);
 
   useEffect(() => {
     fetchRentings();
   }, [fetchRentings]);
 
   usePoller(fetchRentings, 10000);
+
   return (
     <AvailableForRentContext.Provider
       value={{

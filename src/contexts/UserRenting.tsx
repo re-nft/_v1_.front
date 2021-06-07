@@ -1,18 +1,12 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
 import { SignerContext } from "../hardhat/SymfoniContext";
-import usePoller from "../hooks/usePoller";
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
 import { diffJson } from "diff";
+import usePoller from "../hooks/usePoller";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -44,17 +38,17 @@ export const UserRentingProvider: React.FC = ({ children }) => {
         if (usersRenting) {
           const { users } = usersRenting;
           if (!users) {
-            setRentings([]);
+            if (renting.length > 0) setRentings([]);
             return;
           }
           if (users.length < 1) {
-            setRentings([]);
+            if (renting.length > 0) setRentings([]);
             return;
           }
           const firstMatch = users[0];
-          const { renting:r } = firstMatch;
+          const { renting: r } = firstMatch;
           if (!r) {
-            setRentings([]);
+            if (renting.length > 0) setRentings([]);
             return;
           }
           const _renting: Renting[] = [];
@@ -70,7 +64,9 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             );
           });
           const normalizedLendings = renting.map((lending) => lending.toJSON());
-          const normalizedLendingNew = _renting.map((lending) => lending.toJSON());
+          const normalizedLendingNew = _renting.map((lending) =>
+            lending.toJSON()
+          );
 
           const difference = diffJson(
             normalizedLendings,
@@ -78,7 +74,11 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             { ignoreWhitespace: true }
           );
           //const difference = true;
-          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
+          if (
+            difference &&
+            difference[1] &&
+            (difference[1].added || difference[1].removed)
+          ) {
             setRentings(_renting);
           }
         }
