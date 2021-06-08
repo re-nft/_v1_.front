@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
-import { IS_PROD } from "../../../consts";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import {
@@ -36,7 +35,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchAsync = useCallback(async () => {
-    if (IS_PROD) {
+    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === 'undefined') {
       if (isLoading) setIsLoading(false);
       return;
     }
