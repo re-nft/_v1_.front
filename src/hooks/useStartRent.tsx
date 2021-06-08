@@ -2,7 +2,7 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber, ContractTransaction } from "ethers";
-import { getE20 } from "../utils";
+import { getDistinctItems, getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
@@ -50,7 +50,7 @@ export const useStartRent = (): {
 
       setApprovalLoading(true);
 
-      const promiseTokenAddresses = nfts
+      const promiseTokenAddresses = getDistinctItems(nfts, 'paymentToken')
         .map((nft) => nft.paymentToken)
         .map((token) => resolver.getPaymentToken(token));
 

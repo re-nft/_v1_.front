@@ -128,7 +128,11 @@ export const decimalToPaddedHexString = (
 };
 
 //TODO:eniko do we need this
-export const unpackPrice = (price: BigNumberish, scale: BigNumber, divide: number): number => {
+export const unpackPrice = (
+  price: BigNumberish,
+  scale: BigNumber,
+  divide: number
+): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
     2
@@ -274,4 +278,22 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   } catch (e) {
     Promise.reject(e);
   }
+};
+
+export const getDistinctItems = <
+  T extends Record<string | number | symbol, unknown>
+>(
+  nfts: T[],
+  property: keyof T
+): T[] => {
+  const set = new Set<unknown>();
+  const distinctItems = nfts.reduce<T[]>((acc, item) => {
+    const field = item[property];
+    if (!set.has(field)) {
+      set.add(field);
+      acc.push(item);
+    }
+    return acc;
+  }, []);
+  return distinctItems;
 };
