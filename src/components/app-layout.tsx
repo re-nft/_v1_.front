@@ -35,11 +35,11 @@ const debug = createDebugger('app:layout')
 const ROUTES = [
   {
     path: "/",
-    name: "Rent NFT",
+    name: "Rent",
   },
   {
     path: "/lend",
-    name: "Lend NFT",
+    name: "Lend",
   },
   {
     path: "/dashboard",

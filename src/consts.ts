@@ -11,4 +11,5 @@ export const MAX_UINT256 =
 export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 
 export const IS_PROD =
-  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production";
+  process.env["REACT_APP_ENVIRONMENT"]?.toLowerCase() === "production" &&
+  process.env["REACT_APP_NETWORK_NAME"] === "mainnet";

@@ -22,6 +22,7 @@ export const useReturnIt = (): ((
 
   const renft = useMemo(() => {
     if (!signer) return;
+    if (!contractAddress) return;
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 

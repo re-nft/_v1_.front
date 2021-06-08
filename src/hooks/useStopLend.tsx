@@ -21,6 +21,8 @@ export const useStopLend = (): ((
 
   const renft = useMemo(() => {
     if (!signer) return;
+    if (!contractAddress) return;
+
     return getReNFT(signer, contractAddress);
   }, [signer, contractAddress]);
 
