@@ -311,7 +311,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
 
     const getReNFT = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0xB85942c0D4f93009DBefB438dCB76717592a7762"
+        const contractAddress = "0xEeA6573AB0724eA1227577d72f39d5377fC55E0B"
         const instance = _signer ? ReNFT__factory.connect(contractAddress, _signer) : ReNFT__factory.connect(contractAddress, _provider)
         const contract: SymfoniReNFT = {
             instance: instance,
@@ -322,7 +322,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getResolver = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x13c41354BAEA681f771cD9ff760FD8719dfAc2a3"
+        const contractAddress = "0xB0fA5aCEf7Aa85F7338a255B010cfDCc6abb19A7"
         const instance = _signer ? Resolver__factory.connect(contractAddress, _signer) : Resolver__factory.connect(contractAddress, _provider)
         const contract: SymfoniResolver = {
             instance: instance,
@@ -333,7 +333,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getE1155 = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x853eae7044A2C407A425e5e6e3A9a1998c69f015"
+        const contractAddress = "0x4Ef062728295D74E330B8c3D48a4e97fc46dB5ca"
         const instance = _signer ? E1155__factory.connect(contractAddress, _signer) : E1155__factory.connect(contractAddress, _provider)
         const contract: SymfoniE1155 = {
             instance: instance,
@@ -344,7 +344,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getDAI = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0xc0AE2046770183cD98f516E24bF196f30Ab849EB"
+        const contractAddress = "0xf0AA58579333310576a4f5b97da3Ba4ABcB82dE6"
         const instance = _signer ? DAI__factory.connect(contractAddress, _signer) : DAI__factory.connect(contractAddress, _provider)
         const contract: SymfoniDAI = {
             instance: instance,
@@ -355,7 +355,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getE1155B = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0xE97B54D59AA4eDEb9d8A017373a146753D7B6496"
+        const contractAddress = "0x7F87A29b479E63779a8DA398E788DCDC01143765"
         const instance = _signer ? E1155B__factory.connect(contractAddress, _signer) : E1155B__factory.connect(contractAddress, _provider)
         const contract: SymfoniE1155B = {
             instance: instance,
@@ -366,7 +366,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getE721 = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x6E88A2AA2657a97e8FC71f1C821b0Ec5Fc03801f"
+        const contractAddress = "0xc3Fa1FC39B7D3e5c347f6adA2cd5A7344912bE8a"
         const instance = _signer ? E721__factory.connect(contractAddress, _signer) : E721__factory.connect(contractAddress, _provider)
         const contract: SymfoniE721 = {
             instance: instance,
@@ -377,7 +377,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getE721B = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x5aeB28A14252497E754e72A98F577EEe717d4BD9"
+        const contractAddress = "0xA99Ed167b593CF684678d01092160954be228E34"
         const instance = _signer ? E721B__factory.connect(contractAddress, _signer) : E721B__factory.connect(contractAddress, _provider)
         const contract: SymfoniE721B = {
             instance: instance,
@@ -388,7 +388,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getTUSD = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x46517180542334083d8aa60A44Da5b4a4a70c259"
+        const contractAddress = "0x07a15E6B6a0764fEEfC1E98fe864BabC7DA123CF"
         const instance = _signer ? TUSD__factory.connect(contractAddress, _signer) : TUSD__factory.connect(contractAddress, _provider)
         const contract: SymfoniTUSD = {
             instance: instance,
@@ -399,7 +399,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getUSDC = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x214D0D13F19Ad8Aca2dff8Ded96bb2DFa2835e6C"
+        const contractAddress = "0xbf475983f159CAdDF32647D24cBC65Eb757Af938"
         const instance = _signer ? USDC__factory.connect(contractAddress, _signer) : USDC__factory.connect(contractAddress, _provider)
         const contract: SymfoniUSDC = {
             instance: instance,
@@ -410,7 +410,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getUSDT = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x0Abc973E504E242d8609685E69Ea96b4e3621d85"
+        const contractAddress = "0x211d4638fF5D0c324D88243e603Dcb39C7b30C38"
         const instance = _signer ? USDT__factory.connect(contractAddress, _signer) : USDT__factory.connect(contractAddress, _provider)
         const contract: SymfoniUSDT = {
             instance: instance,
@@ -421,7 +421,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getUtils = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0x3460b0d63Be513ebe056dC8510BaC47Cc10EF270"
+        const contractAddress = "0xa5ea59F96D31739669CD6F60b952b71DA3512512"
         const instance = _signer ? Utils__factory.connect(contractAddress, _signer) : Utils__factory.connect(contractAddress, _provider)
         const contract: SymfoniUtils = {
             instance: instance,
@@ -432,7 +432,7 @@ export const Symfoni: React.FC<SymfoniProps> = ({
         ;
     const getWETH = (_provider: providers.Provider, _signer?: Signer) => {
 
-        const contractAddress = "0xD7C6a8bB6d1FA43d1e020057d61880e2A36f67fb"
+        const contractAddress = "0x00131290BC3DAbDb262305d77443D7b90683045f"
         const instance = _signer ? WETH__factory.connect(contractAddress, _signer) : WETH__factory.connect(contractAddress, _provider)
         const contract: SymfoniWETH = {
             instance: instance,
