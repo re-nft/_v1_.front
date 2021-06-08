@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
-import { IS_PROD } from "../../../consts";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
 import {
@@ -12,6 +11,7 @@ import {
   SignerContext,
 } from "../../../hardhat/SymfoniContext";
 import createCancellablePromise from "../../create-cancellable-promise";
+import usePoller from "../../../hooks/usePoller";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -35,7 +35,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchAsync = useCallback(async () => {
-    if (IS_PROD) {
+    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === 'undefined') {
       if (isLoading) setIsLoading(false);
       return;
     }
@@ -137,10 +137,10 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     return fetchRequest.cancel;
   }, [fetchAsync]);
 
-  // usePoller(()=>{
-  //   const fetchRequest = createCancellablePromise(fetchAsync());
-  //   return fetchRequest.cancel;
-  // }, 5_000)
+  usePoller(()=>{
+    const fetchRequest = createCancellablePromise(fetchAsync());
+    return fetchRequest.cancel;
+  }, 3000)
 
   return { devNfts, isLoading };
 };

@@ -104,6 +104,7 @@ class Nft {
   _tokenURI: string;
   _mediaURI: string;
   _contract: ERC721 | ERC1155 | undefined;
+  [k: string]: unknown;
 
   /**
    * If previously instantiated, will return that instance, otherwise, will instantiate

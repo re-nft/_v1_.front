@@ -79,33 +79,6 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintNFT = useCallback(
-    async (nft: number) => {
-      switch (nft) {
-        case 0:
-          if (!e721) return;
-          await (await e721.faucet()).wait();
-          break;
-        case 1:
-          if (!e721b) return;
-          await (await e721b.faucet()).wait();
-          break;
-        case 2:
-          if (!e1155) return;
-          await (await e1155.faucet('10')).wait();
-          break;
-        case 3:
-          if (!e1155b) return;
-          await (await e1155b.faucet('10')).wait();
-          break;
-        default:
-          debug("unknown NFT");
-          return;
-      }
-    },
-    [e721, e721b, e1155, e1155b]
-  );
-
   const mintE20 = useCallback(async (e20: number) => {
     switch (e20) {
       case 1:
@@ -129,7 +102,30 @@ const App: React.FC = () => {
         await (await tusd.faucet()).wait();
         break;
     }
-  }, []);
+  }, [dai, tusd, usdc, usdt, weth]);
+  const mintNFT = useCallback(async (nft: number) => {
+    switch (nft) {
+      case 0:
+        if (!e721) return;
+        await (await e721.faucet()).wait();
+        break;
+      case 1:
+        if (!e721b) return;
+        await (await e721b.faucet()).wait();
+        break;
+      case 2:
+        if (!e1155) return;
+        await (await e1155.faucet(10)).wait();
+        break;
+      case 3:
+        if (!e1155b) return;
+        await (await e1155b.faucet(10)).wait();
+        break;
+      default:
+        debug("unknown NFT");
+        return
+    }
+  }, [e721, e721b, e1155, e1155b]);
 
   return (
     <Layout>
