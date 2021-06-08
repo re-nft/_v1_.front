@@ -39,6 +39,7 @@ export const useStartRent = (): {
 
   const renft = useMemo(() => {
     if (!signer) return;
+    if (!contractAddress) return;
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 

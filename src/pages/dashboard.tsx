@@ -156,7 +156,7 @@ export const Dashboard: React.FC = () => {
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center">You aren&apos;t lending or renting anyThing</div>
+      <div className="center">You aren&apos;t lending or renting yet. To start lending, head to the lend tab.</div>
     );
   }
 

@@ -17,6 +17,7 @@ export const useClaimColleteral = (): ((
 
   const renft = useMemo(() => {
     if (!signer) return;
+    if (!contractAddress) return;
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 
@@ -30,7 +31,7 @@ export const useClaimColleteral = (): ((
       }[]
     ) => {
       if (!renft) return Promise.reject();
-      console.log(nfts)
+      console.log(nfts);
       return renft.claimCollateral(
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),

@@ -24,6 +24,8 @@ export const useStartLend = (): ((
 
   const renft = useMemo(() => {
     if (!signer) return;
+    if (!contractAddress) return;
+    console.log('contractAddress', contractAddress)
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 
@@ -46,6 +48,7 @@ export const useStartLend = (): ((
       debug("dailyRentPrices", dailyRentPrices);
       debug("nftPrice", nftPrice);
       debug("tokens", tokens);
+
       return renft
         .lend(
           addresses,
