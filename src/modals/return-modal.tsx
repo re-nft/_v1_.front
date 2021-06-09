@@ -49,9 +49,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   }, [nfts, currentAddress, setIsApproved, contractAddress]);
 
   const handleApproveAll = useCallback(() => {
-    console.log('handle approve all')
     if (!provider) return;
-    console.log(nonApprovedNft, 'nonApprovedNft')
     const transaction = createCancellablePromise(
       setApprovalForAll(nonApprovedNft, contractAddress)
     );
@@ -68,7 +66,6 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         setIsApprovalLoading(false);
       })
       .catch((e) => {
-        console.log(e);
         console.warn("issue approving all in batch lend");
         setIsApprovalLoading(false);
         return [undefined];

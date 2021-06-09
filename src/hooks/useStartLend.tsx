@@ -25,7 +25,6 @@ export const useStartLend = (): ((
   const renft = useMemo(() => {
     if (!signer) return;
     if (!contractAddress) return;
-    console.log('contractAddress', contractAddress)
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 

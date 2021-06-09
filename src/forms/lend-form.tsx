@@ -57,7 +57,6 @@ function is4Digits(x: number | string) {
     // precision up to 16 digits after
     const p: number = Number.parseFloat(x.toString()) * 10e3;
     const reminder: number = p - Number.parseInt(p.toString()); 
-    console.log(reminder, p, Number.parseInt(p.toString()))
     return reminder * 10e15 === 0;
   } catch (e) {
     return false;

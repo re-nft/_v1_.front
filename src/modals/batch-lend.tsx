@@ -99,7 +99,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         setIsApprovalLoading(false);
       })
       .catch((e) => {
-        console.log(e);
         console.warn("issue approving all in batch lend");
         setIsApprovalLoading(false);
         return [undefined];

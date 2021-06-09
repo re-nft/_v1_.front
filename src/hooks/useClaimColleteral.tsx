@@ -31,7 +31,6 @@ export const useClaimColleteral = (): ((
       }[]
     ) => {
       if (!renft) return Promise.reject();
-      console.log(nfts);
       return renft.claimCollateral(
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),

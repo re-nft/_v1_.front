@@ -134,7 +134,6 @@ export const useStartRent = (): {
       return await renft
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
         .catch((e) => {
-          console.log(e.message)
           setError(e.message, 'error')
           debug("Error with rent", e);
         });

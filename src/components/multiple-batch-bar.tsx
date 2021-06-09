@@ -54,9 +54,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
   }, [currentAddress, setIsApproved, contractAddress, checkedRenting]);
 
   const handleApproveAll = useCallback(() => {
-    console.log("handle approve all");
     if (!provider) return;
-    console.log(nonApprovedNft, "nonApprovedNft");
     const transaction = createCancellablePromise(
       setApprovalForAll(nonApprovedNft, contractAddress)
     );
@@ -73,7 +71,6 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
         setIsApprovalLoading(false);
       })
       .catch((e) => {
-        console.log(e);
         console.warn("issue approving all in batch lend");
         setIsApprovalLoading(false);
         return [undefined];
