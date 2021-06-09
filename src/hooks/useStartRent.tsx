@@ -10,6 +10,7 @@ import { ERC20 } from "../hardhat/typechain/ERC20";
 import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
+import { SnackAlertContext } from "../contexts/SnackProvider";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -36,6 +37,7 @@ export const useStartRent = (): {
   const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
+  const { setError }  = useContext(SnackAlertContext)
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -132,10 +134,12 @@ export const useStartRent = (): {
       return await renft
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
         .catch((e) => {
+          console.log(e.message)
+          setError(e.message, 'error')
           debug("Error with rent", e);
         });
     },
-    [renft]
+    [renft, setError]
   );
 
   return {
