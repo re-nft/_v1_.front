@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber, ContractTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { getDistinctItems, getE20 } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
@@ -25,7 +25,7 @@ export type StartRentNft = {
 
 export const useStartRent = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => Promise<void | ContractTransaction>;
+  startRent: (nfts: StartRentNft[]) => Promise<void | boolean>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
   isApprovalLoading: boolean;
@@ -37,7 +37,7 @@ export const useStartRent = (): {
   const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
-  const { setError }  = useContext(SnackAlertContext)
+  const { setError } = useContext(SnackAlertContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -53,7 +53,7 @@ export const useStartRent = (): {
 
       setApprovalLoading(true);
 
-      const promiseTokenAddresses = getDistinctItems(nfts, 'paymentToken')
+      const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
         .map((token) => resolver.getPaymentToken(token));
 
@@ -74,7 +74,13 @@ export const useStartRent = (): {
         Promise.all(promiseTokenAllowances).then(
           (tokenAllowances: [BigNumber, ERC20][]) => {
             const approvals: ERC20[] = tokenAllowances
-              .filter(([allowance]) => allowance.lt(MAX_UINT256))
+              .filter(([allowance]) => {
+                console.log(
+                  BigNumber.from(MAX_UINT256),
+                  allowance.toHexString()
+                );
+                return allowance.lt(MAX_UINT256);
+              })
               .map(([_, erc20]) => erc20);
             setApprovalLoading(false);
             setApprovals(approvals);
@@ -101,14 +107,22 @@ export const useStartRent = (): {
         approvals.map((approval) =>
           approval.approve(contractAddress, MAX_UINT256)
         )
-        //TODO this is wrong, all transactions needs to be tracked
-      ).then(([tx]) => {
-        if (tx) setHash(tx.hash);
-        setApprovalLoading(false);
-        setApprovals([]);
-      });
+      )
+        .then((hashes) => {
+          if (hashes.length > 0) return setHash(hashes.map((tx) => tx.hash));
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (!status) setError("Transaction is not successful!", "warning");
+          setApprovalLoading(false);
+          setApprovals([]);
+        })
+        .catch((e) => {
+          setApprovalLoading(false);
+          setError(e.message, "error");
+        });
     }
-  }, [approvals, contractAddress, setHash]);
+  }, [approvals, contractAddress, setError, setHash]);
 
   const startRent = useCallback(
     async (nfts: StartRentNft[]) => {
@@ -133,12 +147,20 @@ export const useStartRent = (): {
 
       return await renft
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
+        .then((tx) => {
+          if (tx) return setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (!status) setError("Transaction is not successful!", "warning");
+          return Promise.resolve(status);
+        })
         .catch((e) => {
-          setError(e.message, 'error')
+          setError(e.message, "error");
           debug("Error with rent", e);
         });
     },
-    [renft, setError]
+    [renft, setError, setHash]
   );
 
   return {

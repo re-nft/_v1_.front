@@ -2,7 +2,6 @@ import React, { useContext, useCallback, useEffect } from "react";
 
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, isLending } from "../../../contexts/graph/classes";
-import { TransactionStateContext } from "../../../contexts/TransactionState";
 import CatalogueItem from "../../../components/catalogue-item";
 import ActionButton from "../../../components/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
@@ -34,7 +33,6 @@ const UserCurrentlyLending: React.FC = () => {
     onPageControllerInit,
   } = usePageController<Lending>();
   const { userLending, isLoading } = useContext(UserLendingContext);
-  const { setHash } = useContext(TransactionStateContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
   const stopLending = useStopLend();
 
@@ -44,19 +42,14 @@ const UserCurrentlyLending: React.FC = () => {
         stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
       );
 
-      transaction.promise
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve(false);
-        })
-        .then((status) => {
-          if (status) batchHandleReset();
-        });
+      transaction.promise.then((status) => {
+        if (status) batchHandleReset();
+      });
 
       return transaction.cancel;
     },
 
-    [stopLending, setHash, batchHandleReset]
+    [stopLending, batchHandleReset]
   );
 
   const handleClickNft = useCallback(
@@ -96,16 +89,19 @@ const UserCurrentlyLending: React.FC = () => {
     <>
       <ItemWrapper>
         {currentPage.map((nft: Lending) => {
+          const hasRenting = !nft.lending.renting;
           return (
             <CatalogueItem
               key={getUniqueCheckboxId(nft)}
               checked={!!checkedItems[getUniqueCheckboxId(nft)]}
               nft={nft}
               onCheckboxChange={checkBoxChangeWrapped(nft)}
+              disabled={hasRenting}
             >
               <LendingFields nft={nft} />
               <ActionButton<Lending>
                 nft={nft}
+                disabled={hasRenting}
                 title="Stop Lending"
                 onClick={handleClickNft}
               />

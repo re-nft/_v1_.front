@@ -56,7 +56,7 @@ function is4Digits(x: number | string) {
   try {
     // precision up to 16 digits after
     const p: number = Number.parseFloat(x.toString()) * 10e3;
-    const reminder: number = p - Number.parseInt(p.toString()); 
+    const reminder: number = p - Number.parseInt(p.toString());
     return reminder * 10e15 === 0;
   } catch (e) {
     return false;
@@ -128,11 +128,21 @@ export const LendForm: React.FC<LendFormProps> = ({
       if (typeof field === "undefined") {
         error[fieldName] = "please specify the borrow price";
       } else if (field < 0.0001) {
+<<<<<<< HEAD
         error[fieldName] = "borrow price must be greater than or equal to 0.0001";
       } else if (field > 9999.9999) {
         error[fieldName] = "borrow price must be less then or equal 9999.9999";
       }  else if (!is4Digits(field)){
         error[fieldName] = "borrow price only accepts up to 4 fractional digits";
+=======
+        error[fieldName] =
+          "borrow price must be greater than or equal to 0.0001";
+      } else if (field > 9999.9999) {
+        error[fieldName] = "borrow price must be less then or equal 9999.9999";
+      } else if (!is4Digits(field)) {
+        error[fieldName] =
+          "borrow price only accepts up to 4 fractional digits";
+>>>>>>> fix/cosmetics
       }
       
       fieldName = "nftPrice";
@@ -143,7 +153,11 @@ export const LendForm: React.FC<LendFormProps> = ({
         error[fieldName] = "collateral must be greater than or equal to 0.0001";
       } else if (field > 9999.9999) {
         error[fieldName] = "collateral must be less then or equal 9999.9999";
+<<<<<<< HEAD
       } else if (!is4Digits(field)){
+=======
+      } else if (!is4Digits(field)) {
+>>>>>>> fix/cosmetics
         error[fieldName] = "collateral only accepts up to 4 fractional digits";
       }
 

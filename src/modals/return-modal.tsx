@@ -3,6 +3,7 @@ import { Button } from "../components/button";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { Nft, Renting } from "../contexts/graph/classes";
+import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import { ProviderContext } from "../hardhat/SymfoniContext";
@@ -30,6 +31,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const [provider] = useContext(ProviderContext);
+  const { setError } = useContext(SnackAlertContext);
 
   useEffect(() => {
     if (!currentAddress) return;
@@ -56,17 +58,18 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     setIsApproved(false);
     setIsApprovalLoading(true);
     transaction.promise
-      //TODO this is wrong, all transactions needs to be tracked
-      .then(([tx]) => {
-        if (!tx) return Promise.resolve(false);
-        return setHash(tx.hash);
+      .then((hashes) => {
+        if (hashes.length < 1) return Promise.resolve(false);
+        return setHash(hashes.map((tx) => tx.hash));
       })
       .then((status) => {
+        if (!status) setError("Transaction is not successful!", "warning");
         setIsApproved(status);
         setIsApprovalLoading(false);
       })
       .catch((e) => {
         console.warn("issue approving all in batch lend");
+        setError(e.message, "error");
         setIsApprovalLoading(false);
         return [undefined];
       });
@@ -74,7 +77,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     return () => {
       transaction.cancel();
     };
-  }, [contractAddress, nonApprovedNft, provider, setHash]);
+  }, [contractAddress, nonApprovedNft, provider, setError, setHash]);
 
   const handleReturnNft = useCallback(async () => {
     const items = nfts.map((item) => ({

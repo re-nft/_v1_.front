@@ -14,12 +14,14 @@ import CatalogueItemRow from "./catalogue-item-row";
 import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
+import { Checkbox } from "./checkbox";
 
 export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
   onCheckboxChange: () => void;
+  disabled?: boolean;
 };
 const Skeleton = () => {
   return (
@@ -39,6 +41,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   isAlreadyFavourited,
   onCheckboxChange,
   children,
+  disabled,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
   const currentAddress = useContext(CurrentAddressWrapper);
@@ -126,6 +129,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
 
+  // tODO refactor nft__checkbox
   return (
     <div
       ref={ref}
@@ -152,12 +156,17 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
             </div> */}
             <div className="spacer" />
-            <div className="nft__checkbox">
+            <Checkbox
+              checked={isChecked}
+              handleClick={onCheckboxClick}
+              disabled={disabled}
+            ></Checkbox>
+            {/* <div className="nft__checkbox">
               <div
                 onClick={onCheckboxClick}
-                className={`checkbox ${isChecked ? "checked" : ""}`}
+                className={`checkbox ${isChecked ? "checked" : ""} ${disabled ? "disabled": ""}`}
               />
-            </div>
+            </div> */}
           </div>
           <div className="nft__image">
             {image ? (

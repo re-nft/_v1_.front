@@ -6,7 +6,7 @@ import Debug from "debug";
 
 dotenv.config();
 
-console.log('REACT_APP_ENVIRONMENT ', process.env.REACT_APP_ENVIRONMENT)
+console.log("REACT_APP_ENVIRONMENT ", process.env.REACT_APP_ENVIRONMENT);
 if (process.env.REACT_APP_DEBUG) {
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
