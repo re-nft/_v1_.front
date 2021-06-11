@@ -111,6 +111,7 @@ const UserCurrentlyLending: React.FC = () => {
                 disabled={hasRenting}
                 title="Stop Lending"
                 onClick={handleClickNft}
+                disabled={!!nft.renting}
               />
             </CatalogueItem>
           );
