@@ -75,10 +75,6 @@ export const useStartRent = (): {
           (tokenAllowances: [BigNumber, ERC20][]) => {
             const approvals: ERC20[] = tokenAllowances
               .filter(([allowance]) => {
-                console.log(
-                  BigNumber.from(MAX_UINT256),
-                  allowance.toHexString()
-                );
                 return allowance.lt(BigNumber.from(MAX_UINT256).div(2));
               })
               .map(([_, erc20]) => erc20);
