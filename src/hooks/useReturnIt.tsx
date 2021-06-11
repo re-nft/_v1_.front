@@ -31,14 +31,18 @@ export const useReturnIt = (): ((
       if (!renft) return;
       if (nfts.length < 1) return;
 
-      const tx = await renft.returnIt(
+      return await renft.returnIt(
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
         nfts.map((nft) => Number(nft.amount)),
         nfts.map((nft) => BigNumber.from(nft.lendingId))
-      );
-      const isSuccess = await setHash(tx.hash);
-      return isSuccess;
+      ).then((tx)=>{
+        return setHash(tx.hash);
+      }).catch((e)=>{
+        //
+        return false;
+      });
+   
     },
     [renft, setHash]
   );

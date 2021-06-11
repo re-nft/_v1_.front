@@ -5,6 +5,8 @@ import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
+import moment from "moment";
+import { Renting } from "./contexts/graph/classes";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -297,3 +299,11 @@ export const getDistinctItems = <
   }, []);
   return distinctItems;
 };
+
+export const nftReturnIsExpired = (rent: Renting): boolean => {
+  const isExpired =
+  moment(rent.renting.rentedAt * 1000 )
+    .add(rent.renting.rentDuration, "days")
+    .unix() * 1000 < moment.now();
+  return isExpired
+}

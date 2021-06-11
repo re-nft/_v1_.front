@@ -135,7 +135,7 @@ export const RentForm: React.FC<LendFormProps> = ({
               {!isApproved && !isSubmitting && (
                 <>
                   <ActionButton<Nft>
-                    title="Approve all"
+                    title="Approve Payment tokens"
                     nft={nft}
                     onClick={handleApproveAll}
                     disabled={isApprovalLoading || isSubmitting}

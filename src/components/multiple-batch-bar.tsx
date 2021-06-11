@@ -146,7 +146,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button handleClick={onStopLend} description="Lend all"></Button>
+            <Button handleClick={onStopLend} description="Stop lend all"></Button>
           </div>
         </div>
       )}

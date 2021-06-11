@@ -96,16 +96,19 @@ const UserCurrentlyLending: React.FC = () => {
     <>
       <ItemWrapper>
         {currentPage.map((nft: Lending) => {
+          const hasRenting = !nft.lending.renting;
           return (
             <CatalogueItem
               key={getUniqueCheckboxId(nft)}
               checked={!!checkedItems[getUniqueCheckboxId(nft)]}
               nft={nft}
               onCheckboxChange={checkBoxChangeWrapped(nft)}
+              disabled={hasRenting}
             >
               <LendingFields nft={nft} />
               <ActionButton<Lending>
                 nft={nft}
+                disabled={hasRenting}
                 title="Stop Lending"
                 onClick={handleClickNft}
               />

@@ -10,7 +10,7 @@ import {
 import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { short } from "../utils";
+import { nftReturnIsExpired, short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useStopLend } from "../hooks/useStopLend";
 import { UserLendingContext } from "../contexts/UserLending";
@@ -142,21 +142,24 @@ export const Dashboard: React.FC = () => {
     },
     [onCheckboxChange]
   );
-  const checkedClaimsLength = useMemo(()=>{
+  const checkedClaimsLength = useMemo(() => {
     return checkedClaims.length;
-  }, [checkedClaims])
-  const checkedRentingLength = useMemo(()=>{
+  }, [checkedClaims]);
+  const checkedRentingLength = useMemo(() => {
     return checkedRentingItems.length;
-  }, [checkedRentingItems])
-  const lendinItemsStopLendableLength = useMemo(()=>{
+  }, [checkedRentingItems]);
+  const lendinItemsStopLendableLength = useMemo(() => {
     return lendinItemsStopLendable.length;
-  }, [lendinItemsStopLendable])
+  }, [lendinItemsStopLendable]);
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center">You aren&apos;t lending or renting yet. To start lending, head to the lend tab.</div>
+      <div className="center">
+        You aren&apos;t lending or renting yet. To start lending, head to the
+        lend tab.
+      </div>
     );
   }
 
@@ -238,6 +241,7 @@ export const Dashboard: React.FC = () => {
                 <Tbody>
                   {rentingItems.map((rent: Renting) => {
                     const checked = !!checkedItems[getUniqueCheckboxId(rent)];
+                    const isExpired = nftReturnIsExpired(rent);
                     return (
                       <RentingRow
                         checked={checked}
@@ -246,6 +250,7 @@ export const Dashboard: React.FC = () => {
                         handleReturn={handleReturn}
                         currentAddress={currentAddress}
                         checkBoxChangeWrapped={checkBoxChangeWrapped}
+                        isExpired={isExpired}
                       ></RentingRow>
                     );
                   })}
@@ -274,17 +279,20 @@ const RentingRow: React.FC<{
   handleReturn: (nft: Renting[]) => void;
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
+  isExpired: boolean;
 }> = ({
   checked,
   rent,
   handleReturn,
   checkBoxChangeWrapped,
   currentAddress,
+  isExpired,
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
     return handleReturn([rent]);
   }, [handleReturn, rent]);
+  // TODO .format("MM/D/YY hh:mm") should be in local time
   return (
     <Tr>
       <Td className="column">{short(renting.lending.nftAddress)}</Td>
@@ -300,13 +308,17 @@ const RentingRow: React.FC<{
       <Td className="column">{renting.rentDuration} days</Td>
       <Td className="column">{renting.lending.dailyRentPrice}</Td>
       <Td className="action-column">
-        <Checkbox handleClick={checkBoxChangeWrapped(rent)} checked={checked} />
+        <Checkbox
+          handleClick={checkBoxChangeWrapped(rent)}
+          checked={checked}
+          disabled={isExpired}
+        />
       </Td>
       <Td className="action-column">
         {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
           <Button
             handleClick={handleClick}
-            disabled={checked}
+            disabled={checked || isExpired}
             description="Return it"
           />
         )}
