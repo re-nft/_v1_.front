@@ -23,7 +23,7 @@ export const useStartLend = (): ((
 ) => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
   const contractAddress = useContractAddress();
-  const { setError }  = useContext(SnackAlertContext)
+  const { setError } = useContext(SnackAlertContext);
   const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {
@@ -64,15 +64,15 @@ export const useStartLend = (): ((
         )
         .then((tx) => {
           if (tx) return setHash(tx.hash);
-          return Promise.resolve(false)
+          return Promise.resolve(false);
         })
         .then((status) => {
-          if (!status) setError('Transaction is not successful!', 'warning')
-          return Promise.resolve(status)
+          if (!status) setError("Transaction is not successful!", "warning");
+          return Promise.resolve(status);
         })
         .catch((e) => {
           console.warn("could not start lend");
-          setError(e.message, 'error')
+          setError(e.message, "error");
           return;
         });
     },

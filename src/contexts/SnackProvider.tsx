@@ -30,13 +30,16 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
 
   const setError = useCallback((message: string, type: ErrorType) => {
     const validMessages = [
-        // Tuple, first one is old matched message, second string is new message shown to user
+      // Tuple, first one is old matched message, second string is new message shown to user
       [
         "execution reverted: ERC20: transfer amount exceeds balance",
         "Insufficient fund. Please check your balance.",
       ],
       ["Transaction is not successful!", "Transaction is not successful!"],
-      ["User denied transaction signature.", "User denied transaction signature."]
+      [
+        "User denied transaction signature.",
+        "User denied transaction signature.",
+      ],
     ];
     const contains = validMessages
       .filter(([m]) => message.indexOf(m) > 0)
@@ -45,10 +48,10 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
       setErrorShown(true);
       setErrorMessage(contains[0]);
       setErrorType(type);
-    }else {
+    } else {
       setErrorShown(true);
       setErrorMessage("Something went wrong. Please try again!");
-      setErrorType('error');
+      setErrorType("error");
     }
   }, []);
 

@@ -62,11 +62,10 @@ export const Dashboard: React.FC = () => {
         lendingId: lending.id,
         amount: lending.amount,
       }));
-      claim(claims)
-        .then((status) => {
-          if (status)
-            handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
-        });
+      claim(claims).then((status) => {
+        if (status)
+          handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
+      });
     },
     [claim, handleResetLending]
   );
@@ -83,11 +82,10 @@ export const Dashboard: React.FC = () => {
           lendingId: l.lending.id,
           tokenId: l.tokenId,
         }))
-      ) 
-       .then((status) => {
-          if (status)
-            handleResetLending(lending.map((i) => getUniqueCheckboxId(i)));
-        });
+      ).then((status) => {
+        if (status)
+          handleResetLending(lending.map((i) => getUniqueCheckboxId(i)));
+      });
     },
     [stopLending, handleResetLending]
   );
@@ -221,6 +219,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "11%" }}>Rented On</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>
                     <Th style={{ widTh: "7%" }}>Due Date</Th>
+                    <Th style={{ widTh: "7%" }}>Daily Price</Th>
                     <Th style={{ widTh: "7%" }}>Batch Select</Th>
                     <Th style={{ widTh: "20%" }} className="action-column">
                       &nbsp;
@@ -281,6 +280,11 @@ const RentingRow: React.FC<{
   const handleClick = useCallback(() => {
     return handleReturn([rent]);
   }, [handleReturn, rent]);
+  const days = renting.rentDuration;
+  const expireDate = moment(Number(renting.rentedAt) * 1000).add(
+    renting.rentDuration,
+    "days"
+  );
   // TODO .format("MM/D/YY hh:mm") should be in local time
   return (
     <Tr>
@@ -290,11 +294,15 @@ const RentingRow: React.FC<{
       <Td className="column">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
       </Td>
-      <Td className="column">{renting.rentDuration} days</Td>
+      <Td className="column">{renting.lending.nftPrice}</Td>
+
       <Td className="column">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
       </Td>
-      <Td className="column">{renting.rentDuration} days</Td>
+      <Td className="column">
+        {days} {days > 1 ? "days" : "day"}
+      </Td>
+      <Td className="column">{expireDate.format("MM/D/YY hh:mm")}</Td>
       <Td className="column">{renting.lending.dailyRentPrice}</Td>
       <Td className="action-column">
         <Checkbox

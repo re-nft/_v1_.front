@@ -17,7 +17,7 @@ export const useClaimColleteral = (): ((
   const [signer] = useContext(SignerContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
-  const { setError }  = useContext(SnackAlertContext)
+  const { setError } = useContext(SnackAlertContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -51,7 +51,7 @@ export const useClaimColleteral = (): ((
           return Promise.resolve(status);
         })
         .catch((e) => {
-          setError(e.message, 'error')
+          setError(e.message, "error");
         });
     },
     [renft, setError, setHash]

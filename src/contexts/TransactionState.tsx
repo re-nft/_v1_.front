@@ -75,12 +75,12 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         return provider.waitForTransaction(h, confirmations, timeout);
       });
       // blocking
-      const receipts = await Promise.all(transactionConfirmations).then(r => r).catch(
-        (e) => {
+      const receipts = await Promise.all(transactionConfirmations)
+        .then((r) => r)
+        .catch((e) => {
           console.warn("could not fetch the transaction status");
           return [];
-        }
-      );
+        });
       if (receipts.length < 1) return false;
 
       const isSuccess =

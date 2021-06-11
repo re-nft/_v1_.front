@@ -15,7 +15,6 @@ export const SnackAlert: React.FC = () => {
     type,
   } = useContext(SnackAlertContext);
 
-  
   const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;

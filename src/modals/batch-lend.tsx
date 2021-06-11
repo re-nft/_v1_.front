@@ -70,10 +70,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
           pmtTokens
         )
       );
-      return transaction.promise
-        .then((status) => {
-          if (status) onClose();
-        });
+      return transaction.promise.then((status) => {
+        if (status) onClose();
+      });
     },
 
     [startLend, nfts, onClose]
@@ -89,7 +88,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     transaction.promise
       .then((hashes) => {
         if (hashes.length < 1) return Promise.resolve(false);
-        return setHash(hashes.map(tx => tx.hash));
+        return setHash(hashes.map((tx) => tx.hash));
       })
       .then((status) => {
         if (!status) setError("Transaction is not successful!", "warning");

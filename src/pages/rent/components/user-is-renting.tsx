@@ -95,7 +95,7 @@ const UserRentings: React.FC = () => {
             const id = getUniqueCheckboxId(nft);
             const checked = !!checkedItems[id];
             const isExpired = nftReturnIsExpired(nft);
-
+            const days = nft.renting.rentDuration;
             return (
               <CatalogueItem
                 key={id}
@@ -111,8 +111,8 @@ const UserRentings: React.FC = () => {
                 />
                 <NumericField
                   text="Rent Duration"
-                  value={nft.renting.rentDuration.toString()}
-                  unit="days"
+                  value={days.toString()}
+                  unit={days > 1 ? "days" : "day"}
                 />
                 <ActionButton<Nft>
                   title="Return It"

@@ -65,7 +65,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
     transaction.promise
       .then((hashes) => {
         if (hashes.length < 1) return Promise.resolve(false);
-        return setHash(hashes.map(tx => tx.hash));
+        return setHash(hashes.map((tx) => tx.hash));
       })
       .then((status) => {
         if (!status) setError("Transaction is not successful!", "warning");
@@ -149,7 +149,10 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button handleClick={onStopLend} description="Stop lend all"></Button>
+            <Button
+              handleClick={onStopLend}
+              description="Stop lend all"
+            ></Button>
           </div>
         </div>
       )}

@@ -302,8 +302,10 @@ export const getDistinctItems = <
 
 export const nftReturnIsExpired = (rent: Renting): boolean => {
   const isExpired =
-  moment(rent.renting.rentedAt * 1000 )
-    .add(rent.renting.rentDuration, "days")
-    .unix() * 1000 < moment.now();
-  return isExpired
-}
+    moment(rent.renting.rentedAt * 1000)
+      .add(rent.renting.rentDuration, "days")
+      .unix() *
+      1000 <
+    moment.now();
+  return isExpired;
+};

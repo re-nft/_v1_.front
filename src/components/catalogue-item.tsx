@@ -41,7 +41,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   isAlreadyFavourited,
   onCheckboxChange,
   children,
-  disabled
+  disabled,
 }) => {
   const [ref, { entry }] = useIntersectionObserver();
   const currentAddress = useContext(CurrentAddressWrapper);
@@ -156,7 +156,11 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
               <span className="icon-minus" />-{nftVote?.downvote || "?"}
             </div> */}
             <div className="spacer" />
-            <Checkbox checked={isChecked} handleClick={onCheckboxClick} disabled={disabled} ></Checkbox>
+            <Checkbox
+              checked={isChecked}
+              handleClick={onCheckboxClick}
+              disabled={disabled}
+            ></Checkbox>
             {/* <div className="nft__checkbox">
               <div
                 onClick={onCheckboxClick}

@@ -75,8 +75,11 @@ export const useStartRent = (): {
           (tokenAllowances: [BigNumber, ERC20][]) => {
             const approvals: ERC20[] = tokenAllowances
               .filter(([allowance]) => {
-                console.log(BigNumber.from(MAX_UINT256), allowance.toHexString())
-                return allowance.lt(MAX_UINT256)
+                console.log(
+                  BigNumber.from(MAX_UINT256),
+                  allowance.toHexString()
+                );
+                return allowance.lt(MAX_UINT256);
               })
               .map(([_, erc20]) => erc20);
             setApprovalLoading(false);
@@ -106,11 +109,11 @@ export const useStartRent = (): {
         )
       )
         .then((hashes) => {
-          if (hashes.length > 0) return setHash(hashes.map(tx => tx.hash));
-          return Promise.resolve(false)
+          if (hashes.length > 0) return setHash(hashes.map((tx) => tx.hash));
+          return Promise.resolve(false);
         })
         .then((status) => {
-          if (!status) setError('Transaction is not successful!', 'warning')
+          if (!status) setError("Transaction is not successful!", "warning");
           setApprovalLoading(false);
           setApprovals([]);
         })
@@ -146,11 +149,11 @@ export const useStartRent = (): {
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
         .then((tx) => {
           if (tx) return setHash(tx.hash);
-          return Promise.resolve(false)
+          return Promise.resolve(false);
         })
         .then((status) => {
-          if (!status) setError('Transaction is not successful!', 'warning')
-          return Promise.resolve(status)
+          if (!status) setError("Transaction is not successful!", "warning");
+          return Promise.resolve(status);
         })
         .catch((e) => {
           setError(e.message, "error");

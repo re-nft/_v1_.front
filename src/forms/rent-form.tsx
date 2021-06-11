@@ -191,10 +191,13 @@ const ModalDialogSection: React.FC<{
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
 
   const renderItem = () => {
+    const days = item.lending.maxRentDuration;
     return (
       <span>
         <span>Rent duration </span>
-        <span>(max {item.lending.maxRentDuration} days)</span>
+        <span>
+          (max {days} {days > 1 ? "days" : "day"})
+        </span>
       </span>
     );
   };

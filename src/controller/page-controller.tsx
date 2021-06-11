@@ -31,7 +31,7 @@ export const usePageController = <T extends Nft>(): {
   const handleReset = useCallback(() => {
     setState(defaultSate);
   }, []);
-  const [newState, setNewState] = useState<State<T>>(defaultSate)
+  const [newState, setNewState] = useState<State<T>>(defaultSate);
 
   const getCurrentPage = useCallback(
     (pageNumber: number, totalPages: number, pageItems: T[]) => {
@@ -63,26 +63,25 @@ export const usePageController = <T extends Nft>(): {
   );
 
   // only modify the state if there are changes
-  useEffect(
-    () => {
-      if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-      const oldStateNormalized = pageItems.map((l) => l.toJSON());
-      const newStateNormalized = newState.pageItems.map((l) => l.toJSON());
-      const difference = diffJson(
-        oldStateNormalized,
-        newStateNormalized,
-        { ignoreWhitespace: true }
-      );
-      //const difference = true;
-      if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
-        setState((prevState)=>({
-          ...prevState,
-          ...newState
-        }))
-      }
-    },
-    [pageItems, newState],
-  )
+  useEffect(() => {
+    if (pageItems.length === 0 && newState.pageItems.length === 0) return;
+    const oldStateNormalized = pageItems.map((l) => l.toJSON());
+    const newStateNormalized = newState.pageItems.map((l) => l.toJSON());
+    const difference = diffJson(oldStateNormalized, newStateNormalized, {
+      ignoreWhitespace: true,
+    });
+    //const difference = true;
+    if (
+      difference &&
+      difference[1] &&
+      (difference[1].added || difference[1].removed)
+    ) {
+      setState((prevState) => ({
+        ...prevState,
+        ...newState,
+      }));
+    }
+  }, [pageItems, newState]);
   const onPageControllerInit = useCallback(
     (newItems: T[]): void => {
       const totalItems = newItems.length || 0;

@@ -10,9 +10,9 @@ type CheckboxProps = {
 };
 const style = {
   root: {
-    padding: '0',
-    width: '32px',
-    height: '32px',
+    padding: "0",
+    width: "32px",
+    height: "32px",
     "& input:disabled + .MuiSvgIcon-root": {
       "& .front": {
         fill: "#9CA3AF",
