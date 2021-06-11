@@ -7,7 +7,6 @@ import {
   isClaimable,
   useBatchItems,
 } from "../controller/batch-controller";
-import { TransactionStateContext } from "../contexts/TransactionState";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { nftReturnIsExpired, short } from "../utils";
@@ -49,7 +48,6 @@ export const Dashboard: React.FC = () => {
     useContext(UserRentingContext);
   const { userLending: lendingItems, isLoading: userLendingLoading } =
     useContext(UserLendingContext);
-  const { setHash } = useContext(TransactionStateContext);
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
@@ -65,17 +63,12 @@ export const Dashboard: React.FC = () => {
         amount: lending.amount,
       }));
       claim(claims)
-        // @ts-ignore
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve();
-        })
         .then((status) => {
           if (status)
             handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
         });
     },
-    [claim, handleResetLending, setHash]
+    [claim, handleResetLending]
   );
 
   const claimCollateralAll = useCallback(() => {
@@ -90,17 +83,13 @@ export const Dashboard: React.FC = () => {
           lendingId: l.lending.id,
           tokenId: l.tokenId,
         }))
-      )
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve(false);
-        })
-        .then((status) => {
+      ) 
+       .then((status) => {
           if (status)
             handleResetLending(lending.map((i) => getUniqueCheckboxId(i)));
         });
     },
-    [stopLending, setHash, handleResetLending]
+    [stopLending, handleResetLending]
   );
   const isLoading = userLendingLoading || userRentingLoading;
 

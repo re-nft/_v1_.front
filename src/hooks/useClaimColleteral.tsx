@@ -1,5 +1,6 @@
-import { BigNumber, ContractTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { useCallback, useContext, useMemo } from "react";
+import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import { SignerContext } from "../hardhat/SymfoniContext";
@@ -12,10 +13,11 @@ export const useClaimColleteral = (): ((
     amount: string;
     lendingId: string;
   }[]
-) => Promise<void | ContractTransaction>) => {
+) => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
+  const { setError }  = useContext(SnackAlertContext)
 
   const renft = useMemo(() => {
     if (!signer) return;
@@ -41,12 +43,17 @@ export const useClaimColleteral = (): ((
           nfts.map((nft) => BigNumber.from(nft.lendingId))
         )
         .then((tx) => {
-          if (tx) setHash(tx.hash);
+          if (tx) return setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (!status) setError("Transaction is not successful!", "warning");
+          return Promise.resolve(status);
         })
         .catch((e) => {
-          //
+          setError(e.message, 'error')
         });
     },
-    [renft, setHash]
+    [renft, setError, setHash]
   );
 };

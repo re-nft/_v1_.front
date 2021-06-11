@@ -35,10 +35,12 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
         "execution reverted: ERC20: transfer amount exceeds balance",
         "Insufficient fund. Please check your balance.",
       ],
+      ["Transaction is not successful!", "Transaction is not successful!"],
+      ["User denied transaction signature.", "User denied transaction signature."]
     ];
     const contains = validMessages
       .filter(([m]) => message.indexOf(m) > 0)
-      .map(([_, newMessage]) => newMessage);
+      .map(([, newMessage]) => newMessage);
     if (contains.length > 0) {
       setErrorShown(true);
       setErrorMessage(contains[0]);
