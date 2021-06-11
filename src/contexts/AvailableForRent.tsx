@@ -52,6 +52,8 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         const address = currentAddress.toLowerCase();
         const lendingsReNFT = Object.values(response?.lendings || [])
           .filter((v) => v != null)
+          // doesn't have renting
+          .filter((v) => !v.renting)
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
