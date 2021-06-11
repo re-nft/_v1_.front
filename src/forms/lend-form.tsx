@@ -55,9 +55,11 @@ const isInteger = (field: string | number): boolean => {
 function is4Digits(x: number | string) {
   try {
     // precision up to 16 digits after
-    const p: number = Number.parseFloat(x.toString()) * 10e3;
-    const reminder: number = p - Number.parseInt(p.toString());
-    return reminder * 10e15 === 0;
+    const [_, b] = x.toString().split('.');
+    if(!b) return true;
+    const reminder = b.toString().slice(4)
+    if (!reminder) return true;
+    return reminder.replaceAll('0', '').length < 1
   } catch (e) {
     return false;
   }
