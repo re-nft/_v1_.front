@@ -79,7 +79,7 @@ export const useStartRent = (): {
                   BigNumber.from(MAX_UINT256),
                   allowance.toHexString()
                 );
-                return allowance.lt(MAX_UINT256);
+                return allowance.lt(BigNumber.from(MAX_UINT256).div(2));
               })
               .map(([_, erc20]) => erc20);
             setApprovalLoading(false);
