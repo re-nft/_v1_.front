@@ -89,7 +89,7 @@ const UserCurrentlyLending: React.FC = () => {
     <>
       <ItemWrapper>
         {currentPage.map((nft: Lending) => {
-          const hasRenting = !nft.renting;
+          const hasRenting = !!nft.renting;
           return (
             <CatalogueItem
               key={getUniqueCheckboxId(nft)}
