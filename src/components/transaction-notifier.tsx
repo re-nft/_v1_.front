@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import Slide from "@material-ui/core/Slide";
 
 import { TransactionStateContext } from "../contexts/TransactionState";
@@ -7,10 +7,10 @@ import { TransactionStateEnum } from "../types";
 export const TransactionNotifier: React.FC = () => {
   const { hash, isActive, txnState } = useContext(TransactionStateContext);
 
-  useEffect(() => {
-    true;
-    // force re-render on txnState change
-  }, [txnState]);
+  // useEffect(() => {
+  //   true;
+  //   // force re-render on txnState change
+  // }, [txnState]);
 
   return (
     <Slide direction="up" in={isActive} mountOnEnter unmountOnExit>

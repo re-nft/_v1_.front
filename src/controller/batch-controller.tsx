@@ -121,7 +121,6 @@ export const useBatchItems: () => BatchContextType = () => {
     (lending?: string[]) => {
       if (Object.keys(checkedItems).length > 0){
         const items = filter(checkedItems, lending, false)
-        console.log('items', items)
         setCheckedItems(items);
 
       }
