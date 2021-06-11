@@ -45,6 +45,10 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
       setErrorShown(true);
       setErrorMessage(contains[0]);
       setErrorType(type);
+    }else {
+      setErrorShown(true);
+      setErrorMessage("Something went wrong. Please try again!");
+      setErrorType('error');
     }
   }, []);
 
