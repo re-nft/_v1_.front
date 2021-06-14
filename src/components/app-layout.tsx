@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 const debug = createDebugger("app:layout");
 const ROUTES = [
   {
-    path: "/",
+    path: "/rent",
     name: "Rent",
   },
   {
@@ -135,7 +135,7 @@ const AppLayout: React.FC = ({ children }) => {
       <div className="content-wrapper mb-l">
         <div className="menu">
           {ROUTES.map((r) => {
-            const isActive = r.path === route.route;
+            const isActive = route.route.startsWith(r.path);
             return (
               <Link key={r.path} href={r.path}>
                 <a className={`menu__item ${isActive ? "menu__item-active" : ""}`}>

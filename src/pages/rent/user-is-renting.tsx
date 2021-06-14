@@ -1,24 +1,25 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
 
-import { Renting } from "../../../contexts/graph/classes";
-import { PaymentToken } from "../../../types";
-import NumericField from "../../../components/numeric-field";
-import CatalogueItem from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/items-wrapper";
-import ReturnModal from "../../../modals/return-modal";
-import ActionButton from "../../../components/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import BatchBar from "../../../components/batch-bar";
+import { Renting } from "../../contexts/graph/classes";
+import { PaymentToken } from "../../types";
+import NumericField from "../../components/numeric-field";
+import CatalogueItem from "../../components/catalogue-item";
+import ItemWrapper from "../../components/items-wrapper";
+import ReturnModal from "../../modals/return-modal";
+import ActionButton from "../../components/action-button";
+import CatalogueLoader from "../../components/catalogue-loader";
+import BatchBar from "../../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems,
-} from "../../../controller/batch-controller";
-import { Nft } from "../../../contexts/graph/classes";
-import Pagination from "../../../components/pagination";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { UserRentingContext } from "../../../contexts/UserRenting";
-import { usePageController } from "../../../controller/page-controller";
-import { nftReturnIsExpired } from "../../../utils";
+} from "../../controller/batch-controller";
+import { Nft } from "../../contexts/graph/classes";
+import Pagination from "../../components/pagination";
+import { NFTMetaContext } from "../../contexts/NftMetaState";
+import { UserRentingContext } from "../../contexts/UserRenting";
+import { usePageController } from "../../controller/page-controller";
+import { nftReturnIsExpired } from "../../utils";
+import PageLayout from "../../components/page-layout";
 
 const UserRentings: React.FC = () => {
   const {
@@ -81,7 +82,7 @@ const UserRentings: React.FC = () => {
   }
 
   return (
-    <>
+    <PageLayout title="RENTING" url="/rent/all">
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
@@ -137,7 +138,7 @@ const UserRentings: React.FC = () => {
           onClick={handleBatchStopRent}
         />
       )}
-    </>
+    </PageLayout>
   );
 };
 

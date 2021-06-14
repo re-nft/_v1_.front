@@ -1,22 +1,23 @@
 import React, { useContext, useCallback, useEffect } from "react";
 
-import ItemWrapper from "../../../components/items-wrapper";
-import { Lending, isLending } from "../../../contexts/graph/classes";
-import CatalogueItem from "../../../components/catalogue-item";
-import ActionButton from "../../../components/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import BatchBar from "../../../components/batch-bar";
+import ItemWrapper from "../../components/items-wrapper";
+import { Lending, isLending } from "../../contexts/graph/classes";
+import CatalogueItem from "../../components/catalogue-item";
+import ActionButton from "../../components/action-button";
+import CatalogueLoader from "../../components/catalogue-loader";
+import BatchBar from "../../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems,
-} from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
-import { usePageController } from "../../../controller/page-controller";
-import LendingFields from "../../../components/lending-fields";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useStopLend } from "../../../hooks/useStopLend";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
-import { UserLendingContext } from "../../../contexts/UserLending";
+} from "../../controller/batch-controller";
+import Pagination from "../../components/pagination";
+import { usePageController } from "../../controller/page-controller";
+import LendingFields from "../../components/lending-fields";
+import { NFTMetaContext } from "../../contexts/NftMetaState";
+import { useStopLend } from "../../hooks/useStopLend";
+import createCancellablePromise from "../../contexts/create-cancellable-promise";
+import { UserLendingContext } from "../../contexts/UserLending";
+import PageLayout from "../../components/page-layout";
 
 const UserCurrentlyLending: React.FC = () => {
   const {
@@ -86,7 +87,7 @@ const UserCurrentlyLending: React.FC = () => {
 
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (
-    <>
+    <PageLayout title="LENDING" url="/lend/all">
       <ItemWrapper>
         {currentPage.map((nft: Lending) => {
           const hasRenting = !!nft.renting;
@@ -122,7 +123,7 @@ const UserCurrentlyLending: React.FC = () => {
           onCancel={batchHandleReset}
         />
       )}
-    </>
+    </PageLayout>
   );
 };
 

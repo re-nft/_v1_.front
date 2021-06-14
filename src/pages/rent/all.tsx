@@ -1,24 +1,25 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
-import CatalogueItem from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/items-wrapper";
-import BatchRentModal from "../../../modals/batch-rent";
-import ActionButton from "../../../components/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import { isLending, Lending } from "../../../contexts/graph/classes";
-import BatchBar from "../../../components/batch-bar";
+import CatalogueItem from "../../components/catalogue-item";
+import ItemWrapper from "../../components/items-wrapper";
+import BatchRentModal from "../../modals/batch-rent";
+import ActionButton from "../../components/action-button";
+import CatalogueLoader from "../../components/catalogue-loader";
+import { isLending, Lending } from "../../contexts/graph/classes";
+import BatchBar from "../../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems,
-} from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
-import LendingFields from "../../../components/lending-fields";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { usePageController } from "../../../controller/page-controller";
-import { AvailableForRentContext } from "../../../contexts/AvailableForRent";
+} from "../../controller/batch-controller";
+import Pagination from "../../components/pagination";
+import LendingFields from "../../components/lending-fields";
+import { NFTMetaContext } from "../../contexts/NftMetaState";
+import { usePageController } from "../../controller/page-controller";
+import { AvailableForRentContext } from "../../contexts/AvailableForRent";
+import PageLayout from "../../components/page-layout";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
-const AvailableToRent: React.FC = () => {
+export const AvailableToRent: React.FC = () => {
   const { allAvailableToRent, isLoading } = useContext(AvailableForRentContext);
   const {
     checkedItems,
@@ -77,7 +78,7 @@ const AvailableToRent: React.FC = () => {
     return <div className="center">You cant rent anything yet</div>;
 
   return (
-    <>
+    <PageLayout title="AVAILABLE TO RENT" url="/rent/user-is-renting" toggleValue>
       <BatchRentModal
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
@@ -125,8 +126,8 @@ const AvailableToRent: React.FC = () => {
           onClick={handleBatchRent}
         />
       )}
-    </>
+    </PageLayout>
   );
 };
 
-export default React.memo(AvailableToRent);
+export default AvailableToRent;

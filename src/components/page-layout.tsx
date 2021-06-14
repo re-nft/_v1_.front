@@ -1,25 +1,33 @@
-import React from "react";
+import { useRouter } from "next/router";
+import React, {useCallback} from "react";
 import { SnackAlert } from "./snack-alert";
 
 type PageLayoutProps = {
-  onSwitch?: () => void;
+  url: string;
   title?: string;
   toggleValue?: boolean;
 };
 
 const PageLayout: React.FC<PageLayoutProps> = ({
-  onSwitch,
+  url,
   toggleValue,
   title,
   children,
 }) => {
+  const router = useRouter();
+  const changeRoute = useCallback(
+    () =>{
+      router.push(url)
+    },
+    [router, url],
+  )
   return (
     <div className="content">
       {title && (
         <div className="content__row content__navigation">
           <div className="switch">
             <div className="switch__title">{title}</div>
-            <div className="switch__control" onClick={onSwitch}>
+            <div className="switch__control" onClick={changeRoute}>
               <div className={`toggle ${toggleValue ? "toggle__active" : ""}`}>
                 <div className="toggle__pin"></div>
               </div>

@@ -1,21 +1,22 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-import { Nft } from "../../../contexts/graph/classes";
-import ItemWrapper from "../../../components/items-wrapper";
-import BatchLendModal from "../../../modals/batch-lend";
-import CatalogueItem from "../../../components/catalogue-item";
-import ActionButton from "../../../components/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import BatchBar from "../../../components/batch-bar";
+import { Nft } from "../../contexts/graph/classes";
+import ItemWrapper from "../../components/items-wrapper";
+import BatchLendModal from "../../modals/batch-lend";
+import CatalogueItem from "../../components/catalogue-item";
+import ActionButton from "../../components/action-button";
+import CatalogueLoader from "../../components/catalogue-loader";
+import BatchBar from "../../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems,
-} from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
-import { usePageController } from "../../../controller/page-controller";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
+} from "../../controller/batch-controller";
+import Pagination from "../../components/pagination";
+import { usePageController } from "../../controller/page-controller";
+import { NFTMetaContext } from "../../contexts/NftMetaState";
+import { useAllAvailableToLend } from "../../contexts/graph/hooks/useAllAvailableToLend";
+import PageLayout from "../../components/page-layout";
 
-const Lendings: React.FC = () => {
+export const Lendings: React.FC = () => {
   const { checkedItems, handleReset, onCheckboxChange, checkedNftItems } =
     useBatchItems();
   const {
@@ -73,7 +74,11 @@ const Lendings: React.FC = () => {
   }
 
   return (
-    <>
+    <PageLayout
+      title="AVAILABLE TO LEND" 
+      toggleValue
+      url="/lend/user-is-lending"
+    >
       {modalOpen && (
         <BatchLendModal
           nfts={checkedNftItems}
@@ -115,8 +120,9 @@ const Lendings: React.FC = () => {
           onClick={handleBatchModalOpen}
         />
       )}
-    </>
+    </PageLayout>
   );
 };
 
-export default React.memo(Lendings);
+
+export default Lendings;
