@@ -35,7 +35,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchAsync = useCallback(async () => {
-    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === 'undefined') {
+    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === "undefined") {
       if (isLoading) setIsLoading(false);
       return;
     }
@@ -126,7 +126,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         );
       }
     }
-    if(usersNfts.length > 1){
+    if (usersNfts.length > 1) {
       setDevNfts(usersNfts);
     }
     setIsLoading(false);
@@ -137,10 +137,10 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     return fetchRequest.cancel;
   }, [fetchAsync]);
 
-  usePoller(()=>{
+  usePoller(() => {
     const fetchRequest = createCancellablePromise(fetchAsync());
     return fetchRequest.cancel;
-  }, 3000)
+  }, 3000);
 
   return { devNfts, isLoading };
 };

@@ -245,6 +245,9 @@ const App: React.FC = () => {
       {/* FOOTER */}
       <div className="content-wrapper footer-content">
         <div className="copy">2021 ReNFT</div>
+        <div className="copy">
+          App version: {process.env.REACT_APP_VERCEL_GIT_COMMIT_SHA}
+        </div>
         <div className="soc">
           <a
             href="https://discord.gg/ka2u9n5sWs"

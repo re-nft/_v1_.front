@@ -1,10 +1,12 @@
 import { useCallback, useContext, useMemo } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
-import { BigNumber, ContractTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import createDebugger from "debug";
+import { SnackAlertContext } from "../contexts/SnackProvider";
+import TransactionStateContext from "../contexts/TransactionState";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
@@ -18,14 +20,15 @@ export const useStartLend = (): ((
   dailyRentPrices: number[],
   nftPrice: number[],
   tokens: PaymentToken[]
-) => Promise<void | ContractTransaction>) => {
+) => Promise<void | boolean>) => {
   const [signer] = useContext(SignerContext);
   const contractAddress = useContractAddress();
+  const { setError } = useContext(SnackAlertContext);
+  const { setHash } = useContext(TransactionStateContext);
 
   const renft = useMemo(() => {
     if (!signer) return;
     if (!contractAddress) return;
-    console.log('contractAddress', contractAddress)
     return getReNFT(signer, contractAddress);
   }, [contractAddress, signer]);
 
@@ -59,15 +62,21 @@ export const useStartLend = (): ((
           nftPrice,
           tokens
         )
-        .then((v) => {
-          return v;
+        .then((tx) => {
+          if (tx) return setHash(tx.hash);
+          return Promise.resolve(false);
+        })
+        .then((status) => {
+          if (!status) setError("Transaction is not successful!", "warning");
+          return Promise.resolve(status);
         })
         .catch((e) => {
           console.warn("could not start lend");
+          setError(e.message, "error");
           return;
         });
     },
-    [renft]
+    [renft, setError, setHash]
   );
   return startLend;
 };

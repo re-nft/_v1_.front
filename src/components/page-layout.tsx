@@ -1,4 +1,5 @@
 import React from "react";
+import { SnackAlert } from "./snack-alert";
 
 type PageLayoutProps = {
   onSwitch?: () => void;
@@ -28,6 +29,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       )}
       {!title && <div style={{ height: "4em" }} />}
       {children}
+      <SnackAlert></SnackAlert>
     </div>
   );
 };

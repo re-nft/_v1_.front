@@ -14,6 +14,8 @@ import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
 import { TimestampProvider } from "./TimestampProvider";
 import { NetworkName } from "../types";
+import { SnackAlertProvider } from "./SnackProvider";
+
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
@@ -25,7 +27,9 @@ export const StateProvider: React.FC = ({ children }) => {
               <UserLendingProvider>
                 <UserRentingProvider>
                   <AvailableForRentProvider>
-                    <TimestampProvider>{children}</TimestampProvider>
+                    <TimestampProvider>
+                      <SnackAlertProvider>{children}</SnackAlertProvider>
+                    </TimestampProvider>
                   </AvailableForRentProvider>
                 </UserRentingProvider>
               </UserLendingProvider>

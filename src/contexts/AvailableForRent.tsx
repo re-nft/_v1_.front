@@ -51,7 +51,10 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
       .then((response) => {
         const address = currentAddress.toLowerCase();
         const lendingsReNFT = Object.values(response?.lendings || [])
+          .filter((v) => !v.renting)
           .filter((v) => v != null)
+          // doesn't have renting
+          .filter((v) => !v.renting)
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
@@ -66,17 +69,20 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         // TODO only update if changed
 
         const normalizedLendings = nfts.map((l) => l.toJSON());
-          const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
+        const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
 
-          const difference = diffJson(
-            normalizedLendings,
-            normalizedLendingNew,
-            { ignoreWhitespace: true }
-          );
-          //const difference = true;
-          if (difference && difference[1] && (difference[1].added || difference[1].removed)) {
-            setNfts(lendingsReNFT);
-          }
+        const difference = diffJson(normalizedLendings, normalizedLendingNew, {
+          ignoreWhitespace: true,
+        });
+        //const difference = true;
+        if (
+          difference &&
+          difference[1] &&
+          (difference[1].added || difference[1].removed)
+        ) {
+          setNfts(lendingsReNFT);
+        }
+
       })
       .finally(() => {
         setLoading(false);
