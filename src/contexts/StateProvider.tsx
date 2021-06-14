@@ -17,7 +17,7 @@ import { NetworkName } from "../types";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
-    <Symfoni>
+    <Symfoni autoInit={false}>
       <CurrentAddressProvider>
         <GraphProvider>
           <TransactionStateProvider>

@@ -28,10 +28,11 @@ import {
   USDCContext,
   USDTContext,
   TUSDContext,
+  SymfoniContext,
 } from "../hardhat/SymfoniContext";
-import createDebugger from 'debug';
+import createDebugger from "debug";
 
-const debug = createDebugger('app:layout')
+const debug = createDebugger("app:layout");
 const ROUTES = [
   {
     path: "/",
@@ -72,6 +73,10 @@ const App: React.FC = () => {
   const { instance: usdt } = useContext(USDTContext);
   const { instance: tusd } = useContext(TUSDContext);
   const [username, setUsername] = useState<string>();
+  const { init } = useContext(SymfoniContext);
+  const [once, setOnce] = useState(() => {
+    return currentAddress === "";
+  });
 
   useEffect(() => {
     if (userData?.name !== "") {
@@ -79,53 +84,70 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintE20 = useCallback(async (e20: number) => {
-    switch (e20) {
-      case 1:
-        if (!weth) return;
-        await (await weth.faucet()).wait();
-        break;
-      case 2:
-        if (!dai) return;
-        await (await dai.faucet()).wait();
-        break;
-      case 3:
-        if (!usdc) return;
-        await (await usdc.faucet()).wait();
-        break;
-      case 4:
-        if (!usdt) return;
-        await (await usdt.faucet()).wait();
-        break;
-      case 5:
-        if (!tusd) return;
-        await (await tusd.faucet()).wait();
-        break;
+  useEffect(() => {
+    if (once) {
+      setOnce(false);
+      try {
+        init("web3modal");
+      } catch (e) {
+        // 
+      }
     }
-  }, [dai, tusd, usdc, usdt, weth]);
-  const mintNFT = useCallback(async (nft: number) => {
-    switch (nft) {
-      case 0:
-        if (!e721) return;
-        await (await e721.faucet()).wait();
-        break;
-      case 1:
-        if (!e721b) return;
-        await (await e721b.faucet()).wait();
-        break;
-      case 2:
-        if (!e1155) return;
-        await (await e1155.faucet(10)).wait();
-        break;
-      case 3:
-        if (!e1155b) return;
-        await (await e1155b.faucet(10)).wait();
-        break;
-      default:
-        debug("unknown NFT");
-        return
-    }
-  }, [e721, e721b, e1155, e1155b]);
+  }, [init, once]);
+
+  const mintE20 = useCallback(
+    async (e20: number) => {
+      switch (e20) {
+        case 1:
+          if (!weth) return;
+          await (await weth.faucet()).wait();
+          break;
+        case 2:
+          if (!dai) return;
+          await (await dai.faucet()).wait();
+          break;
+        case 3:
+          if (!usdc) return;
+          await (await usdc.faucet()).wait();
+          break;
+        case 4:
+          if (!usdt) return;
+          await (await usdt.faucet()).wait();
+          break;
+        case 5:
+          if (!tusd) return;
+          await (await tusd.faucet()).wait();
+          break;
+      }
+    },
+    [dai, tusd, usdc, usdt, weth]
+  );
+  const mintNFT = useCallback(
+    async (nft: number) => {
+      switch (nft) {
+        case 0:
+          if (!e721) return;
+          await (await e721.faucet()).wait();
+          break;
+        case 1:
+          if (!e721b) return;
+          await (await e721b.faucet()).wait();
+          break;
+        case 2:
+          if (!e1155) return;
+          await (await e1155.faucet(10)).wait();
+          break;
+        case 3:
+          if (!e1155b) return;
+          await (await e1155b.faucet(10)).wait();
+          break;
+        default:
+          debug("unknown NFT");
+          return;
+      }
+    },
+    [e721, e721b, e1155, e1155b]
+  );
 
   return (
     <Layout>
