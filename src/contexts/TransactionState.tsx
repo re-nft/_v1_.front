@@ -6,7 +6,7 @@ import { TransactionHash, TransactionStateEnum } from "../types";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 
 import { sleep } from "../utils";
-import { ProviderContext } from "../hardhat/SymfoniContext";
+import UserContext from "./UserProvider";
 
 type TransactionStateType = {
   isActive: boolean; // on if there is an active transaction;
@@ -34,7 +34,7 @@ TransactionStateContext.displayName = "TransactionStateContext";
 // * or using state or hash when the transaction is inactive.
 // * these things ideally should be corrected
 export const TransactionStateProvider: React.FC = ({ children }) => {
-  const [provider] = useContext(ProviderContext);
+  const {web3Provider:provider} = useContext(UserContext);
   const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
   const [txnState, setTxnState] = useState<TransactionStateEnum>(
     TransactionStateEnum.PENDING

@@ -8,10 +8,10 @@ import {
   E721Context,
   E1155BContext,
   E721BContext,
-  SignerContext,
 } from "../../../hardhat/SymfoniContext";
 import createCancellablePromise from "../../create-cancellable-promise";
 import usePoller from "../../../hooks/usePoller";
+import UserContext from "../../UserProvider";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -30,7 +30,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const { instance: e1155 } = useContext(E1155Context);
   const { instance: e721b } = useContext(E721BContext);
   const { instance: e1155b } = useContext(E1155BContext);
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 

@@ -7,10 +7,10 @@ import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
-import { ResolverContext, SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import { SnackAlertContext } from "../contexts/SnackProvider";
+import UserContext from "../contexts/UserProvider";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -30,7 +30,7 @@ export const useStartRent = (): {
   checkApprovals: (nfts: StartRentNft[]) => void;
   isApprovalLoading: boolean;
 } => {
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
   const { instance: resolver } = useContext(ResolverContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();

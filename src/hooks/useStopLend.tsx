@@ -2,10 +2,10 @@ import { useCallback, useContext, useMemo } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { getReNFT } from "../services/get-renft-instance";
 import createDebugger from "debug";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import TransactionStateContext from "../contexts/TransactionState";
+import UserContext from "../contexts/UserProvider";
 
 const debug = createDebugger("app:contracts:usestoplend");
 
@@ -17,7 +17,7 @@ export const useStopLend = (): ((
     amount: string;
   }[]
 ) => Promise<void | boolean>) => {
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setError } = useContext(SnackAlertContext);
   const { setHash } = useContext(TransactionStateContext);

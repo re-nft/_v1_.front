@@ -12,9 +12,9 @@ import { queryAllLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
+import UserContext from "./UserProvider";
 
 
 export const AvailableForRentContext = createContext<{
@@ -24,7 +24,7 @@ export const AvailableForRentContext = createContext<{
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);

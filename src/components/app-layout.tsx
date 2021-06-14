@@ -28,7 +28,6 @@ import {
   USDCContext,
   USDTContext,
   TUSDContext,
-  SymfoniContext,
 } from "../hardhat/SymfoniContext";
 import createDebugger from "debug";
 
@@ -91,10 +90,7 @@ const App: React.FC = () => {
   const { instance: usdt } = useContext(USDTContext);
   const { instance: tusd } = useContext(TUSDContext);
   const [username, setUsername] = useState<string>();
-  const { init } = useContext(SymfoniContext);
-  const [once, setOnce] = useState(() => {
-    return currentAddress === "";
-  });
+
   const installMetaMask = !(window.web3 || window.ethereum);
 
   useEffect(() => {
@@ -102,17 +98,6 @@ const App: React.FC = () => {
       setUsername(userData?.name);
     }
   }, [userData]);
-
-  useEffect(() => {
-    // No metamask found
-    if (!(window.web3 || window.ethereum)) {
-      return;
-    }
-    if (once) {
-      setOnce(false);
-      init("web3modal");
-    }
-  }, [init, once, setOnce]);
 
   const mintE20 = useCallback(
     async (e20: number) => {

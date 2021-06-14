@@ -1,10 +1,5 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  ProviderContext,
-  ReNFTContext,
-  Symfoni,
-} from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { AvailableForRentProvider } from "./AvailableForRent";
@@ -15,11 +10,12 @@ import { UserRentingProvider } from "./UserRenting";
 import { TimestampProvider } from "./TimestampProvider";
 import { NetworkName } from "../types";
 import { SnackAlertProvider } from "./SnackProvider";
+import UserContext, { UserProvider } from "./UserProvider";
 
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
-    <Symfoni autoInit={false}>
+    <UserProvider>
       <CurrentAddressProvider>
         <GraphProvider>
           <TransactionStateProvider>
@@ -37,24 +33,24 @@ export const StateProvider: React.FC = ({ children }) => {
           </TransactionStateProvider>
         </GraphProvider>
       </CurrentAddressProvider>
-    </Symfoni>
+    </UserProvider>
   );
 };
 
 export const useContractAddress = (): string => {
   const { instance } = useContext(ReNFTContext);
-  const [provider] = useContext(ProviderContext);
+  const {web3Provider} = useContext(UserContext);
   const [address, setAddress] = useState("");
 
   useEffect(() => {
     const getNetwork = async () => {
-      const network = await provider?.getNetwork();
+      const network = await web3Provider?.getNetwork();
       const name = network?.name;
       const newAddress =
         name === NetworkName.mainnet ? RENFT_ADDRESS : instance?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();
-  }, [instance, provider, address]);
+  }, [instance, web3Provider, address]);
   return address;
 };

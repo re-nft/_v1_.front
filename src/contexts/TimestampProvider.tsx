@@ -6,10 +6,10 @@ import React, {
   useCallback,
 } from "react";
 import usePoller from "../hooks/usePoller";
-import { ProviderContext } from "../hardhat/SymfoniContext";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
+import UserContext from "./UserProvider";
 
 const debug = createDebugger("app:contracts:blocks");
 
@@ -20,7 +20,7 @@ TimestampContext.displayName = "TimestampContext";
 const day = 24 * 60 * 60 * 1000;
 
 export const TimestampProvider: React.FC = ({ children }) => {
-  const [provider] = useContext(ProviderContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const [timeStamp, setTimestamp] = useState(Date.now() - day);
 
   const getTimestamp = useCallback(() => {
@@ -34,7 +34,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
         .catch((e) => {
           if (e) debug(e);
         });
-      return request.cancel;  
+      return request.cancel;
     }
     return;
   }, [provider, timeStamp]);

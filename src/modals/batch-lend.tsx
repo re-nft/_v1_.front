@@ -11,10 +11,10 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { BigNumber } from "@ethersproject/bignumber";
-import { ProviderContext } from "../hardhat/SymfoniContext";
 import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 import { SnackAlertContext } from "../contexts/SnackProvider";
+import UserContext from "../contexts/UserProvider";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -29,7 +29,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 }) => {
   const { setHash } = useContext(TransactionStateContext);
   const currentAddress = useContext(CurrentAddressWrapper);
-  const [provider] = useContext(ProviderContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);

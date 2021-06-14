@@ -3,7 +3,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
-import { SignerContext } from "../hardhat/SymfoniContext";
+import UserContext from "../contexts/UserProvider";
 import { getReNFT } from "../services/get-renft-instance";
 
 export const useClaimColleteral = (): ((
@@ -14,7 +14,7 @@ export const useClaimColleteral = (): ((
     lendingId: string;
   }[]
 ) => Promise<void | boolean>) => {
-  const [signer] = useContext(SignerContext);
+  const {signer} = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
   const { setError } = useContext(SnackAlertContext);
