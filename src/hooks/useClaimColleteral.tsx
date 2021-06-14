@@ -53,6 +53,7 @@ export const useClaimColleteral = (): ((
         .catch((e) => {
           setError(e.message, "error");
         });
+
     },
     [renft, setError, setHash]
   );

@@ -16,6 +16,7 @@ import { SignerContext } from "../hardhat/SymfoniContext";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 
+
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
   allAvailableToRent: Nft[];
@@ -81,6 +82,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         ) {
           setNfts(lendingsReNFT);
         }
+
       })
       .finally(() => {
         setLoading(false);

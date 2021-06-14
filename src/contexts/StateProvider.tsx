@@ -16,6 +16,7 @@ import { TimestampProvider } from "./TimestampProvider";
 import { NetworkName } from "../types";
 import { SnackAlertProvider } from "./SnackProvider";
 
+
 export const StateProvider: React.FC = ({ children }) => {
   return (
     <Symfoni>

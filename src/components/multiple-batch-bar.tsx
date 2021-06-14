@@ -153,6 +153,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
               handleClick={onStopLend}
               description="Stop lend all"
             ></Button>
+
           </div>
         </div>
       )}
