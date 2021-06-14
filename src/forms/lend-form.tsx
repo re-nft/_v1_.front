@@ -138,7 +138,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         error[fieldName] =
           "borrow price only accepts up to 4 fractional digits";
       }
-
+      
       fieldName = "nftPrice";
       field = input[fieldName];
       if (typeof field === "undefined") {
