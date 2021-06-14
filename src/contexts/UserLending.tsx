@@ -58,6 +58,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         if (response && response.users && response.users[0]) {
           const lendings = Object.values(response.users[0].lending)
             .filter((v) => v != null)
+            .filter((v) => !v.collateralClaimed)
             .map((lending) => {
               return new Lending(lending, signer);
             });
