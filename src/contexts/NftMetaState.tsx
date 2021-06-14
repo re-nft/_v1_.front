@@ -63,7 +63,7 @@ const reducer = (state: State, action: Action) => {
     case "SET_FETCH_READY": {
       const fetchReady: MetaLoading[] = [];
       let hasChange = false;
-      const metas: Record<string, MetaLoading> = {...state.metas};
+      const metas: Record<string, MetaLoading> = { ...state.metas };
       action.payload.forEach((nft) => {
         const id = nftId(nft.address, nft.tokenId);
         if (!state.metas[id]) {
@@ -111,7 +111,7 @@ const reducer = (state: State, action: Action) => {
       return { ...state, fetchingOpenSea, fetchReadyIPFS, metas };
     }
     case "SET_IPFS_RESULT": {
-      const metas = {...state.metas};
+      const metas = { ...state.metas };
       metas[action.payload.id] = {
         ...action.payload,
         loading: false,
@@ -119,7 +119,7 @@ const reducer = (state: State, action: Action) => {
       const fetchingIPFS = state.fetchReadyOpenSea.filter(
         (n) => action.payload.id !== n.id
       );
-      return { ...state, metas, fetchingIPFS};
+      return { ...state, metas, fetchingIPFS };
     }
   }
 };
