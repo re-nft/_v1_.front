@@ -3,7 +3,6 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
-import { addOrRemoveUserFavorite } from "../services/firebase";
 import CatalogueItem from "../components/catalogue-item";
 import {
   getUniqueCheckboxId,
@@ -13,6 +12,7 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../contexts/graph/hooks/useAllAvailableToLend";
+import { useAddOrRemoveUserFavorite } from "../hooks/firebase/useAddOrRemoveUserFavorite";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -50,6 +50,7 @@ export const MyFavorites: React.FC = () => {
     checkedItems,
     onCheckboxChange,
   } = useBatchItems();
+  const addOrRemoveUserFavorite = useAddOrRemoveUserFavorite();
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
       // todo: we need to stop doing this. you can just pass a single nft, and it will

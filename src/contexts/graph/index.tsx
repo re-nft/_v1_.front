@@ -5,15 +5,13 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import {
-  getUserDataOrCrateNew,
-  getAllUsersVote,
-} from "../../services/firebase";
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
 import { CurrentAddressWrapper } from "../CurrentAddressWrapper";
 import { LendingId, RentingId } from "../../services/graph";
 import createCancellablePromise from "../create-cancellable-promise";
+import { useGetUserDataOrCrateNew } from "../../hooks/firebase/useGetUserDataOrCrateNew";
+import { useGetAllUsersVote } from "../../hooks/firebase/useGetAllUsersVote";
 
 /**
  * Useful links
@@ -59,6 +57,8 @@ export const GraphProvider: React.FC = ({ children }) => {
     useState<CalculatedUserVote>({});
   const [usersVote, setUsersVote] = useState<UsersVote>({});
   const [isLoading, setLoading] = useState(false);
+  const getUserDataOrCrateNew = useGetUserDataOrCrateNew()
+  const getAllUsersVote = useGetAllUsersVote()
 
   const refreshUserData = useCallback(() => {
     if (currentAddress) {
@@ -76,7 +76,7 @@ export const GraphProvider: React.FC = ({ children }) => {
           console.warn("could not update global user data");
         });
     }
-  }, [currentAddress]);
+  }, [currentAddress, getUserDataOrCrateNew]);
   useEffect(() => {
     const getUserData = () => {
       if (currentAddress) {
@@ -105,7 +105,7 @@ export const GraphProvider: React.FC = ({ children }) => {
       fetchRequest.cancel();
       fetchRequest2.cancel();
     };
-  }, [currentAddress]);
+  }, [currentAddress, getAllUsersVote, getUserDataOrCrateNew]);
 
   useEffect(() => {
     if (usersVote && Object.keys(usersVote).length !== 0) {

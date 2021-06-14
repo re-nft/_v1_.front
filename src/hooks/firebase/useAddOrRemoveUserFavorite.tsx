@@ -7,14 +7,15 @@ export const useAddOrRemoveUserFavorite = (): ((
   currentAddress: string,
   nftAddress: Address,
   tokenId: string
-) => Promise<boolean>) => {
+) => Promise<boolean | undefined>) => {
   const database = useFirebaseDatabase();
   const addOrRemoveUserFavorite = useCallback(
     async (
       currentAddress: string,
       nftAddress: Address,
       tokenId: string
-    ): Promise<boolean> => {
+    ): Promise<boolean | undefined> => {
+      if (!database) return;
       const id = nftIdFirebase(nftAddress, tokenId);
       const userRef = database.ref(
         "users/" + currentAddress + "/favorites/" + id

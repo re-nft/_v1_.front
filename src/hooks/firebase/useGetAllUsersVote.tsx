@@ -2,10 +2,11 @@ import { UsersVote } from "../../contexts/graph/types";
 import { useCallback } from "react";
 import { useFirebaseDatabase } from "./useFirebaseDatabase";
 
-export const useGetAllUsersVote = (): (() => Promise<UsersVote>) => {
+export const useGetAllUsersVote = (): (() => Promise<UsersVote | undefined>) => {
   const database = useFirebaseDatabase();
 
-  const getAllUsersVote = useCallback(async (): Promise<UsersVote> => {
+  const getAllUsersVote = useCallback(async (): Promise<UsersVote | undefined> => {
+    if (!database) return;
     const voteRef = database.ref("vote/");
     return new Promise((resolve, reject) => {
       voteRef

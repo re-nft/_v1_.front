@@ -18,6 +18,7 @@ export const useUpvoteOrDownvote = (): ((
       tokenId: string,
       vote: number
     ): Promise<void> => {
+      if (!database) return;
       const id = nftIdFirebase(nftAddress, tokenId);
       const voteUserRef = database.ref("vote/" + id + "/" + currentAddress);
       return new Promise((resolve, reject) => {

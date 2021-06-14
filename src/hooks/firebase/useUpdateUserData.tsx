@@ -6,14 +6,15 @@ export const useUpdateUserData = (): ((
   currentAddress: string,
   name: string,
   bio: string
-) => Promise<UserData>) => {
+) => Promise<UserData | undefined>) => {
   const database = useFirebaseDatabase();
   const updateUserData = useCallback(
     async (
       currentAddress: string,
       name: string,
       bio: string
-    ): Promise<UserData> => {
+    ): Promise<UserData | undefined> => {
+      if (!database) return;
       const userRef = database.ref("users/" + currentAddress);
       return new Promise((resolve, reject) => {
         userRef.set(

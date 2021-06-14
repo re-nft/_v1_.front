@@ -10,7 +10,7 @@ import {
   fetchNFTsFromOpenSea,
   NftMetaWithId,
 } from "../services/fetch-nft-meta";
-import { nftId } from "../services/firebase";
+import { nftIdFirebase } from "../utils";
 import { Nft } from "./graph/classes";
 import { NftTokenMetaWithId } from "./graph/types";
 
@@ -65,7 +65,7 @@ const reducer = (state: State, action: Action) => {
       let hasChange = false;
       const metas: Record<string, MetaLoading> = { ...state.metas };
       action.payload.forEach((nft) => {
-        const id = nftId(nft.address, nft.tokenId);
+        const id = nftIdFirebase(nft.address, nft.tokenId);
         if (!state.metas[id]) {
           hasChange = true;
           metas[id] = {
@@ -147,7 +147,7 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
   const fetchNFTs = useCallback((items: Nft[]) => {
     if (items.length < 1) return;
     const fetching = items.map((nft) => {
-      const key = nftId(nft.address, nft.tokenId);
+      const key = nftIdFirebase(nft.address, nft.tokenId);
 
       return { ...nft, id: key };
     });
@@ -191,7 +191,7 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
     if (fetchReady.length < 1) return;
     const fetchSet = new Set(fetchReadyIPFS.map((v: MetaLoading) => v.id));
     const fetchNfts = nfts.filter((nft) =>
-      fetchSet.has(nftId(nft.address, nft.tokenId))
+      fetchSet.has(nftIdFirebase(nft.address, nft.tokenId))
     );
 
     fetchNfts.map((nft) => {

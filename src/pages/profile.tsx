@@ -1,14 +1,15 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
 import GraphContext from "../contexts/graph";
-import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { useUpdateUserData } from "../hooks/firebase/useUpdateUserData";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const updateUserData = useUpdateUserData();
 
   const onSubmit = useCallback(
     (e) => {
@@ -22,7 +23,7 @@ const Profile: React.FC = () => {
       }
     },
     // TODO: check if need to add currentAddress below
-    [username, bio, currentAddress, refreshUserData]
+    [username, bio, updateUserData, currentAddress, refreshUserData]
   );
 
   const handleChangeFormField = useCallback(

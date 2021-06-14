@@ -2,12 +2,6 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 
 import { Nft } from "../contexts/graph/classes";
 import GraphContext from "../contexts/graph";
-import {
-  addOrRemoveUserFavorite,
-  nftId,
-  upvoteOrDownvote,
-  getNftVote,
-} from "../services/firebase";
 import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
@@ -15,6 +9,10 @@ import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { Checkbox } from "./checkbox";
+import { useAddOrRemoveUserFavorite } from "../hooks/firebase/useAddOrRemoveUserFavorite";
+import { useUpvoteOrDownvote } from "../hooks/firebase/useUpvoteOrDownvote";
+import { useGetNftVote } from "../hooks/firebase/useGetNftVote";
+import { nftIdFirebase } from "../utils";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -56,7 +54,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
-  const id = nftId(nft.address, nft.tokenId);
+  const addOrRemoveUserFavorite = useAddOrRemoveUserFavorite();
+  const upvoteOrDownvote = useUpvoteOrDownvote();
+  const id = nftIdFirebase(nft.address, nft.tokenId);
+  const getNftVote = useGetNftVote()
   const meta = metas[id];
 
   const onCheckboxClick = useCallback(() => {
@@ -74,7 +75,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
       .catch(() => {
         console.warn("could not change userFavorite");
       });
-  }, [nft, currentAddress]);
+  }, [addOrRemoveUserFavorite, currentAddress, nft.address, nft.tokenId]);
 
   const handleVote = useCallback(
     (vote: number) => {
@@ -82,7 +83,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
         .then(() => {
           getNftVote(nft.address, nft.tokenId)
             .then((resp: UsersVote) => {
-              const id = nftId(nft.address, nft.tokenId);
+              const id = nftIdFirebase(nft.address, nft.tokenId);
               const voteData: CalculatedUserVote = calculateVoteByUser(
                 resp,
                 id
@@ -98,7 +99,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
           console.warn("could not handle vote");
         });
     },
-    [nft, currentAddress]
+    [upvoteOrDownvote, currentAddress, nft.address, nft.tokenId, getNftVote]
   );
 
   const handleUpVote = useCallback(() => handleVote(1), [handleVote]);

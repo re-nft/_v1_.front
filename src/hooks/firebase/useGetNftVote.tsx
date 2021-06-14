@@ -7,11 +7,13 @@ import { UsersVote } from "../../contexts/graph/types";
 export const useGetNftVote = (): ((
     nftAddress: Address,
     tokenId: string
-  ) => Promise<UsersVote>) => {
+  ) => Promise<UsersVote | undefined>) => {
     const database = useFirebaseDatabase();
   
     const getNftVote = useCallback(
-      async (nftAddress: Address, tokenId: string): Promise<UsersVote> => {
+      async (nftAddress: Address, tokenId: string): Promise<UsersVote | undefined> => {
+        if (!database) return;
+
         const id = nftIdFirebase(nftAddress, tokenId);
         return new Promise((resolve, reject) => {
           database

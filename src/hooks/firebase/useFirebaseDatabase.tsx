@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import firebase from "../../services/firebase/clientApp";
 
-export const useFirebaseDatabase = (): firebase.database.Database => {
+export const useFirebaseDatabase = (): firebase.database.Database | undefined => {
     return useMemo(() => {
-      return firebase.database();
+      if(firebase) return firebase.database();
     }, []);
   };
   

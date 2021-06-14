@@ -9,10 +9,11 @@ const newUserData = {
 
 export const useGetUserDataOrCrateNew = (): ((
   currentAddress: string
-) => Promise<UserData>) => {
+) => Promise<UserData | undefined>) => {
   const database = useFirebaseDatabase();
   const createNewUser = useCallback(
-    async (currentAddress: string): Promise<UserData> => {
+    async (currentAddress: string): Promise<UserData | undefined> => {
+      if (!database) return;
       const userRef = database.ref("users/" + currentAddress);
       return new Promise((resolve, reject) => {
         userRef.set(
@@ -33,7 +34,8 @@ export const useGetUserDataOrCrateNew = (): ((
   );
 
   const getUserDataOrCrateNew = useCallback(
-    async (currentAddress: string): Promise<UserData> => {
+    async (currentAddress: string): Promise<UserData | undefined> => {
+      if (!database) return;
       const userRef = database.ref("users/" + currentAddress);
       return new Promise((resolve, reject) => {
         userRef
