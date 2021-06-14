@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
-import dotenv from "dotenv";
 import Debug from "debug";
 
-dotenv.config();
 
 if (process.env.NEXT_PUBLIC_DEBUG) {
   Debug.enable(process.env.NEXT_PUBLIC_DEBUG);
-}
+
+console.log("NODE_ENV ", process.env.NODE_ENV);
+
 if (IS_PROD && process.env.NEXT_PUBLIC_ADDRESS) {
   throw Error("Please do not use ADDRESS in PRODUCTION env!");
 }

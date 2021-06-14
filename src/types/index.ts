@@ -20,4 +20,10 @@ export enum TransactionStateEnum {
   PENDING,
 }
 
+export enum NetworkName {
+  mainnet = "mainnet",
+  ropsten = "ropsten",
+  localhost = "localhost",
+}
+
 export type Path = string[];

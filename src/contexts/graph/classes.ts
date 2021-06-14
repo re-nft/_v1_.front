@@ -104,6 +104,7 @@ class Nft {
   _tokenURI: string;
   _mediaURI: string;
   _contract: ERC721 | ERC1155 | undefined;
+  [k: string]: unknown;
 
   /**
    * If previously instantiated, will return that instance, otherwise, will instantiate
@@ -173,14 +174,14 @@ class Nft {
 
   toJSON = (): Record<string, unknown> => {
     return {
-      type : this.type,
+      type: this.type,
       nftAddress: this.nftAddress,
       address: this.address,
       tokenId: this.tokenId,
       amount: this.amount,
       isERC721: this.isERC721,
-    }
-  }
+    };
+  };
 }
 
 class Lending extends Nft {
@@ -217,7 +218,7 @@ class Lending extends Nft {
 
   toJSON = (): Record<string, unknown> => {
     return {
-      type : this.type,
+      type: this.type,
       nftAddress: this.nftAddress,
       address: this.address,
       tokenId: this.tokenId,
@@ -226,8 +227,8 @@ class Lending extends Nft {
       id: this.id,
       lending: this.lending,
       renting: this.renting,
-    }
-  }
+    };
+  };
 }
 
 class Renting extends Nft {
@@ -262,10 +263,9 @@ class Renting extends Nft {
     return this.amount;
   };
 
-
   toJSON = (): Record<string, unknown> => {
     return {
-      type : this.type,
+      type: this.type,
       nftAddress: this.nftAddress,
       address: this.address,
       tokenId: this.tokenId,
@@ -274,8 +274,8 @@ class Renting extends Nft {
       id: this.id,
       lending: this.lending,
       renting: this.renting,
-    }
-  }
+    };
+  };
 }
 
 export { Nft, Lending, Renting };

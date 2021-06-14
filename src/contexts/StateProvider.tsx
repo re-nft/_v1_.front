@@ -1,7 +1,10 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
-import React, { useContext } from "react";
-import { IS_PROD } from "../consts";
-import { ReNFTContext, Symfoni } from "../hardhat/SymfoniContext";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ProviderContext,
+  ReNFTContext,
+  Symfoni,
+} from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { AvailableForRentProvider } from "./AvailableForRent";
@@ -10,6 +13,8 @@ import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
 import { TimestampProvider } from "./TimestampProvider";
+import { NetworkName } from "../types";
+import { SnackAlertProvider } from "./SnackProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
@@ -21,7 +26,9 @@ export const StateProvider: React.FC = ({ children }) => {
               <UserLendingProvider>
                 <UserRentingProvider>
                   <AvailableForRentProvider>
-                    <TimestampProvider>{children}</TimestampProvider>
+                    <TimestampProvider>
+                      <SnackAlertProvider>{children}</SnackAlertProvider>
+                    </TimestampProvider>
                   </AvailableForRentProvider>
                 </UserRentingProvider>
               </UserLendingProvider>
@@ -35,5 +42,18 @@ export const StateProvider: React.FC = ({ children }) => {
 
 export const useContractAddress = (): string => {
   const { instance } = useContext(ReNFTContext);
-  return IS_PROD ? RENFT_ADDRESS : instance ? instance.address : "";
+  const [provider] = useContext(ProviderContext);
+  const [address, setAddress] = useState("");
+
+  useEffect(() => {
+    const getNetwork = async () => {
+      const network = await provider?.getNetwork();
+      const name = network?.name;
+      const newAddress =
+        name === NetworkName.mainnet ? RENFT_ADDRESS : instance?.address || "";
+      if (newAddress) setAddress(newAddress);
+    };
+    getNetwork();
+  }, [instance, provider, address]);
+  return address;
 };

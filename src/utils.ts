@@ -2,9 +2,12 @@ import { ethers, BigNumber, BigNumberish, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
-import { PaymentToken } from "./types";
+import { PaymentToken, Address } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
+import moment from "moment";
+import { Renting } from "./contexts/graph/classes";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -128,7 +131,11 @@ export const decimalToPaddedHexString = (
 };
 
 //TODO:eniko do we need this
-export const unpackPrice = (price: BigNumberish, scale: BigNumber, divide: number): number => {
+export const unpackPrice = (
+  price: BigNumberish,
+  scale: BigNumber,
+  divide: number
+): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
     2
@@ -274,4 +281,37 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   } catch (e) {
     Promise.reject(e);
   }
+};
+
+export const getDistinctItems = <
+  T extends Record<string | number | symbol, unknown>
+>(
+  nfts: T[],
+  property: keyof T
+): T[] => {
+  const set = new Set<unknown>();
+  const distinctItems = nfts.reduce<T[]>((acc, item) => {
+    const field = item[property];
+    if (!set.has(field)) {
+      set.add(field);
+      acc.push(item);
+    }
+    return acc;
+  }, []);
+  return distinctItems;
+};
+
+export const nftReturnIsExpired = (rent: Renting): boolean => {
+  const isExpired =
+    moment(rent.renting.rentedAt * 1000)
+      .add(rent.renting.rentDuration, "days")
+      .unix() *
+      1000 <
+    moment.now();
+  return isExpired;
+};
+
+
+export const nftIdFirebase = (nftAddress: Address, tokenId: string): string => {
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`;
 };

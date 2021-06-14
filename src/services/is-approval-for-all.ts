@@ -1,17 +1,13 @@
 import { Nft } from "../contexts/graph/classes";
+import { getDistinctItems } from "../utils";
 
 export default async function isApprovalForAll(
   nft: Nft[],
   currentAddress: string,
   contractAddress: string
 ): Promise<[boolean, Nft[]]> {
-  const distinctItems = nft.filter(
-    (item, index, all) =>
-      all.findIndex((nft) => nft.address === item.address) === index
-  );
-
   const result = await Promise.all(
-    distinctItems.map((nft) => {
+    getDistinctItems(nft, "address").map((nft) => {
       const contract = nft.contract();
       return contract
         .isApprovedForAll(currentAddress, contractAddress)

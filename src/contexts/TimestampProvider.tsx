@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import usePoller from "../hooks/usePoller";
 import { ProviderContext } from "../hardhat/SymfoniContext";
 import { Block } from "@ethersproject/abstract-provider";
@@ -11,7 +17,6 @@ export const TimestampContext = createContext<number>(0);
 
 TimestampContext.displayName = "TimestampContext";
 
-
 const day = 24 * 60 * 60 * 1000;
 
 export const TimestampProvider: React.FC = ({ children }) => {
@@ -20,7 +25,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
 
   const getTimestamp = useCallback(() => {
     if (provider) {
-      const request = createCancellablePromise(provider.getBlock('latest'));
+      const request = createCancellablePromise(provider.getBlock("latest"));
       request.promise
         .then((block: Block) => {
           if (timeStamp !== block.timestamp * 1000)
@@ -29,16 +34,16 @@ export const TimestampProvider: React.FC = ({ children }) => {
         .catch((e) => {
           if (e) debug(e);
         });
-      return request.cancel;  
+      return request.cancel;
     }
     return;
   }, [provider, timeStamp]);
 
   useEffect(() => {
     const cancel = getTimestamp();
-    ()=>{
-      if(cancel) cancel();
-    }
+    () => {
+      if (cancel) cancel();
+    };
   }, [getTimestamp, timeStamp]);
 
   // this will cause a lot of rerender, do not setit for too low value
@@ -47,11 +52,8 @@ export const TimestampProvider: React.FC = ({ children }) => {
   }, 30_000);
 
   return (
-    <TimestampContext.Provider
-      value={timeStamp}
-    >
+    <TimestampContext.Provider value={timeStamp}>
       {children}
     </TimestampContext.Provider>
   );
-
 };

@@ -8,7 +8,7 @@ export const useAllAvailableToLend = (): {
   allAvailableToLend: Nft[];
   isLoading: boolean;
 } => {
-  const {devNfts, isLoading: devIsLoading} = useFetchNftDev();
+  const { devNfts, isLoading: devIsLoading } = useFetchNftDev();
   const { ERC721, isLoading: erc721Loading } = useFetchERC721();
   const { ERC1155, isLoading: erc1155Loading } = useFetchERC1155();
 

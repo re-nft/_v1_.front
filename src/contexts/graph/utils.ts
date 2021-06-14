@@ -16,8 +16,8 @@ export const parseLending = (
       : DP18;
   const precision =
     paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-      ? 10e9
-      : 10e18;
+      ? 10e8
+      : 10e17;
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),

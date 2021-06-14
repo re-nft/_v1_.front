@@ -17,16 +17,17 @@ import {
 } from "../hardhat/SymfoniContext";
 import createDebugger from "debug";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
   {
     path: "/",
-    name: "Rent NFT",
+    name: "Rent",
   },
   {
     path: "/lend",
-    name: "Lend NFT",
+    name: "Lend",
   },
   {
     path: "/dashboard",
@@ -49,6 +50,7 @@ const ROUTES = [
 const AppLayout: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
+  const route = useRouter();
   const { instance: e721 } = useContext(E721Context);
   const { instance: e721b } = useContext(E721BContext);
   const { instance: e1155 } = useContext(E1155Context);
@@ -132,23 +134,16 @@ const AppLayout: React.FC = ({ children }) => {
       </div>
       <div className="content-wrapper mb-l">
         <div className="menu">
-          {ROUTES.map((route) => (
-            <Link
-              key={route.path}
-              href={route.path}
-              // isActive={(_, location) => {
-              //   if (location.pathname === route.path) return true;
-              //   return false;
-              // }}
-            >
-              <a
-                className="menu__item"
-                //activeClassName="menu__item-active"
-              >
-                {route.name}
-              </a>
-            </Link>
-          ))}
+          {ROUTES.map((r) => {
+            const isActive = r.path === route.route;
+            return (
+              <Link key={r.path} href={r.path}>
+                <a className={`menu__item ${isActive ? "menu__item-active" : ""}`}>
+                  {r.name}
+                </a>
+              </Link>
+            );
+          })}
         </div>
         <button className="menu__item" onClick={() => mintNFT(0)}>
           Mint 721A
@@ -185,35 +180,13 @@ const AppLayout: React.FC = ({ children }) => {
         </div>
       </div>
       {/* CONTENT */}
-      <div className="content-wrapper main-content mb-l">
-        {children}
-        {/* <Route exact path="/">
-            <Rent />
-          </Route>
-          <Route exact path="/lend">
-            <Lend />
-          </Route>
-          <Route exact path="/dashboard">
-            <PageLayout>
-              <Dashboard />
-            </PageLayout>
-          </Route>
-          <Route exact path="/favourites">
-            <MyFavorites />
-          </Route> */}
-        {/* <Route exact path="/leaderboard">
-              <Leaderboard />
-            </Route> */}
-        {/* <Route exact path="/faq">
-            <Faq />
-          </Route>
-          <Route exact path="/profile">
-            <Profile />
-          </Route> */}
-      </div>
+      <div className="content-wrapper main-content mb-l">{children}</div>
       {/* FOOTER */}
       <div className="content-wrapper footer-content">
         <div className="copy">2021 ReNFT</div>
+        <div className="copy">
+          App version: {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
+        </div>
         <div className="soc">
           <a
             href="https://discord.gg/ka2u9n5sWs"

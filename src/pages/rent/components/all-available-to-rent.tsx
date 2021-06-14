@@ -15,7 +15,7 @@ import Pagination from "../../../components/pagination";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { usePageController } from "../../../controller/page-controller";
-import {AvailableForRentContext} from "../../../contexts/AvailableForRent"
+import { AvailableForRentContext } from "../../../contexts/AvailableForRent";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
@@ -130,4 +130,3 @@ const AvailableToRent: React.FC = () => {
 };
 
 export default React.memo(AvailableToRent);
-

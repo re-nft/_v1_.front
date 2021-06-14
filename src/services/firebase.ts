@@ -18,7 +18,7 @@ const config = {
 
 // firebase.initializeApp(config);
 
-// const database = firebase.database();
+//const database = firebase.database();
 const database = {
   ref: (_: string) => {
     // do nothing

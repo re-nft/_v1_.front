@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useContext,
-} from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
@@ -23,6 +18,7 @@ import Pagination from "../../../components/pagination";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { UserRentingContext } from "../../../contexts/UserRenting";
 import { usePageController } from "../../../controller/page-controller";
+import { nftReturnIsExpired } from "../../../utils";
 
 const UserRentings: React.FC = () => {
   const {
@@ -98,11 +94,14 @@ const UserRentings: React.FC = () => {
           currentPage.map((nft: Renting) => {
             const id = getUniqueCheckboxId(nft);
             const checked = !!checkedItems[id];
+            const isExpired = nftReturnIsExpired(nft);
+            const days = nft.renting.rentDuration;
             return (
               <CatalogueItem
                 key={id}
                 nft={nft}
                 checked={checked}
+                disabled={isExpired}
                 onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
                 <NumericField
@@ -112,11 +111,12 @@ const UserRentings: React.FC = () => {
                 />
                 <NumericField
                   text="Rent Duration"
-                  value={nft.renting.rentDuration.toString()}
-                  unit="days"
+                  value={days.toString()}
+                  unit={days > 1 ? "days" : "day"}
                 />
                 <ActionButton<Nft>
                   title="Return It"
+                  disabled={isExpired}
                   nft={nft}
                   onClick={() => handleReturnNft(nft)}
                 />
