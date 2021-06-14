@@ -59,7 +59,25 @@ const ROUTES = [
     name: "FAQ",
   },
 ];
-
+const InstallMetamask = () => {
+  return (
+    <div id="installMetaMask" className="cjAFRf web3modal-provider-wrapper">
+      <a
+        href="https://metamask.io/"
+        target="_blank"
+        className="cjAFRf web3modal-provider-container"
+        rel="noreferrer"
+      >
+        <div className="jMhaxE web3modal-provider-icon">
+          <img src="/metamask.svg" alt="MetaMask" width="32px" height="32px"/>
+        </div>
+        <div className="bktcUM sc-web3modal-provider-name mt-0">
+          Install MetaMask
+        </div>
+      </a>
+    </div>
+  );
+};
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
@@ -77,6 +95,7 @@ const App: React.FC = () => {
   const [once, setOnce] = useState(() => {
     return currentAddress === "";
   });
+  const installMetaMask = !(window.web3 || window.ethereum);
 
   useEffect(() => {
     if (userData?.name !== "") {
@@ -85,15 +104,15 @@ const App: React.FC = () => {
   }, [userData]);
 
   useEffect(() => {
+    // No metamask found
+    if (!(window.web3 || window.ethereum)) {
+      return;
+    }
     if (once) {
       setOnce(false);
-      try {
-        init("web3modal");
-      } catch (e) {
-        // 
-      }
+      init("web3modal");
     }
-  }, [init, once]);
+  }, [init, once, setOnce]);
 
   const mintE20 = useCallback(
     async (e20: number) => {
@@ -156,9 +175,13 @@ const App: React.FC = () => {
           <div className="header">
             <div className="header__logo"></div>
             <div className="header__user">
-              <Link className="" to="/profile">
-                {username || short(currentAddress)}
-              </Link>
+              {installMetaMask ? (
+                <InstallMetamask />
+              ) : (
+                <Link className="" to="/profile">
+                  {username || short(currentAddress)}
+                </Link>
+              )}
             </div>
           </div>
         </div>

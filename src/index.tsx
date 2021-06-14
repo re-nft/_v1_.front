@@ -72,7 +72,7 @@ ReactDOM.render(
         FallbackComponent={ErrorFallback}
         onReset={() => {
           // TODO we will do something better, refresh for now
-          window.location.reload();
+          //window.location.reload();
         }}
       >
         <App />
