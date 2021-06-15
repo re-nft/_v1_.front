@@ -15,6 +15,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
+  network: ""
 };
 
 type UserContextType = {
@@ -23,6 +24,7 @@ type UserContextType = {
   provider: unknown;
   signer: Signer | undefined;
   web3Provider: ethers.providers.Web3Provider | undefined;
+  network: string
 };
 
 const UserContext = createContext<UserContextType>(DefaultUser);
@@ -30,6 +32,7 @@ const UserContext = createContext<UserContextType>(DefaultUser);
 export const UserProvider: React.FC = ({ children }) => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
   const [provider, setProvider] = useState<unknown>();
+  const [network, setNetworkName] = useState<string>("");
   const [web3Provider, setWeb3Provider] =
     useState<ethers.providers.Web3Provider>();
   const [signer, setSigner] = useState<Signer>();
@@ -49,8 +52,17 @@ export const UserProvider: React.FC = ({ children }) => {
   // TODO connect only works if metamask is installed, otherwise it just creates a grayed empty popup
   const connect = useCallback(async () => {
     if (web3Modal) {
-      const provider = await web3Modal.connect();
+      const provider = await web3Modal
+        .connect()
+        .then((p) => p)
+        .catch(() => {
+          // do nothing
+        });
+      if(!provider) return;  
       const web3p = new ethers.providers.Web3Provider(provider);
+      const network = await web3p?.getNetwork();
+      const name = network?.name;
+      setNetworkName(name)
       const _signer = web3p.getSigner();
       setSigner(_signer);
       const address = await _signer.getAddress().then((t) => t.toLowerCase());
@@ -76,10 +88,13 @@ export const UserProvider: React.FC = ({ children }) => {
   // change account
   useEffect(() => {
     if (provider) {
+      // @ts-ignore
       // web3modal is untyped...
       // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
       // @ts-ignore
       provider.on("accountsChanged", connect);
+      // @ts-ignore
+      provider.on("chainChanged", connect);
     }
     return () => {
       if (provider) {
@@ -87,13 +102,15 @@ export const UserProvider: React.FC = ({ children }) => {
         // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
         // @ts-ignore
         provider.off("accountsChanged", connect);
+        // @ts-ignore
+        provider.off("chainChanged", connect);
       }
     };
   }, [connect, provider]);
 
   return (
     <UserContext.Provider
-      value={{ connect, provider, signer, address, web3Provider }}
+      value={{ connect, provider, signer, address, web3Provider, network }}
     >
       {children}
     </UserContext.Provider>

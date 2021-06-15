@@ -15,6 +15,7 @@ import { ContractContext, ContractsProvider } from "./ContractsProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
+    <SnackAlertProvider>
     <UserProvider>
       <CurrentAddressProvider>
         <ContractsProvider>
@@ -25,7 +26,7 @@ export const StateProvider: React.FC = ({ children }) => {
                   <UserRentingProvider>
                     <AvailableForRentProvider>
                       <TimestampProvider>
-                        <SnackAlertProvider>{children}</SnackAlertProvider>
+                        {children}
                       </TimestampProvider>
                     </AvailableForRentProvider>
                   </UserRentingProvider>
@@ -36,23 +37,22 @@ export const StateProvider: React.FC = ({ children }) => {
         </ContractsProvider>
       </CurrentAddressProvider>
     </UserProvider>
+    </SnackAlertProvider>
   );
 };
 
 export const useContractAddress = (): string => {
   const { ReNFT } = useContext(ContractContext);
-  const { web3Provider } = useContext(UserContext);
+  const { network } = useContext(UserContext);
   const [address, setAddress] = useState("");
 
   useEffect(() => {
     const getNetwork = async () => {
-      const network = await web3Provider?.getNetwork();
-      const name = network?.name;
       const newAddress =
-        name === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
+      network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();
-  }, [web3Provider, address, ReNFT?.address]);
+  }, [address, ReNFT?.address, network]);
   return address;
 };

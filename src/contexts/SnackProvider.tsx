@@ -39,10 +39,10 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
       [
         "User denied transaction signature.",
         "User denied transaction signature.",
-      ],
+      ]
     ];
     const contains = validMessages
-      .filter(([m]) => message.indexOf(m) > 0)
+      .filter(([m]) => message.indexOf(m) > -1)
       .map(([, newMessage]) => newMessage);
     if (contains.length > 0) {
       setErrorShown(true);

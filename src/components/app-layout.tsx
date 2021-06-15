@@ -21,6 +21,7 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 import createDebugger from "debug";
 import { ContractContext } from "../contexts/ContractsProvider";
+import UserContext from "../contexts/UserProvider";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -59,7 +60,7 @@ const InstallMetamask = () => {
         rel="noreferrer"
       >
         <div className="jMhaxE web3modal-provider-icon">
-          <img src="/metamask.svg" alt="MetaMask" width="32px" height="32px"/>
+          <img src="/metamask.svg" alt="MetaMask" width="32px" height="32px" />
         </div>
         <div className="bktcUM sc-web3modal-provider-name mt-0">
           Install MetaMask
@@ -70,8 +71,10 @@ const InstallMetamask = () => {
 };
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
+  const { network } = useContext(UserContext);
   const { userData } = useContext(GraphContext);
-  const {E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD}  = useContext(ContractContext)
+  const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
+    useContext(ContractContext);
   const [username, setUsername] = useState<string>();
 
   const installMetaMask = !(window.web3 || window.ethereum);
@@ -143,12 +146,17 @@ const App: React.FC = () => {
           <div className="header">
             <div className="header__logo"></div>
             <div className="header__user">
-              {installMetaMask ? (
-                <InstallMetamask />
-              ) : (
-                <Link className="" to="/profile">
-                  {username || short(currentAddress)}
-                </Link>
+              {installMetaMask && <InstallMetamask />}
+              {!installMetaMask &&
+                !currentAddress &&
+                "Please connect your wallet!"}
+              {!installMetaMask && !!currentAddress && (
+                <>
+                  {network} &nbsp;
+                  <Link className="" to="/profile">
+                    {username || short(currentAddress)}
+                  </Link>
+                </>
               )}
             </div>
           </div>
