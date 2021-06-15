@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,11 +16,11 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short } from "../utils";
+import { short , advanceTime} from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 import createDebugger from "debug";
-import { ContractContext } from "../contexts/ContractsProvider";
+// import { ContractContext } from "../contexts/ContractsProvider";
 import UserContext from "../contexts/UserProvider";
 
 const debug = createDebugger("app:layout");
@@ -73,8 +73,8 @@ const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network } = useContext(UserContext);
   const { userData } = useContext(GraphContext);
-  const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
-    useContext(ContractContext);
+  // const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
+  //   useContext(ContractContext);
   const [username, setUsername] = useState<string>();
 
   const installMetaMask = !(window.web3 || window.ethereum);
@@ -85,59 +85,59 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintE20 = useCallback(
-    async (e20: number) => {
-      switch (e20) {
-        case 1:
-          if (!WETH) return;
-          await (await WETH.faucet()).wait();
-          break;
-        case 2:
-          if (!DAI) return;
-          await (await DAI.faucet()).wait();
-          break;
-        case 3:
-          if (!USDC) return;
-          await (await USDC.faucet()).wait();
-          break;
-        case 4:
-          if (!USDT) return;
-          await (await USDT.faucet()).wait();
-          break;
-        case 5:
-          if (!TUSD) return;
-          await (await TUSD.faucet()).wait();
-          break;
-      }
-    },
-    [DAI, TUSD, USDC, USDT, WETH]
-  );
-  const mintNFT = useCallback(
-    async (nft: number) => {
-      switch (nft) {
-        case 0:
-          if (!E721) return;
-          await (await E721.faucet()).wait();
-          break;
-        case 1:
-          if (!E721B) return;
-          await (await E721B.faucet()).wait();
-          break;
-        case 2:
-          if (!E1155) return;
-          await (await E1155.faucet(10)).wait();
-          break;
-        case 3:
-          if (!E1155B) return;
-          await (await E1155B.faucet(10)).wait();
-          break;
-        default:
-          debug("unknown NFT");
-          return;
-      }
-    },
-    [E721, E721B, E1155, E1155B]
-  );
+  // const mintE20 = useCallback(
+  //   async (e20: number) => {
+  //     switch (e20) {
+  //       case 1:
+  //         if (!WETH) return;
+  //         await (await WETH.faucet()).wait();
+  //         break;
+  //       case 2:
+  //         if (!DAI) return;
+  //         await (await DAI.faucet()).wait();
+  //         break;
+  //       case 3:
+  //         if (!USDC) return;
+  //         await (await USDC.faucet()).wait();
+  //         break;
+  //       case 4:
+  //         if (!USDT) return;
+  //         await (await USDT.faucet()).wait();
+  //         break;
+  //       case 5:
+  //         if (!TUSD) return;
+  //         await (await TUSD.faucet()).wait();
+  //         break;
+  //     }
+  //   },
+  //   [DAI, TUSD, USDC, USDT, WETH]
+  // );
+  // const mintNFT = useCallback(
+  //   async (nft: number) => {
+  //     switch (nft) {
+  //       case 0:
+  //         if (!E721) return;
+  //         await (await E721.faucet()).wait();
+  //         break;
+  //       case 1:
+  //         if (!E721B) return;
+  //         await (await E721B.faucet()).wait();
+  //         break;
+  //       case 2:
+  //         if (!E1155) return;
+  //         await (await E1155.faucet(10)).wait();
+  //         break;
+  //       case 3:
+  //         if (!E1155B) return;
+  //         await (await E1155B.faucet(10)).wait();
+  //         break;
+  //       default:
+  //         debug("unknown NFT");
+  //         return;
+  //     }
+  //   },
+  //   [E721, E721B, E1155, E1155B]
+  // );
 
   return (
     <Layout>
@@ -178,7 +178,7 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          <button className="menu__item" onClick={() => mintNFT(0)}>
+          {/* <button className="menu__item" onClick={() => mintNFT(0)}>
             Mint 721A
           </button>
           <button className="menu__item" onClick={() => mintNFT(1)}>
@@ -189,10 +189,10 @@ const App: React.FC = () => {
           </button>
           <button className="menu__item" onClick={() => mintNFT(3)}>
             Mint 1155B
-          </button>
+          </button> */}
           {/* payment token faucets */}
           <div>
-            <button className="menu__item" onClick={() => mintE20(1)}>
+            {/* <button className="menu__item" onClick={() => mintE20(1)}>
               Mint WETH
             </button>
             <button className="menu__item" onClick={() => mintE20(2)}>
@@ -206,10 +206,10 @@ const App: React.FC = () => {
             </button>
             <button className="menu__item" onClick={() => mintE20(5)}>
               Mint TUSD
-            </button>
-            {/* <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
-              Advance time
             </button> */}
+            <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
+              Advance time
+            </button>
           </div>
         </div>
         {/* CONTENT */}

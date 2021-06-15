@@ -21,7 +21,7 @@ function range(start: number, stop: number, step: number) {
 
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {E721, E721B, E1155, E1155B}  = useContext(ContractContext)
+  const { E721, E721B, E1155, E1155B } = useContext(ContractContext);
 
   const { signer } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
@@ -32,35 +32,41 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       if (isLoading) setIsLoading(false);
       return;
     }
-    if (!E1155 || !E721 || !E721B || !E1155B || !signer || !currentAddress)
+    if (!E1155 || !E721 || !E721B || !E1155B || !signer || !currentAddress) {
+      setIsLoading(false);
       return [];
-
+    }
     const usersNfts: Nft[] = [];
     const E1155IDs = range(0, 1005, 1);
-
-    const num721s = await E721
+    const e721 = E721.connect(signer);
+    const e721b = E721B.connect(signer);
+    const e1155 = E1155.connect(signer);
+    const e1155b = E1155B.connect(signer);
+    const num721s = await e721
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
 
-    const num721bs = await E721B
+    const num721bs = await e721b
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
 
-    const num1155s = await E1155
+    const num1155s = await e1155
+
       .balanceOfBatch(Array(E1155IDs.length).fill(currentAddress), E1155IDs)
       .catch(() => []);
 
-    const num1155bs = await E1155B
+    const num1155bs = await e1155b
+
       .balanceOfBatch(Array(E1155IDs.length).fill(currentAddress), E1155IDs)
       .catch(() => []);
 
     for (let i = 0; i < num721s.toNumber(); i++) {
       try {
-        const tokenId = await E721.tokenOfOwnerByIndex(
+        const tokenId = await e721.tokenOfOwnerByIndex(
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(E721.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -70,11 +76,11 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
 
     for (let i = 0; i < num721bs.toNumber(); i++) {
       try {
-        const tokenId = await E721B.tokenOfOwnerByIndex(
+        const tokenId = await e721b.tokenOfOwnerByIndex(
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(E721B.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -82,7 +88,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       }
     }
 
-    let amountBalance = await E1155.balanceOfBatch(
+    let amountBalance = await e1155.balanceOfBatch(
       Array(E1155IDs.length).fill(currentAddress),
       E1155IDs
     );
@@ -91,7 +97,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       if (amountBalance[i].toNumber() > 0) {
         usersNfts.push(
           new Nft(
-            E1155.address,
+            e1155.address,
             E1155IDs[i].toString(),
             amountBalance[i],
             false,
@@ -101,7 +107,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       }
     }
 
-    amountBalance = await E1155B.balanceOfBatch(
+    amountBalance = await e1155b.balanceOfBatch(
       Array(E1155IDs.length).fill(currentAddress),
       E1155IDs
     );
@@ -110,7 +116,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       if (amountBalance[i].toNumber() > 0) {
         usersNfts.push(
           new Nft(
-            E1155B.address,
+            e1155b.address,
             E1155IDs[i].toString(),
             amountBalance[i],
             false,

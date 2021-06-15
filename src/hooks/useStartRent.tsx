@@ -31,7 +31,7 @@ export const useStartRent = (): {
   checkApprovals: (nfts: StartRentNft[]) => void;
   isApprovalLoading: boolean;
 } => {
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const { Resolver } = useContext(ContractContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
@@ -51,12 +51,14 @@ export const useStartRent = (): {
       if (!Resolver) return;
       if (!currentAddress) return;
       if (!contractAddress) return;
+      if (!signer) return;
 
       setApprovalLoading(true);
-
+      const resolver = Resolver.connect(signer);
+      //const deployed = await resolver.deployed()
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
-        .map((token) => Resolver.getPaymentToken(token));
+        .map((token) => resolver.getPaymentToken(token));
 
       Promise.all(promiseTokenAddresses).then((tokenAddresses) => {
         const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));

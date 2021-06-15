@@ -15,7 +15,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: ""
+  network: "",
 };
 
 type UserContextType = {
@@ -24,7 +24,7 @@ type UserContextType = {
   provider: unknown;
   signer: Signer | undefined;
   web3Provider: ethers.providers.Web3Provider | undefined;
-  network: string
+  network: string;
 };
 
 const UserContext = createContext<UserContextType>(DefaultUser);
@@ -58,14 +58,19 @@ export const UserProvider: React.FC = ({ children }) => {
         .catch(() => {
           // do nothing
         });
-      if(!provider) return;  
+      if (!provider) return;
       const web3p = new ethers.providers.Web3Provider(provider);
       const network = await web3p?.getNetwork();
-      const name = network?.name;
-      setNetworkName(name)
+      const name = network.chainId === 31337 ? "local" : network?.name;
+      setNetworkName(name);
       const _signer = web3p.getSigner();
       setSigner(_signer);
-      const address = await _signer.getAddress().then((t) => t.toLowerCase());
+      const address = await _signer
+        .getAddress()
+        .then((t) => t.toLowerCase())
+        .catch(() => {
+          // do nothing
+        });
       setAddress(address || "");
       setProvider(provider);
       setWeb3Provider(web3p);

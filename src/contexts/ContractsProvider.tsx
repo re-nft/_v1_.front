@@ -1,20 +1,18 @@
 import { Contract } from "@ethersproject/contracts";
 import React, { createContext, useEffect, useState, useContext } from "react";
 import { Signer } from "@ethersproject/abstract-signer";
-import {
-  ReNFT,
-  Resolver,
-  E721,
-  E721B,
-  E1155,
-  E1155B,
-  WETH,
-  DAI,
-  USDC,
-  USDT,
-  TUSD,
-  Utils,
-} from "../hardhat/typechain";
+import { ReNFT } from "../hardhat/typechain/ReNFT";
+import { Resolver } from "../hardhat/typechain/Resolver";
+import { E721 } from "../hardhat/typechain/E721";
+import { E721B } from "../hardhat/typechain/E721B";
+import { E1155 } from "../hardhat/typechain/E1155";
+import { E1155B } from "../hardhat/typechain/E1155B";
+import { WETH } from "../hardhat/typechain/WETH";
+import { DAI } from "../hardhat/typechain/DAI";
+import { USDC } from "../hardhat/typechain/USDC";
+import { USDT } from "../hardhat/typechain/USDT";
+import { TUSD } from "../hardhat/typechain/TUSD";
+import { Utils } from "../hardhat/typechain/Utils";
 import UserContext from "./UserProvider";
 import * as contractList from "../contracts/contracts.js";
 
@@ -39,8 +37,6 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
   const newContract = new Contract(
     require(`../contracts/${contractName}.address.js`),
     require(`../contracts/${contractName}.abi.js`),
-    // Note has to do with versions mismatch between different ethers libraries
-    // @ts-ignore
     signer
   );
   try {
@@ -49,7 +45,8 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
   } catch (e) {
     console.log(e);
   }
-  switch (contractName) {
+  const name = contractName.replace("Test/", "")
+  switch (name) {
     case "ReNFT":
       return newContract as unknown as ReNFT;
     case "Resolver":
@@ -73,7 +70,7 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
     case "TUSD":
       return newContract as unknown as TUSD;
     case "Utils":
-        return newContract as unknown as Utils;  
+      return newContract as unknown as Utils;
     default:
       return newContract;
   }
@@ -86,11 +83,11 @@ async function loadContracts(
   try {
     const newContracts: ContractsObject = {};
     contractList.forEach((contractName) => {
-      const name: keyof ContractsObject = (contractName[0] +
-        contractName.slice(1)) as keyof ContractsObject;
+      const nameWithoutTest = contractName.replace("Test/", "")
+  
       // TODO investigate
       // @ts-ignore
-      newContracts[name] = loadContract(contractName, signer);
+      newContracts[nameWithoutTest] = loadContract(contractName, signer);
     });
 
     setContracts(newContracts);
