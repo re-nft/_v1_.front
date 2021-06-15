@@ -11,6 +11,7 @@ import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import UserContext from "../contexts/UserProvider";
+import { ContractContext } from "../contexts/ContractsProvider";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -31,7 +32,7 @@ export const useStartRent = (): {
   isApprovalLoading: boolean;
 } => {
   const {signer} = useContext(UserContext);
-  const { instance: resolver } = useContext(ResolverContext);
+  const { Resolver } = useContext(ContractContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
@@ -47,7 +48,7 @@ export const useStartRent = (): {
 
   const checkApprovals = useCallback(
     (nfts: StartRentNft[]) => {
-      if (!resolver) return;
+      if (!Resolver) return;
       if (!currentAddress) return;
       if (!contractAddress) return;
 
@@ -55,7 +56,7 @@ export const useStartRent = (): {
 
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
-        .map((token) => resolver.getPaymentToken(token));
+        .map((token) => Resolver.getPaymentToken(token));
 
       Promise.all(promiseTokenAddresses).then((tokenAddresses) => {
         const erc20s = tokenAddresses.map((addr) => getE20(addr, signer));
@@ -84,7 +85,7 @@ export const useStartRent = (): {
         );
       });
     },
-    [contractAddress, currentAddress, resolver, signer]
+    [Resolver, contractAddress, currentAddress, signer]
   );
   const isApproved = useMemo(() => {
     // use memo as there could be multiple tokens

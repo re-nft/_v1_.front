@@ -40,7 +40,7 @@ export const StateProvider: React.FC = ({ children }) => {
 };
 
 export const useContractAddress = (): string => {
-  const { reNFT } = useContext(ContractContext);
+  const { ReNFT } = useContext(ContractContext);
   const { web3Provider } = useContext(UserContext);
   const [address, setAddress] = useState("");
 
@@ -49,10 +49,10 @@ export const useContractAddress = (): string => {
       const network = await web3Provider?.getNetwork();
       const name = network?.name;
       const newAddress =
-        name === NetworkName.mainnet ? RENFT_ADDRESS : reNFT?.address || "";
+        name === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();
-  }, [web3Provider, address, reNFT?.address]);
+  }, [web3Provider, address, ReNFT?.address]);
   return address;
 };

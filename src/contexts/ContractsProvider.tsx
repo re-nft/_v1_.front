@@ -13,12 +13,13 @@ import {
   USDC,
   USDT,
   TUSD,
+  Utils,
 } from "../hardhat/typechain";
 import UserContext from "./UserProvider";
-import contractList from "../contracts/contracts";
+import * as contractList from "../contracts/contracts.js";
 
 interface ContractsObject {
-  reNFT?: ReNFT;
+  ReNFT?: ReNFT;
   Resolver?: Resolver;
   E721?: E721;
   E721B?: E721B;
@@ -29,21 +30,22 @@ interface ContractsObject {
   USDC?: USDC;
   USDT?: USDT;
   TUSD?: TUSD;
+  Utils?: Utils;
 }
 
 export const ContractContext = createContext<ContractsObject>({});
 
 const loadContract = (contractName: string, signer: Signer | undefined) => {
   const newContract = new Contract(
-    require(`../../contracts/${contractName}.address.js`),
-    require(`../../contracts/${contractName}.abi.js`),
+    require(`../contracts/${contractName}.address.js`),
+    require(`../contracts/${contractName}.abi.js`),
     // Note has to do with versions mismatch between different ethers libraries
     // @ts-ignore
     signer
   );
   try {
     // @ts-ignore
-    newContract.bytecode = require(`../../contracts/${contractName}.bytecode.js`);
+    newContract.bytecode = require(`../contracts/${contractName}.bytecode.js`);
   } catch (e) {
     console.log(e);
   }
@@ -70,6 +72,8 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
       return newContract as unknown as USDT;
     case "TUSD":
       return newContract as unknown as TUSD;
+    case "Utils":
+        return newContract as unknown as Utils;  
     default:
       return newContract;
   }
@@ -82,9 +86,8 @@ async function loadContracts(
   try {
     const newContracts: ContractsObject = {};
     contractList.forEach((contractName) => {
-      const name: keyof ContractsObject = (contractName[0].toLowerCase() +
+      const name: keyof ContractsObject = (contractName[0] +
         contractName.slice(1)) as keyof ContractsObject;
-      console.log(contractName[0].toLowerCase() + contractName.slice(1));
       // TODO investigate
       // @ts-ignore
       newContracts[name] = loadContract(contractName, signer);
