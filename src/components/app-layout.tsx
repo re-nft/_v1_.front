@@ -18,18 +18,9 @@ import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import {
-  E721Context,
-  E721BContext,
-  E1155Context,
-  E1155BContext,
-  WETHContext,
-  DAIContext,
-  USDCContext,
-  USDTContext,
-  TUSDContext,
-} from "../hardhat/SymfoniContext";
+
 import createDebugger from "debug";
+import { ContractContext } from "../contexts/ContractsProvider";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -80,15 +71,7 @@ const InstallMetamask = () => {
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData } = useContext(GraphContext);
-  const { instance: e721 } = useContext(E721Context);
-  const { instance: e721b } = useContext(E721BContext);
-  const { instance: e1155 } = useContext(E1155Context);
-  const { instance: e1155b } = useContext(E1155BContext);
-  const { instance: weth } = useContext(WETHContext);
-  const { instance: dai } = useContext(DAIContext);
-  const { instance: usdc } = useContext(USDCContext);
-  const { instance: usdt } = useContext(USDTContext);
-  const { instance: tusd } = useContext(TUSDContext);
+  const {E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD}  = useContext(ContractContext)
   const [username, setUsername] = useState<string>();
 
   const installMetaMask = !(window.web3 || window.ethereum);
@@ -103,54 +86,54 @@ const App: React.FC = () => {
     async (e20: number) => {
       switch (e20) {
         case 1:
-          if (!weth) return;
-          await (await weth.faucet()).wait();
+          if (!WETH) return;
+          await (await WETH.faucet()).wait();
           break;
         case 2:
-          if (!dai) return;
-          await (await dai.faucet()).wait();
+          if (!DAI) return;
+          await (await DAI.faucet()).wait();
           break;
         case 3:
-          if (!usdc) return;
-          await (await usdc.faucet()).wait();
+          if (!USDC) return;
+          await (await USDC.faucet()).wait();
           break;
         case 4:
-          if (!usdt) return;
-          await (await usdt.faucet()).wait();
+          if (!USDT) return;
+          await (await USDT.faucet()).wait();
           break;
         case 5:
-          if (!tusd) return;
-          await (await tusd.faucet()).wait();
+          if (!TUSD) return;
+          await (await TUSD.faucet()).wait();
           break;
       }
     },
-    [dai, tusd, usdc, usdt, weth]
+    [DAI, TUSD, USDC, USDT, WETH]
   );
   const mintNFT = useCallback(
     async (nft: number) => {
       switch (nft) {
         case 0:
-          if (!e721) return;
-          await (await e721.faucet()).wait();
+          if (!E721) return;
+          await (await E721.faucet()).wait();
           break;
         case 1:
-          if (!e721b) return;
-          await (await e721b.faucet()).wait();
+          if (!E721B) return;
+          await (await E721B.faucet()).wait();
           break;
         case 2:
-          if (!e1155) return;
-          await (await e1155.faucet(10)).wait();
+          if (!E1155) return;
+          await (await E1155.faucet(10)).wait();
           break;
         case 3:
-          if (!e1155b) return;
-          await (await e1155b.faucet(10)).wait();
+          if (!E1155B) return;
+          await (await E1155B.faucet(10)).wait();
           break;
         default:
           debug("unknown NFT");
           return;
       }
     },
-    [e721, e721b, e1155, e1155b]
+    [E721, E721B, E1155, E1155B]
   );
 
   return (

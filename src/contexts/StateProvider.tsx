@@ -11,35 +11,37 @@ import { TimestampProvider } from "./TimestampProvider";
 import { NetworkName } from "../types";
 import { SnackAlertProvider } from "./SnackProvider";
 import UserContext, { UserProvider } from "./UserProvider";
-
+import { ContractContext, ContractsProvider } from "./ContractsProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
     <UserProvider>
       <CurrentAddressProvider>
-        <GraphProvider>
-          <TransactionStateProvider>
-            <NFTMetaProvider>
-              <UserLendingProvider>
-                <UserRentingProvider>
-                  <AvailableForRentProvider>
-                    <TimestampProvider>
-                      <SnackAlertProvider>{children}</SnackAlertProvider>
-                    </TimestampProvider>
-                  </AvailableForRentProvider>
-                </UserRentingProvider>
-              </UserLendingProvider>
-            </NFTMetaProvider>
-          </TransactionStateProvider>
-        </GraphProvider>
+        <ContractsProvider>
+          <GraphProvider>
+            <TransactionStateProvider>
+              <NFTMetaProvider>
+                <UserLendingProvider>
+                  <UserRentingProvider>
+                    <AvailableForRentProvider>
+                      <TimestampProvider>
+                        <SnackAlertProvider>{children}</SnackAlertProvider>
+                      </TimestampProvider>
+                    </AvailableForRentProvider>
+                  </UserRentingProvider>
+                </UserLendingProvider>
+              </NFTMetaProvider>
+            </TransactionStateProvider>
+          </GraphProvider>
+        </ContractsProvider>
       </CurrentAddressProvider>
     </UserProvider>
   );
 };
 
 export const useContractAddress = (): string => {
-  const { instance } = useContext(ReNFTContext);
-  const {web3Provider} = useContext(UserContext);
+  const { reNFT } = useContext(ContractContext);
+  const { web3Provider } = useContext(UserContext);
   const [address, setAddress] = useState("");
 
   useEffect(() => {
@@ -47,10 +49,10 @@ export const useContractAddress = (): string => {
       const network = await web3Provider?.getNetwork();
       const name = network?.name;
       const newAddress =
-        name === NetworkName.mainnet ? RENFT_ADDRESS : instance?.address || "";
+        name === NetworkName.mainnet ? RENFT_ADDRESS : reNFT?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();
-  }, [instance, web3Provider, address]);
+  }, [web3Provider, address, reNFT?.address]);
   return address;
 };

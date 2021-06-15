@@ -15,6 +15,7 @@ import {
   TUSD,
 } from "../hardhat/typechain";
 import UserContext from "./UserProvider";
+import contractList from "../contracts/contracts";
 
 interface ContractsObject {
   reNFT?: ReNFT;
@@ -75,15 +76,18 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
 };
 
 async function loadContracts(
-  signer: Signer | undefined ,
+  signer: Signer | undefined,
   setContracts: (arg: ContractsObject) => void
 ) {
   try {
-    const contractList = require("../../contracts/contracts.js");
-    const newContracts = {};
+    const newContracts: ContractsObject = {};
     contractList.forEach((contractName) => {
-      newContracts[contractName[0].toLowerCase() + contractName.slice(1)] =
-        loadContract(contractName, signer);
+      const name: keyof ContractsObject = (contractName[0].toLowerCase() +
+        contractName.slice(1)) as keyof ContractsObject;
+      console.log(contractName[0].toLowerCase() + contractName.slice(1));
+      // TODO investigate
+      // @ts-ignore
+      newContracts[name] = loadContract(contractName, signer);
     });
 
     setContracts(newContracts);
