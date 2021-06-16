@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -23,6 +23,7 @@ import createDebugger from "debug";
 // import { ContractContext } from "../contexts/ContractsProvider";
 import UserContext from "../contexts/UserProvider";
 import { Button } from "./button";
+import { ContractContext } from "../contexts/ContractsProvider";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -74,72 +75,74 @@ const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network, connect } = useContext(UserContext);
   const { userData } = useContext(GraphContext);
-  // const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
-  //   useContext(ContractContext);
+
   const [username, setUsername] = useState<string>();
 
   const installMetaMask = !(window.web3 || window.ethereum);
+
+  const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
+    useContext(ContractContext);
+  const mintE20 = useCallback(
+    async (e20: number) => {
+      switch (e20) {
+        case 1:
+          if (!WETH) return;
+          await (await WETH.faucet()).wait();
+          break;
+        case 2:
+          if (!DAI) return;
+          await (await DAI.faucet()).wait();
+          break;
+        case 3:
+          if (!USDC) return;
+          await (await USDC.faucet()).wait();
+          break;
+        case 4:
+          if (!USDT) return;
+          await (await USDT.faucet()).wait();
+          break;
+        case 5:
+          if (!TUSD) return;
+          await (await TUSD.faucet()).wait();
+          break;
+      }
+    },
+    [DAI, TUSD, USDC, USDT, WETH]
+  );
+  const mintNFT = useCallback(
+    async (nft: number) => {
+      switch (nft) {
+        case 0:
+          if (!E721) return;
+          await (await E721.faucet()).wait();
+          break;
+        case 1:
+          if (!E721B) return;
+          await (await E721B.faucet()).wait();
+          break;
+        case 2:
+          if (!E1155) return;
+          // @ts-ignore
+          await (await E1155.faucet(10)).wait();
+          break;
+        case 3:
+          if (!E1155B) return;
+          // @ts-ignore
+          await (await E1155B.faucet(10)).wait();
+          break;
+        default:
+          debug("unknown NFT");
+          return;
+      }
+    },
+    [E721, E721B, E1155, E1155B]
+  );
 
   useEffect(() => {
     if (userData?.name !== "") {
       setUsername(userData?.name);
     }
   }, [userData]);
-
-  // const mintE20 = useCallback(
-  //   async (e20: number) => {
-  //     switch (e20) {
-  //       case 1:
-  //         if (!WETH) return;
-  //         await (await WETH.faucet()).wait();
-  //         break;
-  //       case 2:
-  //         if (!DAI) return;
-  //         await (await DAI.faucet()).wait();
-  //         break;
-  //       case 3:
-  //         if (!USDC) return;
-  //         await (await USDC.faucet()).wait();
-  //         break;
-  //       case 4:
-  //         if (!USDT) return;
-  //         await (await USDT.faucet()).wait();
-  //         break;
-  //       case 5:
-  //         if (!TUSD) return;
-  //         await (await TUSD.faucet()).wait();
-  //         break;
-  //     }
-  //   },
-  //   [DAI, TUSD, USDC, USDT, WETH]
-  // );
-  // const mintNFT = useCallback(
-  //   async (nft: number) => {
-  //     switch (nft) {
-  //       case 0:
-  //         if (!E721) return;
-  //         await (await E721.faucet()).wait();
-  //         break;
-  //       case 1:
-  //         if (!E721B) return;
-  //         await (await E721B.faucet()).wait();
-  //         break;
-  //       case 2:
-  //         if (!E1155) return;
-  //         await (await E1155.faucet(10)).wait();
-  //         break;
-  //       case 3:
-  //         if (!E1155B) return;
-  //         await (await E1155B.faucet(10)).wait();
-  //         break;
-  //       default:
-  //         debug("unknown NFT");
-  //         return;
-  //     }
-  //   },
-  //   [E721, E721B, E1155, E1155B]
-  // );
-
 
   return (
     <Layout>
@@ -185,41 +188,52 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          {/* <button className="menu__item" onClick={() => mintNFT(0)}>
-            Mint 721A
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(1)}>
-            Mint 721B
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(2)}>
-            Mint 1155A
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(3)}>
-            Mint 1155B
-          </button> */}
+          {network !== "homestead" && network !== "local" && (
+            <>
+              <button className="menu__item" onClick={() => mintNFT(0)}>
+                Mint 721A
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(1)}>
+                Mint 721B
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(2)}>
+                Mint 1155A
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(3)}>
+                Mint 1155B
+              </button>
+            </>
+          )}
+
           {/* payment token faucets */}
           <div>
-            {/* <button className="menu__item" onClick={() => mintE20(1)}>
-              Mint WETH
-            </button>
-            <button className="menu__item" onClick={() => mintE20(2)}>
-              Mint DAI
-            </button>
-            <button className="menu__item" onClick={() => mintE20(3)}>
-              Mint USDC
-            </button>
-            <button className="menu__item" onClick={() => mintE20(4)}>
-              Mint USDT
-            </button>
-            <button className="menu__item" onClick={() => mintE20(5)}>
-              Mint TUSD
-            </button> */}
-            <button
-              className="menu__item"
-              onClick={() => advanceTime(24 * 60 * 60)}
-            >
-              Advance time
-            </button>
+            {network !== "homestead" && network !== "local" && (
+              <>
+                <button className="menu__item" onClick={() => mintE20(1)}>
+                  Mint WETH
+                </button>
+                <button className="menu__item" onClick={() => mintE20(2)}>
+                  Mint DAI
+                </button>
+                <button className="menu__item" onClick={() => mintE20(3)}>
+                  Mint USDC
+                </button>
+                <button className="menu__item" onClick={() => mintE20(4)}>
+                  Mint USDT
+                </button>
+                <button className="menu__item" onClick={() => mintE20(5)}>
+                  Mint TUSD
+                </button>
+              </>
+            )}
+            {network === "local" && (
+              <button
+                className="menu__item"
+                onClick={() => advanceTime(24 * 60 * 60)}
+              >
+                Advance time
+              </button>
+            )}
           </div>
         </div>
         {/* CONTENT */}
