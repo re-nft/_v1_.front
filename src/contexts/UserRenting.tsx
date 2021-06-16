@@ -30,7 +30,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
 

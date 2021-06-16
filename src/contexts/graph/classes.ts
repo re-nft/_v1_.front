@@ -112,7 +112,6 @@ class Nft {
    * @returns ERC721 or ERC1155 instance that can be signed by the currentAddress
    */
   contract = (): ERC721 | ERC1155 => {
-    
     if (this._contract) return this._contract;
 
     const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
@@ -121,7 +120,8 @@ class Nft {
       // this is troublesome, if signer is null (not connected the wallet then we need to pass provider in)
       // provider will return constants functions (readonly) version of contract
       // but we need to guess the network , aka localhost/ropsten to fetch data
-      this.signer || ethers.getDefaultProvider(process.env.REACT_APP_DEFAULT_NETWORK)
+      this.signer ||
+        ethers.getDefaultProvider(process.env.REACT_APP_DEFAULT_NETWORK)
     );
     this._contract = _contract;
     return _contract;

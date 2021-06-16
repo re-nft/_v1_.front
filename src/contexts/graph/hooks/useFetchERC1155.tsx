@@ -9,7 +9,7 @@ import { NftToken } from "../types";
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
 
   // TODO:eniko use cacheProvider or similar
   const [nfts, setNfts] = useState<Nft[]>([]);

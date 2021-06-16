@@ -45,7 +45,7 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
   } catch (e) {
     console.log(e);
   }
-  const name = contractName.replace("Test/", "")
+  const name = contractName.replace("Test/", "");
   switch (name) {
     case "ReNFT":
       return newContract as unknown as ReNFT;
@@ -83,8 +83,8 @@ async function loadContracts(
   try {
     const newContracts: ContractsObject = {};
     contractList.forEach((contractName) => {
-      const nameWithoutTest = contractName.replace("Test/", "")
-  
+      const nameWithoutTest = contractName.replace("Test/", "");
+
       // TODO investigate
       // @ts-ignore
       newContracts[nameWithoutTest] = loadContract(contractName, signer);

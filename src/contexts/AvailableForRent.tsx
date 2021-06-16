@@ -16,7 +16,6 @@ import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
 
-
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
   allAvailableToRent: Nft[];
@@ -24,7 +23,7 @@ export const AvailableForRentContext = createContext<{
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
@@ -58,7 +57,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           // ! therefore, this check is !==
           .filter((l) => {
             // empty address show all renting
-            if(!currentAddress) return true;
+            if (!currentAddress) return true;
 
             const userNotLender = l.lenderAddress.toLowerCase() !== address;
             const userNotRenter =
@@ -84,7 +83,6 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         ) {
           setNfts(lendingsReNFT);
         }
-
       })
       .finally(() => {
         setLoading(false);

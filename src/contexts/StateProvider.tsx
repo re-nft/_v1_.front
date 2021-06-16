@@ -16,27 +16,25 @@ import { ContractContext, ContractsProvider } from "./ContractsProvider";
 export const StateProvider: React.FC = ({ children }) => {
   return (
     <SnackAlertProvider>
-    <UserProvider>
-      <CurrentAddressProvider>
-        <ContractsProvider>
-          <GraphProvider>
-            <TransactionStateProvider>
-              <NFTMetaProvider>
-                <UserLendingProvider>
-                  <UserRentingProvider>
-                    <AvailableForRentProvider>
-                      <TimestampProvider>
-                        {children}
-                      </TimestampProvider>
-                    </AvailableForRentProvider>
-                  </UserRentingProvider>
-                </UserLendingProvider>
-              </NFTMetaProvider>
-            </TransactionStateProvider>
-          </GraphProvider>
-        </ContractsProvider>
-      </CurrentAddressProvider>
-    </UserProvider>
+      <UserProvider>
+        <CurrentAddressProvider>
+          <ContractsProvider>
+            <GraphProvider>
+              <TransactionStateProvider>
+                <NFTMetaProvider>
+                  <UserLendingProvider>
+                    <UserRentingProvider>
+                      <AvailableForRentProvider>
+                        <TimestampProvider>{children}</TimestampProvider>
+                      </AvailableForRentProvider>
+                    </UserRentingProvider>
+                  </UserLendingProvider>
+                </NFTMetaProvider>
+              </TransactionStateProvider>
+            </GraphProvider>
+          </ContractsProvider>
+        </CurrentAddressProvider>
+      </UserProvider>
     </SnackAlertProvider>
   );
 };
@@ -49,7 +47,7 @@ export const useContractAddress = (): string => {
   useEffect(() => {
     const getNetwork = async () => {
       const newAddress =
-      network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
+        network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();

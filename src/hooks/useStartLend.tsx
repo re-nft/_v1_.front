@@ -21,7 +21,7 @@ export const useStartLend = (): ((
   nftPrice: number[],
   tokens: PaymentToken[]
 ) => Promise<void | boolean>) => {
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setError } = useContext(SnackAlertContext);
   const { setHash } = useContext(TransactionStateContext);

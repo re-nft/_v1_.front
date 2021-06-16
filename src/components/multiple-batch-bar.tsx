@@ -35,7 +35,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
-  const {web3Provider:provider} = useContext(UserContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const { setError } = useContext(SnackAlertContext);
 
   useEffect(() => {
@@ -153,7 +153,6 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
               handleClick={onStopLend}
               description="Stop lend all"
             ></Button>
-
           </div>
         </div>
       )}

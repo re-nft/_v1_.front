@@ -17,7 +17,7 @@ export type ReturnNft = {
 export const useReturnIt = (): ((
   nfts: ReturnNft[]
 ) => Promise<void | boolean>) => {
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
   const { setError } = useContext(SnackAlertContext);

@@ -17,7 +17,7 @@ export const useStopLend = (): ((
     amount: string;
   }[]
 ) => Promise<void | boolean>) => {
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setError } = useContext(SnackAlertContext);
   const { setHash } = useContext(TransactionStateContext);

@@ -14,7 +14,7 @@ export const useClaimColleteral = (): ((
     lendingId: string;
   }[]
 ) => Promise<void | boolean>) => {
-  const {signer} = useContext(UserContext);
+  const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
   const { setError } = useContext(SnackAlertContext);
@@ -53,7 +53,6 @@ export const useClaimColleteral = (): ((
         .catch((e) => {
           setError(e.message, "error");
         });
-
     },
     [renft, setError, setHash]
   );
