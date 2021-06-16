@@ -4,8 +4,8 @@ import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
 import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
-import { ERC721__factory } from "../../hardhat/typechain/factories/ERC721__factory";
-import { ERC1155__factory } from "../../hardhat/typechain/factories/ERC1155__factory";
+import { ERC721__factory } from "../../contracts/ERC721__factory";
+import { ERC1155__factory } from "../../contracts/ERC1155__factory";
 import { decimalToPaddedHexString } from "../../utils";
 import createDebugger from "debug";
 
@@ -56,7 +56,7 @@ class Nft {
     tokenId: string | BigNumber,
     amount: string | BigNumber,
     isERC721: boolean,
-    signer: ethers.Signer,
+    signer?: ethers.Signer,
     options?: NftOptions
   ) {
     this.address = nftAddress;
@@ -98,7 +98,7 @@ class Nft {
   address: Address;
   tokenId: string;
   amount: string;
-  signer: ethers.Signer;
+  signer?: ethers.Signer;
   isERC721: boolean;
   _meta: NftToken["meta"] | undefined;
   _tokenURI: string;
@@ -112,12 +112,16 @@ class Nft {
    * @returns ERC721 or ERC1155 instance that can be signed by the currentAddress
    */
   contract = (): ERC721 | ERC1155 => {
+    
     if (this._contract) return this._contract;
 
     const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
     const _contract: ERC721 | ERC1155 = instantiator.connect(
       this.address,
-      this.signer
+      // this is troublesome, if signer is null (not connected the wallet then we need to pass provider in)
+      // provider will return constants functions (readonly) version of contract
+      // but we need to guess the network , aka localhost/ropsten to fetch data
+      this.signer || ethers.getDefaultProvider(process.env.REACT_APP_DEFAULT_NETWORK)
     );
     this._contract = _contract;
     return _contract;
@@ -187,7 +191,7 @@ class Nft {
 class Lending extends Nft {
   constructor(
     lendingRaw: LendingRaw,
-    signer: ethers.Signer,
+    signer?: ethers.Signer,
     options?: NftOptions
   ) {
     super(

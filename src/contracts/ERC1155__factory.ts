@@ -5,7 +5,7 @@
 import { Signer, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
 
-import type { ERC1155 } from "../ERC1155";
+import type { ERC1155 } from "../hardhat/typechain/ERC1155";
 
 export class ERC1155__factory extends ContractFactory {
   constructor(signer?: Signer) {

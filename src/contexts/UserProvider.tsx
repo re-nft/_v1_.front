@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { ethers, Signer } from "ethers";
-import Web3Modal, { getInjectedProvider } from "web3modal";
+import Web3Modal from "web3modal";
 import { THROWS } from "../utils";
 
 const DefaultUser = {
@@ -77,18 +77,6 @@ export const UserProvider: React.FC = ({ children }) => {
       return Promise.resolve(web3p);
     }
   }, [web3Modal]);
-
-  // reconnect if connected once
-  // this is necessary, because metamask window shows connected state in it's wallet
-  // this will not connect if never connected or clicked on disconnect, try it in private window
-  useEffect(() => {
-    const injectedProvider = getInjectedProvider();
-    if (web3Modal) {
-      if (injectedProvider && !provider) {
-        connect();
-      }
-    }
-  }, [connect, provider, web3Modal]);
 
   // change account
   useEffect(() => {

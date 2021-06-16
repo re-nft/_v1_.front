@@ -30,7 +30,6 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
   const [isLoading, setLoading] = useState(true);
 
   const fetchRentings = useCallback(() => {
-    if (!signer || !currentAddress) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
@@ -58,6 +57,9 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
+            // empty address show all renting
+            if(!currentAddress) return true;
+
             const userNotLender = l.lenderAddress.toLowerCase() !== address;
             const userNotRenter =
               (l.renting?.renterAddress ?? "o_0").toLowerCase() !== address;

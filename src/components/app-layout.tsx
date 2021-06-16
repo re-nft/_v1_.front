@@ -16,12 +16,13 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short , advanceTime} from "../utils";
+import { short, advanceTime } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 import createDebugger from "debug";
 // import { ContractContext } from "../contexts/ContractsProvider";
 import UserContext from "../contexts/UserProvider";
+import { Button } from "./button";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -71,7 +72,7 @@ const InstallMetamask = () => {
 };
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { network } = useContext(UserContext);
+  const { network, connect } = useContext(UserContext);
   const { userData } = useContext(GraphContext);
   // const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
   //   useContext(ContractContext);
@@ -145,20 +146,25 @@ const App: React.FC = () => {
         <div className="content-wrapper mb-l">
           <div className="header">
             <div className="header__logo"></div>
-            <div className="header__user">
-              {installMetaMask && <InstallMetamask />}
-              {!installMetaMask &&
-                !currentAddress &&
-                "Please connect your wallet!"}
-              {!installMetaMask && !!currentAddress && (
-                <>
-                  {network} &nbsp;
-                  <Link className="" to="/profile">
-                    {username || short(currentAddress)}
-                  </Link>
-                </>
-              )}
-            </div>
+            {!installMetaMask && !currentAddress ? (
+              <Button
+                handleClick={connect}
+                description="Please connect your wallet!"
+              />
+            ) : (
+              <div className="header__user">
+                {installMetaMask && <InstallMetamask />}
+
+                {!installMetaMask && !!currentAddress && (
+                  <>
+                    {network} &nbsp;
+                    <Link className="" to="/profile">
+                      {username || short(currentAddress)}
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="content-wrapper mb-l">
@@ -207,7 +213,10 @@ const App: React.FC = () => {
             <button className="menu__item" onClick={() => mintE20(5)}>
               Mint TUSD
             </button> */}
-            <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
+            <button
+              className="menu__item"
+              onClick={() => advanceTime(24 * 60 * 60)}
+            >
               Advance time
             </button>
           </div>
