@@ -43,7 +43,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const web3Modal = useMemo(() => {
     return typeof window !== "undefined"
       ? new Web3Modal({
-          cacheProvider: false,
+          cacheProvider: true,
           providerOptions, // required
         })
       : null;
@@ -77,6 +77,12 @@ export const UserProvider: React.FC = ({ children }) => {
       return Promise.resolve(web3p);
     }
   }, [web3Modal]);
+
+  useEffect(() => {
+    if (web3Modal && web3Modal.cachedProvider) {
+      connect()
+    }
+  }, [connect, web3Modal])
 
   // change account
   useEffect(() => {
