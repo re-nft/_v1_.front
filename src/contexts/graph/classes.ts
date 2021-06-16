@@ -4,7 +4,7 @@ import { ERC1155 } from "../../hardhat/typechain/ERC1155";
 import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
 import { parseLending, parseRenting } from "./utils";
 import { BigNumber, ethers } from "ethers";
-import { EtherscanProvider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC721__factory } from "../../contracts/ERC721__factory";
 import { ERC1155__factory } from "../../contracts/ERC1155__factory";
 import { decimalToPaddedHexString } from "../../utils";
@@ -122,10 +122,10 @@ class Nft {
       // provider will return constants functions (readonly) version of contract
       // but we need to guess the network , aka localhost/ropsten to fetch data
       // also it's really bad that API_KEY is needed to do query with provider
-      this.signer ||
-        new EtherscanProvider(
-          process.env.REACT_APP_NO_WALLET_PROVIDER,
-          process.env.REACT_APP_NO_WALLET_API_KEY
+      // this won't work on other network than localhost or mainnet
+      this.signer || 
+        new JsonRpcProvider(
+          process.env.REACT_APP_PROVIDER_URL
         )
     );
     this._contract = _contract;

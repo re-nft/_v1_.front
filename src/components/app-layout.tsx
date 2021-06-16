@@ -140,10 +140,7 @@ const App: React.FC = () => {
   //   [E721, E721B, E1155, E1155B]
   // );
 
-  const networkName =
-    network !== process.env.REACT_APP_NO_WALLET_PROVIDER
-      ? `Wrong network! Please switch to ${network}`
-      : network;
+
   return (
     <Layout>
       <Router>
@@ -161,7 +158,7 @@ const App: React.FC = () => {
 
                 {!installMetaMask && !!currentAddress && (
                   <>
-                    {networkName} &nbsp;
+                    {network} &nbsp;
                     <Link className="" to="/profile">
                       {username || short(currentAddress)}
                     </Link>
