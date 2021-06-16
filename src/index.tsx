@@ -28,7 +28,7 @@ if (IS_PROD && process.env.REACT_APP_ADDRESS) {
   "REACT_APP_FIREBASE_STORAGE_BUCKET",
   "REACT_APP_FIREBASE_MESSAGING_SENDERID",
   "REACT_APP_FIREBASE_APP_ID",
-  "REACT_APP_DEFAULT_NETWORK",
+  "REACT_APP_NO_WALLET_PROVIDER",
 ].forEach((name) => {
   if (!process.env[name]) {
     throw Error(`Please provide a value for ${name} variable`);

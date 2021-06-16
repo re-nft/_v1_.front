@@ -49,7 +49,6 @@ export const UserProvider: React.FC = ({ children }) => {
       : null;
   }, [providerOptions]);
 
-  // TODO connect only works if metamask is installed, otherwise it just creates a grayed empty popup
   const connect = useCallback(async () => {
     if (web3Modal) {
       const provider = await web3Modal
@@ -80,9 +79,9 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (web3Modal && web3Modal.cachedProvider) {
-      connect()
+      connect();
     }
-  }, [connect, web3Modal])
+  }, [connect, web3Modal]);
 
   // change account
   useEffect(() => {
