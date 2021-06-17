@@ -40,7 +40,10 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
-    const address = await signer.getAddress();
+    const address = await signer.getAddress().catch(()=>{
+      // on disconnect
+      return ""
+    });
     const fetchRequest = createCancellablePromise<{
       users: { lending: LendingRaw[] }[];
     }>(
