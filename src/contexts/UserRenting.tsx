@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from "react";
 
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
@@ -14,6 +13,7 @@ import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
+import UserContext from "./UserProvider";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -30,7 +30,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
 

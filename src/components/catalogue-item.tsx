@@ -15,6 +15,7 @@ import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { Checkbox } from "./checkbox";
+import UserContext from "../contexts/UserProvider";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -43,6 +44,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
   disabled,
 }) => {
+  const { signer } = useContext(UserContext);
   const [ref, { entry }] = useIntersectionObserver();
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
@@ -58,6 +60,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const [metas] = useContext(NFTMetaContext);
   const id = nftId(nft.address, nft.tokenId);
   const meta = metas[id];
+  const noWallet = !signer;
 
   const onCheckboxClick = useCallback(() => {
     setIsChecked(!isChecked);
@@ -159,7 +162,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <Checkbox
               checked={isChecked}
               handleClick={onCheckboxClick}
-              disabled={disabled}
+              disabled={disabled || noWallet}
             ></Checkbox>
             {/* <div className="nft__checkbox">
               <div

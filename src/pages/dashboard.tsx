@@ -22,6 +22,7 @@ import { Address } from "../components/address";
 import Checkbox from "../components/checkbox";
 import { TimestampContext } from "../contexts/TimestampProvider";
 import { Button } from "../components/button";
+import UserContext from "../contexts/UserProvider";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -35,6 +36,8 @@ enum DashboardViewType {
 // TODO: so That we do not repeat This batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
+  const { signer } = useContext(UserContext);
+
   const {
     onCheckboxChange,
     handleResetLending,
@@ -138,6 +141,11 @@ export const Dashboard: React.FC = () => {
   const lendinItemsStopLendableLength = useMemo(() => {
     return lendinItemsStopLendable.length;
   }, [lendinItemsStopLendable]);
+
+  if (!signer) {
+    return <div className="center">Please connect your wallet!</div>;
+  }
+
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return <CatalogueLoader />;
 

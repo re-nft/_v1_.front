@@ -12,9 +12,9 @@ import { queryAllLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
-import { SignerContext } from "../hardhat/SymfoniContext";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
+import UserContext from "./UserProvider";
 
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
@@ -23,13 +23,12 @@ export const AvailableForRentContext = createContext<{
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
 
   const fetchRentings = useCallback(() => {
-    if (!signer || !currentAddress) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
@@ -57,6 +56,9 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
+            // empty address show all renting
+            if (!currentAddress) return true;
+
             const userNotLender = l.lenderAddress.toLowerCase() !== address;
             const userNotRenter =
               (l.renting?.renterAddress ?? "o_0").toLowerCase() !== address;

@@ -3,15 +3,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { Nft } from "../../graph/classes";
 import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import {
-  E1155Context,
-  E721Context,
-  E1155BContext,
-  E721BContext,
-  SignerContext,
-} from "../../../hardhat/SymfoniContext";
 import createCancellablePromise from "../../create-cancellable-promise";
 import usePoller from "../../../hooks/usePoller";
+import UserContext from "../../UserProvider";
+import { ContractContext } from "../../ContractsProvider";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -26,11 +21,9 @@ function range(start: number, stop: number, step: number) {
 
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { instance: e721 } = useContext(E721Context);
-  const { instance: e1155 } = useContext(E1155Context);
-  const { instance: e721b } = useContext(E721BContext);
-  const { instance: e1155b } = useContext(E1155BContext);
-  const [signer] = useContext(SignerContext);
+  const { E721, E721B, E1155, E1155B } = useContext(ContractContext);
+
+  const { signer } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -39,12 +32,16 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       if (isLoading) setIsLoading(false);
       return;
     }
-    if (!e1155 || !e721 || !e721b || !e1155b || !signer || !currentAddress)
+    if (!E1155 || !E721 || !E721B || !E1155B || !signer || !currentAddress) {
+      setIsLoading(false);
       return [];
-
+    }
     const usersNfts: Nft[] = [];
-    const e1155IDs = range(0, 1005, 1);
-
+    const E1155IDs = range(0, 1005, 1);
+    const e721 = E721.connect(signer);
+    const e721b = E721B.connect(signer);
+    const e1155 = E1155.connect(signer);
+    const e1155b = E1155B.connect(signer);
     const num721s = await e721
       .balanceOf(currentAddress)
       .catch(() => BigNumZero);
@@ -54,11 +51,13 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       .catch(() => BigNumZero);
 
     const num1155s = await e1155
-      .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
+
+      .balanceOfBatch(Array(E1155IDs.length).fill(currentAddress), E1155IDs)
       .catch(() => []);
 
     const num1155bs = await e1155b
-      .balanceOfBatch(Array(e1155IDs.length).fill(currentAddress), e1155IDs)
+
+      .balanceOfBatch(Array(E1155IDs.length).fill(currentAddress), E1155IDs)
       .catch(() => []);
 
     for (let i = 0; i < num721s.toNumber(); i++) {
@@ -90,8 +89,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     }
 
     let amountBalance = await e1155.balanceOfBatch(
-      Array(e1155IDs.length).fill(currentAddress),
-      e1155IDs
+      Array(E1155IDs.length).fill(currentAddress),
+      E1155IDs
     );
 
     for (let i = 0; i < num1155s.length; i++) {
@@ -99,7 +98,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         usersNfts.push(
           new Nft(
             e1155.address,
-            e1155IDs[i].toString(),
+            E1155IDs[i].toString(),
             amountBalance[i],
             false,
             signer
@@ -109,8 +108,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     }
 
     amountBalance = await e1155b.balanceOfBatch(
-      Array(e1155IDs.length).fill(currentAddress),
-      e1155IDs
+      Array(E1155IDs.length).fill(currentAddress),
+      E1155IDs
     );
 
     for (let i = 0; i < num1155bs.length; i++) {
@@ -118,7 +117,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         usersNfts.push(
           new Nft(
             e1155b.address,
-            e1155IDs[i].toString(),
+            E1155IDs[i].toString(),
             amountBalance[i],
             false,
             signer
@@ -130,7 +129,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       setDevNfts(usersNfts);
     }
     setIsLoading(false);
-  }, [e1155, e721, e721b, e1155b, signer, currentAddress, isLoading]);
+  }, [E1155, E721, E721B, E1155B, signer, currentAddress, isLoading]);
 
   useEffect(() => {
     const fetchRequest = createCancellablePromise(fetchAsync());

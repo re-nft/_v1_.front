@@ -1,10 +1,5 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  ProviderContext,
-  ReNFTContext,
-  Symfoni,
-} from "../hardhat/SymfoniContext";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { AvailableForRentProvider } from "./AvailableForRent";
@@ -15,45 +10,47 @@ import { UserRentingProvider } from "./UserRenting";
 import { TimestampProvider } from "./TimestampProvider";
 import { NetworkName } from "../types";
 import { SnackAlertProvider } from "./SnackProvider";
+import UserContext, { UserProvider } from "./UserProvider";
+import { ContractContext, ContractsProvider } from "./ContractsProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
-    <Symfoni>
-      <CurrentAddressProvider>
-        <GraphProvider>
-          <TransactionStateProvider>
-            <NFTMetaProvider>
-              <UserLendingProvider>
-                <UserRentingProvider>
-                  <AvailableForRentProvider>
-                    <TimestampProvider>
-                      <SnackAlertProvider>{children}</SnackAlertProvider>
-                    </TimestampProvider>
-                  </AvailableForRentProvider>
-                </UserRentingProvider>
-              </UserLendingProvider>
-            </NFTMetaProvider>
-          </TransactionStateProvider>
-        </GraphProvider>
-      </CurrentAddressProvider>
-    </Symfoni>
+    <SnackAlertProvider>
+      <UserProvider>
+        <CurrentAddressProvider>
+          <ContractsProvider>
+            <GraphProvider>
+              <TransactionStateProvider>
+                <NFTMetaProvider>
+                  <UserLendingProvider>
+                    <UserRentingProvider>
+                      <AvailableForRentProvider>
+                        <TimestampProvider>{children}</TimestampProvider>
+                      </AvailableForRentProvider>
+                    </UserRentingProvider>
+                  </UserLendingProvider>
+                </NFTMetaProvider>
+              </TransactionStateProvider>
+            </GraphProvider>
+          </ContractsProvider>
+        </CurrentAddressProvider>
+      </UserProvider>
+    </SnackAlertProvider>
   );
 };
 
 export const useContractAddress = (): string => {
-  const { instance } = useContext(ReNFTContext);
-  const [provider] = useContext(ProviderContext);
+  const { ReNFT } = useContext(ContractContext);
+  const { network } = useContext(UserContext);
   const [address, setAddress] = useState("");
 
   useEffect(() => {
     const getNetwork = async () => {
-      const network = await provider?.getNetwork();
-      const name = network?.name;
       const newAddress =
-        name === NetworkName.mainnet ? RENFT_ADDRESS : instance?.address || "";
+        network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
       if (newAddress) setAddress(newAddress);
     };
     getNetwork();
-  }, [instance, provider, address]);
+  }, [address, ReNFT?.address, network]);
   return address;
 };

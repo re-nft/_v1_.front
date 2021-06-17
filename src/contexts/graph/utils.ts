@@ -9,7 +9,7 @@ export const parseLending = (
   lending: LendingRaw,
   parsedRenting?: IRenting
 ): ILending => {
- // const paymentToken = parsePaymentToken(lending.paymentToken);
+  // const paymentToken = parsePaymentToken(lending.paymentToken);
   // const number =
   //   paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
   //     ? DP9

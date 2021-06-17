@@ -28,3 +28,8 @@ yarn-error.log*
 .todo
 .todo.swp
 .husky
+
+#ignore symfoni
+src/hardhat/SymfoniContext.tsx
+src/hardhat/typechain/factories/**/*.tsx
+src/hardhat/typechain/factories/**/*.ts

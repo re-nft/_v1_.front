@@ -3,7 +3,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
-import { SignerContext } from "../hardhat/SymfoniContext";
+import UserContext from "../contexts/UserProvider";
 import { getReNFT } from "../services/get-renft-instance";
 
 export type ReturnNft = {
@@ -17,7 +17,7 @@ export type ReturnNft = {
 export const useReturnIt = (): ((
   nfts: ReturnNft[]
 ) => Promise<void | boolean>) => {
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
   const { setError } = useContext(SnackAlertContext);

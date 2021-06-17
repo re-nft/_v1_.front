@@ -17,8 +17,10 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useStopLend } from "../../../hooks/useStopLend";
 import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../../../contexts/UserLending";
+import UserContext from "../../../contexts/UserProvider";
 
 const UserCurrentlyLending: React.FC = () => {
+  const { signer } = useContext(UserContext);
   const {
     checkedItems,
     handleReset: batchHandleReset,
@@ -80,6 +82,10 @@ const UserCurrentlyLending: React.FC = () => {
     },
     [onCheckboxChange]
   );
+
+  if (!signer) {
+    return <div className="center">Please connect your wallet!</div>;
+  }
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
     return <div className="center">You are not lending anything yet</div>;
