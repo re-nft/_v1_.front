@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
+
 import { SignerContext } from "../hardhat/SymfoniContext";
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
