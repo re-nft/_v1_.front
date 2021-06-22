@@ -16,20 +16,14 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short } from "../utils";
+import { short, advanceTime } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import {
-  E721Context,
-  E721BContext,
-  E1155Context,
-  E1155BContext,
-  WETHContext,
-  DAIContext,
-  USDCContext,
-  USDTContext,
-  TUSDContext,
-} from "../hardhat/SymfoniContext";
+
 import createDebugger from "debug";
+// import { ContractContext } from "../contexts/ContractsProvider";
+import UserContext from "../contexts/UserProvider";
+import { Button } from "./button";
+import { ContractContext } from "../contexts/ContractsProvider";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -58,20 +52,91 @@ const ROUTES = [
     name: "FAQ",
   },
 ];
-
+const InstallMetamask = () => {
+  return (
+    <div id="installMetaMask" className="cjAFRf web3modal-provider-wrapper">
+      <a
+        href="https://metamask.io/"
+        target="_blank"
+        className="cjAFRf web3modal-provider-container"
+        rel="noreferrer"
+      >
+        <div className="jMhaxE web3modal-provider-icon">
+          <img src="/metamask.svg" alt="MetaMask" width="32px" height="32px" />
+        </div>
+        <div className="bktcUM sc-web3modal-provider-name mt-0">
+          Install MetaMask
+        </div>
+      </a>
+    </div>
+  );
+};
 const App: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
+  const { network, connect } = useContext(UserContext);
   const { userData } = useContext(GraphContext);
-  const { instance: e721 } = useContext(E721Context);
-  const { instance: e721b } = useContext(E721BContext);
-  const { instance: e1155 } = useContext(E1155Context);
-  const { instance: e1155b } = useContext(E1155BContext);
-  const { instance: weth } = useContext(WETHContext);
-  const { instance: dai } = useContext(DAIContext);
-  const { instance: usdc } = useContext(USDCContext);
-  const { instance: usdt } = useContext(USDTContext);
-  const { instance: tusd } = useContext(TUSDContext);
+
   const [username, setUsername] = useState<string>();
+
+  const installMetaMask = !(window.web3 || window.ethereum);
+
+  const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
+    useContext(ContractContext);
+  const mintE20 = useCallback(
+    async (e20: number) => {
+      switch (e20) {
+        case 1:
+          if (!WETH) return;
+          await (await WETH.faucet()).wait();
+          break;
+        case 2:
+          if (!DAI) return;
+          await (await DAI.faucet()).wait();
+          break;
+        case 3:
+          if (!USDC) return;
+          await (await USDC.faucet()).wait();
+          break;
+        case 4:
+          if (!USDT) return;
+          await (await USDT.faucet()).wait();
+          break;
+        case 5:
+          if (!TUSD) return;
+          await (await TUSD.faucet()).wait();
+          break;
+      }
+    },
+    [DAI, TUSD, USDC, USDT, WETH]
+  );
+  const mintNFT = useCallback(
+    async (nft: number) => {
+      switch (nft) {
+        case 0:
+          if (!E721) return;
+          await (await E721.faucet()).wait();
+          break;
+        case 1:
+          if (!E721B) return;
+          await (await E721B.faucet()).wait();
+          break;
+        case 2:
+          if (!E1155) return;
+          // @ts-ignore
+          await (await E1155.faucet(10)).wait();
+          break;
+        case 3:
+          if (!E1155B) return;
+          // @ts-ignore
+          await (await E1155B.faucet(10)).wait();
+          break;
+        default:
+          debug("unknown NFT");
+          return;
+      }
+    },
+    [E721, E721B, E1155, E1155B]
+  );
 
   useEffect(() => {
     if (userData?.name !== "") {
@@ -79,72 +144,31 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  const mintE20 = useCallback(
-    async (e20: number) => {
-      switch (e20) {
-        case 1:
-          if (!weth) return;
-          await (await weth.faucet()).wait();
-          break;
-        case 2:
-          if (!dai) return;
-          await (await dai.faucet()).wait();
-          break;
-        case 3:
-          if (!usdc) return;
-          await (await usdc.faucet()).wait();
-          break;
-        case 4:
-          if (!usdt) return;
-          await (await usdt.faucet()).wait();
-          break;
-        case 5:
-          if (!tusd) return;
-          await (await tusd.faucet()).wait();
-          break;
-      }
-    },
-    [dai, tusd, usdc, usdt, weth]
-  );
-  const mintNFT = useCallback(
-    async (nft: number) => {
-      switch (nft) {
-        case 0:
-          if (!e721) return;
-          await (await e721.faucet()).wait();
-          break;
-        case 1:
-          if (!e721b) return;
-          await (await e721b.faucet()).wait();
-          break;
-        case 2:
-          if (!e1155) return;
-          await (await e1155.faucet(10)).wait();
-          break;
-        case 3:
-          if (!e1155b) return;
-          await (await e1155b.faucet(10)).wait();
-          break;
-        default:
-          debug("unknown NFT");
-          return;
-      }
-    },
-    [e721, e721b, e1155, e1155b]
-  );
-
-
   return (
     <Layout>
       <Router>
         <div className="content-wrapper mb-l">
           <div className="header">
             <div className="header__logo"></div>
-            <div className="header__user">
-              <Link className="" to="/profile">
-                {username || short(currentAddress)}
-              </Link>
-            </div>
+            {!installMetaMask && !currentAddress ? (
+              <Button
+                handleClick={connect}
+                description="Please connect your wallet!"
+              />
+            ) : (
+              <div className="header__user">
+                {installMetaMask && <InstallMetamask />}
+
+                {!installMetaMask && !!currentAddress && (
+                  <>
+                    {network} &nbsp;
+                    <Link className="" to="/profile">
+                      {username || short(currentAddress)}
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="content-wrapper mb-l">
@@ -164,38 +188,52 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          <button className="menu__item" onClick={() => mintNFT(0)}>
-            Mint 721A
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(1)}>
-            Mint 721B
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(2)}>
-            Mint 1155A
-          </button>
-          <button className="menu__item" onClick={() => mintNFT(3)}>
-            Mint 1155B
-          </button>
+          {network !== "homestead" && network !== "local" && (
+            <>
+              <button className="menu__item" onClick={() => mintNFT(0)}>
+                Mint 721A
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(1)}>
+                Mint 721B
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(2)}>
+                Mint 1155A
+              </button>
+              <button className="menu__item" onClick={() => mintNFT(3)}>
+                Mint 1155B
+              </button>
+            </>
+          )}
+
           {/* payment token faucets */}
           <div>
-            <button className="menu__item" onClick={() => mintE20(1)}>
-              Mint WETH
-            </button>
-            <button className="menu__item" onClick={() => mintE20(2)}>
-              Mint DAI
-            </button>
-            <button className="menu__item" onClick={() => mintE20(3)}>
-              Mint USDC
-            </button>
-            <button className="menu__item" onClick={() => mintE20(4)}>
-              Mint USDT
-            </button>
-            <button className="menu__item" onClick={() => mintE20(5)}>
-              Mint TUSD
-            </button>
-            {/* <button className="menu__item" onClick={() => advanceTime(24 * 60 * 60 )}>
-              Advance time
-            </button> */}
+            {network !== "homestead" && network !== "local" && (
+              <>
+                <button className="menu__item" onClick={() => mintE20(1)}>
+                  Mint WETH
+                </button>
+                <button className="menu__item" onClick={() => mintE20(2)}>
+                  Mint DAI
+                </button>
+                <button className="menu__item" onClick={() => mintE20(3)}>
+                  Mint USDC
+                </button>
+                <button className="menu__item" onClick={() => mintE20(4)}>
+                  Mint USDT
+                </button>
+                <button className="menu__item" onClick={() => mintE20(5)}>
+                  Mint TUSD
+                </button>
+              </>
+            )}
+            {network === "local" && (
+              <button
+                className="menu__item"
+                onClick={() => advanceTime(24 * 60 * 60)}
+              >
+                Advance time
+              </button>
+            )}
           </div>
         </div>
         {/* CONTENT */}

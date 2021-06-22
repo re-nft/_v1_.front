@@ -19,8 +19,10 @@ import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { UserRentingContext } from "../../../contexts/UserRenting";
 import { usePageController } from "../../../controller/page-controller";
 import { nftReturnIsExpired } from "../../../utils";
+import UserContext from "../../../contexts/UserProvider";
 
 const UserRentings: React.FC = () => {
+  const { signer } = useContext(UserContext);
   const {
     checkedItems,
     handleReset: handleBatchReset,
@@ -72,6 +74,9 @@ const UserRentings: React.FC = () => {
     [onCheckboxChange]
   );
 
+  if (!signer) {
+    return <div className="center">Please connect your wallet!</div>;
+  }
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }

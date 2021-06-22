@@ -6,7 +6,7 @@ import { Nft, Renting } from "../contexts/graph/classes";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
-import { ProviderContext } from "../hardhat/SymfoniContext";
+import UserContext from "../contexts/UserProvider";
 import { ReturnNft, useReturnIt } from "../hooks/useReturnIt";
 import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
@@ -30,7 +30,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
-  const [provider] = useContext(ProviderContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const { setError } = useContext(SnackAlertContext);
 
   useEffect(() => {

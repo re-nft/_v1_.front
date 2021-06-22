@@ -55,11 +55,11 @@ const isInteger = (field: string | number): boolean => {
 function is4Digits(x: number | string) {
   try {
     // precision up to 16 digits after
-    const [_, b] = x.toString().split('.');
-    if(!b) return true;
-    const reminder = b.toString().slice(4)
+    const [_, b] = x.toString().split(".");
+    if (!b) return true;
+    const reminder = b.toString().slice(4);
     if (!reminder) return true;
-    return reminder.replaceAll('0', '').length < 1
+    return reminder.replaceAll("0", "").length < 1;
   } catch (e) {
     return false;
   }
@@ -138,7 +138,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         error[fieldName] =
           "borrow price only accepts up to 4 fractional digits";
       }
-      
+
       fieldName = "nftPrice";
       field = input[fieldName];
       if (typeof field === "undefined") {

@@ -1,12 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { CurrentAddressContext } from "../hardhat/SymfoniContext";
+import UserContext from "./UserProvider";
 
 export const CurrentAddressWrapper = createContext<string>("");
 
 CurrentAddressWrapper.displayName = "CurrentAddressWrapper";
 
 export const CurrentAddressProvider: React.FC = ({ children }) => {
-  const [address] = useContext(CurrentAddressContext);
+  const { address } = useContext(UserContext);
   const [newAddress, setNewAddress] = useState(address);
   useEffect(() => {
     if (process.env.REACT_APP_ADDRESS) {

@@ -29,7 +29,7 @@ interface E1155BInterface extends ethers.utils.Interface {
     "award()": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "faucet(uint256)": FunctionFragment;
+    "faucet()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -55,10 +55,7 @@ interface E1155BInterface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     values: [string[], BigNumberish[]]
   ): string;
-  encodeFunctionData(
-    functionFragment: "faucet",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "faucet", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
@@ -228,12 +225,10 @@ export class E1155B extends Contract {
     ): Promise<[BigNumber[]]>;
 
     faucet(
-      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "faucet(uint256)"(
-      _amount: BigNumberish,
+    "faucet()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -368,12 +363,10 @@ export class E1155B extends Contract {
   ): Promise<BigNumber[]>;
 
   faucet(
-    _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "faucet(uint256)"(
-    _amount: BigNumberish,
+  "faucet()"(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -503,12 +496,9 @@ export class E1155B extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    faucet(_amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    faucet(overrides?: CallOverrides): Promise<void>;
 
-    "faucet(uint256)"(
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    "faucet()"(overrides?: CallOverrides): Promise<void>;
 
     isApprovedForAll(
       account: string,
@@ -692,12 +682,10 @@ export class E1155B extends Contract {
     ): Promise<BigNumber>;
 
     faucet(
-      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "faucet(uint256)"(
-      _amount: BigNumberish,
+    "faucet()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -833,12 +821,10 @@ export class E1155B extends Contract {
     ): Promise<PopulatedTransaction>;
 
     faucet(
-      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "faucet(uint256)"(
-      _amount: BigNumberish,
+    "faucet()"(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
