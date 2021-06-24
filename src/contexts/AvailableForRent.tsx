@@ -15,6 +15,7 @@ import createCancellablePromise from "./create-cancellable-promise";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
+import { usePrevious } from "../hooks/usePrevious";
 
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
@@ -27,6 +28,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
+  const previousAddress = usePrevious(currentAddress);
 
   const fetchRentings = useCallback(() => {
     if (!process.env.REACT_APP_RENFT_API) {
@@ -67,8 +69,6 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           .map((lending) => {
             return new Lending(lending, signer);
           });
-        // TODO only update if changed
-
         const normalizedLendings = nfts.map((l) => l.toJSON());
         const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
 
@@ -76,19 +76,24 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           ignoreWhitespace: true,
         });
         //const difference = true;
-        if (
+          // we need to update the signer if currentAddress is non-null
+        if(currentAddress !== previousAddress){
+          setNfts(lendingsReNFT);
+        }
+        else if (
           difference &&
           difference[1] &&
           (difference[1].added || difference[1].removed)
         ) {
           setNfts(lendingsReNFT);
         }
+      
       })
       .finally(() => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currentAddress, nfts, signer]);
+  }, [currentAddress, nfts, signer, previousAddress]);
 
   useEffect(() => {
     fetchRentings();

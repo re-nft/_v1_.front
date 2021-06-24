@@ -33,7 +33,7 @@ const UserContext = createContext<UserContextType>(DefaultUser);
 
 export const UserProvider: React.FC = ({ children }) => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
-  const [provider, setProvider] = useState<unknown>();
+  const [provider, setProvider] = useState<any>();
   const [network, setNetworkName] = useState<string>("");
   const [web3Provider, setWeb3Provider] =
     useState<ethers.providers.Web3Provider>();
@@ -107,7 +107,7 @@ export const UserProvider: React.FC = ({ children }) => {
         }
       })
       .catch((error: unknown) => {
-        console.warn(error)
+        console.warn(error);
       });
     return request.cancel;
   }, [address, network, signer]);
@@ -123,8 +123,8 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const accountsChanged = useCallback(
     (arg) => {
-      if (arg.lengths > 0) connect(false);
-      if (arg.lengts === 0) {
+      if (arg.length > 0) connect(false);
+      if (arg.length === 0) {
         // disconnect case
         if (permissions.length > 0) setPermissions([]);
         if (signer) setSigner(undefined);
@@ -143,24 +143,15 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // change account
   useEffect(() => {
-    if (provider) {
-      // @ts-ignore
-      // web3modal is untyped...
-      // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
-      // @ts-ignore
-      provider.on("accountsChanged", accountsChanged);
-      // @ts-ignore
-      provider.on("chainChanged", chainChanged);
+    if (provider && provider.addListener) {
+      provider.addListener("accountsChanged", accountsChanged);
+      provider.addListener("chainChanged", chainChanged);
     }
     return () => {
       // @ts-ignore
-      if (provider && typeof provider.off !== "undefined") {
-        // web3modal is untyped...
-        // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
-        // @ts-ignore
-        provider.off("accountsChanged", accountsChanged);
-        // @ts-ignore
-        provider.off("chainChanged", chainChanged);
+      if (provider && provider.removeListener) {
+        provider.removeListener("accountsChanged", accountsChanged);
+        provider.removeListener("chainChanged", chainChanged);
       }
     };
   }, [accountsChanged, chainChanged, provider]);

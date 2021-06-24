@@ -136,14 +136,14 @@ export const useStartRent = (): {
       debug("addresses", addresses);
       debug(
         "tokenIds",
-        tokenIds.map((t) => t.toHexString())
+        nfts.map((nft) => nft.tokenId)
       );
       debug(
         "lendingIds",
-        lendingIds.map((t) => t.toHexString())
+        nfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-
+      debug("contractAddress", contractAddress)
       return await renft
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
         .then((tx) => {
@@ -159,7 +159,7 @@ export const useStartRent = (): {
           debug("Error with rent", e);
         });
     },
-    [renft, setError, setHash]
+    [contractAddress, renft, setError, setHash]
   );
 
   return {

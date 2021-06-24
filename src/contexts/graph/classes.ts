@@ -73,8 +73,8 @@ class Nft {
     this._mediaURI = options?.mediaURI ?? "";
 
     if (!options?.tokenURI) {
-      const _contract = this.contract();
-      const uriSelector = isERC721 ? _contract.tokenURI : _contract.uri;
+      const contract = this.contract();
+      const uriSelector = isERC721 ? contract.tokenURI : contract.uri;
 
       uriSelector.bind(this);
 
@@ -104,7 +104,6 @@ class Nft {
   _meta: NftToken["meta"] | undefined;
   _tokenURI: string;
   _mediaURI: string;
-  _contract: ERC721 | ERC1155 | undefined;
   [k: string]: unknown;
 
   /**
@@ -113,10 +112,8 @@ class Nft {
    * @returns ERC721 or ERC1155 instance that can be signed by the currentAddress
    */
   contract = (): ERC721 | ERC1155 => {
-    if (this._contract) return this._contract;
-
     const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
-    const _contract: ERC721 | ERC1155 = instantiator.connect(
+    const contract: ERC721 | ERC1155 = instantiator.connect(
       this.address,
       // this is troublesome, if signer is null (not connected the wallet then we need to pass provider in)
       // provider will return constants functions (readonly) version of contract
@@ -128,13 +125,11 @@ class Nft {
           process.env.REACT_APP_PROVIDER_URL
         )
     );
-    this._contract = _contract;
-    return _contract;
+    return contract;
   };
 
   loadTokenURI = async (): Promise<string | undefined> => {
     if (this._tokenURI) return this._tokenURI;
-    if (!this._contract) this.contract();
 
     try {
       if (this.isERC721) {
