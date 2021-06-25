@@ -4,6 +4,7 @@ import { PaymentToken } from "../types";
 import { Lending } from "../contexts/graph/classes";
 
 const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
+  const days = parseInt(String(nft.lending.maxRentDuration), 10);
   return (
     <>
       <NumericField
@@ -13,8 +14,8 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
       />
       <NumericField
         text="Max duration"
-        value={String(parseInt(String(nft.lending.maxRentDuration), 10))}
-        unit="days"
+        value={String(days)}
+        unit={days > 1 ? "days" : "day"}
       />
       <NumericField
         text="Collateral"

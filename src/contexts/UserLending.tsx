@@ -1,6 +1,12 @@
 import request from "graphql-request";
-import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
-import { SignerContext } from "../hardhat/SymfoniContext";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  useEffect,
+} from "react";
+
 import { timeItAsync } from "../utils";
 import createCancellablePromise from "./create-cancellable-promise";
 import { Lending } from "./graph/classes";
@@ -8,6 +14,7 @@ import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
+import UserContext from "./UserProvider";
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -21,7 +28,7 @@ export const UserLendingContext = createContext<UserLendingContextType>({
 UserLendingContext.displayName = "UserLendingContext";
 
 export const UserLendingProvider: React.FC = ({ children }) => {
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
 
@@ -33,7 +40,10 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
     const subgraphURI = process.env.REACT_APP_RENFT_API;
     setLoading(true);
-    const address = await signer.getAddress();
+    const address = await signer.getAddress().catch(() => {
+      // on disconnect
+      return "";
+    });
     const fetchRequest = createCancellablePromise<{
       users: { lending: LendingRaw[] }[];
     }>(
@@ -58,6 +68,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         if (response && response.users && response.users[0]) {
           const lendings = Object.values(response.users[0].lending)
             .filter((v) => v != null)
+            .filter((v) => !v.collateralClaimed)
             .map((lending) => {
               return new Lending(lending, signer);
             });

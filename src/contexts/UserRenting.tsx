@@ -1,5 +1,11 @@
-import React, { createContext, useState, useContext, useCallback, useEffect } from "react";
-import { SignerContext } from "../hardhat/SymfoniContext";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useCallback,
+  useEffect,
+} from "react";
+
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import createCancellablePromise from "./create-cancellable-promise";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
@@ -7,6 +13,7 @@ import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
+import UserContext from "./UserProvider";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -23,7 +30,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const [signer] = useContext(SignerContext);
+  const { signer } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
 
@@ -51,18 +58,18 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             if (renting.length > 0) setRentings([]);
             return;
           }
-          const _renting: Renting[] = [];
-          r.forEach((r) => {
-            _renting.push(
-              new Renting(
-                r.lending.nftAddress,
-                r.lending.tokenId,
-                parseLending(r.lending),
-                r,
-                signer
-              )
+          const _renting: Renting[] = r
+            .filter((v) => v.lending && !v.lending.collateralClaimed)
+            .map(
+              (r) =>
+                new Renting(
+                  r.lending.nftAddress,
+                  r.lending.tokenId,
+                  parseLending(r.lending),
+                  r,
+                  signer
+                )
             );
-          });
           const normalizedLendings = renting.map((lending) => lending.toJSON());
           const normalizedLendingNew = _renting.map((lending) =>
             lending.toJSON()

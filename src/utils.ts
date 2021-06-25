@@ -1,10 +1,12 @@
-import { ethers, BigNumber, BigNumberish, providers } from "ethers";
+import { ethers, BigNumberish, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
 import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
+import moment from "moment";
+import { Renting } from "./contexts/graph/classes";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -128,11 +130,7 @@ export const decimalToPaddedHexString = (
 };
 
 //TODO:eniko do we need this
-export const unpackPrice = (
-  price: BigNumberish,
-  scale: BigNumber,
-  divide: number
-): number => {
+export const unpackPrice = (price: BigNumberish): number => {
   // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
   const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
     2
@@ -141,11 +139,13 @@ export const unpackPrice = (
   let decimal = parseInt(numHex.slice(4), 16);
   if (whole > 9999) whole = 9999;
   if (decimal > 9999) decimal = 9999;
-  const w = BigNumber.from(whole).mul(scale);
-  const d = BigNumber.from(decimal).mul(scale.div(10_000));
-  const _price = w.add(d);
-  // * think of a neat way to divide by 1e18
-  return Number(_price) / divide;
+  const number = parseFloat(`${whole}.${decimal}`);
+  return number;
+  // const w = BigNumber.from(whole).mul(scale);
+  // const d = BigNumber.from(decimal).mul(scale.div(10_000));
+  // const _price = w.add(d);
+  // // * think of a neat way to divide by 1e18
+  // return Number(_price) / divide;
 };
 
 export const packPrice = (price: number): string => {
@@ -296,4 +296,14 @@ export const getDistinctItems = <
     return acc;
   }, []);
   return distinctItems;
+};
+
+export const nftReturnIsExpired = (rent: Renting): boolean => {
+  const isExpired =
+    moment(rent.renting.rentedAt * 1000)
+      .add(rent.renting.rentDuration, "days")
+      .unix() *
+      1000 <
+    moment.now();
+  return isExpired;
 };

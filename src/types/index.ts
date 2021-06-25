@@ -21,9 +21,9 @@ export enum TransactionStateEnum {
 }
 
 export enum NetworkName {
-  mainnet = 'mainnet',
-  ropsten = 'ropsten',
-  localhost = 'localhost'
+  mainnet = "homestead", // this is called homestead
+  ropsten = "ropsten",
+  localhost = "localhost",
 }
 
 export type Path = string[];

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback , useContext} from "react";
+import { useState, useMemo, useCallback, useContext } from "react";
 
 import {
   Nft,
@@ -119,11 +119,9 @@ export const useBatchItems: () => BatchContextType = () => {
   // remove provided items or all the lendings
   const handleResetLending = useCallback(
     (lending?: string[]) => {
-      if (Object.keys(checkedItems).length > 0){
-        const items = filter(checkedItems, lending, false)
-        console.log('items', items)
+      if (Object.keys(checkedItems).length > 0) {
+        const items = filter(checkedItems, lending, false);
         setCheckedItems(items);
-
       }
     },
     [checkedItems]

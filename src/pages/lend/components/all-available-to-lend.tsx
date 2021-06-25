@@ -14,8 +14,10 @@ import Pagination from "../../../components/pagination";
 import { usePageController } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
+import UserContext from "../../../contexts/UserProvider";
 
 const Lendings: React.FC = () => {
+  const { signer } = useContext(UserContext);
   const { checkedItems, handleReset, onCheckboxChange, checkedNftItems } =
     useBatchItems();
   const {
@@ -63,6 +65,10 @@ const Lendings: React.FC = () => {
     },
     [onCheckboxChange]
   );
+
+  if (!signer) {
+    return <div className="center">Please connect your wallet!</div>;
+  }
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;

@@ -52,6 +52,18 @@ const isInteger = (field: string | number): boolean => {
   }
 };
 
+function is4Digits(x: number | string) {
+  try {
+    // precision up to 16 digits after
+    const [_, b] = x.toString().split(".");
+    if (!b) return true;
+    const reminder = b.toString().slice(4);
+    if (!reminder) return true;
+    return reminder.replaceAll("0", "").length < 1;
+  } catch (e) {
+    return false;
+  }
+}
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -118,9 +130,13 @@ export const LendForm: React.FC<LendFormProps> = ({
       if (typeof field === "undefined") {
         error[fieldName] = "please specify the borrow price";
       } else if (field < 0.0001) {
-        error[fieldName] = "borrow price must be greater than 0";
+        error[fieldName] =
+          "borrow price must be greater than or equal to 0.0001";
       } else if (field > 9999.9999) {
-        error[fieldName] = "borrow price must be less then 1000";
+        error[fieldName] = "borrow price must be less then or equal 9999.9999";
+      } else if (!is4Digits(field)) {
+        error[fieldName] =
+          "borrow price only accepts up to 4 fractional digits";
       }
 
       fieldName = "nftPrice";
@@ -128,9 +144,11 @@ export const LendForm: React.FC<LendFormProps> = ({
       if (typeof field === "undefined") {
         error[fieldName] = "please specify collateral";
       } else if (field < 0.0001) {
-        error[fieldName] = "collateral must be greater than 0";
+        error[fieldName] = "collateral must be greater than or equal to 0.0001";
       } else if (field > 9999.9999) {
-        error[fieldName] = "collateral must be less then 1000";
+        error[fieldName] = "collateral must be less then or equal 9999.9999";
+      } else if (!is4Digits(field)) {
+        error[fieldName] = "collateral only accepts up to 4 fractional digits";
       }
 
       fieldName = "pmToken";
@@ -247,8 +265,8 @@ const ModalDialogSection: React.FC<{
   touched: FormikTouched<LendInput> | null;
   errors: FormikErrors<LendInput> | null;
 }> = ({ lendingInput, index, handleChange, handleBlur, errors, touched }) => {
-  const only1Item =
-    Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
+  const amount = Number(lendingInput.nft.amount);
+  const only1Item = amount === 1 || lendingInput.nft.isERC721;
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>

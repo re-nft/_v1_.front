@@ -134,36 +134,36 @@ export const queryAllRenft = (): string => {
 };
 
 // reNFT's query to pull all user's lendings and rentings
-export const queryUserRenft = (user: string): string => {
-  return `{
-    user(id: "${user.toString().toLowerCase()}") {
-      id
-      lending {
-        id
-        nftAddress
-        tokenId
-        lentAmount
-        isERC721
-        renting {
-          id
-        }
-      }
-      renting {
-        id
-        renterAddress
-        rentDuration
-        rentedAt
-        lending {
-          id
-          nftAddress
-          tokenId
-          lentAmount
-          isERC721
-        }
-      }
-    }
-  }`;
-};
+// export const queryUserRenft = (user: string): string => {
+//   return `{
+//     user(id: "${user.toString().toLowerCase()}") {
+//       id
+//       lending {
+//         id
+//         nftAddress
+//         tokenId
+//         lentAmount
+//         isERC721
+//         renting {
+//           id
+//         }
+//       }
+//       renting {
+//         id
+//         renterAddress
+//         rentDuration
+//         rentedAt
+//         lending {
+//           id
+//           nftAddress
+//           tokenId
+//           lentAmount
+//           isERC721
+//         }
+//       }
+//     }
+//   }`;
+// };
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
@@ -210,6 +210,7 @@ export const queryUserRentingRenft = (user: string): string => {
           lenderAddress
           maxRentDuration
           isERC721
+          collateralClaimed
         }
       }
     }

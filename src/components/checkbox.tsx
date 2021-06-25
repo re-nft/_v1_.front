@@ -10,34 +10,36 @@ type CheckboxProps = {
 };
 const style = {
   root: {
-    '& input:disabled + .MuiSvgIcon-root': {
-      '& .front': {
-        fill: '#9CA3AF'
+    padding: "0",
+    width: "32px",
+    height: "32px",
+    "& input:disabled + .MuiSvgIcon-root": {
+      "& .front": {
+        fill: "#9CA3AF",
       },
-      '& .shadow': {
-        fill: '#4B5563'
-      }
-    }
+      "& .shadow": {
+        fill: "#4B5563",
+      },
+    },
   },
 };
 const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
-const Checkbox: React.FC<CheckboxProps> = ({
+export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
   handleClick,
   disabled,
 }) => {
   return (
-    <>
-      <StyledCheckbox
-        checked={checked}
-        checkedIcon={<CheckedIcon/>}
-        icon={<CheckIcon/>}
-        onChange={handleClick}
-        disableRipple
-        disabled={disabled}
-      />
-    </>
+    <StyledCheckbox
+      checked={checked}
+      checkedIcon={<CheckedIcon />}
+      icon={<CheckIcon />}
+      onChange={handleClick}
+      disableRipple
+      disabled={disabled}
+      size="medium"
+    />
   );
 };
 

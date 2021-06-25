@@ -15,10 +15,12 @@ import Pagination from "../../../components/pagination";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { usePageController } from "../../../controller/page-controller";
-import {AvailableForRentContext} from "../../../contexts/AvailableForRent"
+import { AvailableForRentContext } from "../../../contexts/AvailableForRent";
+import UserContext from "../../../contexts/UserProvider";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
+  const { signer } = useContext(UserContext);
   const { allAvailableToRent, isLoading } = useContext(AvailableForRentContext);
   const {
     checkedItems,
@@ -36,6 +38,7 @@ const AvailableToRent: React.FC = () => {
   } = usePageController<Lending>();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
+  const noWallet = !signer;
 
   useEffect(() => {
     onPageControllerInit(allAvailableToRent.filter(isLending));
@@ -98,7 +101,7 @@ const AvailableToRent: React.FC = () => {
                 onClick={handleBatchModalOpen}
                 nft={nft}
                 title="Rent Now"
-                disabled={isChecked}
+                disabled={isChecked || noWallet}
               />
             </CatalogueItem>
           );
@@ -130,4 +133,3 @@ const AvailableToRent: React.FC = () => {
 };
 
 export default React.memo(AvailableToRent);
-

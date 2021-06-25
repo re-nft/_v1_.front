@@ -72,7 +72,7 @@ const Pagination: React.FC<PaginationProps> = ({
   }, [currentPageNumber]);
 
   // hide pagination if page number less than 2
-  if(totalPages < 2) return null;
+  if (totalPages < 2) return null;
 
   return (
     <>

@@ -1,23 +1,23 @@
 import { ethers } from "ethers";
 
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
-import { DP18, DP9 } from "../../consts";
+//import { DP18, DP9 } from "../../consts";
 import { unpackPrice, parsePaymentToken } from "../../utils";
-import { PaymentToken } from "../../types";
+//import { PaymentToken } from "../../types";
 
 export const parseLending = (
   lending: LendingRaw,
   parsedRenting?: IRenting
 ): ILending => {
-  const paymentToken = parsePaymentToken(lending.paymentToken);
-  const number =
-    paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-      ? DP9
-      : DP18;
-  const precision =
-    paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-      ? 10e9
-      : 10e18;
+  // const paymentToken = parsePaymentToken(lending.paymentToken);
+  // const number =
+  //   paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
+  //     ? DP9
+  //     : DP18;
+  // const precision =
+  //   paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
+  //     ? 10e8
+  //     : 10e17;
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
@@ -25,8 +25,8 @@ export const parseLending = (
     lentAmount: lending.lentAmount,
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
-    dailyRentPrice: unpackPrice(lending.dailyRentPrice, number, precision),
-    nftPrice: unpackPrice(lending.nftPrice, number, precision),
+    dailyRentPrice: unpackPrice(lending.dailyRentPrice),
+    nftPrice: unpackPrice(lending.nftPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,

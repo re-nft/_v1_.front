@@ -6,14 +6,14 @@ import { TransactionHash, TransactionStateEnum } from "../types";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 
 import { sleep } from "../utils";
-import { ProviderContext } from "../hardhat/SymfoniContext";
+import UserContext from "./UserProvider";
 
 type TransactionStateType = {
   isActive: boolean; // on if there is an active transaction;
   txnState: TransactionStateEnum;
-  hash?: TransactionHash;
-  receipt?: TransactionReceipt;
-  setHash: (h: TransactionHash) => Promise<boolean>;
+  hash?: TransactionHash[];
+  receipt?: TransactionReceipt[];
+  setHash: (h: TransactionHash | TransactionHash[]) => Promise<boolean>;
 };
 
 const TransactionStateDefault: TransactionStateType = {
@@ -34,13 +34,13 @@ TransactionStateContext.displayName = "TransactionStateContext";
 // * or using state or hash when the transaction is inactive.
 // * these things ideally should be corrected
 export const TransactionStateProvider: React.FC = ({ children }) => {
-  const [provider] = useContext(ProviderContext);
+  const { web3Provider: provider } = useContext(UserContext);
   const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
   const [txnState, setTxnState] = useState<TransactionStateEnum>(
     TransactionStateEnum.PENDING
   );
-  const [receipt, setReceipt] = useState<TransactionReceipt>();
-  const [hash, _setHash] = useState<TransactionHash>();
+  const [receipt, setReceipt] = useState<TransactionReceipt[]>();
+  const [hash, _setHash] = useState<TransactionHash[]>([]);
 
   const delayedSetIsActive = useCallback(
     async (ms: number, _isActive: boolean) => {
@@ -51,7 +51,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
   );
 
   const setHash = useCallback(
-    async (h: TransactionHash) => {
+    async (h: TransactionHash | TransactionHash[]) => {
       if (!provider) {
         console.warn("cannot set transaction hash. no provider");
         return false;
@@ -63,41 +63,39 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         );
         return false;
       }
-
-      _setHash(h);
+      const hashes = Array.isArray(h) ? h : [h];
+      _setHash(hashes);
       setIsActive(true);
       setTxnState(TransactionStateEnum.PENDING);
 
       const confirmations = 1;
       const timeout = 120 * SECOND_IN_MILLISECONDS;
+
+      const transactionConfirmations = hashes.map((h) => {
+        return provider.waitForTransaction(h, confirmations, timeout);
+      });
       // blocking
-      const receipt = await provider.waitForTransaction(
-        h,
-        confirmations,
-        timeout
-      );
-      if (!receipt.status) {
-        console.warn("could not fetch the transaction status");
-        return false;
-      }
+      const receipts = await Promise.all(transactionConfirmations)
+        .then((r) => r)
+        .catch((e) => {
+          console.warn("could not fetch the transaction status");
+          return [];
+        });
+      if (receipts.length < 1) return false;
 
-      let isSuccess = false;
+      const isSuccess =
+        receipts.filter((receipt) => {
+          const status = receipt.status;
+          if (!status) return false;
+          return (
+            TransactionStateEnum[status] ===
+            TransactionStateEnum[TransactionStateEnum.SUCCESS]
+          );
+        }).length > 0;
 
-      // 0 is reverted
-      // 1 is successful
-      switch (TransactionStateEnum[receipt.status]) {
-        case TransactionStateEnum[TransactionStateEnum.SUCCESS]:
-          isSuccess = true;
-          break;
-        case TransactionStateEnum[TransactionStateEnum.FAILED]:
-          break;
-        default:
-          console.warn(`unknown transaction state: ${receipt.status}`);
-      }
-
-      setReceipt(receipt);
+      setReceipt(receipts);
       // setIsActive(false);
-      await sleep(1.5 * SECOND_IN_MILLISECONDS);
+      //await sleep(1.5 * SECOND_IN_MILLISECONDS);
 
       return isSuccess;
     },
@@ -105,7 +103,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
   );
 
   const chainSetHash = useCallback(
-    async (h: TransactionHash) => {
+    async (h: TransactionHash | TransactionHash[]) => {
       const isSuccess = await setHash(h);
       switch (isSuccess) {
         case true:
