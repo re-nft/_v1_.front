@@ -265,8 +265,8 @@ const ModalDialogSection: React.FC<{
   touched: FormikTouched<LendInput> | null;
   errors: FormikErrors<LendInput> | null;
 }> = ({ lendingInput, index, handleChange, handleBlur, errors, touched }) => {
-  const only1Item =
-    Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
+  const amount = Number(lendingInput.nft.amount);
+  const only1Item = amount === 1 || lendingInput.nft.isERC721;
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>

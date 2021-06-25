@@ -59,15 +59,17 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             return;
           }
           const _renting: Renting[] = r
-          .filter((v) => v.lending && !v.lending.collateralClaimed)          
-          .map((r) => 
-              new Renting(
-                r.lending.nftAddress,
-                r.lending.tokenId,
-                parseLending(r.lending),
-                r,
-                signer
-              ));
+            .filter((v) => v.lending && !v.lending.collateralClaimed)
+            .map(
+              (r) =>
+                new Renting(
+                  r.lending.nftAddress,
+                  r.lending.tokenId,
+                  parseLending(r.lending),
+                  r,
+                  signer
+                )
+            );
           const normalizedLendings = renting.map((lending) => lending.toJSON());
           const normalizedLendingNew = _renting.map((lending) =>
             lending.toJSON()

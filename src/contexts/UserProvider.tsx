@@ -107,7 +107,7 @@ export const UserProvider: React.FC = ({ children }) => {
         }
       })
       .catch((error: unknown) => {
-        console.warn(error)
+        console.warn(error);
       });
     return request.cancel;
   }, [address, network, signer]);

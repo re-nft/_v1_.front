@@ -33,7 +33,7 @@ export const useReturnIt = (): ((
       if (!renft) return;
       if (nfts.length < 1) return;
 
-      return await renft
+      return renft
         .returnIt(
           nfts.map((nft) => nft.address),
           nfts.map((nft) => BigNumber.from(nft.tokenId)),
