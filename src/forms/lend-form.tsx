@@ -64,6 +64,86 @@ function is4Digits(x: number | string) {
     return false;
   }
 }
+
+function amountValidation(
+  input: LendInput,
+  error: Record<string, string | undefined>,
+  amount: string
+) {
+  const fieldName = "lendAmount";
+  const field = input[fieldName];
+  if (typeof field === "undefined") {
+    error[fieldName] = "please specify amount";
+  } else if (field < 1) {
+    error[fieldName] = "amount must be greater than 1";
+  } else if (field > Number(amount)) {
+    error[fieldName] =
+      "amount must be less than equal then the total amount available";
+  } else if (isInteger(field)) {
+    error[fieldName] = "amount must be a whole number";
+  }
+}
+function maxDurationValidation(
+  input: LendInput,
+  error: Record<string, string | undefined>
+) {
+  const fieldName = "maxDuration";
+  const field = input[fieldName];
+  if (typeof field === "undefined") {
+    error[fieldName] = "please specify lend duration";
+  } else if (field < 1) {
+    error[fieldName] = "lend duration must be greater than 1";
+  } else if (field > 255) {
+    error[fieldName] = "lend duration must be less or equal than 255";
+  } else if (isInteger(field)) {
+    error[fieldName] = "maxDuration must be a whole number";
+  }
+}
+function borrowPriceValidation(
+  input: LendInput,
+  error: Record<string, string | undefined>
+) {
+  const fieldName = "borrowPrice";
+  const field = input[fieldName];
+  if (typeof field === "undefined") {
+    error[fieldName] = "please specify the borrow price";
+  } else if (field < 0.0001) {
+    error[fieldName] = "borrow price must be greater than or equal to 0.0001";
+  } else if (field > 9999.9999) {
+    error[fieldName] = "borrow price must be less then or equal 9999.9999";
+  } else if (!is4Digits(field)) {
+    error[fieldName] = "borrow price only accepts up to 4 fractional digits";
+  }
+}
+
+function nftPriceValidation(
+  input: LendInput,
+  error: Record<string, string | undefined>
+) {
+  const fieldName = "nftPrice";
+  const field = input[fieldName];
+  if (typeof field === "undefined") {
+    error[fieldName] = "please specify collateral";
+  } else if (field < 0.0001) {
+    error[fieldName] = "collateral must be greater than or equal to 0.0001";
+  } else if (field > 9999.9999) {
+    error[fieldName] = "collateral must be less then or equal 9999.9999";
+  } else if (!is4Digits(field)) {
+    error[fieldName] = "collateral only accepts up to 4 fractional digits";
+  }
+}
+function paymentTokenValidation(
+  input: LendInput,
+  error: Record<string, string | undefined>
+) {
+  const fieldName = "pmToken";
+  const field = input[fieldName];
+  if (typeof field === "undefined") {
+    error[fieldName] = "please specify payment token";
+  } else if (field < 0 || field > 5) {
+    error[fieldName] = "please specify payment token";
+  }
+}
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -100,64 +180,13 @@ export const LendForm: React.FC<LendFormProps> = ({
     );
     values.inputs.forEach((input: LendInput, index: number) => {
       const error: Record<string, string | undefined> = {};
-      let fieldName: keyof typeof input = "lendAmount";
-      let field = input[fieldName];
-      if (typeof field === "undefined") {
-        error[fieldName] = "please specify amount";
-      } else if (field < 1) {
-        error[fieldName] = "amount must be greater than 1";
-      } else if (field > Number(input.nft.amount)) {
-        error[fieldName] =
-          "amount must be less than equal then the total amount available";
-      } else if (isInteger(field)) {
-        error[fieldName] = "amount must be a whole number";
-      }
 
-      fieldName = "maxDuration";
-      field = input[fieldName];
-      if (typeof field === "undefined") {
-        error[fieldName] = "please specify lend duration";
-      } else if (field < 1) {
-        error[fieldName] = "lend duration must be greater than 1";
-      } else if (field > 255) {
-        error[fieldName] = "lend duration must be less or equal than 255";
-      } else if (isInteger(field)) {
-        error[fieldName] = "maxDuration must be a whole number";
-      }
+      amountValidation(input, error, input.nft.amount);
+      maxDurationValidation(input, error);
+      borrowPriceValidation(input, error);
+      nftPriceValidation(input, error);
+      paymentTokenValidation(input, error);
 
-      fieldName = "borrowPrice";
-      field = input[fieldName];
-      if (typeof field === "undefined") {
-        error[fieldName] = "please specify the borrow price";
-      } else if (field < 0.0001) {
-        error[fieldName] =
-          "borrow price must be greater than or equal to 0.0001";
-      } else if (field > 9999.9999) {
-        error[fieldName] = "borrow price must be less then or equal 9999.9999";
-      } else if (!is4Digits(field)) {
-        error[fieldName] =
-          "borrow price only accepts up to 4 fractional digits";
-      }
-
-      fieldName = "nftPrice";
-      field = input[fieldName];
-      if (typeof field === "undefined") {
-        error[fieldName] = "please specify collateral";
-      } else if (field < 0.0001) {
-        error[fieldName] = "collateral must be greater than or equal to 0.0001";
-      } else if (field > 9999.9999) {
-        error[fieldName] = "collateral must be less then or equal 9999.9999";
-      } else if (!is4Digits(field)) {
-        error[fieldName] = "collateral only accepts up to 4 fractional digits";
-      }
-
-      fieldName = "pmToken";
-      field = input[fieldName];
-      if (typeof field === "undefined") {
-        error[fieldName] = "please specify payment token";
-      } else if (field < 0 || field > 5) {
-        error[fieldName] = "please specify payment token";
-      }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });
     const valid = errors.filter((e) => e !== undefined).length < 1;
@@ -245,7 +274,7 @@ export const LendForm: React.FC<LendFormProps> = ({
 const voidFn = () => {
   // do nothing func
 };
-const ModalDialogSection: React.FC<{
+interface ModalDialogSectionProps {
   lendingInput: LendInput;
   handleBlur: {
     (e: React.FocusEvent<unknown>): void;
@@ -264,7 +293,16 @@ const ModalDialogSection: React.FC<{
   index: number;
   touched: FormikTouched<LendInput> | null;
   errors: FormikErrors<LendInput> | null;
-}> = ({ lendingInput, index, handleChange, handleBlur, errors, touched }) => {
+}
+
+const ModalDialogSection: React.FC<ModalDialogSectionProps> = ({
+  lendingInput,
+  index,
+  handleChange,
+  handleBlur,
+  errors,
+  touched,
+}) => {
   const amount = Number(lendingInput.nft.amount);
   const only1Item = amount === 1 || lendingInput.nft.isERC721;
   return (
