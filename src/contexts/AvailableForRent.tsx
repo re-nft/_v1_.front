@@ -15,6 +15,7 @@ import createCancellablePromise from "./create-cancellable-promise";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
+import { usePrevious } from "../hooks/usePrevious";
 
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
@@ -27,6 +28,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
+  const previousAddress = usePrevious(currentAddress)
 
   const fetchRentings = useCallback(() => {
     if (!process.env.REACT_APP_RENFT_API) {
@@ -52,7 +54,6 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           .filter((v) => !v.renting)
           .filter((v) => v != null)
           // doesn't have renting
-          .filter((v) => !v.renting)
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
@@ -75,8 +76,12 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         const difference = diffJson(normalizedLendings, normalizedLendingNew, {
           ignoreWhitespace: true,
         });
+
         //const difference = true;
-        if (
+        if(previousAddress !== currentAddress){
+          setNfts(lendingsReNFT)
+        }
+        else if (
           difference &&
           difference[1] &&
           (difference[1].added || difference[1].removed)
@@ -88,7 +93,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currentAddress, nfts, signer]);
+  }, [currentAddress, nfts, signer, previousAddress]);
 
   useEffect(() => {
     fetchRentings();
