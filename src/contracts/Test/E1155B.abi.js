@@ -265,7 +265,13 @@ module.exports = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
     "name": "faucet",
     "outputs": [],
     "stateMutability": "nonpayable",
