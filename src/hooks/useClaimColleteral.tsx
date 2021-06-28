@@ -10,7 +10,6 @@ export const useClaimColleteral = (): ((
   nfts: {
     address: string;
     tokenId: string;
-    amount: string;
     lendingId: string;
   }[]
 ) => Promise<void | boolean>) => {
@@ -30,7 +29,6 @@ export const useClaimColleteral = (): ((
       nfts: {
         address: string;
         tokenId: string;
-        amount: string;
         lendingId: string;
       }[]
     ) => {
@@ -39,7 +37,6 @@ export const useClaimColleteral = (): ((
         .claimCollateral(
           nfts.map((nft) => nft.address),
           nfts.map((nft) => BigNumber.from(nft.tokenId)),
-          nfts.map((nft) => Number(nft.amount)),
           nfts.map((nft) => BigNumber.from(nft.lendingId))
         )
         .then((tx) => {

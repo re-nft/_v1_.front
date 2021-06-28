@@ -11,7 +11,6 @@ export type ReturnNft = {
   address: string;
   tokenId: string;
   lendingId: string;
-  amount: string;
 };
 
 export const useReturnIt = (): ((
@@ -37,7 +36,6 @@ export const useReturnIt = (): ((
         .returnIt(
           nfts.map((nft) => nft.address),
           nfts.map((nft) => BigNumber.from(nft.tokenId)),
-          nfts.map((nft) => Number(nft.amount)),
           nfts.map((nft) => BigNumber.from(nft.lendingId))
         )
         .then((tx) => {

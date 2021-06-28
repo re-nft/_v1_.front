@@ -21,7 +21,6 @@ export type StartRentNft = {
   lendingId: string;
   rentDuration: string;
   paymentToken: PaymentToken;
-  amount: string;
 };
 
 export const useStartRent = (): {
@@ -131,7 +130,6 @@ export const useStartRent = (): {
       const tokenIds = nfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = nfts.map((nft) => BigNumber.from(nft.lendingId));
       const rentDurations = nfts.map((nft) => Number(nft.rentDuration));
-      const amount = nfts.map((nft) => Number(nft.amount));
 
       debug("addresses", addresses);
       debug(
@@ -145,7 +143,7 @@ export const useStartRent = (): {
       debug("rentDurations", rentDurations);
       debug("contractAddress", contractAddress);
       return await renft
-        .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
+        .rent(addresses, tokenIds, lendingIds, rentDurations)
         .then((tx) => {
           if (tx) return setHash(tx.hash);
           return Promise.resolve(false);
@@ -155,6 +153,7 @@ export const useStartRent = (): {
           return Promise.resolve(status);
         })
         .catch((e) => {
+          console.log(e);
           setError(e.message, "error");
           debug("Error with rent", e);
         });
