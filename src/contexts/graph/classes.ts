@@ -120,10 +120,7 @@ class Nft {
       // but we need to guess the network , aka localhost/ropsten to fetch data
       // also it's really bad that API_KEY is needed to do query with provider
       // this won't work on other network than localhost or mainnet
-      this.signer || 
-        new JsonRpcProvider(
-          process.env.REACT_APP_PROVIDER_URL
-        )
+      this.signer || new JsonRpcProvider(process.env.REACT_APP_PROVIDER_URL)
     );
     return contract;
   };

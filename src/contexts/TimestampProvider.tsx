@@ -46,7 +46,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
     };
   }, [getTimestamp, timeStamp]);
 
-  // this will cause a lot of rerender, do not setit for too low value
+  // this will cause a lot of rerender, do not set it to a very low value
   usePoller(() => {
     getTimestamp();
   }, 30_000);

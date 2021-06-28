@@ -143,7 +143,7 @@ export const useStartRent = (): {
         nfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      debug("contractAddress", contractAddress)
+      debug("contractAddress", contractAddress);
       return await renft
         .rent(addresses, tokenIds, amount, lendingIds, rentDurations)
         .then((tx) => {

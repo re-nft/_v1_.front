@@ -76,18 +76,16 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
           ignoreWhitespace: true,
         });
         //const difference = true;
-          // we need to update the signer if currentAddress is non-null
-        if(currentAddress !== previousAddress){
+        // we need to update the signer if currentAddress is non-null
+        if (currentAddress !== previousAddress) {
           setNfts(lendingsReNFT);
-        }
-        else if (
+        } else if (
           difference &&
           difference[1] &&
           (difference[1].added || difference[1].removed)
         ) {
           setNfts(lendingsReNFT);
         }
-      
       })
       .finally(() => {
         setLoading(false);
