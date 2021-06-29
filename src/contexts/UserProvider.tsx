@@ -143,13 +143,20 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // change account
   useEffect(() => {
-    if (provider && provider.addListener) {
+    if (provider && provider.on) {
+      provider.on("accountsChanged", accountsChanged);
+      provider.on("chainChanged", chainChanged);
+    } else if (provider && provider.addListener) {
       provider.addListener("accountsChanged", accountsChanged);
       provider.addListener("chainChanged", chainChanged);
     }
     return () => {
-      // @ts-ignore
-      if (provider && provider.removeListener) {
+      // this is strange, there is On method, but there is no off method
+      // add both cases for sanity
+      if (provider && provider.off) {
+        provider.off("accountsChanged", accountsChanged);
+        provider.off("chainChanged", chainChanged);
+      } else if (provider && provider.removeListener) {
         provider.removeListener("accountsChanged", accountsChanged);
         provider.removeListener("chainChanged", chainChanged);
       }
