@@ -22,7 +22,9 @@ const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
       <div className="modal-dialog-for">
         <div className="label">Token Id</div>
         <div className="dot"></div>
-        <div className="label">{nft.tokenId}</div>
+        <div className="label">
+          <ShortenPopover longString={nft.tokenId}></ShortenPopover>
+        </div>
       </div>
       <div className="modal-dialog-fields">{children}</div>
     </div>
