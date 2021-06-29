@@ -2256,10 +2256,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@renft/sdk@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@renft/sdk/-/sdk-2.0.1.tgz#31b827e59abd065251a07b86fc6752442a1fe7e2"
-  integrity sha512-OncFRl23BAnk+XxguJMqKcJWC/ocdP4s+QH3s3A48xLHh9bCWILPYs51qTpK8XCr1G9WH4za5lbY93AdPiVRvg==
+"@renft/sdk@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@renft/sdk/-/sdk-2.1.0.tgz#e46517124c21e214891706fd99ddc86ed7e428b9"
+  integrity sha512-vkhPnvckI09tCsZXJIClICEyADmnfKxMV36QCSbZra6GXXCrSIGslP164HAOhvQWnpzNuEiPsyovUbJYQ4tILA==
   dependencies:
     ethers "^5.1.4"
     typescript "^4.2.4"
