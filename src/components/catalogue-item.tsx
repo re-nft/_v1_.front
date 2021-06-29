@@ -133,7 +133,13 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
-  const isVideo = image?.endsWith("mp4");
+  const isVideo = image?.endsWith("mp4") 
+   || image?.endsWith("mkv") 
+   || image?.endsWith("webm") 
+   || image?.endsWith("mov") 
+   || image?.endsWith("avi") 
+   || image?.endsWith("flv") 
+  ;
 
   const display = () => {
     if (isVideo) return <Player playsInline autoPlay src={image} muted />;
