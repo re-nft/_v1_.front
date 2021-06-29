@@ -120,7 +120,7 @@ const UserCurrentlyLending: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedLendingItems.length > 1 && (
+      {checkedLendingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedLendingItems.length} items`}
           actionTitle="Stop Lending"

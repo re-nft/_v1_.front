@@ -84,10 +84,10 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
     };
   }, [contractAddress, nonApprovedNft, provider, setError, setHash]);
 
-  if (rentingNumber < 2 && lendingNumber < 2 && claimsNumber < 2) return null;
+  if (rentingNumber < 1 && lendingNumber < 1 && claimsNumber < 1) return null;
   return (
     <div className="batch">
-      {rentingNumber > 1 && (
+      {rentingNumber > 0 && (
         <div className="batch__inner">
           <div
             className="column"
@@ -110,10 +110,10 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
         </div>
       )}
-      {claimsNumber > 1 && (
+      {claimsNumber > 0 && (
         <div
           className="batch__inner"
-          style={{ paddingTop: rentingNumber > 1 ? "20px" : "" }}
+          style={{ paddingTop: rentingNumber > 0 ? "20px" : "" }}
         >
           <div
             className="column"
@@ -131,12 +131,12 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
         </div>
       )}
-      {lendingNumber > 1 && (
+      {lendingNumber > 0 && (
         <div
           className="batch__inner"
           style={{
             paddingTop:
-              claimsNumber > 1 || (claimsNumber < 2 && rentingNumber > 1)
+              claimsNumber > 0 || (claimsNumber < 1 && rentingNumber > 0)
                 ? "20px"
                 : "",
           }}

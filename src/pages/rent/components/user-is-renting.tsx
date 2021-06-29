@@ -134,7 +134,7 @@ const UserRentings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedRentingItems.length > 1 && (
+      {checkedRentingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedRentingItems.length} items`}
           actionTitle="Stop Rents All"

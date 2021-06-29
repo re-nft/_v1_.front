@@ -113,7 +113,7 @@ const Lendings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedNftItems.length > 1 && (
+      {checkedNftItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedNftItems.length} items`}
           actionTitle="Lend All"

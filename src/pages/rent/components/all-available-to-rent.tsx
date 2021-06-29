@@ -27,7 +27,6 @@ const AvailableToRent: React.FC = () => {
     handleReset: handleBatchReset,
     onCheckboxChange,
     checkedLendingItems,
-    checkedRentingItems,
   } = useBatchItems();
   const {
     totalPages,
@@ -112,17 +111,9 @@ const AvailableToRent: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedLendingItems.length > 1 && (
+      {checkedLendingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedLendingItems.length} items`}
-          actionTitle="Rent All"
-          onCancel={handleBatchReset}
-          onClick={handleBatchRent}
-        />
-      )}
-      {checkedRentingItems.length > 1 && (
-        <BatchBar
-          title={`Selected ${checkedRentingItems.length} items`}
           actionTitle="Rent All"
           onCancel={handleBatchReset}
           onClick={handleBatchRent}
