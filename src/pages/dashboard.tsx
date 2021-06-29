@@ -177,7 +177,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "5%" }}>Amount</Th>
                     <Th style={{ widTh: "5%" }}>$</Th>
                     <Th style={{ widTh: "11%" }}>Collateral</Th>
-                    <Th style={{ widTh: "7%" }}>Rent</Th>
+                    <Th style={{ widTh: "7%" }}>Daily Price</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>
                     <Th style={{ widTh: "7%" }}>Batch Select</Th>
                     <Th style={{ widTh: "10%" }} className="action-column">
@@ -302,7 +302,7 @@ const RentingRow: React.FC<{
       <Td className="column">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
       </Td>
-      <Td className="column">{renting.lending.nftPrice}</Td>
+      <Td className="column">{renting.lending.nftPrice * Number(renting.lending.lentAmount)}</Td>
 
       <Td className="column">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
@@ -375,7 +375,7 @@ export const LendingRow: React.FC<{
       <Td className="column">{lend.tokenId}</Td>
       <Td className="column">{lend.amount}</Td>
       <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
-      <Td className="column">{lending.nftPrice}</Td>
+      <Td className="column">{lending.nftPrice * Number(lend.amount)}</Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="action-column">
