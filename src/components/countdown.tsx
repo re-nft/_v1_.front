@@ -31,7 +31,6 @@ interface TimerProps {
   }>;
 }
 
-
 const withTimer =
   (timerProps: TimerProps) =>
   <T extends Record<string, unknown>>(
@@ -66,6 +65,9 @@ class TimerWrapper extends React.Component<{ timer: Date }> {
           const hours = date.getHours();
           const minutes = date.getMinutes();
           const seconds = date.getSeconds();
+          if (time < 1) {
+            return "Expired!";
+          }
           return (
             <>
               <span>
@@ -91,5 +93,5 @@ class TimerWrapper extends React.Component<{ timer: Date }> {
 export const CountDown = ({ expiryDate }: { expiryDate: Date }): JSX.Element =>
   withTimer({
     initialTime: expiryDate.getTime(),
-    direction: "backward"
+    direction: "backward",
   })(TimerWrapper)({});
