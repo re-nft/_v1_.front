@@ -21,6 +21,7 @@ function range(start: number, stop: number, step: number) {
 
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
+  const { network } = useContext(UserContext);
   const { E721, E721B, E1155, E1155B } = useContext(ContractContext);
 
   const { signer } = useContext(UserContext);
@@ -28,6 +29,10 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchAsync = useCallback(async () => {
+    if (network === "homestead") {
+      if (isLoading) setIsLoading(false);
+      return;
+    };
     if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === "undefined") {
       if (isLoading) setIsLoading(false);
       return;
