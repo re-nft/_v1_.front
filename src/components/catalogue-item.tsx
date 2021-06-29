@@ -133,6 +133,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
+  // This is a stupid check, it should check the mimetype of the source
   const isVideo = image?.endsWith("mp4") 
    || image?.endsWith("mkv") 
    || image?.endsWith("webm") 
