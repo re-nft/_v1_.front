@@ -23,6 +23,7 @@ import Checkbox from "../components/checkbox";
 import { TimestampContext } from "../contexts/TimestampProvider";
 import { Button } from "../components/button";
 import UserContext from "../contexts/UserProvider";
+import { CountDown } from "../components/countdown";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -302,7 +303,9 @@ const RentingRow: React.FC<{
       <Td className="column">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
       </Td>
-      <Td className="column">{renting.lending.nftPrice * Number(renting.lending.lentAmount)}</Td>
+      <Td className="column">
+        {renting.lending.nftPrice * Number(renting.lending.lentAmount)}
+      </Td>
 
       <Td className="column">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
@@ -310,7 +313,9 @@ const RentingRow: React.FC<{
       <Td className="column">
         {days} {days > 1 ? "days" : "day"}
       </Td>
-      <Td className="column">{expireDate.format("MM/D/YY hh:mm")}</Td>
+      <Td className="column">
+        <CountDown expiryDate={expireDate.toDate()} />
+      </Td>
       <Td className="column">{renting.lending.dailyRentPrice}</Td>
       <Td className="action-column">
         <Checkbox
