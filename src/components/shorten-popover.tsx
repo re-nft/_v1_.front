@@ -11,7 +11,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ShortenPopover: React.FC<{ longString: string }> = ({ longString }) => {
+export const ShortenPopover: React.FC<{ longString: string }> = ({
+  longString,
+}) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -32,7 +34,7 @@ export const ShortenPopover: React.FC<{ longString: string }> = ({ longString })
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        {short(longString)}
+        {longString.length > 10 ? short(longString) : longString}
       </span>
       <Popover
         id="mouse-over-popover"
