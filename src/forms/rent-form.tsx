@@ -162,6 +162,20 @@ export const RentForm: React.FC<LendFormProps> = ({
   );
 };
 
+/**
+ * 
+ * @param number 
+ * @returns Number with cut to 4 digits after whole part
+ */
+const normalizeFloat = (number: number | string) => {
+  const str = number.toString();
+  if (str.indexOf(".") > 0) {
+    const [a, b] = str.split(".");
+    return Number(`${a}.${b.slice(0, 3)}`);
+  }
+  return Number(number);
+};
+
 const ModalDialogSection: React.FC<{
   item: LendingWithKey;
   handleBlur: {
@@ -186,9 +200,10 @@ const ModalDialogSection: React.FC<{
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
-  const totalRent =
+  const totalRent = normalizeFloat(
     (item.lending.nftPrice || 0) * Number(item.amount) +
-    (item.lending.dailyRentPrice || 0) * Number(item.duration);
+      (item.lending.dailyRentPrice || 0) * Number(item.duration)
+  );
 
   const renderItem = () => {
     const days = item.lending.maxRentDuration;
@@ -243,9 +258,9 @@ const ModalDialogSection: React.FC<{
         <div className="nft__meta_dot"></div>
         <div className="nft__meta_value">
           {dailyRentPrice}
-          {` x ${item.duration ? item.duration : 0} days + ${nftPrice} * ${item.amount} = ${
-            totalRent ? totalRent : "? "
-          }`}
+          {` x ${item.duration ? item.duration : 0} days + ${Number(
+            nftPrice
+          )} * ${Number(item.amount)} = ${totalRent ? totalRent : "? "}`}
           {` ${paymentToken}`}
         </div>
       </div>
