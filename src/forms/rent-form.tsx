@@ -187,7 +187,7 @@ const ModalDialogSection: React.FC<{
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
   const totalRent =
-    (item.lending.nftPrice || 0) +
+    (item.lending.nftPrice || 0) * Number(item.amount) +
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
 
   const renderItem = () => {
@@ -203,6 +203,12 @@ const ModalDialogSection: React.FC<{
   };
   return (
     <CommonInfo nft={item} key={getUniqueCheckboxId(item)}>
+      <div className="modal-dialog-for">
+        <div className="label">Rent Amount</div>
+        <div className="dot"></div>
+        {/* we can do this because checked items will have the right amount when we pass them here */}
+        <div className="label">{item.amount}</div>
+      </div>
       <CssTextField
         required
         label={renderItem()}
@@ -224,7 +230,7 @@ const ModalDialogSection: React.FC<{
         </div>
       </div>
       <div className="nft__meta_row">
-        <div className="nft__meta_title">Collateral</div>
+        <div className="nft__meta_title">Collateral (per item)</div>
         <div className="nft__meta_dot"></div>
         <div className="nft__meta_value">
           {nftPrice} {paymentToken}
@@ -237,7 +243,7 @@ const ModalDialogSection: React.FC<{
         <div className="nft__meta_dot"></div>
         <div className="nft__meta_value">
           {dailyRentPrice}
-          {` x ${item.duration ? item.duration : 0} days + ${nftPrice} = ${
+          {` x ${item.duration ? item.duration : 0} days + ${nftPrice} * ${item.amount} = ${
             totalRent ? totalRent : "? "
           }`}
           {` ${paymentToken}`}

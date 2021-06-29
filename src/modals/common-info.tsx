@@ -24,12 +24,6 @@ const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
         <div className="dot"></div>
         <div className="label">{nft.tokenId}</div>
       </div>
-      <div className="modal-dialog-for">
-        <div className="label">Available Amount</div>
-        <div className="dot"></div>
-        {/* we can do this because checked items will have the right amount when we pass them here */}
-        <div className="label">{nft.amount}</div>
-      </div>
       <div className="modal-dialog-fields">{children}</div>
     </div>
   );

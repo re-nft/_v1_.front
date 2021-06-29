@@ -175,7 +175,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "15%" }}>Address</Th>
                     <Th style={{ widTh: "7%" }}>ID</Th>
                     <Th style={{ widTh: "5%" }}>Amount</Th>
-                    <Th style={{ widTh: "5%" }}>Pmt in</Th>
+                    <Th style={{ widTh: "5%" }}>$</Th>
                     <Th style={{ widTh: "11%" }}>Collateral</Th>
                     <Th style={{ widTh: "7%" }}>Rent</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>
@@ -222,7 +222,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "15%" }}>Address</Th>
                     <Th style={{ widTh: "5%" }}>ID</Th>
                     <Th style={{ widTh: "5%" }}>Amount</Th>
-                    <Th style={{ widTh: "7%" }}>Pmt in</Th>
+                    <Th style={{ widTh: "7%" }}>$</Th>
                     <Th style={{ widTh: "7%" }}>Collateral</Th>
                     <Th style={{ widTh: "11%" }}>Rented On</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>

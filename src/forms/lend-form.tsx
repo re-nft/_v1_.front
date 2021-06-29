@@ -271,7 +271,12 @@ const ModalDialogSection: React.FC<{
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>
         {/* lendAmount for 721 is ignored */}
-
+        <div className="modal-dialog-for">
+          <div className="label">Available Amount</div>
+          <div className="dot"></div>
+          {/* we can do this because checked items will have the right amount when we pass them here */}
+          <div className="label">{lendingInput.nft.amount}</div>
+        </div>
         <CssTextField
           required
           label="Amount"
