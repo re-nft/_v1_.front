@@ -16,6 +16,8 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { Checkbox } from "./checkbox";
 import UserContext from "../contexts/UserProvider";
+// @ts-ignore
+import { Player } from "video-react";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -131,8 +133,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
+  const isVideo = image?.endsWith("mp4");
 
-  // tODO refactor nft__checkbox
+  const display = () => {
+    if (isVideo) return <Player playsInline autoPlay src={image} muted />;
+    return <img alt={description} src={image} />;
+  };
   return (
     <div
       ref={ref}
@@ -172,11 +178,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             </div> */}
           </div>
           <div className="nft__image">
-            {image ? (
-              <img alt={description} src={image} />
-            ) : (
-              <div className="no-img">NO IMG</div>
-            )}
+            {image ? display() : <div className="no-img">NO IMG</div>}
           </div>
           <div className="nft__meta">
             {name && <div className="nft__name">{name}</div>}

@@ -26,6 +26,7 @@
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.2",
     "react-super-responsive-table": "5.2.0",
+    "video-react": "0.14.1",
     "web3modal": "1.9.3",
     "yup": "^0.32.9"
   },
