@@ -16,7 +16,7 @@ import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
 import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
-import { short, advanceTime } from "../utils";
+import { advanceTime } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 import createDebugger from "debug";
@@ -24,6 +24,8 @@ import createDebugger from "debug";
 import UserContext from "../contexts/UserProvider";
 import { Button } from "./button";
 import { ContractContext } from "../contexts/ContractsProvider";
+import { useLookupAddress } from "../hooks/useLookupAddress";
+import { ShortenPopover } from "./shorten-popover";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [
@@ -79,6 +81,7 @@ const App: React.FC = () => {
   const [username, setUsername] = useState<string>();
 
   const installMetaMask = !(window.web3 || window.ethereum);
+  const lookupAddress = useLookupAddress();
 
   const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
     useContext(ContractContext);
@@ -163,7 +166,7 @@ const App: React.FC = () => {
                   <>
                     {network} &nbsp;
                     <Link className="" to="/profile">
-                      {username || short(currentAddress)}
+                      <ShortenPopover longString={username || lookupAddress ||  currentAddress}/>
                     </Link>
                   </>
                 )}

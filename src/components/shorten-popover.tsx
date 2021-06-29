@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Address: React.FC<{ address: string }> = ({ address }) => {
+export const ShortenPopover: React.FC<{ longString: string }> = ({ longString }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -32,7 +32,7 @@ export const Address: React.FC<{ address: string }> = ({ address }) => {
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        {short(address)}
+        {short(longString)}
       </span>
       <Popover
         id="mouse-over-popover"
@@ -53,7 +53,7 @@ export const Address: React.FC<{ address: string }> = ({ address }) => {
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <Typography>{address}</Typography>
+        <Typography>{longString}</Typography>
       </Popover>
     </>
   );

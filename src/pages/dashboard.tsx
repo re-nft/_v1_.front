@@ -18,7 +18,7 @@ import { useReturnIt } from "../hooks/useReturnIt";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import { Address } from "../components/address";
+import { ShortenPopover } from "../components/shorten-popover";
 import Checkbox from "../components/checkbox";
 import { TimestampContext } from "../contexts/TimestampProvider";
 import { Button } from "../components/button";
@@ -370,7 +370,7 @@ export const LendingRow: React.FC<{
   return (
     <Tr>
       <Td className="column">
-        <Address address={lending.nftAddress}></Address>
+        <ShortenPopover longString={lending.nftAddress}></ShortenPopover>
       </Td>
       <Td className="column">{lend.tokenId}</Td>
       <Td className="column">{lend.amount}</Td>
