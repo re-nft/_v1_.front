@@ -260,7 +260,7 @@ const ModalDialogSection: React.FC<{
           {dailyRentPrice}
           {` x ${item.duration ? item.duration : 0} days + ${Number(
             nftPrice
-          )} * ${Number(item.amount)} = ${totalRent ? totalRent : "? "}`}
+          )} x ${Number(item.amount)} = ${totalRent ? totalRent : "? "}`}
           {` ${paymentToken}`}
         </div>
       </div>
