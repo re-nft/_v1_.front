@@ -11,7 +11,7 @@ export const TransactionWrapper: React.FC<{
   isLoading: boolean;
   transactionHashes?: TransactionHash[];
   status: TransactionStateEnum;
-  closeWindow: () => void;
+  closeWindow?: () => void | undefined;
 }> = ({ isLoading, children, transactionHashes, status, closeWindow }) => {
   const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS)
   const [showMessage, setShowMessage] = useState(false);

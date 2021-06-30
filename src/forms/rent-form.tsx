@@ -44,6 +44,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       ...nft,
     })),
   };
+
   const onSubmit = (
     values: FormProps,
     { setSubmitting, setStatus }: FormikBag<FormProps, unknown>
@@ -145,7 +146,7 @@ export const RentForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <TransactionWrapper isLoading={isApprovalLoading} status={status[0]} closeWindow={status[1]}>
+                <TransactionWrapper isLoading={isApprovalLoading} status={TransactionStateEnum.PENDING} >
                   <ActionButton<Nft>
                     title="Approve Payment tokens"
                     nft={nft}

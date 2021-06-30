@@ -129,7 +129,7 @@ export const LendForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <TransactionWrapper isLoading={isApprovalLoading} status={status[0]} closeWindow={status[1]}>
+                <TransactionWrapper isLoading={isApprovalLoading} status={TransactionStateEnum.PENDING}>
                   <ActionButton<Nft>
                     title="Approve all"
                     nft={nft}
