@@ -38,7 +38,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const { setError } = useContext(SnackAlertContext);
 
   const handleLend = useCallback(
-    (lendingInputs: LendInputDefined[]) => {
+    (lendingInputs: LendInputDefined[]): Promise<[boolean | void, () => void]> => {
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
       const borrowPriceValues: number[] = [];
@@ -71,7 +71,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
         )
       );
       return transaction.promise.then((status) => {
-        if (status) onClose();
+        return Promise.resolve([status, onClose]);
       });
     },
 

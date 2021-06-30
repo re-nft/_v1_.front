@@ -14,7 +14,6 @@ import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
 import Profile from "../pages/profile";
 import PageLayout from "../components/page-layout";
-import { TransactionNotifier } from "./transaction-notifier";
 import GraphContext from "../contexts/graph";
 import { advanceTime } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
@@ -291,7 +290,6 @@ const App: React.FC = () => {
           </a>
         </div>
       </div>
-      <TransactionNotifier />
     </Layout>
   );
 };

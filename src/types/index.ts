@@ -15,9 +15,9 @@ export enum PaymentToken {
 }
 
 export enum TransactionStateEnum {
-  FAILED,
-  SUCCESS,
-  PENDING,
+  FAILED = 0,
+  SUCCESS = 1,
+  PENDING = 2
 }
 
 export enum NetworkName {

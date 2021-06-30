@@ -19,12 +19,14 @@ type MinimalSelectProps = {
       ? void
       : (e: string | React.ChangeEvent<unknown>) => void;
   };
+  disabled?: boolean
 };
 
 const MinimalSelect: React.FC<MinimalSelectProps> = ({
   handleChange,
   selectedValue,
   name,
+  disabled
 }) => {
   const minimalSelectClasses = useMinimalSelectStyles();
 
@@ -66,6 +68,7 @@ const MinimalSelect: React.FC<MinimalSelectProps> = ({
         value={selectedValue}
         onChange={handleChange}
         defaultValue={-1}
+        disabled={disabled}
       >
         <MenuItem disabled value={-1}>
           Select Payment Token *

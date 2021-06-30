@@ -40,13 +40,18 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   }, [checkApprovals, nfts]);
 
   const handleSubmit = useCallback(
-    (items: StartRentNft[]) => {
+    (items: StartRentNft[]): Promise<[boolean | void, () => void]> => {
       if (isApproved) {
         return startRent(items).then((status) => {
-          if (status) handleClose();
+          return Promise.resolve([status, handleClose]);
         });
       }
-      return Promise.reject();
+      return Promise.reject([
+        false,
+        () => {
+          // do nothing
+        },
+      ]);
     },
     [handleClose, isApproved, startRent]
   );
