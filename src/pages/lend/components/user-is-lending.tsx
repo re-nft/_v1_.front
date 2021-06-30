@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useEffect } from "react";
+import React, { useContext, useCallback, useEffect, useState } from "react";
 
 import ItemWrapper from "../../../components/items-wrapper";
 import { Lending, isLending } from "../../../contexts/graph/classes";
@@ -14,10 +14,9 @@ import Pagination from "../../../components/pagination";
 import { usePageController } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useStopLend } from "../../../hooks/useStopLend";
-import createCancellablePromise from "../../../contexts/create-cancellable-promise";
 import { UserLendingContext } from "../../../contexts/UserLending";
 import UserContext from "../../../contexts/UserProvider";
+import { StopLendModal } from "../../../modals/stop-lend-modal";
 
 const UserCurrentlyLending: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -36,34 +35,28 @@ const UserCurrentlyLending: React.FC = () => {
   } = usePageController<Lending>();
   const { userLending, isLoading } = useContext(UserLendingContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
-  const stopLending = useStopLend();
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleStopLend = useCallback(
-    async (nfts: Lending[]) => {
-      const transaction = createCancellablePromise(
-        stopLending(nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id })))
-      );
+  const handleCloseModal = useCallback(() => {
+    setModalOpen(false);
+    batchHandleReset()
+  }, [batchHandleReset]);
 
-      transaction.promise.then((status) => {
-        if (status) batchHandleReset();
-      });
-
-      return transaction.cancel;
+  const handleOpenModal = useCallback(
+    () => {
+      setModalOpen(true)
     },
+    [setModalOpen],
+  )
 
-    [stopLending, batchHandleReset]
-  );
-
+ 
   const handleClickNft = useCallback(
     (nft: Lending) => {
-      handleStopLend([nft]);
+      onCheckboxChange(nft);
+      setModalOpen(true);
     },
-    [handleStopLend]
+    [onCheckboxChange]
   );
-
-  const handleBatchStopnLend = useCallback(async () => {
-    handleStopLend(checkedLendingItems);
-  }, [handleStopLend, checkedLendingItems]);
 
   useEffect(() => {
     onPageControllerInit(userLending.filter(isLending));
@@ -93,13 +86,21 @@ const UserCurrentlyLending: React.FC = () => {
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (
     <>
+       {modalOpen && (
+        <StopLendModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          nfts={checkedLendingItems}
+        />
+      )}
       <ItemWrapper>
         {currentPage.map((nft: Lending) => {
           const hasRenting = !!nft.renting;
+          const isChecked = !!checkedItems[getUniqueCheckboxId(nft)]
           return (
             <CatalogueItem
               key={getUniqueCheckboxId(nft)}
-              checked={!!checkedItems[getUniqueCheckboxId(nft)]}
+              checked={isChecked}
               nft={nft}
               onCheckboxChange={checkBoxChangeWrapped(nft)}
               disabled={hasRenting}
@@ -107,7 +108,7 @@ const UserCurrentlyLending: React.FC = () => {
               <LendingFields nft={nft} />
               <ActionButton<Lending>
                 nft={nft}
-                disabled={hasRenting}
+                disabled={hasRenting || isChecked}
                 title="Stop Lending"
                 onClick={handleClickNft}
               />
@@ -124,7 +125,7 @@ const UserCurrentlyLending: React.FC = () => {
         <BatchBar
           title={`Selected ${checkedLendingItems.length} items`}
           actionTitle="Stop Lending"
-          onClick={handleBatchStopnLend}
+          onClick={handleOpenModal}
           onCancel={batchHandleReset}
         />
       )}

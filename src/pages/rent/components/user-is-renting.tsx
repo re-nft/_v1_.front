@@ -37,12 +37,13 @@ const UserRentings: React.FC = () => {
     onPageControllerInit,
   } = usePageController<Renting>();
   const { userRenting, isLoading } = useContext(UserRentingContext);
-  const [modalOpen, setModalOpen] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
-  }, [setModalOpen]);
+    handleBatchReset()
+  }, [handleBatchReset]);
 
   const handleBatchStopRent = useCallback(() => {
     setModalOpen(true);
@@ -99,6 +100,7 @@ const UserRentings: React.FC = () => {
           currentPage.map((nft: Renting) => {
             const id = getUniqueCheckboxId(nft);
             const checked = !!checkedItems[id];
+            const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
             const isExpired = nftReturnIsExpired(nft);
             const days = nft.renting.rentDuration;
             return (
@@ -106,7 +108,7 @@ const UserRentings: React.FC = () => {
                 key={id}
                 nft={nft}
                 checked={checked}
-                disabled={isExpired}
+                disabled={isExpired || isChecked}
                 onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
                 <NumericField
