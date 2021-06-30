@@ -1,97 +1,49 @@
-import React from "react";
-import Timer from "react-compound-timer";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 
-interface TimerProps {
-  /** Timer count direction */
-  direction?: "forward" | "backward";
-  /** Inittial time on timer */
-  initialTime?: number;
-  /** Time to rerender */
-  timeToUpdate?: number;
-  /** Start timer immediately after render */
-  startImmediately?: boolean;
-  /** Function to format all values */
-  formatValue?: (value: number) => string;
-  /** Function that will be called on timer start */
-  onStart?: () => unknown;
-  /** Function that will be called on timer resume */
-  onResume?: () => unknown;
-  /** Function that will be called on timer pause */
-  onPause?: () => unknown;
-  /** Function that will be called on timer stop */
-  onStop?: () => unknown;
-  /** Function that will be called on timer reset */
-  onReset?: () => unknown;
-  /** Last unit will accumulate time, for example, 26 hours or 90 seconds */
-  lastUnit?: "ms" | "s" | "m" | "h" | "d";
-  /** Time checkpoints with callback functions */
-  checkpoints?: Array<{
-    time: number;
-    callback: () => unknown;
-  }>;
-}
+const MILISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+const MILISECONDS_IN_HOUR = 60 * 60 * 1000;
+const MILISECONDS_IN_MINUTE = 60 * 1000;
+const MILISECONDS_IN_SECOND = 1000;
 
-const withTimer =
-  (timerProps: TimerProps) =>
-  <T extends Record<string, unknown>>(
-    WrappedComponent: typeof React.Component
-  ) =>
-  // eslint-disable-next-line react/display-name
-  (wrappedComponentProps: T) => {
-    return (
-      <Timer {...timerProps}>
-        {(timerRenderProps: unknown) => (
-          <WrappedComponent
-            {...wrappedComponentProps}
-            timer={timerRenderProps}
-          />
-        )}
-      </Timer>
-    );
-  };
+export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
+  const [{ days, hours, minutes, seconds }, setRemaining] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
-class TimerWrapper extends React.Component<{ timer: Date }> {
-  shouldComponentUpdate() {
-    return false;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const time = endTime - moment().toDate().getTime();
+      const days = time / MILISECONDS_IN_DAY;
+      const hours = (time % MILISECONDS_IN_DAY) / MILISECONDS_IN_HOUR;
+      const minutes = (time % hours) / MILISECONDS_IN_MINUTE;
+      const seconds = (time % MILISECONDS_IN_MINUTE) / MILISECONDS_IN_SECOND;
+      setRemaining({
+        days: parseInt(days.toString(), 10),
+        hours: parseInt(hours.toString(), 10),
+        minutes: parseInt(minutes.toString(), 10),
+        seconds: parseInt(seconds.toString(), 10),
+      });
+    }, 1000);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [endTime]);
+
+  if (endTime <= Date.now()) {
+    return <div>Expired!</div>;
   }
-
-  render() {
-    return (
-      <Timer.Consumer>
-        {() => {
-          const time = this.props.timer.getTime();
-          const date = new Date(time);
-          const days = date.getDate();
-          const hours = date.getHours();
-          const minutes = date.getMinutes();
-          const seconds = date.getSeconds();
-          if (time < 1) {
-            return "Expired!";
-          }
-          return (
-            <>
-              <span>
-                {days} {days > 1 ? "days" : "day"}{" "}
-              </span>
-              <span>
-                {hours} {hours > 1 ? "hours" : "hour"}{" "}
-              </span>
-              <span>
-                {minutes} {minutes > 1 ? "minutes" : "minute"}{" "}
-              </span>
-              <span>
-                {seconds} {seconds > 1 ? "seconds" : "second"}
-              </span>
-            </>
-          );
-        }}
-      </Timer.Consumer>
-    );
-  }
-}
-
-export const CountDown = ({ expiryDate }: { expiryDate: Date }): JSX.Element =>
-  withTimer({
-    initialTime: expiryDate.getTime(),
-    direction: "backward",
-  })(TimerWrapper)({});
+  return (
+    <div style={{ display: 'flex', justifyItems: 'flex-end', alignContent: "center" }}>
+      <span style={{ display: "flex" }}>{days}d&nbsp;</span>
+      <span style={{ display: "flex" }}>{hours}h&nbsp;</span>
+      <span style={{ display: "flex" }}>
+        {minutes}m&nbsp;
+      </span>
+      <span style={{ display: "flex" }}>{seconds}s</span>
+    </div>
+  );
+};

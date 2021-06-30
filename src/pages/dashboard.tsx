@@ -290,10 +290,12 @@ const RentingRow: React.FC<{
     return handleReturn([rent]);
   }, [handleReturn, rent]);
   const days = renting.rentDuration;
+
   const expireDate = moment(Number(renting.rentedAt) * 1000).add(
     renting.rentDuration,
-    "days"
+    "day"
   );
+
   // TODO .format("MM/D/YY hh:mm") should be in local time
   return (
     <Tr>
@@ -314,7 +316,7 @@ const RentingRow: React.FC<{
         {days} {days > 1 ? "days" : "day"}
       </Td>
       <Td className="column">
-        <CountDown expiryDate={expireDate.toDate()} />
+        <CountDown endTime={expireDate.toDate().getTime()} />
       </Td>
       <Td className="column">{renting.lending.dailyRentPrice}</Td>
       <Td className="action-column">
