@@ -139,16 +139,19 @@ export const normalizeFloat = (number: number | string): number => {
   if (str.indexOf(".") > 0) {
     const [a, b] = str.split(".");
     // TODO rewrite this to be recursive
-    if (b.slice(2, 3) === "0") {
-      if (b.slice(1, 2) === "0") {
-        if (b.slice(0, 1) === "0") {
-          return Number(a);
+    if (b.slice(3, 4) === "0") {
+      if (b.slice(2, 3) === "0") {
+        if (b.slice(1, 2) === "0") {
+          if(b.slice(0,1)  === "0"){
+            return Number(a);
+          }
+          return Number(`${a}.${b.slice(0, 1)}`);
         }
-        return Number(`${a}.${b.slice(0, 1)}`);
+        return Number(`${a}.${b.slice(0, 2)}`);
       }
-      return Number(`${a}.${b.slice(0, 2)}`);
+      return Number(`${a}.${b.slice(0, 3)}`);
     }
-    return Number(`${a}.${b.slice(0, 3)}`);
+    return Number(`${a}.${b.slice(0, 4)}`);
   }
   return Number(number);
 };
