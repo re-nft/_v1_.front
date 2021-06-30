@@ -15,6 +15,7 @@ import {
 import { PaymentToken } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
 import Loader from "../components/loader";
+import { normalizeFloat } from "../utils";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -162,19 +163,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   );
 };
 
-/**
- * 
- * @param number 
- * @returns Number with cut to 4 digits after whole part
- */
-const normalizeFloat = (number: number | string) => {
-  const str = number.toString();
-  if (str.indexOf(".") > 0) {
-    const [a, b] = str.split(".");
-    return Number(`${a}.${b.slice(0, 3)}`);
-  }
-  return Number(number);
-};
+
 
 const ModalDialogSection: React.FC<{
   item: LendingWithKey;
