@@ -14,7 +14,7 @@ import {
 } from "formik";
 import { PaymentToken, TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
-import { normalizeFloat } from "../utils";
+import { normalizeFloatTo4Decimals } from "../utils";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 
 type LendFormProps = {
@@ -210,7 +210,7 @@ const ModalDialogSection: React.FC<{
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
-  const totalRent = normalizeFloat(
+  const totalRent = normalizeFloatTo4Decimals(
     (item.lending.nftPrice || 0) * Number(item.amount) +
       (item.lending.dailyRentPrice || 0) * Number(item.duration)
   );

@@ -129,6 +129,16 @@ export const decimalToPaddedHexString = (
   );
 };
 
+const trimZeroEnd = (number: string): string | undefined => {
+  const length = number.length;
+  if (length === 0) return undefined;
+  if (number.endsWith("0")) {
+    const str = number.slice(0, length - 1);
+    return trimZeroEnd(str);
+  }
+  return number;
+};
+
 /**
  *
  * @param number
@@ -138,22 +148,23 @@ export const normalizeFloat = (number: number | string): number => {
   const str = number.toString();
   if (str.indexOf(".") > 0) {
     const [a, b] = str.split(".");
-    // TODO rewrite this to be recursive
-    if (b.slice(3, 4) === "0") {
-      if (b.slice(2, 3) === "0") {
-        if (b.slice(1, 2) === "0") {
-          if (b.slice(0, 1) === "0") {
-            return Number(a);
-          }
-          return Number(`${a}.${b.slice(0, 1)}`);
-        }
-        return Number(`${a}.${b.slice(0, 2)}`);
-      }
-      return Number(`${a}.${b.slice(0, 3)}`);
+    const trimmedDecimal = trimZeroEnd(b);
+    if (trimmedDecimal) {
+      return Number(`${a}.${b}`);
     }
-    return Number(`${a}.${b.slice(0, 4)}`);
+    return Number(a);
   }
   return Number(number);
+};
+
+export const normalizeFloatTo4Decimals = (number: number | string): number => {
+  const str = number.toString();
+  if (str.indexOf(".") > 0) {
+    const [a, b] = str.split(".");
+    const number = Number(`${a}.${b.slice(0, 4)}`);
+    return normalizeFloat(number)
+  }
+  return Number(str);
 };
 
 export const unpackPrice = (price: BigNumberish): number => {
@@ -166,7 +177,7 @@ export const unpackPrice = (price: BigNumberish): number => {
   if (whole > 9999) whole = 9999;
   if (decimal > 9999) decimal = 9999;
   const number = parseFloat(`${whole}.${decimal}`);
-  return normalizeFloat(number);
+  return normalizeFloatTo4Decimals(number);
 };
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
