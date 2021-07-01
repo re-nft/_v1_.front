@@ -145,6 +145,7 @@ const App: React.FC = () => {
       setUsername(userData?.name);
     }
   }, [userData]);
+  const showMint = process.env.REACT_APP_SHOW_MINT === 'true'
 
   return (
     <Layout>
@@ -190,7 +191,7 @@ const App: React.FC = () => {
               </NavLink>
             ))}
           </div>
-          {network !== "homestead" && network !== "local" && (
+          {showMint && (
             <>
               <button className="menu__item" onClick={() => mintNFT(0)}>
                 Mint 721A
@@ -209,7 +210,7 @@ const App: React.FC = () => {
 
           {/* payment token faucets */}
           <div>
-            {network !== "homestead" && network !== "local" && (
+            {showMint && (
               <>
                 <button className="menu__item" onClick={() => mintE20(1)}>
                   Mint WETH
