@@ -55,16 +55,15 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     },
     [handleClose, isApproved, startRent]
   );
-
   return (
     <Modal open={open} handleClose={handleClose}>
-      <RentForm
+      {open && <RentForm
         nfts={nft}
         handleApproveAll={handleApproveAll}
         isApproved={isApproved}
         handleSubmit={handleSubmit}
         isApprovalLoading={isApprovalLoading}
-      ></RentForm>
+      ></RentForm>}
     </Modal>
   );
 };

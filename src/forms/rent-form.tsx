@@ -21,7 +21,7 @@ type LendFormProps = {
   nfts: Lending[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: StartRentNft[]) => Promise<[boolean | void, ()=>void]>;
+  handleSubmit: (arg: StartRentNft[]) => Promise<[boolean | void, () => void]>;
   isApprovalLoading: boolean;
 };
 interface LendingWithKey extends Lending {
@@ -44,13 +44,12 @@ export const RentForm: React.FC<LendFormProps> = ({
       ...nft,
     })),
   };
-
   const onSubmit = (
     values: FormProps,
     { setSubmitting, setStatus }: FormikBag<FormProps, unknown>
   ) => {
     setSubmitting(true);
-    setStatus([TransactionStateEnum.PENDING])
+    setStatus([TransactionStateEnum.PENDING]);
     handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
@@ -63,11 +62,14 @@ export const RentForm: React.FC<LendFormProps> = ({
     )
       .then(([status, closeWindow]) => {
         setSubmitting(false);
-        setStatus([status? TransactionStateEnum.SUCCESS: TransactionStateEnum.FAILED, closeWindow])
+        setStatus([
+          status ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED,
+          closeWindow,
+        ]);
       })
       .catch(() => {
         setSubmitting(false);
-        setStatus([TransactionStateEnum.FAILED])
+        setStatus([TransactionStateEnum.FAILED]);
       });
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
@@ -92,7 +94,6 @@ export const RentForm: React.FC<LendFormProps> = ({
   };
   return (
     <Formik
-      // TODO remove this
       // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
@@ -114,11 +115,14 @@ export const RentForm: React.FC<LendFormProps> = ({
         submitForm,
         status,
       }) => {
-        const formSubmittedSuccessfully = status && status[0] === TransactionStateEnum.SUCCESS
+        const formSubmittedSuccessfully =
+          status && status[0] === TransactionStateEnum.SUCCESS;
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
               {() => {
+                console.log("values.inputs", values);
+
                 return values.inputs.map(
                   (item: LendingWithKey, index: number) => {
                     return (
@@ -146,7 +150,10 @@ export const RentForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <TransactionWrapper isLoading={isApprovalLoading} status={TransactionStateEnum.PENDING} >
+                <TransactionWrapper
+                  isLoading={isApprovalLoading}
+                  status={TransactionStateEnum.PENDING}
+                >
                   <ActionButton<Nft>
                     title="Approve Payment tokens"
                     nft={nft}
@@ -156,12 +163,18 @@ export const RentForm: React.FC<LendFormProps> = ({
                 </TransactionWrapper>
               )}
               {(isApproved || isSubmitting) && (
-                <TransactionWrapper isLoading={isSubmitting} status={status[0]} closeWindow={status[1]}>
+                <TransactionWrapper
+                  isLoading={isSubmitting}
+                  status={status[0]}
+                  closeWindow={status[1]}
+                >
                   <ActionButton<Nft>
                     title={nfts.length > 1 ? "Rent all" : "Rent"}
                     nft={nft}
                     onClick={submitForm}
-                    disabled={!isValid || isSubmitting || formSubmittedSuccessfully}
+                    disabled={
+                      !isValid || isSubmitting || formSubmittedSuccessfully
+                    }
                   />
                 </TransactionWrapper>
               )}
@@ -193,7 +206,7 @@ const ModalDialogSection: React.FC<{
   touched: FormikTouched<LendingWithKey> | null;
   errors: FormikErrors<LendingWithKey> | null;
   disabled: boolean;
-}> = ({ item, index, handleChange, handleBlur, errors, touched , disabled}) => {
+}> = ({ item, index, handleChange, handleBlur, errors, touched, disabled }) => {
   const token = item.lending.paymentToken;
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;

@@ -126,13 +126,13 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   return (
     <Modal open={open} handleClose={onClose}>
-      <LendForm
+      {open && <LendForm
         nfts={nfts}
         isApproved={isApproved}
         handleApproveAll={handleApproveAll}
         handleSubmit={handleLend}
         isApprovalLoading={isApprovalLoading}
-      ></LendForm>
+      ></LendForm>}
     </Modal>
   );
 };
