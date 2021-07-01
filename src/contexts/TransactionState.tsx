@@ -130,12 +130,22 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
           hasPending: true,
         },
       }));
-      const [hasFailure] = await getHashStatus(hashes[0]);
-      // so we give back true, even if subsequent transactions might still fail
+      const key = hashes[0]
+      const receipts = await waitForTransactions(hashes);
+      const [hasFailure, hasPending] = getTransactionsStatus(receipts);
+      setStransactions((state) => ({
+        ...state,
+        [`${key}`]: {
+          hashes: state[key].hashes,
+          receipts,
+          hasFailure,
+          hasPending,
+        },
+      }));
       // todo fix this
       return !hasFailure;
     },
-    [getHashStatus, provider]
+    [getTransactionsStatus, provider, waitForTransactions]
   );
 
   return (
