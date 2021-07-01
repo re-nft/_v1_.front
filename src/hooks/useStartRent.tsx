@@ -153,7 +153,6 @@ export const useStartRent = (): {
           return Promise.resolve(status);
         })
         .catch((e) => {
-          console.log(e);
           setError(e.message, "error");
           debug("Error with rent", e);
         });

@@ -121,8 +121,6 @@ export const RentForm: React.FC<LendFormProps> = ({
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
               {() => {
-                console.log("values.inputs", values);
-
                 return values.inputs.map(
                   (item: LendingWithKey, index: number) => {
                     return (
