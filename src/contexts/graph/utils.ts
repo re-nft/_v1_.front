@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
-import { unpackPrice } from "@renft/sdk/dist/utils";
+import { unpackPrice } from "@renft/sdk";
 //import { DP18, DP9 } from "../../consts";
 import { parsePaymentToken } from "../../utils";
 //import { PaymentToken } from "../../types";
