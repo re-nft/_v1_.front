@@ -15,6 +15,9 @@ import { LendingRaw } from "./graph/types";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
+import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
+import { usePrevious } from "../hooks/usePrevious";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -31,7 +34,9 @@ export const UserLendingProvider: React.FC = ({ children }) => {
   const { signer } = useContext(UserContext);
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
-
+  const currentAddress = useContext(CurrentAddressWrapper);
+  const previousAddress = usePrevious(currentAddress);
+  
   const fetchLending = useCallback(async () => {
     if (!signer) return;
     if (!process.env.REACT_APP_RENFT_API) {
@@ -82,8 +87,10 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             normalizedLendingNew,
             { ignoreWhitespace: true }
           );
-          //const difference = true;
-          if (
+          if (currentAddress !== previousAddress) {
+            setLendings(lendings);
+          }
+          else if (
             difference &&
             difference[1] &&
             (difference[1].added || difference[1].removed)
@@ -96,13 +103,13 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [lending, signer]);
+  }, [currentAddress, lending, previousAddress, signer]);
 
   useEffect(() => {
     fetchLending();
   }, [fetchLending]);
 
-  usePoller(fetchLending, 10000);
+  usePoller(fetchLending, 10 * SECOND_IN_MILLISECONDS, [currentAddress]);
 
   return (
     <UserLendingContext.Provider

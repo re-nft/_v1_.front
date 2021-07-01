@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const usePoller = (fn: () => void, delay: number, extraWatch?: any): void => {
+const usePoller = (fn: () => void, delay: number, extraWatch: any[] = []): void => {
   const savedCallback = useRef<() => void>();
 
   // Remember the latest fn.
@@ -24,7 +24,7 @@ const usePoller = (fn: () => void, delay: number, extraWatch?: any): void => {
   useEffect(() => {
     fn();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extraWatch]);
+  }, [...extraWatch]);
 };
 
 export default usePoller;

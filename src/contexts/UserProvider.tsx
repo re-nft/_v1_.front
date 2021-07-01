@@ -123,7 +123,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const accountsChanged = useCallback(
     (arg) => {
-      if (arg.length > 0) connect(false);
+      if (arg.length > 0) connect(true);
       if (arg.length === 0) {
         // disconnect case
         if (permissions.length > 0) setPermissions([]);

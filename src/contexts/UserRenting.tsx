@@ -14,6 +14,8 @@ import { parseLending } from "./graph/utils";
 import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
+import { usePrevious } from "../hooks/usePrevious";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -33,6 +35,8 @@ export const UserRentingProvider: React.FC = ({ children }) => {
   const { signer } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
+  const currentAddress = useContext(CurrentAddressWrapper);
+  const previousAddress = usePrevious(currentAddress);
 
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return;
@@ -80,8 +84,10 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             normalizedLendingNew,
             { ignoreWhitespace: true }
           );
-          //const difference = true;
-          if (
+          if (currentAddress !== previousAddress) {
+            setRentings(_renting);
+          }
+          else if (
             difference &&
             difference[1] &&
             (difference[1].added || difference[1].removed)
@@ -94,13 +100,13 @@ export const UserRentingProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currAddress, renting, signer]);
+  }, [currAddress, currentAddress, previousAddress, renting, signer]);
 
   useEffect(() => {
     fetchRenting();
   }, [fetchRenting]);
 
-  usePoller(fetchRenting, 5000);
+  usePoller(fetchRenting, 5 * SECOND_IN_MILLISECONDS, [currentAddress]);
 
   return (
     <UserRentingContext.Provider

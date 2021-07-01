@@ -16,6 +16,7 @@ import { diffJson } from "diff";
 import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
 import { usePrevious } from "../hooks/usePrevious";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
@@ -23,11 +24,11 @@ export const AvailableForRentContext = createContext<{
 }>({ isLoading: true, allAvailableToRent: [] });
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
-  const currentAddress = useContext(CurrentAddressWrapper);
   const { signer } = useContext(UserContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
+  const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);
 
   const fetchRentings = useCallback(() => {
@@ -53,8 +54,6 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         const lendingsReNFT = Object.values(response?.lendings || [])
           .filter((v) => !v.renting)
           .filter((v) => v != null)
-          // doesn't have renting
-          .filter((v) => !v.renting)
           // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
           // ! therefore, this check is !==
           .filter((l) => {
@@ -97,7 +96,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
     fetchRentings();
   }, [fetchRentings]);
 
-  usePoller(fetchRentings, 10000);
+  usePoller(fetchRentings, 10 * SECOND_IN_MILLISECONDS, [currentAddress]);
 
   return (
     <AvailableForRentContext.Provider
