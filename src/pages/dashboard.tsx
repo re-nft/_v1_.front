@@ -9,7 +9,7 @@ import {
 } from "../controller/batch-controller";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
-import { nftReturnIsExpired, short } from "../utils";
+import { nftReturnIsExpired, normalizeFloat, short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
@@ -281,7 +281,7 @@ const RentingRow: React.FC<{
         {PaymentToken[renting.lending.paymentToken ?? 0]}
       </Td>
       <Td className="column">
-        {renting.lending.nftPrice * Number(renting.lending.lentAmount)}
+        {normalizeFloat(renting.lending.nftPrice * Number(renting.lending.lentAmount))}
       </Td>
 
       <Td className="column">
@@ -360,7 +360,7 @@ export const LendingRow: React.FC<{
       <Td className="column">{lend.tokenId}</Td>
       <Td className="column">{lend.amount}</Td>
       <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
-      <Td className="column">{lending.nftPrice * Number(lend.amount)}</Td>
+      <Td className="column">{normalizeFloat(lending.nftPrice * Number(lend.amount))}</Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="action-column">
