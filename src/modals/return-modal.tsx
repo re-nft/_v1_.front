@@ -44,8 +44,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
       isApprovalForAll(nfts, currentAddress, contractAddress)
     );
     transaction.promise
-      .then(([isApproved, nonApproved]) => {
-        if (isApproved) setIsApproved(isApproved);
+      .then(([status, nonApproved]) => {
+        if (status) setIsApproved(status);
         setNonApprovedNfts(nonApproved);
       })
       .catch(() => {
@@ -61,7 +61,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     );
     setIsApproved(false);
     setIsApprovalLoading(true);
-    setStatus(TransactionStateEnum.PENDING)
+    setStatus(TransactionStateEnum.PENDING);
     transaction.promise
       .then((hashes) => {
         if (hashes.length < 1) return Promise.resolve(false);
@@ -74,13 +74,12 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         setStatus(
           status ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
         );
-
       })
       .catch((e) => {
         console.warn("issue approving all in batch lend");
         setError(e.message, "error");
         setIsApprovalLoading(false);
-        setStatus(TransactionStateEnum.FAILED)
+        setStatus(TransactionStateEnum.FAILED);
         return [undefined];
       });
 
@@ -90,8 +89,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   }, [contractAddress, nonApprovedNft, provider, setError, setHash]);
 
   const handleReturnNft = useCallback(async () => {
-    setIsLoading(true)
-    setStatus(TransactionStateEnum.PENDING)
+    setIsLoading(true);
+    setStatus(TransactionStateEnum.PENDING);
     const isSuccess = await returnIt(nfts)
       .then((r) => r)
       .catch((e) => {
@@ -101,7 +100,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     setStatus(
       isSuccess ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
     );
-    setIsLoading(false)
+    setIsLoading(false);
   }, [returnIt, nfts]);
 
   return (
@@ -112,7 +111,6 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
           {!isApproved && (
             <TransactionWrapper
               isLoading={isApprovalLoading}
-              closeWindow={onClose}
               status={status}
             >
               <Button
