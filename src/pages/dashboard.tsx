@@ -11,11 +11,8 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
 import { nftReturnIsExpired, short } from "../utils";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { useStopLend } from "../hooks/useStopLend";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
-import { useReturnIt } from "../hooks/useReturnIt";
-import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { ShortenPopover } from "../components/shorten-popover";
@@ -24,20 +21,21 @@ import { TimestampContext } from "../contexts/TimestampProvider";
 import { Button } from "../components/button";
 import UserContext from "../contexts/UserProvider";
 import { CountDown } from "../components/countdown";
+import ReturnModal from "../modals/return-modal";
+import StopLendModal from "../modals/stop-lend-modal";
+import ClaimModal from "../modals/claim-modal";
 
 enum DashboardViewType {
   LIST_VIEW,
   MINIATURE_VIEW,
 }
 
-// TODO: This code is not DRY
-// TODO: lendings has This batch architecture too
-// TODO: it would be good to absTract batching
-// TODO: and pass components as children to The absTracted
-// TODO: so That we do not repeat This batch code everywhere
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { signer } = useContext(UserContext);
+  const [isClaimModalOpen, toggleClaimModal] = useState(false);
+  const [isLendModalOpen, toggleLendModal] = useState(false);
+  const [isReturnModalOpen, toggleReturnModal] = useState(false);
 
   const {
     onCheckboxChange,
@@ -55,75 +53,12 @@ export const Dashboard: React.FC = () => {
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );
-  const stopLending = useStopLend();
-  const claim = useClaimColleteral();
 
-  const claimCollateral = useCallback(
-    async (items: Lending[]) => {
-      const claims = items.map((lending) => ({
-        address: lending.address,
-        tokenId: lending.tokenId,
-        lendingId: lending.id,
-        amount: lending.amount,
-      }));
-      claim(claims).then((status) => {
-        if (status)
-          handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
-      });
-    },
-    [claim, handleResetLending]
-  );
-
-  const claimCollateralAll = useCallback(() => {
-    claimCollateral(checkedLendingItems);
-  }, [checkedLendingItems, claimCollateral]);
-  const handleStopLend = useCallback(
-    (lending: Lending[]) => {
-      stopLending(
-        lending.map((l) => ({
-          address: l.address,
-          amount: l.amount,
-          lendingId: l.lending.id,
-          tokenId: l.tokenId,
-        }))
-      ).then((status) => {
-        if (status)
-          handleResetLending(lending.map((i) => getUniqueCheckboxId(i)));
-      });
-    },
-    [stopLending, handleResetLending]
-  );
   const isLoading = userLendingLoading || userRentingLoading;
 
   const lendinItemsStopLendable = useMemo(() => {
     return checkedLendingItems.filter((v) => !v.renting);
   }, [checkedLendingItems]);
-  const returnIt = useReturnIt();
-
-  const handleStopLendAll = useCallback(() => {
-    return handleStopLend(lendinItemsStopLendable);
-  }, [handleStopLend, lendinItemsStopLendable]);
-
-  const handleReturn = useCallback(
-    (nfts: Renting[]) => {
-      returnIt(
-        nfts.map((item) => ({
-          id: item.id,
-          address: item.address,
-          tokenId: item.tokenId,
-          lendingId: item.renting.lendingId,
-          amount: item.renting.lending.lentAmount,
-        }))
-      ).then((status) => {
-        if (status) handleResetRenting(nfts.map((i) => getUniqueCheckboxId(i)));
-      });
-    },
-    [handleResetRenting, returnIt]
-  );
-
-  const handleReturnAll = useCallback(() => {
-    handleReturn(checkedRentingItems);
-  }, [checkedRentingItems, handleReturn]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -161,6 +96,42 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div>
+      {isReturnModalOpen && (
+        <ReturnModal
+          nfts={checkedRentingItems}
+          open={isReturnModalOpen}
+          onClose={() => {
+            toggleReturnModal(false);
+            handleResetRenting(
+              checkedRentingItems.map((i) => getUniqueCheckboxId(i))
+            );
+          }}
+        />
+      )}
+      {isLendModalOpen && (
+        <StopLendModal
+          nfts={checkedLendingItems}
+          open={isLendModalOpen}
+          onClose={() => {
+            toggleLendModal(false);
+            handleResetLending(
+              checkedLendingItems.map((i) => getUniqueCheckboxId(i))
+            );
+          }}
+        />
+      )}
+      {isClaimModalOpen && (
+        <ClaimModal
+          nfts={checkedClaims}
+          open={isClaimModalOpen}
+          onClose={() => {
+            toggleClaimModal(false);
+            handleResetLending(
+              checkedClaims.map((i) => getUniqueCheckboxId(i))
+            );
+          }}
+        />
+      )}
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           {lendingItems.length !== 0 && (
@@ -200,8 +171,8 @@ export const Dashboard: React.FC = () => {
                         hasRenting={hasRenting}
                         checked={checked}
                         lend={lend}
-                        claimCollateral={claimCollateral}
-                        handleStopLend={handleStopLend}
+                        openClaimModal={toggleClaimModal}
+                        openLendModal={toggleLendModal}
                         checkBoxChangeWrapped={checkBoxChangeWrapped}
                       ></LendingRow>
                     );
@@ -244,7 +215,7 @@ export const Dashboard: React.FC = () => {
                         checked={checked}
                         rent={rent}
                         key={getUniqueCheckboxId(rent)}
-                        handleReturn={handleReturn}
+                        openModal={toggleReturnModal}
                         currentAddress={currentAddress}
                         checkBoxChangeWrapped={checkBoxChangeWrapped}
                         isExpired={isExpired}
@@ -261,10 +232,15 @@ export const Dashboard: React.FC = () => {
         claimsNumber={checkedClaimsLength}
         rentingNumber={checkedRentingLength}
         lendingNumber={lendinItemsStopLendableLength}
-        onClaim={claimCollateralAll}
-        onStopRent={handleReturnAll}
-        onStopLend={handleStopLendAll}
-        checkedRenting={checkedRentingItems}
+        onClaim={() => {
+          toggleClaimModal(true);
+        }}
+        onStopRent={() => {
+          toggleReturnModal(true);
+        }}
+        onStopLend={() => {
+          toggleLendModal(true);
+        }}
       />
     </div>
   );
@@ -273,30 +249,29 @@ export const Dashboard: React.FC = () => {
 const RentingRow: React.FC<{
   checked: boolean;
   rent: Renting;
-  handleReturn: (nft: Renting[]) => void;
+  openModal: (t: boolean) => void;
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   isExpired: boolean;
 }> = ({
   checked,
   rent,
-  handleReturn,
   checkBoxChangeWrapped,
   currentAddress,
   isExpired,
+  openModal,
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
-    return handleReturn([rent]);
-  }, [handleReturn, rent]);
+    checkBoxChangeWrapped(rent);
+    openModal(true);
+  }, [checkBoxChangeWrapped, openModal, rent]);
   const days = renting.rentDuration;
 
   const expireDate = moment(Number(renting.rentedAt) * 1000).add(
     renting.rentDuration,
     "day"
   );
-
-  // TODO .format("MM/D/YY hh:mm") should be in local time
   return (
     <Tr>
       <Td className="column">{short(renting.lending.nftAddress)}</Td>
@@ -345,15 +320,15 @@ export const LendingRow: React.FC<{
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   checked: boolean;
   hasRenting: boolean;
-  handleStopLend: (lending: Lending[]) => void;
-  claimCollateral: (lending: Lending[]) => void;
+  openClaimModal: (t: boolean) => void;
+  openLendModal: (t: boolean) => void;
 }> = ({
   lend,
   checkBoxChangeWrapped,
   checked,
   hasRenting,
-  handleStopLend,
-  claimCollateral,
+  openLendModal,
+  openClaimModal,
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);
@@ -366,14 +341,17 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
-  const handleClick = useCallback(() => {
+  
+  const handleClaim = useCallback(() => {
     if (!claimable) return;
-    return claimCollateral([lend]);
-  }, [claimCollateral, lend, claimable]);
+    checkBoxChangeWrapped(lend)()
+    openClaimModal(true);
+  }, [claimable, checkBoxChangeWrapped, lend, openClaimModal]);
 
   const handleClickLend = useCallback(() => {
-    return handleStopLend([lend]);
-  }, [handleStopLend, lend]);
+    checkBoxChangeWrapped(lend)()
+    openLendModal(true);
+  }, [checkBoxChangeWrapped, lend, openLendModal]);
   return (
     <Tr>
       <Td className="column">
@@ -394,7 +372,7 @@ export const LendingRow: React.FC<{
       </Td>
       <Td className="action-column">
         <Button
-          handleClick={handleClick}
+          handleClick={handleClaim}
           disabled={checked || !claimable}
           description="Claim"
         />

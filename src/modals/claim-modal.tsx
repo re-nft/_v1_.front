@@ -2,8 +2,8 @@ import React, { useCallback, useState } from "react";
 import { Button } from "../components/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Lending } from "../contexts/graph/classes";
+import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import { ReturnNft } from "../hooks/useReturnIt";
-import { useStopLend } from "../hooks/useStopLend";
 import { TransactionStateEnum } from "../types";
 import Modal from "./modal";
 
@@ -13,20 +13,35 @@ type ReturnModalProps = {
   nfts: Lending[];
 };
 
-export const StopLendModal: React.FC<ReturnModalProps> = ({
+export const ClaimModal: React.FC<ReturnModalProps> = ({
   open,
   onClose,
   nfts
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(TransactionStateEnum.PENDING);
-  const stopLending = useStopLend();
+  const claim = useClaimColleteral();
   
-  const handleStopLend = useCallback(async () => {
+  const claimCollateral = useCallback(
+    async (items: Lending[]) => {
+      const claims = items.map((lending) => ({
+        address: lending.address,
+        tokenId: lending.tokenId,
+        lendingId: lending.id,
+        amount: lending.amount,
+      }));
+      return claim(claims).then((status) => {
+        // if (status)
+        //   handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
+        return Promise.resolve(status)  
+      });
+    },
+    [claim]
+  );
+  const handleClaim = useCallback(async () => {
     setIsLoading(true)
     setStatus(TransactionStateEnum.PENDING)
-    const items = nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }))
-    const isSuccess = await stopLending(items)
+    const isSuccess = await claimCollateral(nfts)
       .then((r) => r)
       .catch((e) => {
         setIsLoading(false);
@@ -36,12 +51,12 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
       isSuccess ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
     );
     setIsLoading(false)
-  }, [nfts, stopLending]);
+  }, [claimCollateral, nfts]);
 
   return (
-    <Modal open={open} handleClose={onClose}>
+    <Modal open={open} handleClose={() => onClose()}>
       <div className="modal-dialog-section">
-        <div className="modal-dialog-title">Do you want to stop lending?</div>
+        <div className="modal-dialog-title">Do you want to claim?</div>
         <div className="modal-dialog-button">
             <TransactionWrapper
               isLoading={isLoading}
@@ -49,9 +64,9 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
               status={status}
             >
               <Button
-                description={nfts.length > 1 ? "Stop Lend All" : "Stop Lend"}
+                description={nfts.length > 1 ? "Claim All" : "Claim"}
                 disabled={isLoading}
-                handleClick={handleStopLend}
+                handleClick={handleClaim}
               />
             </TransactionWrapper>
         </div>
@@ -60,4 +75,4 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
   );
 };
 
-export default StopLendModal;
+export default ClaimModal;
