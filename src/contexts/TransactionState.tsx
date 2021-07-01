@@ -27,7 +27,7 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 TransactionStateContext.displayName = "TransactionStateContext";
 
 const NUMBER_OF_CONFIRMATIONS = 1;
-const TRANSACTION_TIMEOUT = 2 * 60 * SECOND_IN_MILLISECONDS;
+const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
 
 // save transaction hashes for each address and hashes
 export const TransactionStateProvider: React.FC = ({ children }) => {
