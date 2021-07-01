@@ -1,4 +1,4 @@
-import { ethers, BigNumberish, providers } from "ethers";
+import { ethers, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
@@ -167,18 +167,7 @@ export const normalizeFloatTo4Decimals = (number: number | string): number => {
   return Number(str);
 };
 
-export const unpackPrice = (price: BigNumberish): number => {
-  // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
-  const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
-    2
-  );
-  let whole = parseInt(numHex.slice(0, 4), 16);
-  let decimal = parseInt(numHex.slice(4), 16);
-  if (whole > 9999) whole = 9999;
-  if (decimal > 9999) decimal = 9999;
-  const number = parseFloat(`${whole}.${decimal}`);
-  return normalizeFloatTo4Decimals(number);
-};
+
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
