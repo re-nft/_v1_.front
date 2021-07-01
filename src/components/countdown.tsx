@@ -19,7 +19,7 @@ export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
       const time = endTime - moment().toDate().getTime();
       const days = time / MILISECONDS_IN_DAY;
       const hours = (time % MILISECONDS_IN_DAY) / MILISECONDS_IN_HOUR;
-      const minutes = (time % hours) / MILISECONDS_IN_MINUTE;
+      const minutes = (time % MILISECONDS_IN_HOUR) / MILISECONDS_IN_MINUTE;
       const seconds = (time % MILISECONDS_IN_MINUTE) / MILISECONDS_IN_SECOND;
       setRemaining({
         days: parseInt(days.toString(), 10),

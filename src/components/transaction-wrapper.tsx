@@ -39,7 +39,7 @@ export const TransactionWrapper: React.FC<{
         } else if (status === TransactionStateEnum.SUCCESS) {
           if (closeWindow) closeWindow();
         }
-      }, 4 * SECOND_IN_MILLISECONDS);
+      }, 2 * SECOND_IN_MILLISECONDS);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
