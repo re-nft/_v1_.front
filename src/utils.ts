@@ -129,44 +129,6 @@ export const decimalToPaddedHexString = (
   );
 };
 
-const trimZeroEnd = (number: string): string | undefined => {
-  const length = number.length;
-  if (length === 0) return undefined;
-  if (number.endsWith("0")) {
-    const str = number.slice(0, length - 1);
-    return trimZeroEnd(str);
-  }
-  return number;
-};
-
-/**
- *
- * @param number
- * @returns Number with cut to 4 digits after whole part, also removes trailing 0s
- */
-export const normalizeFloat = (number: number | string): number => {
-  const str = number.toString();
-  if (str.indexOf(".") > 0) {
-    const [a, b] = str.split(".");
-    const trimmedDecimal = trimZeroEnd(b);
-    if (trimmedDecimal) {
-      return Number(`${a}.${b}`);
-    }
-    return Number(a);
-  }
-  return Number(number);
-};
-
-export const normalizeFloatTo4Decimals = (number: number | string): number => {
-  const str = number.toString();
-  if (str.indexOf(".") > 0) {
-    const [a, b] = str.split(".");
-    const number = Number(`${a}.${b.slice(0, 4)}`);
-    return normalizeFloat(number)
-  }
-  return Number(str);
-};
-
 
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
