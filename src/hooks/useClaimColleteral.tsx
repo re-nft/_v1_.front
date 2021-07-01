@@ -1,17 +1,15 @@
 import { BigNumber } from "ethers";
 import { useCallback, useContext, useMemo } from "react";
+import { Nft } from "../contexts/graph/classes";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
 import { getReNFT } from "../services/get-renft-instance";
+import { sortNfts } from "../utils";
 
 export const useClaimColleteral = (): ((
-  nfts: {
-    address: string;
-    tokenId: string;
-    lendingId: string;
-  }[]
+  nfts: Nft[]
 ) => Promise<void | boolean>) => {
   const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
@@ -26,18 +24,15 @@ export const useClaimColleteral = (): ((
 
   return useCallback(
     (
-      nfts: {
-        address: string;
-        tokenId: string;
-        lendingId: string;
-      }[]
+      nfts: Nft[]
     ) => {
       if (!renft) return Promise.reject();
+      const sortedNfts = nfts.sort(sortNfts)
       return renft
         .claimCollateral(
-          nfts.map((nft) => nft.address),
-          nfts.map((nft) => BigNumber.from(nft.tokenId)),
-          nfts.map((nft) => BigNumber.from(nft.lendingId))
+          sortedNfts.map((nft) => nft.address),
+          sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
+          sortedNfts.map((nft) => BigNumber.from(nft.lendingId))
         )
         .then((tx) => {
           if (tx) return setHash(tx.hash);

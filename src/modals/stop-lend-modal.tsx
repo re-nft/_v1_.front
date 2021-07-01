@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from "react";
 import { Button } from "../components/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
-import { Lending } from "../contexts/graph/classes";
-import { ReturnNft } from "../hooks/useReturnIt";
+import { Lending, Nft } from "../contexts/graph/classes";
 import { useStopLend } from "../hooks/useStopLend";
 import { TransactionStateEnum } from "../types";
 import Modal from "./modal";
 
 type ReturnModalProps = {
   open: boolean;
-  onClose: (nfts?: ReturnNft[]) => void;
+  onClose: (nfts?: Nft[]) => void;
   nfts: Lending[];
 };
 

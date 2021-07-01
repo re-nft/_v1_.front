@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from "react";
 import { Button } from "../components/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
-import { Lending } from "../contexts/graph/classes";
+import { Lending, Nft } from "../contexts/graph/classes";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
-import { ReturnNft } from "../hooks/useReturnIt";
 import { TransactionStateEnum } from "../types";
 import Modal from "./modal";
 
 type ReturnModalProps = {
   open: boolean;
-  onClose: (nfts?: ReturnNft[]) => void;
+  onClose: (nfts?: Nft[]) => void;
   nfts: Lending[];
 };
 
@@ -24,13 +23,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   
   const claimCollateral = useCallback(
     async (items: Lending[]) => {
-      const claims = items.map((lending) => ({
-        address: lending.address,
-        tokenId: lending.tokenId,
-        lendingId: lending.id,
-        amount: lending.amount,
-      }));
-      return claim(claims).then((status) => {
+      return claim(items).then((status) => {
         // if (status)
         //   handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
         return Promise.resolve(status)  

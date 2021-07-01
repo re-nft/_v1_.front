@@ -24,6 +24,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       lendingId: nft.lending.id,
       rentDuration: "",
       paymentToken: nft.lending.paymentToken,
+      isERC721: nft.isERC721
     }));
   }, [nft]);
 

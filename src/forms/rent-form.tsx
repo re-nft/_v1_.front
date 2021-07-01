@@ -58,6 +58,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         lendingId: nft.lending.id,
         rentDuration: (nft.duration as number).toString(),
         paymentToken: nft.lending.paymentToken,
+        isERC721: nft.isERC721
       }))
     )
       .then(([status, closeWindow]) => {

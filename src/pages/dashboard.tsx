@@ -263,7 +263,7 @@ const RentingRow: React.FC<{
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
-    checkBoxChangeWrapped(rent);
+    checkBoxChangeWrapped(rent)();
     openModal(true);
   }, [checkBoxChangeWrapped, openModal, rent]);
   const days = renting.rentDuration;

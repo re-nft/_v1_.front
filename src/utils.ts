@@ -142,7 +142,7 @@ export const normalizeFloat = (number: number | string): number => {
     if (b.slice(3, 4) === "0") {
       if (b.slice(2, 3) === "0") {
         if (b.slice(1, 2) === "0") {
-          if(b.slice(0,1)  === "0"){
+          if (b.slice(0, 1) === "0") {
             return Number(a);
           }
           return Number(`${a}.${b.slice(0, 1)}`);
@@ -301,4 +301,23 @@ export const nftReturnIsExpired = (rent: Renting): boolean => {
       1000 <
     moment.now();
   return isExpired;
+};
+
+enum EQUALITY {
+  LESS = -1,
+  EQUAL = 0,
+  GREATER = 1,
+}
+export const sortNfts = (
+  a: { tokenId: string; isERC721: boolean },
+  b: { tokenId: string; isERC721: boolean }
+): EQUALITY => {
+  {
+    if (a.isERC721 === b.isERC721) {
+      if (a.tokenId < b.tokenId) return EQUALITY.LESS;
+      if (a.tokenId > b.tokenId) return EQUALITY.GREATER;
+      return EQUALITY.EQUAL;
+    }
+    return a.isERC721 ? EQUALITY.LESS : EQUALITY.GREATER;
+  }
 };

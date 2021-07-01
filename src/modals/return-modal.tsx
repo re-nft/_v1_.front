@@ -8,7 +8,7 @@ import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
-import { ReturnNft, useReturnIt } from "../hooks/useReturnIt";
+import { useReturnIt } from "../hooks/useReturnIt";
 import isApprovalForAll from "../services/is-approval-for-all";
 import setApprovalForAll from "../services/set-approval-for-all";
 import { TransactionStateEnum } from "../types";
@@ -17,7 +17,7 @@ import Modal from "./modal";
 type ReturnModalProps = {
   nfts: Renting[];
   open: boolean;
-  onClose: (nfts?: ReturnNft[]) => void;
+  onClose: (nfts?: Nft[]) => void;
 };
 
 export const ReturnModal: React.FC<ReturnModalProps> = ({
@@ -92,15 +92,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const handleReturnNft = useCallback(async () => {
     setIsLoading(true)
     setStatus(TransactionStateEnum.PENDING)
-    const items = nfts.map((item) => ({
-      id: item.id,
-      address: item.address,
-      tokenId: item.tokenId,
-      lendingId: item.renting.lendingId,
-      amount: item.renting.lending.lentAmount,
-      contract: item.contract,
-    }));
-    const isSuccess = await returnIt(items)
+    const isSuccess = await returnIt(nfts)
       .then((r) => r)
       .catch((e) => {
         setIsLoading(false);

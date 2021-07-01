@@ -2,7 +2,7 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber } from "ethers";
-import { getDistinctItems, getE20 } from "../utils";
+import { getDistinctItems, getE20, sortNfts } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
@@ -21,6 +21,7 @@ export type StartRentNft = {
   lendingId: string;
   rentDuration: string;
   paymentToken: PaymentToken;
+  isERC721: boolean;
 };
 
 export const useStartRent = (): {
@@ -126,19 +127,20 @@ export const useStartRent = (): {
     async (nfts: StartRentNft[]) => {
       if (!renft) return Promise.resolve();
 
-      const addresses = nfts.map((nft) => nft.address);
-      const tokenIds = nfts.map((nft) => BigNumber.from(nft.tokenId));
-      const lendingIds = nfts.map((nft) => BigNumber.from(nft.lendingId));
-      const rentDurations = nfts.map((nft) => Number(nft.rentDuration));
+      const sortedNfts = nfts.sort(sortNfts)
+      const addresses = sortedNfts.map((nft) => nft.address);
+      const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
+      const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
+      const rentDurations = sortedNfts.map((nft) => Number(nft.rentDuration));
 
       debug("addresses", addresses);
       debug(
         "tokenIds",
-        nfts.map((nft) => nft.tokenId)
+        sortedNfts.map((nft) => nft.tokenId)
       );
       debug(
         "lendingIds",
-        nfts.map((nft) => nft.lendingId)
+        sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
       debug("contractAddress", contractAddress);

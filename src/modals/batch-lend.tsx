@@ -15,6 +15,7 @@ import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import UserContext from "../contexts/UserProvider";
+import { sortNfts } from "../utils";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -38,7 +39,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const { setError } = useContext(SnackAlertContext);
 
   const handleLend = useCallback(
-    (lendingInputs: LendInputDefined[]): Promise<[boolean | void, () => void]> => {
+    (
+      lendingInputs: LendInputDefined[]
+    ): Promise<[boolean | void, () => void]> => {
       const lendAmountsValues: number[] = [];
       const maxDurationsValues: number[] = [];
       const borrowPriceValues: number[] = [];
@@ -47,14 +50,17 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       const tokenIds: BigNumber[] = [];
       const pmtTokens: number[] = [];
 
-      Object.values(lendingInputs).forEach((item) => {
+      const sortedNfts = Object.values(lendingInputs)
+        .map((a) => ({ ...a.nft, ...a }))
+        .sort(sortNfts);
+      sortedNfts.forEach((item) => {
         lendAmountsValues.push(item.lendAmount);
         maxDurationsValues.push(item.maxDuration);
         borrowPriceValues.push(item.borrowPrice);
         nftPriceValues.push(item.nftPrice);
         pmtTokens.push(item.pmToken);
       });
-      nfts.forEach(({ address, tokenId }) => {
+      sortedNfts.forEach(({ address, tokenId }) => {
         addresses.push(address);
         tokenIds.push(BigNumber.from(tokenId));
       });
@@ -75,7 +81,7 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
       });
     },
 
-    [startLend, nfts, onClose]
+    [startLend, onClose]
   );
 
   const handleApproveAll = useCallback(() => {
@@ -126,13 +132,15 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
   return (
     <Modal open={open} handleClose={onClose}>
-      {open && <LendForm
-        nfts={nfts}
-        isApproved={isApproved}
-        handleApproveAll={handleApproveAll}
-        handleSubmit={handleLend}
-        isApprovalLoading={isApprovalLoading}
-      ></LendForm>}
+      {open && (
+        <LendForm
+          nfts={nfts}
+          isApproved={isApproved}
+          handleApproveAll={handleApproveAll}
+          handleSubmit={handleLend}
+          isApprovalLoading={isApprovalLoading}
+        ></LendForm>
+      )}
     </Modal>
   );
 };

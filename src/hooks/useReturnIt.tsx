@@ -1,20 +1,16 @@
 import { BigNumber } from "ethers";
 import { useCallback, useContext, useMemo } from "react";
+import { Renting } from "../contexts/graph/classes";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
 import { getReNFT } from "../services/get-renft-instance";
+import { sortNfts } from "../utils";
 
-export type ReturnNft = {
-  id: string;
-  address: string;
-  tokenId: string;
-  lendingId: string;
-};
 
 export const useReturnIt = (): ((
-  nfts: ReturnNft[]
+  nfts: Renting[]
 ) => Promise<void | boolean>) => {
   const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
@@ -28,15 +24,15 @@ export const useReturnIt = (): ((
   }, [contractAddress, signer]);
 
   return useCallback(
-    async (nfts: ReturnNft[]) => {
+    async (nfts: Renting[]) => {
       if (!renft) return;
       if (nfts.length < 1) return;
-
+      const sortedNfts = nfts.sort(sortNfts)
       return await renft
         .returnIt(
-          nfts.map((nft) => nft.address),
-          nfts.map((nft) => BigNumber.from(nft.tokenId)),
-          nfts.map((nft) => BigNumber.from(nft.lendingId))
+          sortedNfts.map((nft) => nft.address),
+          sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
+          sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
         )
         .then((tx) => {
           if (tx) return setHash(tx.hash);
