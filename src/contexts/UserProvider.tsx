@@ -93,6 +93,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
+    if(!window || !window.ethereum) return;
     const request = createCancellablePromise<unknown[]>(
       window.ethereum.request({ method: "wallet_getPermissions" })
     );
