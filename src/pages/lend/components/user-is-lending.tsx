@@ -77,11 +77,11 @@ const UserCurrentlyLending: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center">Please connect your wallet!</div>;
+    return <div className="center content__message">Please connect your wallet!</div>;
   }
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You are not lending anything yet</div>;
+    return <div className="center content__message">You are not lending anything yet</div>;
 
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (

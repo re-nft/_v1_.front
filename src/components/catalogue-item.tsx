@@ -149,7 +149,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   return (
     <div
       ref={ref}
-      className={`nft ${isChecked ? "checked" : ""}`}
+      className={`nft ${isChecked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >

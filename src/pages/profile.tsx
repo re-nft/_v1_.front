@@ -4,6 +4,7 @@ import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useLookupAddress } from "../hooks/useLookupAddress";
+import UserContext from "../contexts/UserProvider";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
@@ -11,6 +12,7 @@ const Profile: React.FC = () => {
   const lookupName = useLookupAddress();
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const { signer } = useContext(UserContext);
 
   const onSubmit = useCallback(
     (e) => {
@@ -44,6 +46,10 @@ const Profile: React.FC = () => {
       setBio(userData?.bio || "");
     }
   }, [userData]);
+
+  if (!signer) {
+    return <div className="center content__message">Please connect your wallet!</div>;
+  }
 
   if (isLoading) {
     return <CatalogueLoader />;

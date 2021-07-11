@@ -76,14 +76,14 @@ const UserRentings: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center">Please connect your wallet!</div>;
+    return <div className="center content__message">Please connect your wallet!</div>;
   }
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You are not renting anything yet</div>;
+    return <div className="center content__message">You are not renting anything yet</div>;
   }
 
   return (

@@ -11,8 +11,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ShortenPopover: React.FC<{ longString: string }> = ({
+export const ShortenPopover: React.FC<{ longString: string, dataCy?:string }> = ({
   longString,
+  dataCy
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,7 +56,7 @@ export const ShortenPopover: React.FC<{ longString: string }> = ({
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <Typography>{longString}</Typography>
+        <Typography data-cy={dataCy}>{longString}</Typography>
       </Popover>
     </>
   );

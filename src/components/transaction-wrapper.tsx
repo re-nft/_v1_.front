@@ -49,7 +49,7 @@ export const TransactionWrapper: React.FC<{
   return (
     <>
       {transactionLoading ? (
-        <div style={{ display: "block" }}>
+        <div style={{ display: "block" }} data-cy='transaction-loading'>
           <img src={imageSource}></img>
           {transactionHashes?.map((hash) => {
             return (

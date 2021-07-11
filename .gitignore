@@ -33,3 +33,7 @@ yarn-error.log*
 src/hardhat/SymfoniContext.tsx
 src/hardhat/typechain/factories/**/*.tsx
 src/hardhat/typechain/factories/**/*.ts
+
+#ignore
+cypress/other/**/**.js
+cypress/videos

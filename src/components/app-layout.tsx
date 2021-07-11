@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
   Link,
-  NavLink,
+  NavLink
 } from "react-router-dom";
 import Layout from "./layout";
 import Rent from "../pages/rent";
@@ -30,15 +30,15 @@ const debug = createDebugger("app:layout");
 const ROUTES = [
   {
     path: "/",
-    name: "Rent",
+    name: "Rent"
   },
   {
     path: "/lend",
-    name: "Lend",
+    name: "Lend"
   },
   {
     path: "/dashboard",
-    name: "My Dashboard",
+    name: "My Dashboard"
   },
   // {
   //   path: "/favourites",
@@ -50,8 +50,8 @@ const ROUTES = [
   // },
   {
     path: "/faq",
-    name: "FAQ",
-  },
+    name: "FAQ"
+  }
 ];
 const InstallMetamask = () => {
   return (
@@ -145,7 +145,7 @@ const App: React.FC = () => {
       setUsername(userData?.name);
     }
   }, [userData]);
-  const showMint = process.env.REACT_APP_SHOW_MINT === 'true'
+  const showMint = process.env.REACT_APP_SHOW_MINT === "true";
 
   return (
     <Layout>
@@ -155,6 +155,7 @@ const App: React.FC = () => {
             <div className="header__logo"></div>
             {!installMetaMask && !currentAddress ? (
               <Button
+                datacy="metamask-connect-button"
                 handleClick={connect}
                 description="Please connect your wallet!"
               />
@@ -166,7 +167,10 @@ const App: React.FC = () => {
                   <>
                     {network} &nbsp;
                     <Link className="" to="/profile">
-                      <ShortenPopover longString={username || lookupAddress ||  currentAddress}/>
+                      <ShortenPopover
+                        longString={username || lookupAddress || currentAddress}
+                        data-cy="metamask-connect-button"
+                      />
                     </Link>
                   </>
                 )}

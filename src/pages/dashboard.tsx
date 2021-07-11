@@ -79,7 +79,7 @@ export const Dashboard: React.FC = () => {
   }, [lendinItemsStopLendable]);
 
   if (!signer) {
-    return <div className="center">Please connect your wallet!</div>;
+    return <div className="center content__message">Please connect your wallet!</div>;
   }
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
@@ -87,7 +87,7 @@ export const Dashboard: React.FC = () => {
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center">
+      <div className="center content__message">
         You aren&apos;t lending or renting yet. To start lending, head to the
         lend tab.
       </div>

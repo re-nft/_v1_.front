@@ -67,7 +67,7 @@ const Lendings: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center">Please connect your wallet!</div>;
+    return <div className="center content__message">Please connect your wallet!</div>;
   }
 
   if (isLoading && currentPage.length === 0) {
@@ -75,7 +75,7 @@ const Lendings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You don&apos;t have any NFTs to lend</div>;
+    return <div className="center content__message">You don&apos;t have any NFTs to lend</div>;
   }
 
   return (

@@ -76,7 +76,7 @@ const AvailableToRent: React.FC = () => {
 
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You cant rent anything yet</div>;
+    return <div className="center content__message">You can&apos;t rent anything yet</div>;
 
   return (
     <>
