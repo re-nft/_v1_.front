@@ -15,7 +15,9 @@ describe("Lending", () => {
       });
       it("user has an i721a", () => {
         cy.visit("/lend");
-        cy.wait(20_000);
+        //TODO this is a bug
+        cy.wait(25_000);
+        //TODO should be one, but keep rerunning the same tests
         cy.get(".content__items .nft.nft__erc721").should(
           "have.length.at.least",
           1
@@ -28,57 +30,72 @@ describe("Lending", () => {
           ".modal-dialog .modal-dialog-section .modal-dialog-section"
         ).should("have.length", 1);
       });
-      // it("can approve the nft to lend without filling out details", () => {
-      //   cy.get(
-      //     ".modal-dialog-button > :nth-child(1) > .nft__control > .nft__button"
-      //   ).click();
-      // });
-      // it("loading state is shown while approval is mined", () => {
-      //   cy.get('[data-cy="transaction-loading"]');
-      //   cy.confirmMetamaskTransaction();
-      // });
+      it("if approve button shows can approve the nft to lend without filling out details", () => {
+        //TODO this is complicated because i keep rerunning the test, also using the same hardhat node, without restart
+        cy.get("body").then(($body) => {
+          if (
+            $body.find(".nft__control .nft__button:disabled")
+              .length > 0
+          ) {
+            // lend button, do nothing
+          }else {
+            // approve case, approve nft
+            cy.wait(2000)
+            cy.get(
+              ".modal-dialog-button > :nth-child(1) > .nft__control > .nft__button"
+            ).click();
+            cy.get('[data-cy="transaction-loading"]');
+            cy.confirmMetamaskTransaction();
+            cy.wait(2000);
+          }
+        });
+      });
       it("lending button is shown with disabled state after approval successful", () => {
-        cy.wait(2000);
         cy.get(".nft__control .nft__button").should("be.disabled");
       });
       it("can fills out i721 lending details after approval", () => {
         cy.get("#inputs\\.0\\.maxDuration").type("10");
         cy.get("#inputs\\.0\\.borrowPrice").type("10");
         cy.get("#inputs\\.0\\.nftPrice").type("10");
-        cy.selectWETH()
+        cy.selectWETH();
       });
       it("can click on lending button", () => {
-        cy.get(".modal-dialog-button > :nth-child(1) > .nft__control > .nft__button").should("not.be.disabled").click();
+        cy.get(
+          ".modal-dialog-button > :nth-child(1) > .nft__control > .nft__button"
+        )
+          .should("not.be.disabled")
+          .click();
       });
       it("lending button changes to loading state", () => {
         cy.get('[data-cy="transaction-loading"]');
       });
-      it('lending modal self closes after successful transaction', () => {
+      it("lending modal self closes after successful transaction", () => {
         cy.confirmMetamaskTransaction();
-        cy.wait(2000)
+        cy.wait(2000);
         cy.get("body").then(($body) => {
           if ($body.find(".modal-dialog").length) {
-            cy.get('.modal-dialog').should('not.be.visible')
+            cy.get(".modal-dialog").should("not.be.visible");
           }
         });
-      })
+      });
 
       it("then the items shows up in is-lending screen", () => {
         cy.get(".toggle").click();
+        // graph returns 
         cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
       });
-      // it("and the item shows up in dashboard lending section with correct details", () => {
-      //   cy.visit("/dashboard").click();
-      //   cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
-      // });
-      // it("and the item shows up in renting", () => {
-      //   cy.visit("/renting");
-      //   cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
-      // });
-      // it("and the item shows up in different user renting tab", () => {
-      //   cy.changeAccount(2);
-      //   cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
-      // });
+      it("and the item shows up in dashboard lending section with correct details", () => {
+        cy.visit("/dashboard").click();
+        cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
+      });
+      it("and the item shows up in renting", () => {
+        cy.visit("/renting");
+        cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
+      });
+      it("and the item shows up in different user renting tab", () => {
+        cy.changeAccount(2);
+        cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
+      });
     });
   });
 });
