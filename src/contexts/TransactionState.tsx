@@ -26,7 +26,7 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 );
 TransactionStateContext.displayName = "TransactionStateContext";
 
-const NUMBER_OF_CONFIRMATIONS = 1;
+const NUMBER_OF_CONFIRMATIONS = 1; //let's make it 5, so graph has time to sync
 const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
 
 // save transaction hashes for each address and hashes

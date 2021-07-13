@@ -158,7 +158,7 @@ export const LendForm: React.FC<LendFormProps> = ({
 
 const isInteger = (field: string | number): boolean => {
   try {
-    return field !== parseInt(field.toString(), 10);
+    return field != parseInt(field.toString(), 10);
   } catch (_) {
     return false;
   }

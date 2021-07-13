@@ -31,8 +31,15 @@ interface ILendInput {
   disabled: boolean;
 }
 export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
-  const { lendingInput, index, handleChange, handleBlur, errors, touched, disabled } =
-    input;
+  const {
+    lendingInput,
+    index,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    disabled
+  } = input;
   const only1Item =
     Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
   return (
@@ -50,7 +57,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Amount"
           variant="outlined"
           value={lendingInput.lendAmount ?? ""}
-          type="number"
+          inputProps={{ inputMode: 'numeric', pattern: '^[1-9][0-9]*$' }}
           onChange={only1Item ? voidFn : handleChange}
           onBlur={only1Item ? voidFn : handleBlur}
           id={`inputs.${index}.lendAmount`}
@@ -71,7 +78,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Max lend duration"
           variant="outlined"
           value={lendingInput?.maxDuration ?? ""}
-          type="number"
+          inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{0,3}$' }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.maxDuration`}
@@ -91,7 +98,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Borrow Price"
           variant="outlined"
           value={lendingInput.borrowPrice ?? ""}
-          type="number"
+          inputProps={{ inputMode: 'numeric', pattern: '^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$' }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.borrowPrice`}
@@ -111,9 +118,10 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Collateral"
           variant="outlined"
           value={lendingInput.nftPrice ?? ""}
-          type="number"
+          inputProps={{ inputMode: 'numeric', pattern: '^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$' }}
           onChange={handleChange}
           onBlur={handleBlur}
+          
           id={`inputs.${index}.nftPrice`}
           name={`inputs.${index}.nftPrice`}
           error={
