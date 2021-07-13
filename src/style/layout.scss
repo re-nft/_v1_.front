@@ -163,11 +163,12 @@
     }
   
     &__logo {
-      background-image: url(./img/logo.jpg);
-      background-size: auto 90px;
+      margin-top: 30px;
+      background-image: url(./img/logo.svg);
+      background-size: auto 50px;
       background-repeat: no-repeat;
-      height: 90px;
-      width: 290px;
+      height: 50px;
+      width: 145px;
       flex-grow: 1;
     }
   }

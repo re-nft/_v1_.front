@@ -152,7 +152,7 @@ const App: React.FC = () => {
       <Router>
         <div className="content-wrapper mb-l">
           <div className="header">
-            <div className="header__logo"></div>
+            <div className="header__logo" ></div>
             {!installMetaMask && !currentAddress ? (
               <Button
                 datacy="metamask-connect-button"
