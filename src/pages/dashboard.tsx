@@ -194,7 +194,7 @@ export const Dashboard: React.FC = () => {
           />
           {lendingItems.length !== 0 && (
             <div className="dashboard-section">
-              <h2 className="lending">Lending</h2>
+              <h2 className="dashboard-header dashboard-header__lending"></h2>
               <h3 style={{ color: "white", marginBottom: "1em" }}>
                 Here you will find The NFTs That you are lending. These can also
                 be found in The Lending tab after you toggle The view.
@@ -245,7 +245,7 @@ export const Dashboard: React.FC = () => {
           )}
           {rentingItems.length !== 0 && (
             <div className="dashboard-section">
-              <h2 className="renting">Renting</h2>
+              <h2 className="dashboard-header dashboard-header__renting"></h2>
               <h3 style={{ color: "white", marginBottom: "1em" }}>
                 Here you will find The NFTs That you are renting. These can also
                 be found in The renting tab, after you toggle The view.
