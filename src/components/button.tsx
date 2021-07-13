@@ -7,14 +7,16 @@ type ButtonProps = {
   datacy?: string
 };
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = React.forwardRef(({
   disabled,
   handleClick,
   description,
-  datacy
-}) => {
+  datacy,
+}, ref) => {
   return (
     <button
+      //@ts-ignore
+      ref={ref}
       className={`nft__button small ${disabled ? "disabled" : ""}`}
       disabled={disabled}
       onClick={handleClick}
@@ -23,4 +25,5 @@ export const Button: React.FC<ButtonProps> = ({
       {description}
     </button>
   );
-};
+});
+Button.displayName="Button"

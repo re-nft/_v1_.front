@@ -5,7 +5,7 @@ import { Lending, Nft, Renting } from "../contexts/graph/classes";
 import {
   getUniqueCheckboxId,
   isClaimable,
-  useBatchItems,
+  useBatchItems
 } from "../controller/batch-controller";
 import CatalogueLoader from "../components/catalogue-loader";
 import { PaymentToken } from "../types";
@@ -24,10 +24,11 @@ import { CountDown } from "../components/countdown";
 import ReturnModal from "../modals/return-modal";
 import StopLendModal from "../modals/stop-lend-modal";
 import ClaimModal from "../modals/claim-modal";
+import { Tooltip } from "@material-ui/core";
 
 enum DashboardViewType {
   LIST_VIEW,
-  MINIATURE_VIEW,
+  MINIATURE_VIEW
 }
 
 export const Dashboard: React.FC = () => {
@@ -44,7 +45,7 @@ export const Dashboard: React.FC = () => {
     checkedItems,
     checkedLendingItems,
     checkedRentingItems,
-    checkedClaims,
+    checkedClaims
   } = useBatchItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);
@@ -55,6 +56,32 @@ export const Dashboard: React.FC = () => {
   );
 
   const isLoading = userLendingLoading || userRentingLoading;
+
+  const relendedLendingItems = useMemo(() => {
+    if (!rentingItems) return [];
+    const ids = new Set(
+      rentingItems.map((r) => `${r.nftAddress}:${r.tokenId}`)
+    );
+    return lendingItems.map((l) => {
+      return {
+        ...l,
+        relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+      };
+    });
+  }, [lendingItems, rentingItems]);
+
+  const relendedRentingItems = useMemo(() => {
+    if (!rentingItems) return [];
+    const ids = new Set(
+      lendingItems.map((r) => `${r.nftAddress}:${r.tokenId}`)
+    );
+    return rentingItems.map((l) => {
+      return {
+        ...l,
+        relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+      };
+    });
+  }, [lendingItems, rentingItems]);
 
   const lendinItemsStopLendable = useMemo(() => {
     return checkedLendingItems.filter((v) => !v.renting);
@@ -79,7 +106,9 @@ export const Dashboard: React.FC = () => {
   }, [lendinItemsStopLendable]);
 
   if (!signer) {
-    return <div className="center content__message">Please connect your wallet!</div>;
+    return (
+      <div className="center content__message">Please connect your wallet!</div>
+    );
   }
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
@@ -144,6 +173,8 @@ export const Dashboard: React.FC = () => {
               <Table className="list">
                 <Thead>
                   <Tr>
+                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
+
                     <Th style={{ widTh: "15%" }}>Address</Th>
                     <Th style={{ widTh: "7%" }}>ID</Th>
                     <Th style={{ widTh: "5%" }}>Amount</Th>
@@ -151,7 +182,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "11%" }}>Collateral</Th>
                     <Th style={{ widTh: "7%" }}>Daily Price</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>
-                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
+                    <Th style={{ widTh: "7%" }}>Relended</Th>
                     <Th style={{ widTh: "10%" }} className="action-column">
                       &nbsp;
                     </Th>
@@ -161,22 +192,24 @@ export const Dashboard: React.FC = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {lendingItems.map((lend: Lending) => {
-                    const id = getUniqueCheckboxId(lend);
-                    const hasRenting = !!lend.renting;
-                    const checked = !!checkedItems[id];
-                    return (
-                      <LendingRow
-                        key={id}
-                        hasRenting={hasRenting}
-                        checked={checked}
-                        lend={lend}
-                        openClaimModal={toggleClaimModal}
-                        openLendModal={toggleLendModal}
-                        checkBoxChangeWrapped={checkBoxChangeWrapped}
-                      ></LendingRow>
-                    );
-                  })}
+                  {relendedLendingItems.map(
+                    (lend: Lending & { relended: boolean }) => {
+                      const id = getUniqueCheckboxId(lend);
+                      const hasRenting = !!lend.renting;
+                      const checked = !!checkedItems[id];
+                      return (
+                        <LendingRow
+                          key={id}
+                          hasRenting={hasRenting}
+                          checked={checked}
+                          lend={lend}
+                          openClaimModal={toggleClaimModal}
+                          openLendModal={toggleLendModal}
+                          checkBoxChangeWrapped={checkBoxChangeWrapped}
+                        ></LendingRow>
+                      );
+                    }
+                  )}
                 </Tbody>
               </Table>
             </div>
@@ -191,37 +224,40 @@ export const Dashboard: React.FC = () => {
               <Table className="list">
                 <Thead>
                   <Tr>
+                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
                     <Th style={{ widTh: "15%" }}>Address</Th>
                     <Th style={{ widTh: "5%" }}>ID</Th>
                     <Th style={{ widTh: "5%" }}>Amount</Th>
                     <Th style={{ widTh: "7%" }}>$</Th>
                     <Th style={{ widTh: "7%" }}>Collateral</Th>
-                    <Th style={{ widTh: "11%" }}>Rented On</Th>
-                    <Th style={{ widTh: "7%" }}>Duration</Th>
-                    <Th style={{ widTh: "7%" }}>Due Date</Th>
                     <Th style={{ widTh: "7%" }}>Daily Price</Th>
-                    <Th style={{ widTh: "7%" }}>Batch Select</Th>
+                    <Th style={{ widTh: "7%" }}>Duration</Th>
+                    <Th style={{ widTh: "11%" }}>Rented On</Th>
+                    <Th style={{ widTh: "7%" }}>Due Date</Th>
+
                     <Th style={{ widTh: "20%" }} className="action-column">
                       &nbsp;
                     </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {rentingItems.map((rent: Renting) => {
-                    const checked = !!checkedItems[getUniqueCheckboxId(rent)];
-                    const isExpired = nftReturnIsExpired(rent);
-                    return (
-                      <RentingRow
-                        checked={checked}
-                        rent={rent}
-                        key={getUniqueCheckboxId(rent)}
-                        openModal={toggleReturnModal}
-                        currentAddress={currentAddress}
-                        checkBoxChangeWrapped={checkBoxChangeWrapped}
-                        isExpired={isExpired}
-                      ></RentingRow>
-                    );
-                  })}
+                  {relendedRentingItems.map(
+                    (rent: Renting & { relended: boolean }) => {
+                      const checked = !!checkedItems[getUniqueCheckboxId(rent)];
+                      const isExpired = nftReturnIsExpired(rent);
+                      return (
+                        <RentingRow
+                          checked={checked}
+                          rent={rent}
+                          key={getUniqueCheckboxId(rent)}
+                          openModal={toggleReturnModal}
+                          currentAddress={currentAddress}
+                          checkBoxChangeWrapped={checkBoxChangeWrapped}
+                          isExpired={isExpired}
+                        ></RentingRow>
+                      );
+                    }
+                  )}
                 </Tbody>
               </Table>
             </div>
@@ -248,7 +284,7 @@ export const Dashboard: React.FC = () => {
 
 const RentingRow: React.FC<{
   checked: boolean;
-  rent: Renting;
+  rent: Renting & { relended: boolean };
   openModal: (t: boolean) => void;
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
@@ -259,21 +295,39 @@ const RentingRow: React.FC<{
   checkBoxChangeWrapped,
   currentAddress,
   isExpired,
-  openModal,
+  openModal
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
     checkBoxChangeWrapped(rent)();
     openModal(true);
-  }, [checkBoxChangeWrapped, openModal, rent]);
+  }, [checkBoxChangeWrapped, openModal]);
+  const handleRowClicked = useCallback(() => {
+    if (isExpired || rent.relended) return;
+    checkBoxChangeWrapped(rent)();
+  }, [checkBoxChangeWrapped, rent, isExpired]);
   const days = renting.rentDuration;
 
   const expireDate = moment(Number(renting.rentedAt) * 1000).add(
     renting.rentDuration,
     "day"
   );
+  let tooltip = "Return NFT";
+  tooltip = isExpired
+    ? "The NFT is expired. You cannot return it anymore."
+    : tooltip;
+  tooltip = rent.relended
+    ? "Please stop lending this item first. Then you can return it!"
+    : tooltip;
   return (
-    <Tr>
+    <Tr onClick={handleRowClicked}>
+      <Td className="action-column">
+        <Checkbox
+          handleClick={checkBoxChangeWrapped(rent)}
+          checked={checked}
+          disabled={isExpired || rent.relended}
+        />
+      </Td>
       <Td className="column">{short(renting.lending.nftAddress)}</Td>
       <Td className="column">{rent.tokenId}</Td>
       <Td className="column">{renting.lending.lentAmount}</Td>
@@ -283,31 +337,29 @@ const RentingRow: React.FC<{
       <Td className="column">
         {renting.lending.nftPrice * Number(renting.lending.lentAmount)}
       </Td>
+      <Td className="column">{renting.lending.dailyRentPrice}</Td>
+      <Td className="column">
+        {days} {days > 1 ? "days" : "day"}
+      </Td>
 
       <Td className="column">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
       </Td>
       <Td className="column">
-        {days} {days > 1 ? "days" : "day"}
-      </Td>
-      <Td className="column">
         <CountDown endTime={expireDate.toDate().getTime()} />
       </Td>
-      <Td className="column">{renting.lending.dailyRentPrice}</Td>
-      <Td className="action-column">
-        <Checkbox
-          handleClick={checkBoxChangeWrapped(rent)}
-          checked={checked}
-          disabled={isExpired}
-        />
-      </Td>
+
       <Td className="action-column">
         {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
-          <Button
-            handleClick={handleClick}
-            disabled={checked || isExpired}
-            description="Return it"
-          />
+          <Tooltip title={tooltip} aria-label={tooltip}>
+            <span>
+              <Button
+                handleClick={handleClick}
+                disabled={checked || isExpired || rent.relended}
+                description="Return it"
+              />
+            </span>
+          </Tooltip>
         )}
       </Td>
     </Tr>
@@ -316,7 +368,7 @@ const RentingRow: React.FC<{
 
 // this keeps rerendering
 export const LendingRow: React.FC<{
-  lend: Lending;
+  lend: Lending & { relended: boolean };
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   checked: boolean;
   hasRenting: boolean;
@@ -328,7 +380,7 @@ export const LendingRow: React.FC<{
   checked,
   hasRenting,
   openLendModal,
-  openClaimModal,
+  openClaimModal
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);
@@ -341,19 +393,39 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
-  
+
   const handleClaim = useCallback(() => {
     if (!claimable) return;
-    checkBoxChangeWrapped(lend)()
+    checkBoxChangeWrapped(lend)();
     openClaimModal(true);
   }, [claimable, checkBoxChangeWrapped, lend, openClaimModal]);
 
   const handleClickLend = useCallback(() => {
-    checkBoxChangeWrapped(lend)()
+    checkBoxChangeWrapped(lend)();
     openLendModal(true);
   }, [checkBoxChangeWrapped, lend, openLendModal]);
+
+  const onRowClick = useCallback(() => {
+    if (hasRenting && !claimable) return;
+    checkBoxChangeWrapped(lend)();
+  }, [checkBoxChangeWrapped, lend, hasRenting, claimable]);
+  const claimTooltip = claimable
+    ? "The NFT renting period is over. Click to claim your collateral."
+    : hasRenting
+    ? "The item is not claimable yet or already claimed."
+    : "No one rented the item as so far.";
+  const lendTooltip = hasRenting
+    ? "The item is rented out. You have to wait until the renter returns the item."
+    : "Click to stop lending this item.";
   return (
-    <Tr>
+    <Tr onClick={onRowClick}>
+      <Td className="action-column">
+        <Checkbox
+          handleClick={checkBoxChangeWrapped(lend)}
+          checked={checked}
+          disabled={hasRenting && !claimable}
+        />
+      </Td>
       <Td className="column">
         <ShortenPopover longString={lending.nftAddress}></ShortenPopover>
       </Td>
@@ -363,26 +435,28 @@ export const LendingRow: React.FC<{
       <Td className="column">{lending.nftPrice * Number(lend.amount)}</Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
+      <Td className="column">{lend.relended ? "yes" : "no"}</Td>
       <Td className="action-column">
-        <Checkbox
-          handleClick={checkBoxChangeWrapped(lend)}
-          checked={checked}
-          disabled={hasRenting && !claimable}
-        />
+        <Tooltip title={claimTooltip} aria-label={claimTooltip}>
+          <span>
+            <Button
+              handleClick={handleClaim}
+              disabled={checked || !claimable}
+              description="Claim"
+            />
+          </span>
+        </Tooltip>
       </Td>
       <Td className="action-column">
-        <Button
-          handleClick={handleClaim}
-          disabled={checked || !claimable}
-          description="Claim"
-        />
-      </Td>
-      <Td className="action-column">
-        <Button
-          handleClick={handleClickLend}
-          disabled={checked || hasRenting}
-          description="Stop lend"
-        />
+        <Tooltip title={lendTooltip} aria-label={lendTooltip}>
+          <span>
+            <Button
+              handleClick={handleClickLend}
+              disabled={checked || hasRenting}
+              description="Stop lend"
+            />
+          </span>
+        </Tooltip>
       </Td>
     </Tr>
   );
