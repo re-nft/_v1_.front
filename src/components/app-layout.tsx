@@ -7,8 +7,8 @@ import {
   NavLink
 } from "react-router-dom";
 import Layout from "./layout";
-import Rent from "../pages/rent";
-import Lend from "../pages/lend";
+import Rent, { RentSpecificity } from "../pages/rent";
+import Lend, { LendSpecificity } from "../pages/lend";
 import Faq from "../pages/faq";
 import Dashboard from "../pages/dashboard";
 import MyFavorites from "../pages/favourites";
@@ -188,6 +188,8 @@ const App: React.FC = () => {
                 to={route.path}
                 isActive={(_, location) => {
                   if (location.pathname === route.path) return true;
+                  if (location.pathname === '/user-is-renting' && route.path === '/') return true;
+                  if (location.pathname === '/user-is-lending' && route.path === '/lend') return true;
                   return false;
                 }}
               >
@@ -247,10 +249,16 @@ const App: React.FC = () => {
         <div className="content-wrapper main-content mb-l">
           <Switch>
             <Route exact path="/">
-              <Rent />
+              <Rent specificity={RentSpecificity.ALL}/>
             </Route>
             <Route exact path="/lend">
-              <Lend />
+              <Lend specificity={LendSpecificity.ALL}/>
+            </Route>
+            <Route exact path="/user-is-renting">
+              <Rent specificity={RentSpecificity.RENTING}/>
+            </Route>
+            <Route exact path="/user-is-lending">
+              <Lend specificity={LendSpecificity.LENDING}/>
             </Route>
             <Route exact path="/dashboard">
               <PageLayout>
