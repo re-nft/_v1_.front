@@ -172,7 +172,28 @@
       flex-grow: 1;
     }
   }
-
+  .dashboard-header {
+  
+    &__lending {
+        margin-top: 30px;
+        background-image: url(./img/Lending-Headline.svg);
+        background-size: auto 50px;
+        background-repeat: no-repeat;
+        height: 50px;
+        width: 350px;
+        flex-grow: 1;
+    }
+  
+    &__renting {
+      margin-top: 30px;
+      background-image: url(./img/Renting-Headline.svg);
+      background-size: auto 50px;
+      background-repeat: no-repeat;
+      height: 50px;
+      width: 350px;
+      flex-grow: 1;
+    }
+  }
 .center {
     position: absolute;
     top: 50%;
