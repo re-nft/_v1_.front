@@ -1,15 +1,18 @@
 import { BigNumber } from "ethers";
 import { useCallback, useContext, useMemo } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Lending } from "../contexts/graph/classes";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
 import { getReNFT } from "../services/get-renft-instance";
 import { sortNfts } from "../utils";
+import createDebugger from "debug";
+
+const debug = createDebugger("app:contracts:useClaimColleteral");
 
 export const useClaimColleteral = (): ((
-  nfts: Nft[]
+  nfts: Lending[]
 ) => Promise<void | boolean>) => {
   const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();
@@ -23,17 +26,19 @@ export const useClaimColleteral = (): ((
   }, [contractAddress, signer]);
 
   return useCallback(
-    (
-      nfts: Nft[]
-    ) => {
+    (nfts: Lending[]) => {
       if (!renft) return Promise.reject();
-      const sortedNfts = nfts.sort(sortNfts)
+      const sortedNfts = nfts.sort(sortNfts);
+      const params: [string[], BigNumber[], BigNumber[]] = [
+        sortedNfts.map((nft) => nft.address),
+        sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
+        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId))
+      ];
+      debug("Claim modal addresses ", sortedNfts.map((nft) => nft.address))
+      debug("Claim modal tokenId ", sortedNfts.map((nft) =>nft.tokenId))
+      debug("Claim modal lendingId ", sortedNfts.map((nft) =>nft.renting?.lendingId))
       return renft
-        .claimCollateral(
-          sortedNfts.map((nft) => nft.address),
-          sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-          sortedNfts.map((nft) => BigNumber.from(nft.lendingId))
-        )
+        .claimCollateral(...params)
         .then((tx) => {
           if (tx) return setHash(tx.hash);
           return Promise.resolve(false);

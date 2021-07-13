@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from "react";
 import { Button } from "../components/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
-import { Lending, Nft } from "../contexts/graph/classes";
+import { Nft, Lending } from "../contexts/graph/classes";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
 import { TransactionStateEnum } from "../types";
 import Modal from "./modal";
+
 
 type ReturnModalProps = {
   open: boolean;
@@ -37,6 +38,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
     const isSuccess = await claimCollateral(nfts)
       .then((r) => r)
       .catch((e) => {
+        console.log(e)
         setIsLoading(false);
         setStatus(TransactionStateEnum.FAILED);
       });

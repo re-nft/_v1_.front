@@ -144,6 +144,7 @@ export const queryUserRenft = (user: string): string => {
         tokenId
         lentAmount
         isERC721
+        collateralClaimed
         renting {
           id
         }
@@ -159,6 +160,7 @@ export const queryUserRenft = (user: string): string => {
           tokenId
           lentAmount
           isERC721
+          collateralClaimed
         }
       }
     }
@@ -210,6 +212,7 @@ export const queryUserRentingRenft = (user: string): string => {
           lenderAddress
           maxRentDuration
           isERC721
+          collateralClaimed
         }
       }
     }

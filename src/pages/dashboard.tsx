@@ -25,6 +25,7 @@ import ReturnModal from "../modals/return-modal";
 import StopLendModal from "../modals/stop-lend-modal";
 import ClaimModal from "../modals/claim-modal";
 import { Tooltip } from "@material-ui/core";
+import { Toggle } from "../components/toggle";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -37,6 +38,7 @@ export const Dashboard: React.FC = () => {
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);
+  const [showClaimed, toggleClaimed] = useState(true);
 
   const {
     onCheckboxChange,
@@ -62,26 +64,40 @@ export const Dashboard: React.FC = () => {
     const ids = new Set(
       rentingItems.map((r) => `${r.nftAddress}:${r.tokenId}`)
     );
-    return lendingItems.map((l) => {
-      return {
-        ...l,
-        relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
-      };
-    });
-  }, [lendingItems, rentingItems]);
+    return lendingItems
+      .map((l) => {
+        return {
+          ...l,
+          relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+        };
+      })
+      .filter((l) => {
+        if (!showClaimed) {
+          return !l.lending.collateralClaimed;
+        }
+        return true;
+      });
+  }, [lendingItems, rentingItems, showClaimed]);
 
   const relendedRentingItems = useMemo(() => {
     if (!rentingItems) return [];
     const ids = new Set(
       lendingItems.map((r) => `${r.nftAddress}:${r.tokenId}`)
     );
-    return rentingItems.map((l) => {
-      return {
-        ...l,
-        relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
-      };
-    });
-  }, [lendingItems, rentingItems]);
+    return rentingItems
+      .map((l) => {
+        return {
+          ...l,
+          relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+        };
+      })
+      .filter((l) => {
+        if (!showClaimed) {
+          return !l.lending.collateralClaimed;
+        }
+        return true;
+      });
+  }, [lendingItems, rentingItems, showClaimed]);
 
   const lendinItemsStopLendable = useMemo(() => {
     return checkedLendingItems.filter((v) => !v.renting);
@@ -104,6 +120,14 @@ export const Dashboard: React.FC = () => {
   const lendinItemsStopLendableLength = useMemo(() => {
     return lendinItemsStopLendable.length;
   }, [lendinItemsStopLendable]);
+
+  const toggleClaimSwitch = useCallback(() => {
+    toggleClaimed(!showClaimed);
+  }, [showClaimed]);
+
+  const toggleTitle = useMemo(() => {
+    return showClaimed ? "Hide claimed items" : "Show claimed items";
+  }, [showClaimed]);
 
   if (!signer) {
     return (
@@ -163,6 +187,11 @@ export const Dashboard: React.FC = () => {
       )}
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
+          <Toggle
+            toggleValue={showClaimed}
+            onSwitch={toggleClaimSwitch}
+            title={toggleTitle}
+          />
           {lendingItems.length !== 0 && (
             <div className="dashboard-section">
               <h2 className="lending">Lending</h2>
@@ -182,7 +211,7 @@ export const Dashboard: React.FC = () => {
                     <Th style={{ widTh: "11%" }}>Collateral</Th>
                     <Th style={{ widTh: "7%" }}>Daily Price</Th>
                     <Th style={{ widTh: "7%" }}>Duration</Th>
-                    <Th style={{ widTh: "7%" }}>Relended</Th>
+                    <Th style={{ widTh: "7%" }}>Original owner</Th>
                     <Th style={{ widTh: "10%" }} className="action-column">
                       &nbsp;
                     </Th>
@@ -412,7 +441,9 @@ export const LendingRow: React.FC<{
   const claimTooltip = claimable
     ? "The NFT renting period is over. Click to claim your collateral."
     : hasRenting
-    ? "The item is not claimable yet or already claimed."
+    ? lend.lending.collateralClaimed
+      ? "The item is already claimed"
+      : "The item rental is not expired yet."
     : "No one rented the item as so far.";
   const lendTooltip = hasRenting
     ? "The item is rented out. You have to wait until the renter returns the item."
@@ -435,7 +466,7 @@ export const LendingRow: React.FC<{
       <Td className="column">{lending.nftPrice * Number(lend.amount)}</Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
-      <Td className="column">{lend.relended ? "yes" : "no"}</Td>
+      <Td className="column">{lend.relended ? "renter" : "owner"}</Td>
       <Td className="action-column">
         <Tooltip title={claimTooltip} aria-label={claimTooltip}>
           <span>
