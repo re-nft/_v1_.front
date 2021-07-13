@@ -1,5 +1,5 @@
 import React from "react";
-import NumericField from "./numeric-field";
+import NumericField from "./common/numeric-field";
 import { PaymentToken } from "../types";
 import { Lending } from "../contexts/graph/classes";
 

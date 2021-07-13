@@ -1,5 +1,5 @@
 import React from "react";
-import { ShortenPopover } from "../components/shorten-popover";
+import { ShortenPopover } from "../components/common/shorten-popover";
 
 import { Nft } from "../contexts/graph/classes";
 import { getUniqueCheckboxId } from "../controller/batch-controller";

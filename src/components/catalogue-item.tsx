@@ -13,7 +13,7 @@ import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
-import { Checkbox } from "./checkbox";
+import { Checkbox } from "./common/checkbox";
 import UserContext from "../contexts/UserProvider";
 // @ts-ignore
 import { Player } from "video-react";

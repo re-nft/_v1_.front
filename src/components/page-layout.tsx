@@ -1,6 +1,6 @@
 import React from "react";
-import { SnackAlert } from "./snack-alert";
-import { Toggle } from "./toggle";
+import { SnackAlert } from "./common/snack-alert";
+import { Toggle } from "./common/toggle";
 
 type PageLayoutProps = {
   onSwitch?: () => void;

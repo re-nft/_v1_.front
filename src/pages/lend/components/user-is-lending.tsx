@@ -1,16 +1,16 @@
 import React, { useContext, useCallback, useEffect, useState } from "react";
 
-import ItemWrapper from "../../../components/items-wrapper";
+import ItemWrapper from "../../../components/common/items-wrapper";
 import { Lending, isLending } from "../../../contexts/graph/classes";
 import CatalogueItem from "../../../components/catalogue-item";
-import ActionButton from "../../../components/action-button";
+import ActionButton from "../../../components/common/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems,
 } from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
+import Pagination from "../../../components/common/pagination";
 import { usePageController } from "../../../controller/page-controller";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";

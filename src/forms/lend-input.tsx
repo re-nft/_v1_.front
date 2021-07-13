@@ -1,9 +1,9 @@
 import React from "react";
 import CommonInfo from "../modals/common-info";
 import { FormikErrors, FormikTouched } from "formik";
-import MinimalSelect from "../components/select";
+import MinimalSelect from "../components/common/select";
 import { LendInputProps } from "./lend-form";
-import CssTextField from "../components/css-text-field";
+import CssTextField from "../components/common/css-text-field";
 
 const voidFn = () => {
   // do nothing func

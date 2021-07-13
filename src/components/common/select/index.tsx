@@ -4,7 +4,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { PaymentToken } from "../../types";
+import { PaymentToken } from "../../../types";
 
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540
 

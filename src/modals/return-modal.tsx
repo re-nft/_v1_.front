@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Button } from "../components/button";
+import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";

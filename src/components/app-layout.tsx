@@ -21,10 +21,10 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 // import { ContractContext } from "../contexts/ContractsProvider";
 import UserContext from "../contexts/UserProvider";
-import { Button } from "./button";
+import { Button } from "./common/button";
 import { ContractContext } from "../contexts/ContractsProvider";
 import { useLookupAddress } from "../hooks/useLookupAddress";
-import { ShortenPopover } from "./shorten-popover";
+import { ShortenPopover } from "./common/shorten-popover";
 
 const debug = createDebugger("app:layout");
 const ROUTES = [

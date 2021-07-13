@@ -15,17 +15,17 @@ import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import MultipleBatchBar from "../components/multiple-batch-bar";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import { ShortenPopover } from "../components/shorten-popover";
-import Checkbox from "../components/checkbox";
+import { ShortenPopover } from "../components/common/shorten-popover";
+import Checkbox from "../components/common/checkbox";
 import { TimestampContext } from "../contexts/TimestampProvider";
-import { Button } from "../components/button";
+import { Button } from "../components/common/button";
 import UserContext from "../contexts/UserProvider";
-import { CountDown } from "../components/countdown";
+import { CountDown } from "../components/common/countdown";
 import ReturnModal from "../modals/return-modal";
 import StopLendModal from "../modals/stop-lend-modal";
 import ClaimModal from "../modals/claim-modal";
 import { Tooltip } from "@material-ui/core";
-import { Toggle } from "../components/toggle";
+import { Toggle } from "../components/common/toggle";
 
 enum DashboardViewType {
   LIST_VIEW,

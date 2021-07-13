@@ -1,4 +1,4 @@
-import { short } from "../utils";
+import { short } from "../../utils";
 import { makeStyles, Popover, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 

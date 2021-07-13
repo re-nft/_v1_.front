@@ -1,4 +1,4 @@
-import ActionButton from "../components/action-button";
+import ActionButton from "../components/common/action-button";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";

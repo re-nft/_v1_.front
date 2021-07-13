@@ -2,11 +2,11 @@ import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import { PaymentToken } from "../../../types";
-import NumericField from "../../../components/numeric-field";
+import NumericField from "../../../components/common/numeric-field";
 import CatalogueItem from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/items-wrapper";
+import ItemWrapper from "../../../components/common/items-wrapper";
 import ReturnModal from "../../../modals/return-modal";
-import ActionButton from "../../../components/action-button";
+import ActionButton from "../../../components/common/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
@@ -14,7 +14,7 @@ import {
   useBatchItems,
 } from "../../../controller/batch-controller";
 import { Nft } from "../../../contexts/graph/classes";
-import Pagination from "../../../components/pagination";
+import Pagination from "../../../components/common/pagination";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { UserRentingContext } from "../../../contexts/UserRenting";
 import { usePageController } from "../../../controller/page-controller";

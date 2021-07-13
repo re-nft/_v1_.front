@@ -1,6 +1,6 @@
-import CssTextField from "../components/css-text-field";
+import CssTextField from "../components/common/css-text-field";
 
-import ActionButton from "../components/action-button";
+import ActionButton from "../components/common/action-button";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";

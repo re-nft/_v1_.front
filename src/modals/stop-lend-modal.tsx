@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Button } from "../components/button";
+import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { useStopLend } from "../hooks/useStopLend";
