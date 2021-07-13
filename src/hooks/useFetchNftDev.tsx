@@ -1,14 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
-import { Nft } from "../../graph/classes";
-import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import createCancellablePromise from "../../create-cancellable-promise";
-import usePoller from "../../../hooks/usePoller";
-import UserContext from "../../UserProvider";
-import { ContractContext } from "../../ContractsProvider";
+import { Nft } from "../contexts/graph/classes";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
+import usePoller from "./usePoller";
+import UserContext from "../contexts/UserProvider";
+import { ContractContext } from "../contexts/ContractsProvider";
 import { diffJson } from "diff";
-import { usePrevious } from "../../../hooks/usePrevious";
+import { usePrevious } from "./usePrevious";
 
 const BigNumZero = BigNumber.from("0");
 

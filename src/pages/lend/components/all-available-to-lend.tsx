@@ -13,7 +13,7 @@ import {
 import Pagination from "../../../components/pagination";
 import { usePageController } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../../../hooks/useAllAvailableToLend";
 import UserContext from "../../../contexts/UserProvider";
 
 const Lendings: React.FC = () => {

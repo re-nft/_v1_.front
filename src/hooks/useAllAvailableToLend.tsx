@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Nft } from "../classes";
+import { Nft } from "../contexts/graph/classes";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";

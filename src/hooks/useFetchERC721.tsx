@@ -1,11 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { getUniqueCheckboxId } from "../../../controller/batch-controller";
-import { fetchUserProd721 } from "../../../services/graph";
-import createCancellablePromise from "../../create-cancellable-promise";
-import { CurrentAddressWrapper } from "../../CurrentAddressWrapper";
-import UserContext from "../../UserProvider";
-import { Nft } from "../classes";
-import { NftToken } from "../types";
+import { getUniqueCheckboxId } from "../controller/batch-controller";
+import { fetchUserProd721 } from "../services/graph";
+import createCancellablePromise from "../contexts/create-cancellable-promise";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import UserContext from "../contexts/UserProvider";
+import { Nft } from "../contexts/graph/classes";
+import { NftToken } from "../contexts/graph/types";
 
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
