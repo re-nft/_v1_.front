@@ -58,12 +58,20 @@ const UserRentings: React.FC = () => {
   );
 
   useEffect(() => {
-    onPageControllerInit(userRenting.filter((nft) => nft.renting));
+    let isSubscribed = true;
+    if(isSubscribed) onPageControllerInit(userRenting.filter((nft) => nft.renting));
+    return () => {
+      isSubscribed = false;
+    };
   }, [onPageControllerInit, userRenting]);
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage);
+    let isSubscribed = true;
+    if(isSubscribed) fetchNfts(currentPage);
+    return () => {
+      isSubscribed = false;
+    };
   }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(

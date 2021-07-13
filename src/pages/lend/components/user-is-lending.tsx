@@ -59,12 +59,20 @@ const UserCurrentlyLending: React.FC = () => {
   );
 
   useEffect(() => {
-    onPageControllerInit(userLending.filter(isLending));
+    let isSubscribed = true;
+    if(isSubscribed) onPageControllerInit(userLending.filter(isLending));
+    return () => {
+      isSubscribed = false;
+    };
   }, [onPageControllerInit, userLending]);
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage);
+    let isSubscribed = true;
+    if(isSubscribed)fetchNfts(currentPage);
+    return () => {
+      isSubscribed = false;
+    };
   }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(

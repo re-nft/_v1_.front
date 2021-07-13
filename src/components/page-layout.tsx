@@ -12,12 +12,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   onSwitch,
   toggleValue,
   title,
-  children,
+  children
 }) => {
   return (
     <div className="content">
       {title && (
-        <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch}/>
+        <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
       )}
       {!title && <div style={{ height: "4em" }} />}
       {children}
