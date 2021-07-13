@@ -7,6 +7,8 @@ import createCancellablePromise from "../../create-cancellable-promise";
 import usePoller from "../../../hooks/usePoller";
 import UserContext from "../../UserProvider";
 import { ContractContext } from "../../ContractsProvider";
+import { diffJson } from "diff";
+import { usePrevious } from "../../../hooks/usePrevious";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -27,6 +29,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const { signer } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const previousAddress = usePrevious(currentAddress);
 
   const fetchAsync = useCallback(async () => {
     if (network === "homestead") {
@@ -130,11 +133,29 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         );
       }
     }
-    if (usersNfts.length > 1) {
+
+    const normalizedLendings = devNfts.map((nft) => nft.toJSON());
+    const normalizedLendingNew = usersNfts.map((nft) =>
+    nft.toJSON()
+    );
+
+    const difference = diffJson(
+      normalizedLendings,
+      normalizedLendingNew,
+      { ignoreWhitespace: true }
+    );
+    if (currentAddress !== previousAddress) {
+      setDevNfts(usersNfts);
+    }
+    else if (
+      difference &&
+      difference[1] &&
+      (difference[1].added || difference[1].removed)
+    ) {
       setDevNfts(usersNfts);
     }
     setIsLoading(false);
-  }, [E1155, E721, E721B, E1155B, signer, currentAddress, isLoading]);
+  }, [E1155, E721, E721B, E1155B, signer, currentAddress, isLoading, devNfts, previousAddress]);
 
   useEffect(() => {
     const fetchRequest = createCancellablePromise(fetchAsync());
