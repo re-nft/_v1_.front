@@ -2,13 +2,13 @@ import React from "react";
 
 const ButHow: React.FC = () => {
   return (
-    <div className="text-content">
+    <div className="text-content copy-text">
       <p>
-        You just <b className="bolder">have that NFT</b> sitting around{" "}
-        <b className="bolder">not doing much</b>?
+        You just <b className="bolder headline">have that NFT</b> sitting around{" "}
+        <b className="bolder headline">not doing much</b>?
       </p>
       <p>
-        We know how you can earn <b className="bolder">extra income</b>!
+        We know how you can earn <b className="bolder headline">extra income</b>!
       </p>
 
       <div>
