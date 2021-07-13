@@ -11,7 +11,6 @@ import {
 import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
-import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { Checkbox } from "./checkbox";
@@ -47,7 +46,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   disabled,
 }) => {
   const { signer } = useContext(UserContext);
-  const [ref, { entry }] = useIntersectionObserver();
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
@@ -148,7 +146,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   };
   return (
     <div
-      ref={ref}
       className={`nft ${isChecked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
       key={nft.tokenId}
       data-item-id={nft.tokenId}

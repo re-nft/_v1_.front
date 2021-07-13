@@ -8,7 +8,7 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
   getUniqueCheckboxId,
-  useBatchItems,
+  useBatchItems
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/pagination";
 import { usePageController } from "../../../controller/page-controller";
@@ -25,7 +25,7 @@ const Lendings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onPageControllerInit,
+    onPageControllerInit
   } = usePageController<Nft>();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
@@ -49,12 +49,20 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    onPageControllerInit(allAvailableToLend);
+    let isSubscribed = true;
+    if (isSubscribed) onPageControllerInit(allAvailableToLend);
+    return () => {
+      isSubscribed = false;
+    };
   }, [allAvailableToLend, onPageControllerInit]);
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage);
+    let isSubscribed = true;
+    if (isSubscribed) fetchNfts(currentPage);
+    return () => {
+      isSubscribed = false;
+    };
   }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(
@@ -67,7 +75,9 @@ const Lendings: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center content__message">Please connect your wallet!</div>;
+    return (
+      <div className="center content__message">Please connect your wallet!</div>
+    );
   }
 
   if (isLoading && currentPage.length === 0) {
@@ -75,7 +85,11 @@ const Lendings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center content__message">You don&apos;t have any NFTs to lend</div>;
+    return (
+      <div className="center content__message">
+        You don&apos;t have any NFTs to lend
+      </div>
+    );
   }
 
   return (
