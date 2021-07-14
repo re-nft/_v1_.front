@@ -21,6 +21,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(({
       disabled={disabled}
       onClick={handleClick}
       data-cy={datacy}
+      type="button"
     >
       {description}
     </button>

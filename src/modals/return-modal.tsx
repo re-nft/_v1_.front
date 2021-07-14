@@ -23,7 +23,7 @@ type ReturnModalProps = {
 export const ReturnModal: React.FC<ReturnModalProps> = ({
   nfts,
   open,
-  onClose,
+  onClose
 }) => {
   const { setHash } = useContext(TransactionStateContext);
   const returnIt = useReturnIt();
@@ -35,7 +35,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const { web3Provider: provider } = useContext(UserContext);
   const { setError } = useContext(SnackAlertContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
+  const [approvalStatus, setApprovalStatus] = useState(TransactionStateEnum.PENDING);
+  const [returnStatus, setReturnStatus] = useState(TransactionStateEnum.PENDING);
 
   useEffect(() => {
     if (!currentAddress) return;
@@ -61,7 +62,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     );
     setIsApproved(false);
     setIsApprovalLoading(true);
-    setStatus(TransactionStateEnum.PENDING);
+    setApprovalStatus(TransactionStateEnum.PENDING);
     transaction.promise
       .then((hashes) => {
         if (hashes.length < 1) return Promise.resolve(false);
@@ -71,7 +72,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         if (!status) setError("Transaction is not successful!", "warning");
         setIsApproved(status);
         setIsApprovalLoading(false);
-        setStatus(
+        setApprovalStatus(
           status ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
         );
       })
@@ -79,7 +80,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
         console.warn("issue approving all in batch lend");
         setError(e.message, "error");
         setIsApprovalLoading(false);
-        setStatus(TransactionStateEnum.FAILED);
+        setApprovalStatus(TransactionStateEnum.FAILED);
         return [undefined];
       });
 
@@ -90,31 +91,31 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
   const handleReturnNft = useCallback(async () => {
     setIsLoading(true);
-    setStatus(TransactionStateEnum.PENDING);
+    setReturnStatus(TransactionStateEnum.PENDING);
     const isSuccess = await returnIt(nfts)
       .then((r) => r)
       .catch((e) => {
         setIsLoading(false);
-        setStatus(TransactionStateEnum.FAILED);
+        setReturnStatus(TransactionStateEnum.FAILED);
       });
-    setStatus(
+      setReturnStatus(
       isSuccess ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
     );
     setIsLoading(false);
   }, [returnIt, nfts]);
 
   return (
-    <Modal open={open} handleClose={() => onClose()}>
+    <Modal
+      open={open}
+      handleClose={onClose}
+    >
       <div className="modal-dialog-section">
         <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
           {!isApproved && (
             <TransactionWrapper
               isLoading={isApprovalLoading}
-              status={status}
-              closeWindow={()=>{
-                //void
-              }}
+              status={approvalStatus}
             >
               <Button
                 description="Approve Return"
@@ -127,10 +128,10 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             <TransactionWrapper
               isLoading={isLoading}
               closeWindow={onClose}
-              status={status}
+              status={returnStatus}
             >
               <Button
-                description={nfts.length > 1 ? "Return All" : "Return It"}
+                description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
                 disabled={isApprovalLoading || !isApproved}
                 handleClick={handleReturnNft}
               />

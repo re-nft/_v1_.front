@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useContext } from "react";
+import React, { useCallback, useEffect, useContext, useState } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import NumericField from "../../../components/common/numeric-field";
@@ -10,7 +10,7 @@ import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
   getUniqueCheckboxId,
-  useBatchItems,
+  useBatchItems
 } from "../../../controller/batch-controller";
 import { Nft } from "../../../contexts/graph/classes";
 import Pagination from "../../../components/common/pagination";
@@ -21,28 +21,30 @@ import { nftReturnIsExpired } from "../../../utils";
 import UserContext from "../../../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
 
+
 const UserRentings: React.FC = () => {
   const { signer } = useContext(UserContext);
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedRentingItems,
+    checkedRentingItems
   } = useBatchItems();
   const {
     totalPages,
     currentPageNumber,
     currentPage,
     onSetPage,
-    onPageControllerInit,
+    onPageControllerInit
   } = usePageController<Renting>();
   const { userRenting, isLoading } = useContext(UserRentingContext);
   const [_, fetchNfts] = useContext(NFTMetaContext);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
+    console.log('handleclosemodal called')
     setModalOpen(false);
-    handleBatchReset()
+    handleBatchReset();
   }, [handleBatchReset]);
 
   const handleBatchStopRent = useCallback(() => {
@@ -59,7 +61,8 @@ const UserRentings: React.FC = () => {
 
   useEffect(() => {
     let isSubscribed = true;
-    if(isSubscribed) onPageControllerInit(userRenting.filter((nft) => nft.renting));
+    if (isSubscribed)
+      onPageControllerInit(userRenting.filter((nft) => nft.renting));
     return () => {
       isSubscribed = false;
     };
@@ -68,7 +71,7 @@ const UserRentings: React.FC = () => {
   //Prefetch metadata
   useEffect(() => {
     let isSubscribed = true;
-    if(isSubscribed) fetchNfts(currentPage);
+    if (isSubscribed) fetchNfts(currentPage);
     return () => {
       isSubscribed = false;
     };
@@ -84,14 +87,20 @@ const UserRentings: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center content__message">Please connect your wallet!</div>;
+    return (
+      <div className="center content__message">Please connect your wallet!</div>
+    );
   }
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center content__message">You are not renting anything yet</div>;
+    return (
+      <div className="center content__message">
+        You are not renting anything yet
+      </div>
+    );
   }
 
   return (
@@ -108,7 +117,6 @@ const UserRentings: React.FC = () => {
           currentPage.map((nft: Renting) => {
             const id = getUniqueCheckboxId(nft);
             const checked = !!checkedItems[id];
-            const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
             const isExpired = nftReturnIsExpired(nft);
             const days = nft.renting.rentDuration;
             return (
@@ -147,7 +155,9 @@ const UserRentings: React.FC = () => {
       {checkedRentingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedRentingItems.length} items`}
-          actionTitle="Stop Rents All"
+          actionTitle={
+            checkedRentingItems.length > 1 ? "Return all NFTs" : "Return NFT"
+          }
           onCancel={handleBatchReset}
           onClick={handleBatchStopRent}
         />

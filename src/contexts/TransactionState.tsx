@@ -3,7 +3,7 @@ import React, { createContext, useState, useCallback, useContext } from "react";
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 import { TransactionHash, TransactionStateEnum } from "../types";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 
 import UserContext from "./UserProvider";
 
@@ -26,7 +26,7 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 );
 TransactionStateContext.displayName = "TransactionStateContext";
 
-const NUMBER_OF_CONFIRMATIONS = 1; //let's make it 5, so graph has time to sync
+const NUMBER_OF_CONFIRMATIONS = IS_PROD ? 3: 1; //let's make it 5, so graph has time to sync
 const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
 
 // save transaction hashes for each address and hashes
