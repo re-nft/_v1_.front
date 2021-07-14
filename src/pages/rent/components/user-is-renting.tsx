@@ -116,7 +116,7 @@ const UserRentings: React.FC = () => {
                 key={id}
                 nft={nft}
                 checked={checked}
-                disabled={isExpired || isChecked}
+                disabled={isExpired}
                 onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
                 <NumericField

@@ -98,7 +98,6 @@ const AvailableToRent: React.FC = () => {
               nft={nft}
               checked={isChecked}
               onCheckboxChange={checkBoxChangeWrapped(nft)}
-              disabled={isChecked}
             >
               <LendingFields nft={nft} />
               <ActionButton<Lending>

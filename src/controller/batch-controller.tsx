@@ -132,7 +132,7 @@ export const useBatchItems: () => BatchContextType = () => {
       const uniqueID = getUniqueCheckboxId(item);
       let newState = {};
       // if contained in prev, remove
-      if (uniqueID in checkedItems) {
+      if (checkedItems[uniqueID]) {
         const state = { ...checkedItems };
         delete state[uniqueID];
         newState = state;

@@ -101,7 +101,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
 
   const [contracts, setContracts] = useState<ContractsObject>({});
   useEffect(() => {
-    loadContracts(signer, setContracts);
+    if(signer) loadContracts(signer, setContracts);
   }, [signer]);
 
   return (

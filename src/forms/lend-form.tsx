@@ -193,6 +193,8 @@ const validate = (values: FormProps) => {
         "amount must be less than equal then the total amount available";
     } else if (isInteger(field)) {
       error[fieldName] = "amount must be a whole number";
+    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+      error[fieldName] = "amount must be a number";
     }
 
     fieldName = "maxDuration";
@@ -205,6 +207,8 @@ const validate = (values: FormProps) => {
       error[fieldName] = "lend duration must be less or equal than 255";
     } else if (isInteger(field)) {
       error[fieldName] = "maxDuration must be a whole number";
+    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+      error[fieldName] = "amount must be a number";
     }
 
     fieldName = "borrowPrice";
@@ -217,6 +221,8 @@ const validate = (values: FormProps) => {
       error[fieldName] = "borrow price must be less then or equal 9999.9999";
     } else if (!is4Digits(field)) {
       error[fieldName] = "borrow price only accepts up to 4 fractional digits";
+    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+      error[fieldName] = "amount must be a number";
     }
 
     fieldName = "nftPrice";
@@ -229,6 +235,8 @@ const validate = (values: FormProps) => {
       error[fieldName] = "collateral must be less then or equal 9999.9999";
     } else if (!is4Digits(field)) {
       error[fieldName] = "collateral only accepts up to 4 fractional digits";
+    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+      error[fieldName] = "amount must be a number";
     }
 
     fieldName = "pmToken";

@@ -86,6 +86,8 @@ export const RentForm: React.FC<LendFormProps> = ({
           "the duration cannot be greater then the max rent duration";
       } else if (input.duration != parseInt(input.duration.toString(), 10)) {
         error.duration = "maxDuration must be a whole number";
+      } else if (!(/^\d+(\.\d+)?$/i).test(input.duration.toString())){
+        error.duration = "amount must be a number";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });

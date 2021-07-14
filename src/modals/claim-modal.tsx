@@ -38,7 +38,6 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
     const isSuccess = await claimCollateral(nfts)
       .then((r) => r)
       .catch((e) => {
-        console.log(e)
         setIsLoading(false);
         setStatus(TransactionStateEnum.FAILED);
       });

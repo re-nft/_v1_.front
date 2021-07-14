@@ -110,7 +110,6 @@ const Lendings: React.FC = () => {
               key={getUniqueCheckboxId(nft)}
               nft={nft}
               checked={checked}
-              disabled={checked}
               onCheckboxChange={checkBoxChangeWrapped(nft)}
             >
               <ActionButton<Nft>

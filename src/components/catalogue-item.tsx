@@ -39,8 +39,8 @@ const Skeleton = () => {
 };
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
-  checked,
   isAlreadyFavourited,
+  checked,
   onCheckboxChange,
   children,
   disabled,
@@ -49,7 +49,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
-  const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const [amount, setAmount] = useState<string>("0");
   const [currentVote, setCurrentVote] =
     useState<{
@@ -61,13 +60,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const id = nftId(nft.address, nft.tokenId);
   const meta = metas[id];
   const noWallet = !signer;
-
-  const onCheckboxClick = useCallback(() => {
-    setIsChecked(!isChecked);
-    // ! either pass a type as the id, or do not assume that the id must have a certain
-    // ! format inside of the onCheckboxChange
-    onCheckboxChange();
-  }, [isChecked, onCheckboxChange]);
 
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
@@ -108,8 +100,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
   useEffect(() => {
-    setIsChecked(checked || false);
-
     if (!nft.isERC721 && currentAddress) {
       nft
         .loadAmount(currentAddress)
@@ -146,7 +136,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   };
   return (
     <div
-      className={`nft ${isChecked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
+      className={`nft ${checked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >
@@ -170,16 +160,10 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             </div> */}
             <div className="spacer" />
             <Checkbox
-              checked={isChecked}
-              handleClick={onCheckboxClick}
+              checked={!!checked}
+              handleClick={onCheckboxChange}
               disabled={disabled || noWallet}
             ></Checkbox>
-            {/* <div className="nft__checkbox">
-              <div
-                onClick={onCheckboxClick}
-                className={`checkbox ${isChecked ? "checked" : ""} ${disabled ? "disabled": ""}`}
-              />
-            </div> */}
           </div>
           <div className="nft__image">
             {image ? display() : <div className="no-img">NO IMG</div>}

@@ -112,6 +112,9 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             <TransactionWrapper
               isLoading={isApprovalLoading}
               status={status}
+              closeWindow={()=>{
+                //void
+              }}
             >
               <Button
                 description="Approve Return"
