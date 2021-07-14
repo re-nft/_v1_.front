@@ -4,7 +4,7 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect,
+  useEffect
 } from "react";
 
 import { timeItAsync } from "../utils";
@@ -25,22 +25,26 @@ export type UserLendingContextType = {
 };
 export const UserLendingContext = createContext<UserLendingContextType>({
   userLending: [],
-  isLoading: false,
+  isLoading: false
 });
 
 UserLendingContext.displayName = "UserLendingContext";
 
 export const UserLendingProvider: React.FC = ({ children }) => {
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
   const [lending, setLendings] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(false);
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);
-  
+
   const fetchLending = useCallback(async () => {
     if (!signer) return;
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
+    }
+    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+      if (lending && lending.length > 0) setLendings([]);
+      return;
     }
 
     const subgraphURI = process.env.REACT_APP_RENFT_API;
@@ -89,8 +93,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           );
           if (currentAddress !== previousAddress) {
             setLendings(lendings);
-          }
-          else if (
+          } else if (
             difference &&
             difference[1] &&
             (difference[1].added || difference[1].removed)
@@ -103,7 +106,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currentAddress, lending, previousAddress, signer]);
+  }, [currentAddress, lending, previousAddress, signer, network]);
 
   useEffect(() => {
     fetchLending();
@@ -115,7 +118,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     <UserLendingContext.Provider
       value={{
         userLending: lending,
-        isLoading,
+        isLoading
       }}
     >
       {children}

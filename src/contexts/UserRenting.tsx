@@ -32,7 +32,7 @@ export const UserRentingContext = createContext<UserRentingContextType>({
 
 export const UserRentingProvider: React.FC = ({ children }) => {
   const [renting, setRentings] = useState<Renting[]>([]);
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
   const [isLoading, setLoading] = useState(false);
   const currentAddress = useContext(CurrentAddressWrapper);
@@ -40,6 +40,10 @@ export const UserRentingProvider: React.FC = ({ children }) => {
 
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return;
+    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+      if (renting && renting.length > 0) setRentings([]);
+      return;
+    }
     setLoading(true);
     const fetchRequest = createCancellablePromise<
       FetchUserRentingReturn | undefined
@@ -100,7 +104,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currAddress, currentAddress, previousAddress, renting, signer]);
+  }, [currAddress, currentAddress, previousAddress, renting, signer, network]);
 
   useEffect(() => {
     fetchRenting();

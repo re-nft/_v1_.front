@@ -24,7 +24,7 @@ export const AvailableForRentContext = createContext<{
 }>({ isLoading: true, allAvailableToRent: [] });
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
 
   const [nfts, setNfts] = useState<Nft[]>([]);
   const [isLoading, setLoading] = useState(true);
@@ -35,6 +35,12 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
     if (!process.env.REACT_APP_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
+    if(network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+      if(nfts && nfts.length > 0) setNfts([])
+      if(isLoading) setLoading(false)
+      return;
+    };
+
     setLoading(true);
 
     const subgraphURI = process.env.REACT_APP_RENFT_API;
@@ -90,7 +96,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         setLoading(false);
       });
     return fetchRequest.cancel;
-  }, [currentAddress, nfts, signer, previousAddress]);
+  }, [currentAddress, nfts, signer, previousAddress, network]);
 
   useEffect(() => {
     fetchRentings();

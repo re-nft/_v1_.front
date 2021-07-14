@@ -32,9 +32,9 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const previousAddress = usePrevious(currentAddress);
 
   const fetchAsync = useCallback(async () => {
-    if (network === "homestead") {
+    if(network !== process.env.REACT_APP_NETWORK_SUPPORTED){
       if (isLoading) setIsLoading(false);
-      return;
+      if(devNfts && devNfts.length > 0) setDevNfts([])
     };
     if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === "undefined") {
       if (isLoading) setIsLoading(false);
