@@ -108,7 +108,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
         loadContracts(signer, setContracts)
       }
     };
-  }, [signer]);
+  }, [signer, network]);
 
   return (
     <ContractContext.Provider value={contracts}>
