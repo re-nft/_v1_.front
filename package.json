@@ -37,7 +37,8 @@
     "react-super-responsive-table": "5.2.0",
     "video-react": "0.14.1",
     "web3modal": "1.9.3",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "zustand": "3.5.7"
   },
   "devDependencies": {
     "@metamask/detect-provider": "^1.2.0",

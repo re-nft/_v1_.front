@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
-import { PaymentToken } from "../../../types";
 import NumericField from "../../../components/common/numeric-field";
 import CatalogueItem from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/common/items-wrapper";
@@ -20,6 +19,7 @@ import { UserRentingContext } from "../../../contexts/UserRenting";
 import { usePageController } from "../../../controller/page-controller";
 import { nftReturnIsExpired } from "../../../utils";
 import UserContext from "../../../contexts/UserProvider";
+import { PaymentToken } from "@renft/sdk";
 
 const UserRentings: React.FC = () => {
   const { signer } = useContext(UserContext);

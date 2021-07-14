@@ -1,6 +1,5 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
-import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../utils";
 import { MAX_UINT256 } from "../consts";
@@ -12,6 +11,8 @@ import TransactionStateContext from "../contexts/TransactionState";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import UserContext from "../contexts/UserProvider";
 import { ContractContext } from "../contexts/ContractsProvider";
+import { useSDK } from "./useSDK";
+import { useTransactionWrapper } from "./useTransactionWrapper";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -39,12 +40,8 @@ export const useStartRent = (): {
   const contractAddress = useContractAddress();
   const { setHash } = useContext(TransactionStateContext);
   const { setError } = useContext(SnackAlertContext);
-
-  const renft = useMemo(() => {
-    if (!signer) return;
-    if (!contractAddress) return;
-    return getReNFT(signer, contractAddress);
-  }, [contractAddress, signer]);
+  const sdk = useSDK();
+  const transactionWrapper = useTransactionWrapper();
 
   const checkApprovals = useCallback(
     (nfts: StartRentNft[]) => {
@@ -125,9 +122,9 @@ export const useStartRent = (): {
 
   const startRent = useCallback(
     async (nfts: StartRentNft[]) => {
-      if (!renft) return Promise.resolve();
+      if (!sdk) return Promise.resolve();
 
-      const sortedNfts = nfts.sort(sortNfts)
+      const sortedNfts = nfts.sort(sortNfts);
       const addresses = sortedNfts.map((nft) => nft.address);
       const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
@@ -143,23 +140,10 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      debug("contractAddress", contractAddress);
-      return await renft
-        .rent(addresses, tokenIds, lendingIds, rentDurations)
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve(false);
-        })
-        .then((status) => {
-          if (!status) setError("Transaction is not successful!", "warning");
-          return Promise.resolve(status);
-        })
-        .catch((e) => {
-          setError(e.message, "error");
-          debug("Error with rent", e);
-        });
+      return  transactionWrapper(sdk
+        .rent(addresses, tokenIds, lendingIds, rentDurations))
     },
-    [contractAddress, renft, setError, setHash]
+    [sdk]
   );
 
   return {
@@ -167,6 +151,6 @@ export const useStartRent = (): {
     checkApprovals,
     handleApproveAll,
     isApproved,
-    isApprovalLoading,
+    isApprovalLoading
   };
 };

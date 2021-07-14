@@ -1,12 +1,9 @@
-import { useCallback, useContext, useMemo } from "react";
+import { useCallback } from "react";
 import { PaymentToken } from "@renft/sdk";
-import { getReNFT } from "../services/get-renft-instance";
 import { BigNumber } from "ethers";
-import { useContractAddress } from "../contexts/StateProvider";
 import createDebugger from "debug";
-import { SnackAlertContext } from "../contexts/SnackProvider";
-import TransactionStateContext from "../contexts/TransactionState";
-import UserContext from "../contexts/UserProvider";
+import { useSDK } from "./useSDK";
+import { useTransactionWrapper } from "./useTransactionWrapper";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
@@ -21,16 +18,8 @@ export const useStartLend = (): ((
   nftPrice: number[],
   tokens: PaymentToken[]
 ) => Promise<void | boolean>) => {
-  const { signer } = useContext(UserContext);
-  const contractAddress = useContractAddress();
-  const { setError } = useContext(SnackAlertContext);
-  const { setHash } = useContext(TransactionStateContext);
-
-  const renft = useMemo(() => {
-    if (!signer) return;
-    if (!contractAddress) return;
-    return getReNFT(signer, contractAddress);
-  }, [contractAddress, signer]);
+  const sdk = useSDK();
+  const transactionWrapper = useTransactionWrapper();
 
   const startLend = useCallback(
     (
@@ -42,7 +31,7 @@ export const useStartLend = (): ((
       nftPrice: number[],
       tokens: PaymentToken[]
     ) => {
-      if (!renft) return Promise.resolve();
+      if (!sdk) return Promise.resolve();
 
       debug("addresses", addresses);
       debug("tokenIds", tokenIds);
@@ -52,8 +41,8 @@ export const useStartLend = (): ((
       debug("nftPrice", nftPrice);
       debug("tokens", tokens);
 
-      return renft
-        .lend(
+      return transactionWrapper(
+        sdk.lend(
           addresses,
           tokenIds,
           amounts,
@@ -62,21 +51,9 @@ export const useStartLend = (): ((
           nftPrice,
           tokens
         )
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve(false);
-        })
-        .then((status) => {
-          if (!status) setError("Transaction is not successful!", "warning");
-          return Promise.resolve(status);
-        })
-        .catch((e) => {
-          console.warn("could not start lend");
-          setError(e.message, "error");
-          return;
-        });
+      );
     },
-    [renft, setError, setHash]
+    [sdk]
   );
   return startLend;
 };

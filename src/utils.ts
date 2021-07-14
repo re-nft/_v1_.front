@@ -2,11 +2,11 @@ import { ethers, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
-import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
-import { Renting } from "./contexts/graph/classes";
+import { Lending, Renting } from "./contexts/graph/classes";
+import { PaymentToken } from "@renft/sdk";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -282,4 +282,22 @@ export const sortNfts = (
     }
     return a.isERC721 ? EQUALITY.LESS : EQUALITY.GREATER;
   }
+};
+
+
+export const filterClaimed = (showClaimed: boolean) => (l: Lending | Renting) => {
+  if (!showClaimed) {
+    if (l.lending) return !l.lending.collateralClaimed;
+    return false;
+  }
+  return true;
+};
+export const mapAddRelendedField = (ids: Set<string>) => (l: Lending | Renting) => {
+  return {
+    ...l,
+    relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+  };
+};
+export const mapToIds = (items: Renting[] | Lending[]) => {
+  return new Set(items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`));
 };

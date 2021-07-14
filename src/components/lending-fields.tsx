@@ -1,7 +1,7 @@
 import React from "react";
 import NumericField from "./common/numeric-field";
-import { PaymentToken } from "../types";
 import { Lending } from "../contexts/graph/classes";
+import { PaymentToken } from "@renft/sdk";
 
 const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
   const days = parseInt(String(nft.lending.maxRentDuration), 10);

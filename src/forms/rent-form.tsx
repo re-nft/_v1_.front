@@ -12,9 +12,10 @@ import {
   FieldArray,
   FormikBag,
 } from "formik";
-import { PaymentToken, TransactionStateEnum } from "../types";
+import { TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
 import { TransactionWrapper } from "../components/transaction-wrapper";
+import { PaymentToken } from "@renft/sdk";
 
 type LendFormProps = {
   nfts: Lending[];

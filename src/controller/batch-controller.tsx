@@ -14,7 +14,7 @@ import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
 import { TimestampContext } from "../contexts/TimestampProvider";
 
-type UniqueID = string;
+export type UniqueID = string;
 
 const getUniqueID = (
   nftAddress: string,
