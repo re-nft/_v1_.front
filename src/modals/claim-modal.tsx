@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Nft, Lending } from "../contexts/graph/classes";
 import { useClaimColleteral } from "../hooks/useClaimColleteral";
-import { TransactionStateEnum } from "../types";
+import { useObservable } from "../hooks/useObservable";
 import Modal from "./modal";
 
 
@@ -18,34 +18,12 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   onClose,
   nfts
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
   const claim = useClaimColleteral();
+  const [t, setObservable] = useObservable()
   
-  const claimCollateral = useCallback(
-    async (items: Lending[]) => {
-      return claim(items).then((status) => {
-        // if (status)
-        //   handleResetLending(items.map((i) => getUniqueCheckboxId(i)));
-        return Promise.resolve(status)  
-      });
-    },
-    [claim]
-  );
-  const handleClaim = useCallback(async () => {
-    setIsLoading(true)
-    setStatus(TransactionStateEnum.PENDING)
-    const isSuccess = await claimCollateral(nfts)
-      .then((r) => r)
-      .catch((e) => {
-        setIsLoading(false);
-        setStatus(TransactionStateEnum.FAILED);
-      });
-    setStatus(
-      isSuccess ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
-    );
-    setIsLoading(false)
-  }, [claimCollateral, nfts]);
+  const handleClaim = useCallback(() => {
+    setObservable(claim(nfts));
+  }, [nfts]);
 
   return (
     <Modal open={open} handleClose={() => onClose()} >
@@ -53,13 +31,14 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
         <div className="modal-dialog-title">Do you want to claim?</div>
         <div className="modal-dialog-button">
             <TransactionWrapper
-              isLoading={isLoading}
+              isLoading={t.isLoading}
               closeWindow={onClose}
-              status={status}
+              status={t.status}
+              transactionHashes={t.transactionHash}
             >
               <Button
                 description={nfts.length > 1 ? "Claim All" : "Claim"}
-                disabled={isLoading}
+                disabled={t.isLoading}
                 handleClick={handleClaim}
               />
             </TransactionWrapper>

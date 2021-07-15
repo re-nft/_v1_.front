@@ -8,10 +8,12 @@ import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
 import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
+import { useObservable } from "../hooks/useObservable";
 import { useReturnIt } from "../hooks/useReturnIt";
 import isApprovalForAll from "../services/is-approval-for-all";
-import setApprovalForAll from "../services/set-approval-for-all";
-import { TransactionStateEnum } from "../types";
+import {
+  useSetApprovalAll
+} from "../hooks/useSetApprovalAll";
 import Modal from "./modal";
 
 type ReturnModalProps = {
@@ -30,13 +32,12 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const contractAddress = useContractAddress();
   const currentAddress = useContext(CurrentAddressWrapper);
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [isApprovalLoading, setIsApprovalLoading] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const { web3Provider: provider } = useContext(UserContext);
   const { setError } = useContext(SnackAlertContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [approvalStatus, setApprovalStatus] = useState(TransactionStateEnum.PENDING);
-  const [returnStatus, setReturnStatus] = useState(TransactionStateEnum.PENDING);
+  const [returnT, setReturnObservable] = useObservable();
+  const setApprovalForAll = useSetApprovalAll(nonApprovedNft, currentAddress);
+  const [approvalStatus, setObservable] = useObservable();
 
   useEffect(() => {
     if (!currentAddress) return;
@@ -57,82 +58,41 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
 
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
-    const transaction = createCancellablePromise(
-      setApprovalForAll(nonApprovedNft, contractAddress)
-    );
-    setIsApproved(false);
-    setIsApprovalLoading(true);
-    setApprovalStatus(TransactionStateEnum.PENDING);
-    transaction.promise
-      .then((hashes) => {
-        if (hashes.length < 1) return Promise.resolve(false);
-        return setHash(hashes.map((tx) => tx.hash));
-      })
-      .then((status) => {
-        if (!status) setError("Transaction is not successful!", "warning");
-        setIsApproved(status);
-        setIsApprovalLoading(false);
-        setApprovalStatus(
-          status ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
-        );
-      })
-      .catch((e) => {
-        console.warn("issue approving all in batch lend");
-        setError(e.message, "error");
-        setIsApprovalLoading(false);
-        setApprovalStatus(TransactionStateEnum.FAILED);
-        return [undefined];
-      });
+    setObservable(setApprovalForAll);
+  }, [provider]);
 
-    return () => {
-      transaction.cancel();
-    };
-  }, [contractAddress, nonApprovedNft, provider, setError, setHash]);
-
-  const handleReturnNft = useCallback(async () => {
-    setIsLoading(true);
-    setReturnStatus(TransactionStateEnum.PENDING);
-    const isSuccess = await returnIt(nfts)
-      .then((r) => r)
-      .catch((e) => {
-        setIsLoading(false);
-        setReturnStatus(TransactionStateEnum.FAILED);
-      });
-      setReturnStatus(
-      isSuccess ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED
-    );
-    setIsLoading(false);
+  const handleReturnNft = useCallback(() => {
+    setReturnObservable(returnIt(nfts));
   }, [returnIt, nfts]);
 
   return (
-    <Modal
-      open={open}
-      handleClose={onClose}
-    >
+    <Modal open={open} handleClose={onClose}>
       <div className="modal-dialog-section">
         <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
           {!isApproved && (
             <TransactionWrapper
-              isLoading={isApprovalLoading}
-              status={approvalStatus}
+              isLoading={approvalStatus.isLoading}
+              status={approvalStatus.status}
+              transactionHashes={approvalStatus.transactionHash}
             >
               <Button
                 description="Approve Return"
-                disabled={isApprovalLoading}
+                disabled={approvalStatus.isLoading}
                 handleClick={handleApproveAll}
               />
             </TransactionWrapper>
           )}
           {isApproved && (
             <TransactionWrapper
-              isLoading={isLoading}
+              isLoading={returnT.isLoading}
               closeWindow={onClose}
-              status={returnStatus}
+              status={returnT.status}
+              transactionHashes={returnT.transactionHash}
             >
               <Button
                 description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
-                disabled={isApprovalLoading || !isApproved}
+                disabled={approvalStatus.isLoading || !isApproved}
                 handleClick={handleReturnNft}
               />
             </TransactionWrapper>

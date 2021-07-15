@@ -2,7 +2,8 @@ import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { useTransactionWrapper } from "./useTransactionWrapper";
+import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import { EMPTY, Observable } from "rxjs";
 
 const debug = createDebugger("app:contracts:usestoplend");
 
@@ -12,7 +13,7 @@ export const useStopLend = (): ((
     tokenId: string;
     lendingId: string;
   }[]
-) => Promise<void | boolean>) => {
+) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
 
   const sdk = useSDK();
@@ -25,7 +26,7 @@ export const useStopLend = (): ((
         lendingId: string;
       }[]
     ) => {
-      if (!sdk) return Promise.resolve();
+      if (!sdk) return EMPTY;
       const arr: [string[], BigNumber[], BigNumber[]] = [
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),

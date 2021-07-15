@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import UserContext from "../contexts/UserProvider";
 import { useDebounce } from "../hooks/useDebounce";
 import { TransactionHash, TransactionStateEnum } from "../types";
 
@@ -13,6 +14,7 @@ export const TransactionWrapper: React.FC<{
   status: TransactionStateEnum;
   closeWindow?: () => void | undefined;
 }> = ({ isLoading, children, transactionHashes, status, closeWindow }) => {
+  const {network} = useContext(UserContext);
   const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS)
   const [showMessage, setShowMessage] = useState(false);
   const imageSource = useMemo(() => {
@@ -46,6 +48,15 @@ export const TransactionWrapper: React.FC<{
     };
   }, [closeWindow, isLoading, status]);
 
+  const etherScanUrl = useMemo(()=>{
+    if(network === 'ropsten'){
+      return "https://ropsten.etherscan.io/tx"
+    }
+    return "https://etherscan.io/tx"
+  }, [
+    network
+  ])
+
   return (
     <>
       {transactionLoading ? (
@@ -56,7 +67,7 @@ export const TransactionWrapper: React.FC<{
               <a
                 key={hash}
                 style={{ fontSize: "24px", display: "block" }}
-                href={`https://etherscan.io/tx/${hash}`}
+                href={`${etherScanUrl}/${hash}`}
                 target="_blank"
                 rel="noreferrer"
               >

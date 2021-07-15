@@ -4,6 +4,8 @@ import Modal from "./modal";
 import { StartRentNft, useStartRent } from "../hooks/useStartRent";
 import { RentForm } from "../forms/rent-form";
 import { Lending } from "../contexts/graph/classes";
+import { TransactionStatus } from "../hooks/useTransactionWrapper";
+import { Observable } from "rxjs";
 
 type BatchRentModalProps = {
   open: boolean;
@@ -14,7 +16,7 @@ type BatchRentModalProps = {
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   open,
   handleClose,
-  nft,
+  nft
 }) => {
   const nfts = useMemo(() => {
     return nft.map<StartRentNft>((nft) => ({
@@ -33,7 +35,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     isApproved,
     handleApproveAll,
     checkApprovals,
-    isApprovalLoading,
+    approvalStatus
   } = useStartRent();
 
   useEffect(() => {
@@ -41,30 +43,23 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   }, [checkApprovals, nfts]);
 
   const handleSubmit = useCallback(
-    (items: StartRentNft[]): Promise<[boolean | void, () => void]> => {
-      if (isApproved) {
-        return startRent(items).then((status) => {
-          return Promise.resolve([status, handleClose]);
-        });
-      }
-      return Promise.reject([
-        false,
-        () => {
-          // do nothing
-        },
-      ]);
+    (items: StartRentNft[]): Observable<TransactionStatus> => {
+      return startRent(items)
     },
     [handleClose, isApproved, startRent]
   );
   return (
     <Modal open={open} handleClose={handleClose}>
-      {open && <RentForm
-        nfts={nft}
-        handleApproveAll={handleApproveAll}
-        isApproved={isApproved}
-        handleSubmit={handleSubmit}
-        isApprovalLoading={isApprovalLoading}
-      ></RentForm>}
+      {open && (
+        <RentForm
+          nfts={nft}
+          handleApproveAll={handleApproveAll}
+          isApproved={isApproved}
+          handleSubmit={handleSubmit}
+          approvalStatus={approvalStatus}
+          onClose={handleClose}
+        ></RentForm>
+      )}
     </Modal>
   );
 };

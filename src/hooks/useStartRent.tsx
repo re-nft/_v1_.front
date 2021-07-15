@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../utils";
@@ -7,12 +7,16 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../hardhat/typechain/ERC20";
 import { useContractAddress } from "../contexts/StateProvider";
-import TransactionStateContext from "../contexts/TransactionState";
-import { SnackAlertContext } from "../contexts/SnackProvider";
 import UserContext from "../contexts/UserProvider";
 import { ContractContext } from "../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
-import { useTransactionWrapper } from "./useTransactionWrapper";
+import {
+  TransactionStatus,
+  useTransactionWrapper
+} from "./useTransactionWrapper";
+import { EMPTY, Observable } from "rxjs";
+import { useObservable } from "./useObservable";
+import { TransactionStateEnum } from "../types";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -27,21 +31,20 @@ export type StartRentNft = {
 
 export const useStartRent = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => Promise<void | boolean>;
+  startRent: (nfts: StartRentNft[]) => Observable<TransactionStatus>;
   handleApproveAll: () => void;
   checkApprovals: (nfts: StartRentNft[]) => void;
-  isApprovalLoading: boolean;
+  approvalStatus: TransactionStatus;
 } => {
   const { signer } = useContext(UserContext);
   const { Resolver } = useContext(ContractContext);
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
-  const [isApprovalLoading, setApprovalLoading] = useState<boolean>(true);
+  const [isCheckLoading, setCheckLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
-  const { setHash } = useContext(TransactionStateContext);
-  const { setError } = useContext(SnackAlertContext);
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
+  const [approvalStatus, setObservable] = useObservable();
 
   const checkApprovals = useCallback(
     (nfts: StartRentNft[]) => {
@@ -50,7 +53,7 @@ export const useStartRent = (): {
       if (!contractAddress) return;
       if (!signer) return;
 
-      setApprovalLoading(true);
+      setCheckLoading(true);
       const resolver = Resolver.connect(signer);
       //const deployed = await resolver.deployed()
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
@@ -78,7 +81,7 @@ export const useStartRent = (): {
                 return allowance.lt(BigNumber.from(MAX_UINT256).div(2));
               })
               .map(([_, erc20]) => erc20);
-            setApprovalLoading(false);
+            setCheckLoading(false);
             setApprovals(approvals);
           }
         );
@@ -91,38 +94,33 @@ export const useStartRent = (): {
     // setState is not trusthworth when selecting USCD/DAI first =>isApprove true
     // better to call the smart contracts periodically for allowance check
     // need to optimize this later on
-    if (isApprovalLoading) return false;
+    if (isCheckLoading) return false;
+    if (approvalStatus.isLoading) return false;
     if (!approvals) return true;
     return approvals?.length < 1;
-  }, [approvals, isApprovalLoading]);
+  }, [approvals, approvalStatus.isLoading]);
 
+  useEffect(()=>{
+    if(approvalStatus.status === TransactionStateEnum.SUCCESS){
+      setApprovals([])
+    }
+  }, [approvalStatus.status])
+  
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      setApprovalLoading(true);
-      Promise.all(
-        approvals.map((approval) =>
-          approval.approve(contractAddress, MAX_UINT256)
+      setObservable(transactionWrapper(
+        Promise.all(
+          approvals.map((approval) =>
+            approval.approve(contractAddress, MAX_UINT256)
+          )
         )
-      )
-        .then((hashes) => {
-          if (hashes.length > 0) return setHash(hashes.map((tx) => tx.hash));
-          return Promise.resolve(false);
-        })
-        .then((status) => {
-          if (!status) setError("Transaction is not successful!", "warning");
-          setApprovalLoading(false);
-          setApprovals([]);
-        })
-        .catch((e) => {
-          setApprovalLoading(false);
-          setError(e.message, "error");
-        });
+      ))
     }
-  }, [approvals, contractAddress, setError, setHash]);
+  }, [approvals, contractAddress]);
 
   const startRent = useCallback(
-    async (nfts: StartRentNft[]) => {
-      if (!sdk) return Promise.resolve();
+    (nfts: StartRentNft[]) => {
+      if (!sdk) return EMPTY;
 
       const sortedNfts = nfts.sort(sortNfts);
       const addresses = sortedNfts.map((nft) => nft.address);
@@ -140,8 +138,9 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      return  transactionWrapper(sdk
-        .rent(addresses, tokenIds, lendingIds, rentDurations))
+      return transactionWrapper(
+        sdk.rent(addresses, tokenIds, lendingIds, rentDurations)
+      );
     },
     [sdk]
   );
@@ -151,6 +150,8 @@ export const useStartRent = (): {
     checkApprovals,
     handleApproveAll,
     isApproved,
-    isApprovalLoading
+    approvalStatus: {
+      ...approvalStatus
+    }
   };
 };

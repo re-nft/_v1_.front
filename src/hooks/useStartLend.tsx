@@ -3,7 +3,8 @@ import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { useTransactionWrapper } from "./useTransactionWrapper";
+import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import { EMPTY, Observable } from "rxjs";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
@@ -17,7 +18,7 @@ export const useStartLend = (): ((
   dailyRentPrices: number[],
   nftPrice: number[],
   tokens: PaymentToken[]
-) => Promise<void | boolean>) => {
+) => Observable<TransactionStatus>) => {
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
 
@@ -31,7 +32,7 @@ export const useStartLend = (): ((
       nftPrice: number[],
       tokens: PaymentToken[]
     ) => {
-      if (!sdk) return Promise.resolve();
+      if (!sdk) return EMPTY;
 
       debug("addresses", addresses);
       debug("tokenIds", tokenIds);

@@ -6,13 +6,16 @@ import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
 import { LendInput } from "./lend-input";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { TransactionStateEnum } from "../types";
+import { Observable } from "rxjs";
+import { TransactionStatus } from "../hooks/useTransactionWrapper";
 
 type LendFormProps = {
   nfts: Nft[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: LendInputDefined[]) => Promise<[boolean | void, () => void]>;
-  isApprovalLoading: boolean;
+  handleSubmit: (arg: LendInputDefined[]) => Observable<TransactionStatus>;
+  approvalStatus: TransactionStatus;
+  onClose: () => void
 };
 export type LendInputProps = {
   lendAmount: number | undefined;
@@ -41,7 +44,8 @@ export const LendForm: React.FC<LendFormProps> = ({
   isApproved,
   handleApproveAll,
   handleSubmit,
-  isApprovalLoading,
+  approvalStatus,
+  onClose,
 }) => {
   const [nft] = nfts;
   const initialValues = {
@@ -62,15 +66,15 @@ export const LendForm: React.FC<LendFormProps> = ({
   ) => {
     setSubmitting(true);
     setStatus([TransactionStateEnum.PENDING])
-    handleSubmit(values.inputs as LendInputDefined[])
-      .then(([status, closeWindow]) => {
-        setSubmitting(false);
-        setStatus([status? TransactionStateEnum.SUCCESS: TransactionStateEnum.FAILED, closeWindow])
-      })
-      .catch(() => {
-        setSubmitting(false);
-        setStatus([TransactionStateEnum.FAILED])
-      });
+    const sub = handleSubmit(values.inputs as LendInputDefined[]).subscribe({
+      next: (status)=>{
+        setStatus(status)
+      },
+      complete: ()=>{
+        setSubmitting(false)
+        sub.unsubscribe()
+      }
+    })
   };
 
   return (
@@ -83,7 +87,10 @@ export const LendForm: React.FC<LendFormProps> = ({
       validateOnMount
       validateOnBlur
       validateOnChange
-      initialStatus={[false, undefined]}
+      initialStatus={{
+        isLoading: false,
+        status: TransactionStateEnum.PENDING,
+      }}
     >
       {({
         values,
@@ -97,7 +104,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         submitForm,
         status
       }) => {
-        const formSubmittedSuccessfully = status && status[0] === TransactionStateEnum.SUCCESS
+        const formSubmittedSuccessfully = status.status === TransactionStateEnum.SUCCESS
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
@@ -129,17 +136,17 @@ export const LendForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <TransactionWrapper isLoading={isApprovalLoading} status={TransactionStateEnum.PENDING}>
+                <TransactionWrapper isLoading={approvalStatus.isLoading} status={approvalStatus.status} transactionHashes={approvalStatus.transactionHash}>
                   <ActionButton<Nft>
                     title="Approve all"
                     nft={nft}
                     onClick={handleApproveAll}
-                    disabled={isApprovalLoading}
+                    disabled={approvalStatus.isLoading}
                   />
                 </TransactionWrapper>
               )}
               {(isApproved || isSubmitting) && (
-                <TransactionWrapper isLoading={isSubmitting} status={status[0]} closeWindow={status[1]}>
+                <TransactionWrapper isLoading={isSubmitting} status={status.status} transactionHashes={status.transactionHash} closeWindow={onClose}>
                   <ActionButton<Nft>
                     title={nfts.length > 1 ? "Lend all" : "Lend"}
                     nft={nft}

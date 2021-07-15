@@ -4,19 +4,20 @@ import { Lending } from "../contexts/graph/classes";
 import { sortNfts } from "../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { useTransactionWrapper } from "./useTransactionWrapper";
+import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import { EMPTY, Observable } from "rxjs";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
 
 export const useClaimColleteral = (): ((
   nfts: Lending[]
-) => Promise<void | boolean>) => {
+) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
   const sdk = useSDK();
 
   return useCallback(
     (nfts: Lending[]) => {
-      if (!sdk) return Promise.reject();
+      if (!sdk) return EMPTY;
       const sortedNfts = nfts.sort(sortNfts);
       const params: [string[], BigNumber[], BigNumber[]] = [
         sortedNfts.map((nft) => nft.address),

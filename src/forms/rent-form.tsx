@@ -16,13 +16,16 @@ import { TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { PaymentToken } from "@renft/sdk";
+import { TransactionStatus } from "../hooks/useTransactionWrapper";
+import { Observable } from "rxjs";
 
 type LendFormProps = {
   nfts: Lending[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: StartRentNft[]) => Promise<[boolean | void, () => void]>;
-  isApprovalLoading: boolean;
+  handleSubmit: (arg: StartRentNft[]) => Observable<TransactionStatus>;
+  approvalStatus: TransactionStatus;
+  onClose: () => void;
 };
 interface LendingWithKey extends Lending {
   key: string;
@@ -34,7 +37,8 @@ export const RentForm: React.FC<LendFormProps> = ({
   isApproved,
   handleApproveAll,
   handleSubmit,
-  isApprovalLoading,
+  approvalStatus,
+  onClose
 }) => {
   const [nft] = nfts;
   const initialValues: FormProps = {
@@ -50,7 +54,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   ) => {
     setSubmitting(true);
     setStatus([TransactionStateEnum.PENDING]);
-    handleSubmit(
+    const sub = handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
         tokenId: nft.tokenId,
@@ -61,17 +65,15 @@ export const RentForm: React.FC<LendFormProps> = ({
         isERC721: nft.isERC721
       }))
     )
-      .then(([status, closeWindow]) => {
-        setSubmitting(false);
-        setStatus([
-          status ? TransactionStateEnum.SUCCESS : TransactionStateEnum.FAILED,
-          closeWindow,
-        ]);
-      })
-      .catch(() => {
-        setSubmitting(false);
-        setStatus([TransactionStateEnum.FAILED]);
-      });
+    .subscribe({
+      next: (status)=>{
+        setStatus(status)
+      },
+      complete: ()=>{
+        setSubmitting(false)
+        sub.unsubscribe()
+      }
+    })
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
@@ -118,8 +120,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         submitForm,
         status,
       }) => {
-        const formSubmittedSuccessfully =
-          status && status[0] === TransactionStateEnum.SUCCESS;
+        const formSubmittedSuccessfully = status.status === TransactionStateEnum.SUCCESS
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
@@ -152,29 +153,31 @@ export const RentForm: React.FC<LendFormProps> = ({
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
                 <TransactionWrapper
-                  isLoading={isApprovalLoading}
+                  isLoading={approvalStatus.isLoading}
+                  transactionHashes={approvalStatus.transactionHash}
                   status={TransactionStateEnum.PENDING}
                 >
                   <ActionButton<Nft>
                     title="Approve Payment tokens"
                     nft={nft}
                     onClick={handleApproveAll}
-                    disabled={isApprovalLoading || isSubmitting}
+                    disabled={approvalStatus.isLoading || isSubmitting}
                   />
                 </TransactionWrapper>
               )}
               {(isApproved || isSubmitting) && (
                 <TransactionWrapper
                   isLoading={isSubmitting}
-                  status={status[0]}
-                  closeWindow={status[1]}
+                  status={status.status}
+                  closeWindow={onClose}
+                  transactionHashes={status.transactionHash}
                 >
                   <ActionButton<Nft>
                     title={nfts.length > 1 ? "Rent all" : "Rent"}
                     nft={nft}
                     onClick={submitForm}
                     disabled={
-                      !isValid || isSubmitting || formSubmittedSuccessfully
+                      !isValid ||  !isApproved || isSubmitting || formSubmittedSuccessfully
                     }
                   />
                 </TransactionWrapper>
