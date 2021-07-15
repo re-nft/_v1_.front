@@ -9,11 +9,9 @@ import { useSetApprovalAll } from "../hooks/useSetApprovalAll";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
-import { BigNumber } from "@ethersproject/bignumber";
 import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 import UserContext from "../contexts/UserProvider";
-import { sortNfts } from "../utils";
 import { useObservable } from "../hooks/useObservable";
 
 type LendModalProps = {
@@ -37,43 +35,11 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   const [approvalStatus, setObservable] = useObservable();
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
-      const lendAmountsValues: number[] = [];
-      const maxDurationsValues: number[] = [];
-      const borrowPriceValues: number[] = [];
-      const nftPriceValues: number[] = [];
-      const addresses: string[] = [];
-      const tokenIds: BigNumber[] = [];
-      const pmtTokens: number[] = [];
-
-      const sortedNfts = Object.values(lendingInputs)
-        .map((a) => ({ ...a.nft, ...a }))
-        .sort(sortNfts);
-      sortedNfts.forEach((item) => {
-        lendAmountsValues.push(item.lendAmount);
-        maxDurationsValues.push(item.maxDuration);
-        borrowPriceValues.push(item.borrowPrice);
-        nftPriceValues.push(item.nftPrice);
-        pmtTokens.push(item.pmToken);
-      });
-      sortedNfts.forEach(({ address, tokenId }) => {
-        addresses.push(address);
-        tokenIds.push(BigNumber.from(tokenId));
-      });
-
-      return startLend(
-        addresses,
-        tokenIds,
-        lendAmountsValues,
-        maxDurationsValues,
-        borrowPriceValues,
-        nftPriceValues,
-        pmtTokens
-      );
+      return startLend(lendingInputs);
     },
 
     [startLend, onClose]
   );
-
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
     setObservable(setApprovalForAll);
