@@ -23,7 +23,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   
   const handleClaim = useCallback(() => {
     setObservable(claim(nfts));
-  }, [nfts]);
+  }, [nfts, claim, setObservable]);
 
   return (
     <Modal open={open} handleClose={() => onClose()} >

@@ -1,5 +1,5 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { AvailableForRentProvider } from "./AvailableForRent";
@@ -42,15 +42,6 @@ export const StateProvider: React.FC = ({ children }) => {
 export const useContractAddress = (): string => {
   const { ReNFT } = useContext(ContractContext);
   const { network } = useContext(UserContext);
-  const [address, setAddress] = useState("");
 
-  useEffect(() => {
-    const getNetwork = async () => {
-      const newAddress =
-        network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
-      if (newAddress) setAddress(newAddress);
-    };
-    getNetwork();
-  }, [address, ReNFT?.address, network]);
-  return address;
+  return network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
 };
