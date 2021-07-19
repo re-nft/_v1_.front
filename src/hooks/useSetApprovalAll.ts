@@ -8,21 +8,22 @@ import { EMPTY, Observable } from "rxjs";
 
 export function useSetApprovalAll(
   nfts: { address: string; contract: () => ERC721 | ERC1155 }[],
-  contractAddress: string
+  currentAddress: string
 ): Observable<TransactionStatus> {
   const transactionWrapper = useTransactionWrapper();
-  if (!contractAddress) return EMPTY;
+  if (!currentAddress) return EMPTY;
   if (!nfts || nfts.length < 1) return EMPTY;
   const distinctItems = nfts.filter(
     (item, index, all) =>
       all.findIndex((nft) => nft.address === item.address) === index
   );
   if (distinctItems.length < 1) return EMPTY;
+  console.log(nfts, currentAddress);
   return transactionWrapper(
     Promise.all(
       distinctItems.map((nft) => {
         const contract = nft.contract();
-        return contract.setApprovalForAll(contractAddress, true);
+        return contract.setApprovalForAll(currentAddress, true);
       })
     )
   );

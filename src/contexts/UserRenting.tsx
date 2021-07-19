@@ -3,31 +3,28 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect,
+  useEffect
 } from "react";
 
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
-import createCancellablePromise from "./create-cancellable-promise";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
 import { diffJson } from "diff";
-import usePoller from "../hooks/usePoller";
 import UserContext from "./UserProvider";
 import { usePrevious } from "../hooks/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import { EMPTY, from, timer, map, Observable, switchMap } from "rxjs";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
   isLoading: boolean;
-  refetchRenting: () => (() => void) | undefined;
+  refetchRenting: () => Observable<any> | undefined;
 };
 export const UserRentingContext = createContext<UserRentingContextType>({
   userRenting: [],
   isLoading: false,
-  refetchRenting: () => {
-    return undefined;
-  },
+  refetchRenting: () => EMPTY
 });
 
 export const UserRentingProvider: React.FC = ({ children }) => {
@@ -39,26 +36,27 @@ export const UserRentingProvider: React.FC = ({ children }) => {
   const previousAddress = usePrevious(currentAddress);
 
   const fetchRenting = useCallback(() => {
-    if (!currAddress || !signer) return;
+    if (!currAddress || !signer) return EMPTY;
     if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
       if (renting && renting.length > 0) setRentings([]);
-      return;
+      return EMPTY;
     }
     setLoading(true);
-    const fetchRequest = createCancellablePromise<
-      FetchUserRentingReturn | undefined
-    >(fetchUserRenting(currAddress));
-    fetchRequest.promise
-      .then((usersRenting) => {
+    const fetchRequest = from<Promise<FetchUserRentingReturn | undefined>>(
+      fetchUserRenting(currAddress)
+    ).pipe(
+      map((usersRenting) => {
         if (usersRenting) {
           const { users } = usersRenting;
           if (!users) {
             if (renting.length > 0) setRentings([]);
-            return;
+            setLoading(false);
+            return EMPTY;
           }
           if (users.length < 1) {
             if (renting.length > 0) setRentings([]);
-            return;
+            setLoading(false);
+            return EMPTY;
           }
           const firstMatch = users[0];
           const { renting: r } = firstMatch;
@@ -90,34 +88,35 @@ export const UserRentingProvider: React.FC = ({ children }) => {
           );
           if (currentAddress !== previousAddress) {
             setRentings(_renting);
-          }
-          else if (
+          } else if (
             difference &&
             difference[1] &&
             (difference[1].added || difference[1].removed)
           ) {
             setRentings(_renting);
           }
+          setLoading(false);
         }
       })
-      .finally(() => {
-        setLoading(false);
-      });
-    return fetchRequest.cancel;
+    );
+    return fetchRequest;
   }, [currAddress, currentAddress, previousAddress, renting, signer, network]);
 
   useEffect(() => {
-    fetchRenting();
-  }, [fetchRenting]);
-
-  usePoller(fetchRenting, 5 * SECOND_IN_MILLISECONDS, [currentAddress]);
+    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+      .pipe(switchMap(fetchRenting))
+      .subscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [fetchRenting, currentAddress]);
 
   return (
     <UserRentingContext.Provider
       value={{
         userRenting: renting,
         isLoading,
-        refetchRenting: fetchRenting,
+        refetchRenting: fetchRenting
       }}
     >
       {children}
