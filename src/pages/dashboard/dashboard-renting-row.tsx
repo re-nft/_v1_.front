@@ -35,6 +35,14 @@ export const RentingRow: React.FC<{
     }, [checkBoxChangeWrapped, rent, isExpired]);
     const days = renting.rentDuration;
   
+    const formatCollateral = (v: number) => {
+      const parts = v.toString().split(".");
+      if (parts.length === 1) { return v.toString(); }
+      const wholePart = parts[0];
+      const decimalPart = parts[1];
+      return `${wholePart}.${decimalPart.substring(0, 4)}`
+    }
+
     const expireDate = moment(Number(renting.rentedAt) * 1000).add(
       renting.rentDuration,
       "day"
@@ -62,7 +70,7 @@ export const RentingRow: React.FC<{
           {PaymentToken[renting.lending.paymentToken ?? 0]}
         </Td>
         <Td className="column">
-          {renting.lending.nftPrice * Number(renting.lending.lentAmount)}
+          {formatCollateral(renting.lending.nftPrice * Number(renting.lending.lentAmount))}
         </Td>
         <Td className="column">{renting.lending.dailyRentPrice}</Td>
         <Td className="column">

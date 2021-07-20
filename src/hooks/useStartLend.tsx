@@ -1,46 +1,58 @@
 import { useCallback } from "react";
-import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import {
+  TransactionStatus,
+  useTransactionWrapper
+} from "./useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
+import { LendInputDefined } from "../forms/lend-form";
+import { sortNfts } from "../utils";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
 //const debug = console.log;
 
 export const useStartLend = (): ((
-  addresses: string[],
-  tokenIds: BigNumber[],
-  lendAmounts: number[],
-  maxRentDurations: number[],
-  dailyRentPrices: number[],
-  nftPrice: number[],
-  tokens: PaymentToken[]
+  lendingInputs: LendInputDefined[]
 ) => Observable<TransactionStatus>) => {
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
 
   const startLend = useCallback(
-    (
-      addresses: string[],
-      tokenIds: BigNumber[],
-      amounts: number[],
-      maxRentDurations: number[],
-      dailyRentPrices: number[],
-      nftPrice: number[],
-      tokens: PaymentToken[]
-    ) => {
+    (lendingInputs: LendInputDefined[]) => {
       if (!sdk) return EMPTY;
 
+      const amounts: number[] = [];
+      const maxRentDurations: number[] = [];
+      const dailyRentPrices: number[] = [];
+      const nftPrice: number[] = [];
+      const addresses: string[] = [];
+      const tokenIds: BigNumber[] = [];
+      const pmtTokens: number[] = [];
+
+      const sortedNfts = Object.values(lendingInputs)
+        .map((a) => ({ ...a.nft, ...a }))
+        .sort(sortNfts);
+      sortedNfts.forEach((item) => {
+        amounts.push(item.lendAmount);
+        maxRentDurations.push(item.maxDuration);
+        dailyRentPrices.push(item.borrowPrice);
+        nftPrice.push(item.nftPrice);
+        pmtTokens.push(item.pmToken);
+      });
+      sortedNfts.forEach(({ address, tokenId }) => {
+        addresses.push(address);
+        tokenIds.push(BigNumber.from(tokenId));
+      });
       debug("addresses", addresses);
       debug("tokenIds", tokenIds);
       debug("amounts", amounts);
       debug("maxRentDurations", maxRentDurations);
       debug("dailyRentPrices", dailyRentPrices);
       debug("nftPrice", nftPrice);
-      debug("tokens", tokens);
+      debug("tokens", pmtTokens);
 
       return transactionWrapper(
         sdk.lend(
@@ -50,7 +62,7 @@ export const useStartLend = (): ((
           maxRentDurations,
           dailyRentPrices,
           nftPrice,
-          tokens
+          pmtTokens
         )
       );
     },

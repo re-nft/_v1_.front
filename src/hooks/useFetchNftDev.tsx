@@ -20,7 +20,7 @@ function range(start: number, stop: number, step: number) {
   }
   return a;
 }
-
+//TODO:eniko refactor to rxjs
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network } = useContext(UserContext);
