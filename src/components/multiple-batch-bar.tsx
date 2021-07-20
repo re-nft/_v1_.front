@@ -57,7 +57,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
         </div>
       )}
-      {lendingNumber > 0 && (
+      {(lendingNumber - claimsNumber) > 0 && (
         <div
           className="batch__inner"
           style={{
@@ -71,7 +71,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
             className="column"
             style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
           >
-            {`Selected ${lendingNumber} items to lend`}
+            {`Selected ${lendingNumber - claimsNumber} items to stop lending`}
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
