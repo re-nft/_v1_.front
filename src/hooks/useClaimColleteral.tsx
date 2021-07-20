@@ -17,7 +17,10 @@ export const useClaimColleteral = (): ((
 
   return useCallback(
     (nfts: Lending[]) => {
-      if (!sdk) return EMPTY;
+      if (!sdk) {
+        debug("SDK not found");
+        return EMPTY;
+      }
       const sortedNfts = nfts.sort(sortNfts);
       const params: [string[], BigNumber[], BigNumber[]] = [
         sortedNfts.map((nft) => nft.address),
@@ -38,6 +41,6 @@ export const useClaimColleteral = (): ((
       );
       return transactionWrapper(sdk.claimCollateral(...params));
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
 };

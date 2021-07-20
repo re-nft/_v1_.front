@@ -42,7 +42,6 @@ const UserRentings: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
-    console.log('handleclosemodal called')
     setModalOpen(false);
     handleBatchReset();
   }, [handleBatchReset]);

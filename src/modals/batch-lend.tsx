@@ -7,12 +7,12 @@ import isApprovalForAll from "../services/is-approval-for-all";
 import { useSetApprovalAll } from "../hooks/useSetApprovalAll";
 
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { useStartLend } from "../hooks/useStartLend";
 import { useContractAddress } from "../contexts/StateProvider";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 import UserContext from "../contexts/UserProvider";
 import { useObservable } from "../hooks/useObservable";
+import { from, map } from "rxjs";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -48,18 +48,23 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   useEffect(() => {
     if (!currentAddress) return;
     setIsApproved(false);
-    const transaction = createCancellablePromise(
-      isApprovalForAll(nfts, currentAddress, contractAddress)
-    );
-    transaction.promise
-      .then(([isApproved, nonApproved]) => {
+    const transaction = from(
+      isApprovalForAll(nfts, currentAddress, contractAddress).catch(() => {
+        console.warn("batch lend issue with is approval for all");
+        return null;
+      })
+    ).pipe(
+      map((arg) => {
+        if(!arg) return;
+        const [isApproved, nonApproved] = arg;
         if (isApproved) setIsApproved(isApproved);
         setNonApprovedNfts(nonApproved);
       })
-      .catch(() => {
-        console.warn("batch lend issue with is approval for all");
-      });
-    return transaction.cancel;
+    );
+    const subscription = transaction.subscribe();
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, [nfts, currentAddress, setIsApproved, contractAddress]);
 
   return (

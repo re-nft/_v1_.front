@@ -1,20 +1,16 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { Nft, Renting } from "../contexts/graph/classes";
-import { SnackAlertContext } from "../contexts/SnackProvider";
 import { useContractAddress } from "../contexts/StateProvider";
-import TransactionStateContext from "../contexts/TransactionState";
 import UserContext from "../contexts/UserProvider";
 import { useObservable } from "../hooks/useObservable";
 import { useReturnIt } from "../hooks/useReturnIt";
 import isApprovalForAll from "../services/is-approval-for-all";
-import {
-  useSetApprovalAll
-} from "../hooks/useSetApprovalAll";
+import { useSetApprovalAll } from "../hooks/useSetApprovalAll";
 import Modal from "./modal";
+import { from, map } from "rxjs";
 
 type ReturnModalProps = {
   nfts: Renting[];
@@ -27,14 +23,12 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   open,
   onClose
 }) => {
-  const { setHash } = useContext(TransactionStateContext);
   const returnIt = useReturnIt();
   const contractAddress = useContractAddress();
   const currentAddress = useContext(CurrentAddressWrapper);
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const { web3Provider: provider } = useContext(UserContext);
-  const { setError } = useContext(SnackAlertContext);
   const [returnT, setReturnObservable] = useObservable();
   const setApprovalForAll = useSetApprovalAll(nonApprovedNft, currentAddress);
   const [approvalStatus, setObservable] = useObservable();
@@ -42,18 +36,24 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   useEffect(() => {
     if (!currentAddress) return;
     setIsApproved(false);
-    const transaction = createCancellablePromise(
-      isApprovalForAll(nfts, currentAddress, contractAddress)
-    );
-    transaction.promise
-      .then(([status, nonApproved]) => {
+    const transaction = from(
+      isApprovalForAll(nfts, currentAddress, contractAddress).catch(() => {
+        console.warn("batch lend issue with is approval for all");
+        return null;
+      })
+    ).pipe(
+      map((arg) => {
+        if (!arg) return;
+        const [status, nonApproved] = arg;
         if (status) setIsApproved(status);
         setNonApprovedNfts(nonApproved);
       })
-      .catch(() => {
-        console.warn("batch lend issue with is approval for all");
-      });
-    return transaction.cancel;
+    );
+
+    const subscription = transaction.subscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [nfts, currentAddress, setIsApproved, contractAddress]);
 
   const handleApproveAll = useCallback(() => {
