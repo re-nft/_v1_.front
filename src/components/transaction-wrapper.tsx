@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import UserContext from "../contexts/UserProvider";
 import { useDebounce } from "../hooks/useDebounce";
-import { TransactionHash, TransactionStateEnum } from "../types";
+import { NetworkName, TransactionHash, TransactionStateEnum } from "../types";
 
 const IMAGE_PENDING = "/assets/loading-pending.gif";
 const IMAGE_SUCCESS = "/assets/loading-success.png";
@@ -49,7 +49,7 @@ export const TransactionWrapper: React.FC<{
   }, [closeWindow, isLoading, status]);
 
   const etherScanUrl = useMemo(()=>{
-    if(network === 'ropsten'){
+    if(network === NetworkName.ropsten){
       return "https://ropsten.etherscan.io/tx"
     }
     return "https://etherscan.io/tx"

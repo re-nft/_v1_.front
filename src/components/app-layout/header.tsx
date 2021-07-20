@@ -1,3 +1,4 @@
+import { IconButton } from "@material-ui/core";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
@@ -7,6 +8,7 @@ import { useLookupAddress } from "../../hooks/useLookupAddress";
 import { Button } from "../common/button";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
+import MenuIcon from '@material-ui/icons/Menu';
 
 export const Header = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
@@ -34,14 +36,12 @@ export const Header = () => {
           description="Please connect your wallet!"
         />
       ) : (
-        <>
-          <div style={{marginRight: "10px"}}>
+        <div className="header__wallet">
+          <div className="header__wallet-network">
             <p className="headline pink-text">
               {network} &nbsp;{" "}
               {networkNotSupported && (
-                <span className="copy-text black-text">
-                  is not supported
-                </span>
+                <span className="copy-text black-text">is not supported</span>
               )}
             </p>
             {networkNotSupported && (
@@ -54,21 +54,23 @@ export const Header = () => {
             )}
           </div>
 
-          <div className="header__user">
-            {installMetaMask && <InstallMetamask />}
+          {!networkNotSupported && (
+            <div className="header__wallet-user">
+              {installMetaMask && <InstallMetamask />}
 
-            {!installMetaMask && !!currentAddress && (
-              <>
-                <Link className="" to="/profile">
-                  <ShortenPopover
-                    longString={username || lookupAddress || currentAddress}
-                    data-cy="metamask-connect-button"
-                  />
-                </Link>
-              </>
-            )}
-          </div>
-        </>
+              {!installMetaMask && !!currentAddress && (
+                <>
+                  <Link className="" to="/profile">
+                    <ShortenPopover
+                      longString={username || lookupAddress || currentAddress}
+                      data-cy="metamask-connect-button"
+                    />
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
