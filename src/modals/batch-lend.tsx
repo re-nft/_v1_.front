@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 
 import Modal from "./modal";
 
@@ -7,6 +7,7 @@ import { useNFTApproval } from "../hooks/useNFTApproval";
 
 import { useStartLend } from "../hooks/useStartLend";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -20,12 +21,9 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
   onClose
 }) => {
   const startLend = useStartLend();
-  const {
-    handleApproveAll,
-    isApproved,
-    approvalStatus
-  } = useNFTApproval(nfts);
-  
+  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
+  const currentAddress = useContext(CurrentAddressWrapper);
+
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
       return startLend(lendingInputs);
@@ -33,6 +31,14 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
     [startLend, onClose]
   );
+
+  useEffect(() => {
+    nfts.map((nft) =>
+      nft
+        .loadAmount(currentAddress)
+        .catch(() => console.warn("could not load amount"))
+    );
+  }, [nfts]);
 
   return (
     <Modal open={open} handleClose={onClose}>

@@ -6,7 +6,7 @@ import {
   addOrRemoveUserFavorite,
   nftId,
   upvoteOrDownvote,
-  getNftVote,
+  getNftVote
 } from "../services/firebase";
 import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
@@ -43,7 +43,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   checked,
   onCheckboxChange,
   children,
-  disabled,
+  disabled
 }) => {
   const { signer } = useContext(UserContext);
   const currentAddress = useContext(CurrentAddressWrapper);
@@ -100,14 +100,12 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
   useEffect(() => {
-    if (!nft.isERC721 && currentAddress) {
-      nft
-        .loadAmount(currentAddress)
-        .then((a) => {
-          setAmount(a);
-        })
-        .catch(() => console.warn("could not load amount"));
-    }
+    nft
+      .loadAmount(currentAddress)
+      .then((a) => {
+        setAmount(a);
+      })
+      .catch(() => console.warn("could not load amount"));
   }, [checked, nft, meta?.image, currentAddress]);
 
   useEffect(() => {
@@ -122,21 +120,22 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
   // This is a stupid check, it should check the mimetype of the source
-  const isVideo = image?.endsWith("mp4") 
-   || image?.endsWith("mkv") 
-   || image?.endsWith("webm") 
-   || image?.endsWith("mov") 
-   || image?.endsWith("avi") 
-   || image?.endsWith("flv") 
-  ;
-
+  const isVideo =
+    image?.endsWith("mp4") ||
+    image?.endsWith("mkv") ||
+    image?.endsWith("webm") ||
+    image?.endsWith("mov") ||
+    image?.endsWith("avi") ||
+    image?.endsWith("flv");
   const display = () => {
     if (isVideo) return <Player playsInline autoPlay src={image} muted />;
     return <img alt={description} src={image} />;
   };
   return (
     <div
-      className={`nft ${checked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
+      className={`nft ${checked ? "checked" : ""} ${
+        nft.isERC721 ? "nft__erc721" : "nft__erc1155"
+      }`}
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >
