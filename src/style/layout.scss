@@ -29,12 +29,26 @@
     border-bottom: 2px solid #fff;
 }
 
-.content-wrapper.footer-content {
-    line-height: 1;
+.content-wrapper.footer {
+    flex-wrap: wrap;
     padding: 24px 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+
+    .footer__message {
+        flex: 1 1 100%;
+        align-items: center;
+        text-align: center;
+        color: #f43e77;
+        font-size: 16px;
+
+    }
+    .footer__content  {
+        flex: 1 1 100%;
+
+        line-height: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
 }
 
 .text-content {
