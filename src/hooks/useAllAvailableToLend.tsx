@@ -22,7 +22,7 @@ export const useAllAvailableToLend = (): {
       ...ERC721
         //weird duplicated 721 from 1555
         .filter(
-          (nft) => nft.address.toLowerCase() === "0x2af75676692817d85121353f0d6e8e9ae6ad5576"
+          (nft) => nft.address.toLowerCase() !== "0x2af75676692817d85121353f0d6e8e9ae6ad5576"
         )
     ];
   }, [ERC1155, ERC721, devNfts, network]);
