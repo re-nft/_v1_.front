@@ -38,11 +38,13 @@ export const LendingRow: React.FC<{
 
   const formatCollateral = (v: number) => {
     const parts = v.toString().split(".");
-    if (parts.length === 1) { return v.toString(); }
+    if (parts.length === 1) {
+      return v.toString();
+    }
     const wholePart = parts[0];
     const decimalPart = parts[1];
-    return `${wholePart}.${decimalPart.substring(0, 4)}`
-  }
+    return `${wholePart}.${decimalPart.substring(0, 4)}`;
+  };
 
   const handleClaim = useCallback(() => {
     if (!claimable) return;
@@ -81,10 +83,14 @@ export const LendingRow: React.FC<{
       <Td className="column">
         <ShortenPopover longString={lending.nftAddress}></ShortenPopover>
       </Td>
-      <Td className="column">{lend.tokenId}</Td>
+      <Td className="column">
+        <ShortenPopover longString={lending.tokenId}></ShortenPopover>
+      </Td>
       <Td className="column">{lend.amount}</Td>
       <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
-      <Td className="column">{formatCollateral(lending.nftPrice * Number(lend.amount))}</Td>
+      <Td className="column">
+        {formatCollateral(lending.nftPrice * Number(lend.amount))}
+      </Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="column">{lend.relended ? "renter" : "owner"}</Td>
