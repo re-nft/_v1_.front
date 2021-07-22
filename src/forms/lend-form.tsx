@@ -39,18 +39,7 @@ export type LendInputDefined = {
 };
 type FormProps = { inputs: LendInputProps[] };
 
-function is4Digits(x: number | string) {
-  try {
-    // precision up to 16 digits after
-    const [_, b] = x.toString().split(".");
-    if (!b) return true;
-    const reminder = b.toString().slice(4);
-    if (!reminder) return true;
-    return reminder.replaceAll("0", "").length < 1;
-  } catch (e) {
-    return false;
-  }
-}
+
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -195,6 +184,7 @@ function is4Digits(x: number | string) {
     return false;
   }
 }
+
 const validate = (values: FormProps) => {
   const errors: (Record<string, string | undefined> | undefined)[] = Array(
     values.inputs.length
