@@ -39,6 +39,7 @@ export type LendInputDefined = {
 };
 type FormProps = { inputs: LendInputProps[] };
 
+
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -183,6 +184,7 @@ function is4Digits(x: number | string) {
     return false;
   }
 }
+
 const validate = (values: FormProps) => {
   const errors: (Record<string, string | undefined> | undefined)[] = Array(
     values.inputs.length
