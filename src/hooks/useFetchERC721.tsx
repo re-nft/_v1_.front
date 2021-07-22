@@ -44,6 +44,8 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
           // filter out duplicates
           return result
             .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))
+            //weird duplicated 721 from 1555
+            .filter((nft) => nft.address === "0x2af75676692817d85121353f0d6e8e9ae6ad5576")
             .map((nft) => {
               return new Nft(
                 nft.address,
