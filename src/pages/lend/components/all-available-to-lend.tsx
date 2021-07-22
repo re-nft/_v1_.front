@@ -1,19 +1,19 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Nft } from "../../../contexts/graph/classes";
-import ItemWrapper from "../../../components/items-wrapper";
+import ItemWrapper from "../../../components/common/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
 import CatalogueItem from "../../../components/catalogue-item";
-import ActionButton from "../../../components/action-button";
+import ActionButton from "../../../components/common/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
 import {
   getUniqueCheckboxId,
-  useBatchItems,
+  useBatchItems
 } from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
+import Pagination from "../../../components/common/pagination";
 import { usePageController } from "../../../controller/page-controller";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useAllAvailableToLend } from "../../../contexts/graph/hooks/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../../../hooks/useAllAvailableToLend";
 import UserContext from "../../../contexts/UserProvider";
 
 const Lendings: React.FC = () => {
@@ -25,7 +25,7 @@ const Lendings: React.FC = () => {
     currentPageNumber,
     currentPage,
     onSetPage,
-    onPageControllerInit,
+    onPageControllerInit
   } = usePageController<Nft>();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const [modalOpen, setModalOpen] = useState(false);
@@ -49,12 +49,20 @@ const Lendings: React.FC = () => {
   }, [setModalOpen]);
 
   useEffect(() => {
-    onPageControllerInit(allAvailableToLend);
+    let isSubscribed = true;
+    if (isSubscribed) onPageControllerInit(allAvailableToLend);
+    return () => {
+      isSubscribed = false;
+    };
   }, [allAvailableToLend, onPageControllerInit]);
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage);
+    let isSubscribed = true;
+    if (isSubscribed) fetchNfts(currentPage);
+    return () => {
+      isSubscribed = false;
+    };
   }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(
@@ -67,7 +75,9 @@ const Lendings: React.FC = () => {
   );
 
   if (!signer) {
-    return <div className="center">Please connect your wallet!</div>;
+    return (
+      <div className="center content__message">Please connect your wallet!</div>
+    );
   }
 
   if (isLoading && currentPage.length === 0) {
@@ -75,7 +85,11 @@ const Lendings: React.FC = () => {
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return <div className="center">You don&apos;t have any NFTs to lend</div>;
+    return (
+      <div className="center content__message">
+        You don&apos;t have any NFTs to lend
+      </div>
+    );
   }
 
   return (
@@ -113,7 +127,7 @@ const Lendings: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedNftItems.length > 1 && (
+      {checkedNftItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedNftItems.length} items`}
           actionTitle="Lend All"

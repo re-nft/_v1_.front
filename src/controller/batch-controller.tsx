@@ -14,7 +14,7 @@ import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
 import { TimestampContext } from "../contexts/TimestampProvider";
 
-type UniqueID = string;
+export type UniqueID = string;
 
 const getUniqueID = (
   nftAddress: string,
@@ -132,7 +132,7 @@ export const useBatchItems: () => BatchContextType = () => {
       const uniqueID = getUniqueCheckboxId(item);
       let newState = {};
       // if contained in prev, remove
-      if (uniqueID in checkedItems) {
+      if (checkedItems[uniqueID]) {
         const state = { ...checkedItems };
         delete state[uniqueID];
         newState = state;

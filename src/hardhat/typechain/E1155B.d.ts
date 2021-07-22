@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface E1155BInterface extends ethers.utils.Interface {
   functions: {
     "GOLD()": FunctionFragment;
+    "GUN()": FunctionFragment;
     "SHIELD()": FunctionFragment;
     "SILVER()": FunctionFragment;
     "SWORD()": FunctionFragment;
@@ -39,6 +40,7 @@ interface E1155BInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "GOLD", values?: undefined): string;
+  encodeFunctionData(functionFragment: "GUN", values?: undefined): string;
   encodeFunctionData(functionFragment: "SHIELD", values?: undefined): string;
   encodeFunctionData(functionFragment: "SILVER", values?: undefined): string;
   encodeFunctionData(functionFragment: "SWORD", values?: undefined): string;
@@ -79,6 +81,7 @@ interface E1155BInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
   decodeFunctionResult(functionFragment: "GOLD", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "GUN", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SHIELD", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SILVER", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SWORD", data: BytesLike): Result;
@@ -175,6 +178,10 @@ export class E1155B extends Contract {
     GOLD(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "GOLD()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    GUN(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     SHIELD(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -314,6 +321,10 @@ export class E1155B extends Contract {
 
   "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+  GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
   "SHIELD()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -451,6 +462,10 @@ export class E1155B extends Contract {
     GOLD(overrides?: CallOverrides): Promise<BigNumber>;
 
     "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -633,6 +648,10 @@ export class E1155B extends Contract {
 
     "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
     "SHIELD()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -771,6 +790,10 @@ export class E1155B extends Contract {
     GOLD(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "GOLD()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    GUN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     SHIELD(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

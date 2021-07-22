@@ -1,82 +1,72 @@
-import { useCallback, useContext, useMemo } from "react";
-import { PaymentToken } from "@renft/sdk";
-import { getReNFT } from "../services/get-renft-instance";
+import { useCallback } from "react";
 import { BigNumber } from "ethers";
-import { useContractAddress } from "../contexts/StateProvider";
 import createDebugger from "debug";
-import { SnackAlertContext } from "../contexts/SnackProvider";
-import TransactionStateContext from "../contexts/TransactionState";
-import UserContext from "../contexts/UserProvider";
+import { useSDK } from "./useSDK";
+import {
+  TransactionStatus,
+  useTransactionWrapper
+} from "./useTransactionWrapper";
+import { EMPTY, Observable } from "rxjs";
+import { LendInputDefined } from "../forms/lend-form";
+import { sortNfts } from "../utils";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
 //const debug = console.log;
 
 export const useStartLend = (): ((
-  addresses: string[],
-  tokenIds: BigNumber[],
-  lendAmounts: number[],
-  maxRentDurations: number[],
-  dailyRentPrices: number[],
-  nftPrice: number[],
-  tokens: PaymentToken[]
-) => Promise<void | boolean>) => {
-  const { signer } = useContext(UserContext);
-  const contractAddress = useContractAddress();
-  const { setError } = useContext(SnackAlertContext);
-  const { setHash } = useContext(TransactionStateContext);
-
-  const renft = useMemo(() => {
-    if (!signer) return;
-    if (!contractAddress) return;
-    return getReNFT(signer, contractAddress);
-  }, [contractAddress, signer]);
+  lendingInputs: LendInputDefined[]
+) => Observable<TransactionStatus>) => {
+  const sdk = useSDK();
+  const transactionWrapper = useTransactionWrapper();
 
   const startLend = useCallback(
-    (
-      addresses: string[],
-      tokenIds: BigNumber[],
-      amounts: number[],
-      maxRentDurations: number[],
-      dailyRentPrices: number[],
-      nftPrice: number[],
-      tokens: PaymentToken[]
-    ) => {
-      if (!renft) return Promise.resolve();
+    (lendingInputs: LendInputDefined[]) => {
+      if (!sdk) return EMPTY;
 
+      const amounts: number[] = [];
+      const maxRentDurations: number[] = [];
+      const dailyRentPrices: number[] = [];
+      const nftPrice: number[] = [];
+      const addresses: string[] = [];
+      const tokenIds: BigNumber[] = [];
+      const pmtTokens: number[] = [];
+
+      const sortedNfts = Object.values(lendingInputs)
+        .map((a) => ({ ...a.nft, ...a }))
+        .sort(sortNfts);
+      sortedNfts.forEach((item) => {
+        amounts.push(item.lendAmount);
+        maxRentDurations.push(item.maxDuration);
+        dailyRentPrices.push(item.borrowPrice);
+        nftPrice.push(item.nftPrice);
+        pmtTokens.push(item.pmToken);
+      });
+      sortedNfts.forEach(({ address, tokenId }) => {
+        addresses.push(address);
+        tokenIds.push(BigNumber.from(tokenId));
+      });
       debug("addresses", addresses);
       debug("tokenIds", tokenIds);
       debug("amounts", amounts);
       debug("maxRentDurations", maxRentDurations);
       debug("dailyRentPrices", dailyRentPrices);
       debug("nftPrice", nftPrice);
-      debug("tokens", tokens);
+      debug("tokens", pmtTokens);
 
-      return renft
-        .lend(
+      return transactionWrapper(
+        sdk.lend(
           addresses,
           tokenIds,
           amounts,
           maxRentDurations,
           dailyRentPrices,
           nftPrice,
-          tokens
+          pmtTokens
         )
-        .then((tx) => {
-          if (tx) return setHash(tx.hash);
-          return Promise.resolve(false);
-        })
-        .then((status) => {
-          if (!status) setError("Transaction is not successful!", "warning");
-          return Promise.resolve(status);
-        })
-        .catch((e) => {
-          console.warn("could not start lend");
-          setError(e.message, "error");
-          return;
-        });
+      );
     },
-    [renft, setError, setHash]
+    [sdk]
   );
   return startLend;
 };

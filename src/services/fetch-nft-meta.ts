@@ -180,5 +180,8 @@ export const fetchNFTsFromOpenSea = async (
           id: nftId(nft.assetContract.address, nft.tokenId || ""),
         };
       });
+    }).catch((e)=>{
+      //TODO add logging
+      return []
     });
 };

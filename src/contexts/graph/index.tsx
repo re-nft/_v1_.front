@@ -3,17 +3,17 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useCallback,
+  useCallback
 } from "react";
 import {
   getUserDataOrCrateNew,
-  getAllUsersVote,
+  getAllUsersVote
 } from "../../services/firebase";
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
 import { CurrentAddressWrapper } from "../CurrentAddressWrapper";
 import { LendingId, RentingId } from "../../services/graph";
-import createCancellablePromise from "../create-cancellable-promise";
+import { from, map } from "rxjs";
 
 /**
  * Useful links
@@ -35,7 +35,7 @@ type GraphContextType = {
 };
 
 const defaultUserData = {
-  favorites: {},
+  favorites: {}
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -45,7 +45,7 @@ const DefaultGraphContext: GraphContextType = {
   isLoading: false,
   refreshUserData: () => {
     // empty
-  },
+  }
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -86,24 +86,26 @@ export const GraphProvider: React.FC = ({ children }) => {
     };
 
     setLoading(true);
-    const fetchRequest = createCancellablePromise(getUserData());
-    fetchRequest.promise
-      .then((userData: UserData | undefined) => {
+    const fetchRequest = from(
+      getUserData().catch(() => {
+        setLoading(false);
+
+        console.warn("could not update global user data");
+      })
+    ).pipe(
+      map((userData: UserData | undefined | void) => {
         setLoading(false);
         if (userData) {
           setUserData(userData);
         }
       })
-      .catch(() => {
-        setLoading(false);
-
-        console.warn("could not update global user data");
-      });
-    const fetchRequest2 = createCancellablePromise(getAllUsersVote());
-    fetchRequest2.promise.then((d) => setUsersVote(d));
+    );
+    const fetchRequest2 = from(getAllUsersVote()).pipe(map((d) => setUsersVote(d)));
+    const s1 = fetchRequest.subscribe();
+    const s2 = fetchRequest2.subscribe();
     return () => {
-      fetchRequest.cancel();
-      fetchRequest2.cancel();
+      s1.unsubscribe();
+      s2.unsubscribe();
     };
   }, [currentAddress]);
 
@@ -123,7 +125,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         usersVote,
         calculatedUsersVote,
         isLoading,
-        refreshUserData,
+        refreshUserData
       }}
     >
       {children}

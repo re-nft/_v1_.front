@@ -1,23 +1,12 @@
 import { ethers } from "ethers";
-
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
-//import { DP18, DP9 } from "../../consts";
-import { unpackPrice, parsePaymentToken } from "../../utils";
-//import { PaymentToken } from "../../types";
+import { unpackPrice } from "@renft/sdk";
+import { parsePaymentToken } from "../../utils";
 
 export const parseLending = (
   lending: LendingRaw,
   parsedRenting?: IRenting
 ): ILending => {
-  // const paymentToken = parsePaymentToken(lending.paymentToken);
-  // const number =
-  //   paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-  //     ? DP9
-  //     : DP18;
-  // const precision =
-  //   paymentToken === PaymentToken.USDC || paymentToken === PaymentToken.USDT
-  //     ? 10e8
-  //     : 10e17;
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),

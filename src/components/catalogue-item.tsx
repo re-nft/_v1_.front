@@ -11,11 +11,12 @@ import {
 import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
 import { calculateVoteByUser } from "../services/vote";
 import CatalogueItemRow from "./catalogue-item-row";
-import useIntersectionObserver from "../hooks/use-Intersection-observer";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
-import { Checkbox } from "./checkbox";
+import { Checkbox } from "./common/checkbox";
 import UserContext from "../contexts/UserProvider";
+// @ts-ignore
+import { Player } from "video-react";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -38,18 +39,16 @@ const Skeleton = () => {
 };
 const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
-  checked,
   isAlreadyFavourited,
+  checked,
   onCheckboxChange,
   children,
   disabled,
 }) => {
   const { signer } = useContext(UserContext);
-  const [ref, { entry }] = useIntersectionObserver();
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
-  const [isChecked, setIsChecked] = useState<boolean>(checked || false);
   const [amount, setAmount] = useState<string>("0");
   const [currentVote, setCurrentVote] =
     useState<{
@@ -61,13 +60,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const id = nftId(nft.address, nft.tokenId);
   const meta = metas[id];
   const noWallet = !signer;
-
-  const onCheckboxClick = useCallback(() => {
-    setIsChecked(!isChecked);
-    // ! either pass a type as the id, or do not assume that the id must have a certain
-    // ! format inside of the onCheckboxChange
-    onCheckboxChange();
-  }, [isChecked, onCheckboxChange]);
 
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
@@ -108,8 +100,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
   useEffect(() => {
-    setIsChecked(checked || false);
-
     if (!nft.isERC721 && currentAddress) {
       nft
         .loadAmount(currentAddress)
@@ -131,12 +121,22 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const nftVote =
     currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   const { name, image, description } = meta || {};
+  // This is a stupid check, it should check the mimetype of the source
+  const isVideo = image?.endsWith("mp4") 
+   || image?.endsWith("mkv") 
+   || image?.endsWith("webm") 
+   || image?.endsWith("mov") 
+   || image?.endsWith("avi") 
+   || image?.endsWith("flv") 
+  ;
 
-  // tODO refactor nft__checkbox
+  const display = () => {
+    if (isVideo) return <Player playsInline autoPlay src={image} muted />;
+    return <img alt={description} src={image} />;
+  };
   return (
     <div
-      ref={ref}
-      className={`nft ${isChecked ? "checked" : ""}`}
+      className={`nft ${checked ? "checked" : ""} ${nft.isERC721 ? "nft__erc721": "nft__erc1155"}`}
       key={nft.tokenId}
       data-item-id={nft.tokenId}
     >
@@ -160,23 +160,13 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             </div> */}
             <div className="spacer" />
             <Checkbox
-              checked={isChecked}
-              handleClick={onCheckboxClick}
+              checked={!!checked}
+              handleClick={onCheckboxChange}
               disabled={disabled || noWallet}
             ></Checkbox>
-            {/* <div className="nft__checkbox">
-              <div
-                onClick={onCheckboxClick}
-                className={`checkbox ${isChecked ? "checked" : ""} ${disabled ? "disabled": ""}`}
-              />
-            </div> */}
           </div>
           <div className="nft__image">
-            {image ? (
-              <img alt={description} src={image} />
-            ) : (
-              <div className="no-img">NO IMG</div>
-            )}
+            {image ? display() : <div className="no-img">NO IMG</div>}
           </div>
           <div className="nft__meta">
             {name && <div className="nft__name">{name}</div>}

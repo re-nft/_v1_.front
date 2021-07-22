@@ -11,6 +11,7 @@
     border: 5px solid #000;
     transition: all 250ms;
     top: 0;
+    max-height: 38rem;
 
     &.checked,
     &:hover {

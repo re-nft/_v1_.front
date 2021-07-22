@@ -3,12 +3,16 @@ import GraphContext from "../contexts/graph";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { useLookupAddress } from "../hooks/useLookupAddress";
+import UserContext from "../contexts/UserProvider";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
   const currentAddress = useContext(CurrentAddressWrapper);
+  const lookupName = useLookupAddress();
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const { signer } = useContext(UserContext);
 
   const onSubmit = useCallback(
     (e) => {
@@ -21,7 +25,6 @@ const Profile: React.FC = () => {
           });
       }
     },
-    // TODO: check if need to add currentAddress below
     [username, bio, currentAddress, refreshUserData]
   );
 
@@ -44,6 +47,10 @@ const Profile: React.FC = () => {
     }
   }, [userData]);
 
+  if (!signer) {
+    return <div className="center content__message">Please connect your wallet!</div>;
+  }
+
   if (isLoading) {
     return <CatalogueLoader />;
   }
@@ -55,6 +62,7 @@ const Profile: React.FC = () => {
           <div className="avatar"></div>
           <div className="username">{userData?.name || "Unnamed"}</div>
           <div className="address">{currentAddress}</div>
+          <div className="address">{lookupName}</div>
         </div>
         <div className="profile-body">
           <div className="form">

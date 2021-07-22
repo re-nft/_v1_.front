@@ -2,13 +2,14 @@ import React from "react";
 
 const ButHow: React.FC = () => {
   return (
-    <div className="text-content">
+    <div className="text-content copy-text">
+      <img src="assets/faq/how-to-lend-an-nft.png" />
       <p>
-        You just <b className="bolder">have that NFT</b> sitting around{" "}
-        <b className="bolder">not doing much</b>?
+        You just <b className="bolder headline">have that NFT</b> sitting around{" "}
+        <b className="bolder headline">not doing much</b>?
       </p>
       <p>
-        We know how you can earn <b className="bolder">extra income</b>!
+        We know how you can earn <b className="bolder headline">extra income</b>!
       </p>
 
       <div>
@@ -21,8 +22,10 @@ const ButHow: React.FC = () => {
       </div>
       <div>(iii) amount to charge the borrower per day of renting</div>
       <br />
+      <img src="assets/faq/how-to-rent-an-nft.png" />
       <p>
-        We will ask the borrower to pay the price you indicated in (i) if they
+        We will ask the borrower to pay the price you indicated in
+        (i) if they
         want to rent your NFT. This means that if they do not return your NFT,
         you get back this money. As with everything in life, all good things
         must come to an end. So we will enforce the borrower to return your NFT
@@ -33,15 +36,9 @@ const ButHow: React.FC = () => {
         day that they are renting your NFT
       </p>
 
-      <p>How can Rent NFT be useful?</p>
-      <div>
-        - bulk insurance buyer can offer individual insurance at a discount
-      </div>
-      <div>
-        - collectors can finish their collection for a showcase in an NFT art
-        fair
-      </div>
-      <div>- someone wants to earn some money with higher tier Axie</div>
+      <img src="assets/faq/what-are-the-risks.png" />
+      <br />
+      The contracts were not audited. However, they have been thoroughly tested and peer reviewed, exercise caution, all responsibility due to loss bares with the users of the app.
     </div>
   );
 };

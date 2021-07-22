@@ -150,28 +150,60 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-  
-    &__user {
-      background: #fdfff9;
-      color: #9c65cd;
-      border: 4px solid #000;
-      text-align: center;
-      font-size: 18px;
-      padding: 8px 18px;
-      line-height: 1;
-      box-shadow: 6px 6px 0 #000;
+    margin-top: 30px;
+
+    &__wallet {
+        display:flex;
+
+        &-network {
+            margin-right: 10px;
+            align-self: center;
+        }
+      
+        &-user {
+          background: #fdfff9;
+          color: #9c65cd;
+          border: 4px solid #000;
+          text-align: center;
+          font-size: 18px;
+          padding: 8px 18px;
+          line-height: 1;
+          box-shadow: 6px 6px 0 #000;
+        }
     }
-  
+
+
     &__logo {
-      background-image: url(./img/logo.jpg);
-      background-size: auto 90px;
+      background-image: url(./img/logo.svg);
+      background-size: auto 50px;
       background-repeat: no-repeat;
-      height: 90px;
-      width: 290px;
+      height: 50px;
+      width: 300px;
       flex-grow: 1;
     }
   }
-
+  .dashboard-header {
+  
+    &__lending {
+        margin-top: 30px;
+        background-image: url(./img/Lending-Headline.svg);
+        background-size: auto 50px;
+        background-repeat: no-repeat;
+        height: 50px;
+        width: 350px;
+        flex-grow: 1;
+    }
+  
+    &__renting {
+      margin-top: 30px;
+      background-image: url(./img/Renting-Headline.svg);
+      background-size: auto 50px;
+      background-repeat: no-repeat;
+      height: 50px;
+      width: 350px;
+      flex-grow: 1;
+    }
+  }
 .center {
     position: absolute;
     top: 50%;
@@ -217,4 +249,23 @@
     font-size: 24px;
     text-align: center;
     margin: 24px 0;
+}
+
+.copy-text {
+    font-family: 'VT323';
+    font-size: 24px;
+    line-height: 27px;
+}
+
+.headline{
+    font-family: 'Press Start 2P';
+    font-size: 14px;
+    line-height: 27px;
+}
+
+.pink-text{
+    color: #9a65ca;
+}
+.black-text{
+    color: black;
 }

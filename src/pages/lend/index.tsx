@@ -1,25 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import AvailableToLend from "./components/all-available-to-lend";
 import UserCurrentlyLending from "./components/user-is-lending";
 import PageLayout from "../../components/page-layout";
+import { useHistory } from "react-router-dom";
 
-enum LendSpecificity {
+
+export enum LendSpecificity {
   ALL,
-  LENDING,
+  LENDING
 }
 
-export const Lend: React.FC = () => {
-  const [specificity, setSpecificiy] = useState<LendSpecificity>(
-    LendSpecificity.ALL
-  );
+export const Lend: React.FC<{
+  specificity: LendSpecificity;
+}> = ({ specificity }) => {
+  const history = useHistory();
 
   const switchSpecificity = useCallback(() => {
-    setSpecificiy((specificity) =>
-      specificity === LendSpecificity.ALL
-        ? LendSpecificity.LENDING
-        : LendSpecificity.ALL
-    );
-  }, []);
+    if (specificity == LendSpecificity.ALL) {
+      history.push("/user-is-lending");
+    } else {
+      history.push("/lend");
+    }
+  }, [specificity]);
 
   return (
     <PageLayout

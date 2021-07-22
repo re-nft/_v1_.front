@@ -1,5 +1,5 @@
 import React from "react";
-import { Address } from "../components/address";
+import { ShortenPopover } from "../components/common/shorten-popover";
 
 import { Nft } from "../contexts/graph/classes";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
@@ -16,19 +16,15 @@ const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
       </div>
       <div className="modal-dialog-for">
         <div className="label">
-          <Address address={nft.address}></Address>
+          <ShortenPopover longString={nft.address}></ShortenPopover>
         </div>
       </div>
       <div className="modal-dialog-for">
         <div className="label">Token Id</div>
         <div className="dot"></div>
-        <div className="label">{nft.tokenId}</div>
-      </div>
-      <div className="modal-dialog-for">
-        <div className="label">Available Amount</div>
-        <div className="dot"></div>
-        {/* we can do this because checked items will have the right amount when we pass them here */}
-        <div className="label">{nft.amount}</div>
+        <div className="label">
+          <ShortenPopover longString={nft.tokenId}></ShortenPopover>
+        </div>
       </div>
       <div className="modal-dialog-fields">{children}</div>
     </div>

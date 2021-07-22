@@ -3,25 +3,33 @@ import React, { createContext, useState, useCallback, useContext } from "react";
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 import { TransactionHash, TransactionStateEnum } from "../types";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 
-import { sleep } from "../utils";
 import UserContext from "./UserProvider";
+import {
+  catchError,
+  EMPTY,
+  from,
+  map,
+  Observable,
+  of,
+  zipAll
+} from "rxjs";
+import { ethers } from "ethers";
+import { ErrorType, SnackAlertContext } from "./SnackProvider";
 
 type TransactionStateType = {
-  isActive: boolean; // on if there is an active transaction;
-  txnState: TransactionStateEnum;
-  hash?: TransactionHash[];
-  receipt?: TransactionReceipt[];
-  setHash: (h: TransactionHash | TransactionHash[]) => Promise<boolean>;
+  setHash: (h: TransactionHash | TransactionHash[]) => Observable<[boolean, boolean]>;
+  getHashStatus: (key: string) => Observable<[boolean, boolean]>;
 };
 
 const TransactionStateDefault: TransactionStateType = {
-  isActive: false,
-  txnState: TransactionStateEnum.PENDING,
   setHash: () => {
     throw new Error("must be implemented");
   },
+  getHashStatus: () => {
+    throw new Error("must be implemented");
+  }
 };
 
 export const TransactionStateContext = createContext<TransactionStateType>(
@@ -29,105 +37,143 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 );
 TransactionStateContext.displayName = "TransactionStateContext";
 
-// * this implementation does not guard against the developer forgetting
-// * to set back the transaction to inactive for example,
-// * or using state or hash when the transaction is inactive.
-// * these things ideally should be corrected
+const NUMBER_OF_CONFIRMATIONS = IS_PROD ? 3 : 1; //let's make it 5, so graph has time to sync
+const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
+
+const waitForTransactions = (
+  hashes: TransactionHash[],
+  provider: ethers.providers.Web3Provider | undefined,
+  setError: (str: string, type: ErrorType) => void
+): Observable<(TransactionReceipt | null)[]> => {
+  if (!provider) return EMPTY;
+  //return receipts;
+  return from(hashes).pipe(
+    map((hash) => {
+      return from(
+        provider.waitForTransaction(
+          hash,
+          NUMBER_OF_CONFIRMATIONS,
+          TRANSACTION_TIMEOUT
+        )
+      ).pipe(
+        catchError((err: Error) => {
+          setError(err.message, "error");
+          console.warn("could not fetch the transaction status", err);
+          return of(null);
+        })
+      );
+    }),
+    zipAll()
+  );
+};
+// save transaction hashes for each address and hashes
 export const TransactionStateProvider: React.FC = ({ children }) => {
   const { web3Provider: provider } = useContext(UserContext);
-  const [isActive, setIsActive] = useState(TransactionStateDefault.isActive);
-  const [txnState, setTxnState] = useState<TransactionStateEnum>(
-    TransactionStateEnum.PENDING
-  );
-  const [receipt, setReceipt] = useState<TransactionReceipt[]>();
-  const [hash, _setHash] = useState<TransactionHash[]>([]);
+  const [transactions, setStransactions] = useState<
+    Record<
+      string,
+      {
+        hashes: TransactionHash[];
+        receipts: (TransactionReceipt | null)[] | undefined;
+        hasFailure: boolean;
+        hasPending: boolean;
+      }
+    >
+  >({});
+  const { setError } = useContext(SnackAlertContext);
 
-  const delayedSetIsActive = useCallback(
-    async (ms: number, _isActive: boolean) => {
-      await sleep(ms);
-      setIsActive(_isActive);
+  const getTransactionsStatus = useCallback(
+    (receipts: (TransactionReceipt | null)[] | undefined) => {
+      if (!receipts) return [true, false];
+      if (receipts && receipts.length < 1) return [true, false];
+
+      const transactionSucceeded =
+        (state: TransactionStateEnum) =>
+        (receipt: TransactionReceipt | null) => {
+          if (!receipt) return false;
+          const status = receipt.status;
+          if (!status) return false;
+          return TransactionStateEnum[status] === TransactionStateEnum[state];
+        };
+      const hasFailure =
+        receipts.filter(transactionSucceeded(TransactionStateEnum.FAILED))
+          .length > 0;
+      const hasPending =
+        receipts.filter(transactionSucceeded(TransactionStateEnum.PENDING))
+          .length > 0;
+      // TODO this is where state management will come in to make this easy
+      if(hasFailure) setError("Transaction is not successful!", "warning")
+      return [hasFailure, hasPending];
     },
     []
   );
 
+  const getHashStatus = useCallback(
+    (key): Observable<[boolean, boolean]> => {
+      if (!key) return of([false, false]);
+      const transaction = transactions[key];
+      if (!transaction) return of([false, false]);
+      if (transaction.hasFailure || !transactions.hasPending)
+        return of([false, false]);
+
+      return waitForTransactions(transaction.hashes, provider, setError).pipe(
+        map((receipts) => {
+          const [hasFailure, hasPending] = getTransactionsStatus(receipts);
+          setStransactions((state) => ({
+            ...state,
+            [`${key}`]: {
+              hashes: state[key].hashes,
+              receipts,
+              hasFailure,
+              hasPending
+            }
+          }));
+          if(hasFailure) setError("Transaction is not successful!", "warning")
+          return [hasFailure, hasPending];
+        })
+      );
+    },
+    [getTransactionsStatus, transactions, waitForTransactions, provider]
+  );
   const setHash = useCallback(
-    async (h: TransactionHash | TransactionHash[]) => {
+    (h: TransactionHash | TransactionHash[]): Observable<[boolean, boolean]> => {
       if (!provider) {
         console.warn("cannot set transaction hash. no provider");
-        return false;
-      }
-      // forbid to set if there is an active transaction
-      if (isActive) {
-        console.warn(
-          "can't set the transaction hash when there is one pending"
-        );
-        return false;
+        return of([false, false]);
       }
       const hashes = Array.isArray(h) ? h : [h];
-      _setHash(hashes);
-      setIsActive(true);
-      setTxnState(TransactionStateEnum.PENDING);
+      setStransactions((state) => ({
+        ...state,
+        [`${hashes[0]}`]: {
+          hashes,
+          receipts: [],
+          hasFailure: false,
+          hasPending: true
+        }
+      }));
+      const key = hashes[0];
 
-      const confirmations = 1;
-      const timeout = 120 * SECOND_IN_MILLISECONDS;
-
-      const transactionConfirmations = hashes.map((h) => {
-        return provider.waitForTransaction(h, confirmations, timeout);
-      });
-      // blocking
-      const receipts = await Promise.all(transactionConfirmations)
-        .then((r) => r)
-        .catch((e) => {
-          console.warn("could not fetch the transaction status");
-          return [];
-        });
-      if (receipts.length < 1) return false;
-
-      const isSuccess =
-        receipts.filter((receipt) => {
-          const status = receipt.status;
-          if (!status) return false;
-          return (
-            TransactionStateEnum[status] ===
-            TransactionStateEnum[TransactionStateEnum.SUCCESS]
-          );
-        }).length > 0;
-
-      setReceipt(receipts);
-      // setIsActive(false);
-      //await sleep(1.5 * SECOND_IN_MILLISECONDS);
-
-      return isSuccess;
+      return waitForTransactions(hashes, provider, setError).pipe(
+        map((receipts) => {
+          const [hasFailure, hasPending] = getTransactionsStatus(receipts);
+          setStransactions((state) => ({
+            ...state,
+            [`${key}`]: {
+              hashes: state[key].hashes,
+              receipts,
+              hasFailure,
+              hasPending
+            }
+          }));
+          return [hasFailure, hasPending];
+        })
+      );
     },
-    [isActive, provider]
+    [getTransactionsStatus, provider, waitForTransactions]
   );
-
-  const chainSetHash = useCallback(
-    async (h: TransactionHash | TransactionHash[]) => {
-      const isSuccess = await setHash(h);
-      switch (isSuccess) {
-        case true:
-          setTxnState(TransactionStateEnum.SUCCESS);
-          break;
-        case false:
-          setTxnState(TransactionStateEnum.FAILED);
-          break;
-        default:
-          setTxnState(TransactionStateEnum.FAILED);
-      }
-      delayedSetIsActive(1.5 * SECOND_IN_MILLISECONDS, false);
-      return isSuccess;
-    },
-    [setHash, delayedSetIsActive]
-  );
-
-  // todo: add a providers listener for a cancelled transaction
-  // user may invoke this on their end
 
   return (
-    <TransactionStateContext.Provider
-      value={{ isActive, txnState, hash, receipt, setHash: chainSetHash }}
-    >
+    <TransactionStateContext.Provider value={{ setHash, getHashStatus }}>
       {children}
     </TransactionStateContext.Provider>
   );

@@ -3,13 +3,13 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback,
+  useCallback
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
 import { THROWS } from "../utils";
-import usePoller from "../hooks/usePoller";
-import createCancellablePromise from "./create-cancellable-promise";
+import { EMPTY, from, timer, map, switchMap } from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 const DefaultUser = {
   address: "",
@@ -17,7 +17,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: "",
+  network: ""
 };
 
 type UserContextType = {
@@ -33,7 +33,7 @@ const UserContext = createContext<UserContextType>(DefaultUser);
 
 export const UserProvider: React.FC = ({ children }) => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
-  const [provider, setProvider] = useState<unknown>();
+  const [provider, setProvider] = useState<any>();
   const [network, setNetworkName] = useState<string>("");
   const [web3Provider, setWeb3Provider] =
     useState<ethers.providers.Web3Provider>();
@@ -47,7 +47,7 @@ export const UserProvider: React.FC = ({ children }) => {
     return typeof window !== "undefined"
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions, // required
+          providerOptions // required
         })
       : null;
   }, [providerOptions]);
@@ -55,7 +55,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const initState = useCallback(async (provider) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
-    const name = network.chainId === 31337 ? "local" : network?.name;
+    const name = network.chainId === 31337 ? "localhost" : network?.name;
     setNetworkName(name);
     const _signer = web3p.getSigner();
     setSigner(_signer);
@@ -68,37 +68,53 @@ export const UserProvider: React.FC = ({ children }) => {
     setAddress(address || "");
     setProvider(provider);
     setWeb3Provider(web3p);
-    return Promise.resolve(web3p);
   }, []);
 
   const connect = useCallback(
-    async (manual: boolean) => {
-      if (web3Modal) {
-        // only reconnect if we have permissions or
-        // user manually connected through action
-        if (!!manual || (permissions.length > 0 && !signer)) {
-          const provider = await web3Modal
+    (manual: boolean) => {
+      if (!web3Modal) return EMPTY;
+      if (!(!!manual || (permissions.length > 0 && !signer))) return EMPTY;
+      // only reconnect if we have permissions or
+      // user manually connected through action
+      return from(
+        new Promise((resolve) =>
+          web3Modal
             .connect()
-            .then((p) => p)
+            .then((provider) => {
+              resolve(provider);
+            })
             .catch(() => {
-              // do nothing
-            });
-          if (!provider) return;
-          await initState(provider);
-        }
-      }
+              resolve(null);
+            })
+        )
+      ).pipe(
+        map((provider) => {
+          if (!provider) return EMPTY;
+          return from(initState(provider));
+        })
+      );
     },
     [web3Modal, permissions, signer, initState]
   );
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    const request = createCancellablePromise<unknown[]>(
-      window.ethereum.request({ method: "wallet_getPermissions" })
-    );
-
-    request.promise
-      .then((permissions: unknown[]) => {
+    if (!window || !window.ethereum) return EMPTY;
+    return from<Promise<string[]>>(
+      new Promise((resolve) => {
+        window.ethereum
+          .request({ method: "wallet_getPermissions" })
+          .then((w: any) => {
+            //TODO they keep changing wallet_getPermissions
+            resolve(w[0].caveats[1].value);
+          })
+          .catch((error: unknown) => {
+            console.warn("wallet_getPermissions", error);
+            resolve([]);
+          });
+      })
+    ).pipe(
+      map((permissions: string[]) => {
         setPermissions(permissions);
         if (permissions.length < 1) {
           if (signer) setSigner(undefined);
@@ -106,16 +122,26 @@ export const UserProvider: React.FC = ({ children }) => {
           if (network) setNetworkName("");
         }
       })
-      .catch((error: unknown) => {
-        console.warn(error);
-      });
-    return request.cancel;
+    );
   }, [address, network, signer]);
 
-  usePoller(connectDisconnect, 2000);
-  usePoller(() => {
-    connect(false);
-  }, 2000);
+  useEffect(() => {
+    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+      .pipe(switchMap(() => connect(false)))
+      .subscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [connect]);
+
+  useEffect(() => {
+    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+      .pipe(switchMap(connectDisconnect))
+      .subscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [connectDisconnect]);
 
   const manuallyConnect = useCallback(() => {
     connect(true);
@@ -123,8 +149,12 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const accountsChanged = useCallback(
     (arg) => {
-      if (arg.lengths > 0) connect(false);
-      if (arg.lengts === 0) {
+      if (arg.length > 0) {
+        const check = connect(true).subscribe(() => {
+          check.unsubscribe();
+        });
+      }
+      if (arg.length === 0) {
         // disconnect case
         if (permissions.length > 0) setPermissions([]);
         if (signer) setSigner(undefined);
@@ -136,31 +166,31 @@ export const UserProvider: React.FC = ({ children }) => {
   );
   const chainChanged = useCallback(
     (arg) => {
-      connect(false);
+      const check = connect(true).subscribe(() => {
+        check.unsubscribe();
+      });
     },
     [connect]
   );
 
   // change account
   useEffect(() => {
-    if (provider) {
-      // @ts-ignore
-      // web3modal is untyped...
-      // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
-      // @ts-ignore
+    if (provider && provider.on) {
       provider.on("accountsChanged", accountsChanged);
-      // @ts-ignore
       provider.on("chainChanged", chainChanged);
+    } else if (provider && provider.addListener) {
+      provider.addListener("accountsChanged", accountsChanged);
+      provider.addListener("chainChanged", chainChanged);
     }
     return () => {
-      // @ts-ignore
-      if (provider && typeof provider.off !== "undefined") {
-        // web3modal is untyped...
-        // https://github.com/Web3Modal/web3modal/blob/2ff929d0e99df5edf6bb9e88cff338ba6d8a3991/src/core/index.tsx#L71
-        // @ts-ignore
+      // this is strange, there is On method, but there is no off method
+      // add both cases for sanity
+      if (provider && provider.off) {
         provider.off("accountsChanged", accountsChanged);
-        // @ts-ignore
         provider.off("chainChanged", chainChanged);
+      } else if (provider && provider.removeListener) {
+        provider.removeListener("accountsChanged", accountsChanged);
+        provider.removeListener("chainChanged", chainChanged);
       }
     };
   }, [accountsChanged, chainChanged, provider]);
@@ -173,7 +203,7 @@ export const UserProvider: React.FC = ({ children }) => {
         signer,
         address,
         web3Provider,
-        network,
+        network
       }}
     >
       {children}

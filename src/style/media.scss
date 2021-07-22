@@ -58,6 +58,9 @@
 
     .header {
         flex-direction: column;
+        &__wallet {
+            margin-top: 1rem;
+        }
     }
 
     .modal-dialog {
