@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface E1155Interface extends ethers.utils.Interface {
   functions: {
     "GOLD()": FunctionFragment;
+    "GUN()": FunctionFragment;
     "SHIELD()": FunctionFragment;
     "SILVER()": FunctionFragment;
     "SWORD()": FunctionFragment;
@@ -29,7 +30,7 @@ interface E1155Interface extends ethers.utils.Interface {
     "award()": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "faucet()": FunctionFragment;
+    "faucet(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -39,6 +40,7 @@ interface E1155Interface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "GOLD", values?: undefined): string;
+  encodeFunctionData(functionFragment: "GUN", values?: undefined): string;
   encodeFunctionData(functionFragment: "SHIELD", values?: undefined): string;
   encodeFunctionData(functionFragment: "SILVER", values?: undefined): string;
   encodeFunctionData(functionFragment: "SWORD", values?: undefined): string;
@@ -55,7 +57,10 @@ interface E1155Interface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     values: [string[], BigNumberish[]]
   ): string;
-  encodeFunctionData(functionFragment: "faucet", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "faucet",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
@@ -79,6 +84,7 @@ interface E1155Interface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
   decodeFunctionResult(functionFragment: "GOLD", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "GUN", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SHIELD", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SILVER", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "SWORD", data: BytesLike): Result;
@@ -176,6 +182,10 @@ export class E1155 extends Contract {
 
     "GOLD()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    GUN(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     SHIELD(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     "SHIELD()"(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -225,10 +235,12 @@ export class E1155 extends Contract {
     ): Promise<[BigNumber[]]>;
 
     faucet(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "faucet()"(
+    "faucet(uint256)"(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -314,6 +326,10 @@ export class E1155 extends Contract {
 
   "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+  GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
   "SHIELD()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -363,10 +379,12 @@ export class E1155 extends Contract {
   ): Promise<BigNumber[]>;
 
   faucet(
+    _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "faucet()"(
+  "faucet(uint256)"(
+    _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -452,6 +470,10 @@ export class E1155 extends Contract {
 
     "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
     "SHIELD()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -496,9 +518,12 @@ export class E1155 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    faucet(overrides?: CallOverrides): Promise<void>;
+    faucet(_amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    "faucet()"(overrides?: CallOverrides): Promise<void>;
+    "faucet(uint256)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     isApprovedForAll(
       account: string,
@@ -633,6 +658,10 @@ export class E1155 extends Contract {
 
     "GOLD()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    GUN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     SHIELD(overrides?: CallOverrides): Promise<BigNumber>;
 
     "SHIELD()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -682,10 +711,12 @@ export class E1155 extends Contract {
     ): Promise<BigNumber>;
 
     faucet(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "faucet()"(
+    "faucet(uint256)"(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -772,6 +803,10 @@ export class E1155 extends Contract {
 
     "GOLD()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    GUN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "GUN()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     SHIELD(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "SHIELD()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -821,10 +856,12 @@ export class E1155 extends Contract {
     ): Promise<PopulatedTransaction>;
 
     faucet(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "faucet()"(
+    "faucet(uint256)"(
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
