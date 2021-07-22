@@ -301,3 +301,32 @@ export const mapAddRelendedField = (ids: Set<string>) => (l: Lending | Renting) 
 export const mapToIds = (items: Renting[] | Lending[]) => {
   return new Set(items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`));
 };
+
+// we define degenerate NFTs as the ones that support multiple interfaces all at the same time
+// for example supporting 721 and 1155 standard at the same time
+// TODO: consider if it is possible to not support one or the other but still emit the event
+// TODO: of the other, thus throwing the subgraphs off
+// TODO: multicall for all the NFTs, rather than individual reads
+export const isDegenerateNft = async (
+  address: string,
+  provider: ethers.providers.Web3Provider | undefined
+): Promise<boolean> => {
+  if (!provider) return true;
+
+  const abi165 = [
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
+  ];
+  const contract = new ethers.Contract(address, abi165, provider);
+  let isDegenerate = true;
+
+  // https://ethereum.stackexchange.com/questions/82822/obtaining-erc721-interface-ids
+  try {
+    const supports721 = await contract.supportsInterface("0x80ac58cd");
+    const supports1155 = await contract.supportsInterface("0xd9b67a26");
+    isDegenerate = supports721 && supports1155 ? true : false;
+  } catch {
+    true;
+  }
+
+  return isDegenerate;
+};
