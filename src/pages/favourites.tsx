@@ -12,7 +12,7 @@ import {
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
-import { useAllAvailableToLend } from "../contexts/graph/hooks/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 
 type RemoveButtonProps = {
   nft: Nft;

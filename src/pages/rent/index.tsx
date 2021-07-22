@@ -1,25 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import AvailableToRent from "./components/all-available-to-rent";
 import UserCurrentlyRenting from "./components/user-is-renting";
 import PageLayout from "../../components/page-layout";
+import { useHistory } from "react-router-dom";
 
-enum RentSpecificity {
+
+export enum RentSpecificity {
   ALL,
-  RENTING,
+  RENTING
 }
 
-export const Rent: React.FC = () => {
-  const [specificity, setSpecificiy] = useState<RentSpecificity>(
-    RentSpecificity.ALL
-  );
+export const Rent: React.FC<{ specificity: RentSpecificity }> = ({
+  specificity
+}) => {
+  const history = useHistory();
 
   const switchSpecificity = useCallback(() => {
-    setSpecificiy((specificity) =>
-      specificity === RentSpecificity.ALL
-        ? RentSpecificity.RENTING
-        : RentSpecificity.ALL
-    );
-  }, []);
+    if (specificity == RentSpecificity.ALL) {
+      history.push("/user-is-renting");
+    } else {
+      history.push("/");
+    }
+  }, [specificity]);
 
   return (
     <PageLayout

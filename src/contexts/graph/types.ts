@@ -1,4 +1,5 @@
-import { Address, PaymentToken, TokenId } from "../../types";
+import { PaymentToken } from "@renft/sdk";
+import { Address, TokenId } from "../../types";
 
 export type NftTokenMeta = {
   name?: string;

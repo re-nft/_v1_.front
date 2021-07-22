@@ -104,7 +104,6 @@ class Nft {
   _meta: NftToken["meta"] | undefined;
   _tokenURI: string;
   _mediaURI: string;
-  _contract: ERC721 | ERC1155 | undefined;
   [k: string]: unknown;
 
   /**
@@ -113,7 +112,6 @@ class Nft {
    * @returns ERC721 or ERC1155 instance that can be signed by the currentAddress
    */
   contract = (): ERC721 | ERC1155 => {
-
     const instantiator = this.isERC721 ? ERC721__factory : ERC1155__factory;
     const contract: ERC721 | ERC1155 = instantiator.connect(
       this.address,

@@ -1,5 +1,6 @@
 import React from "react";
-import { SnackAlert } from "./snack-alert";
+import { SnackAlert } from "./common/snack-alert";
+import { Toggle } from "./common/toggle";
 
 type PageLayoutProps = {
   onSwitch?: () => void;
@@ -11,21 +12,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   onSwitch,
   toggleValue,
   title,
-  children,
+  children
 }) => {
   return (
     <div className="content">
       {title && (
-        <div className="content__row content__navigation">
-          <div className="switch">
-            <div className="switch__title">{title}</div>
-            <div className="switch__control" onClick={onSwitch}>
-              <div className={`toggle ${toggleValue ? "toggle__active" : ""}`}>
-                <div className="toggle__pin"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
       )}
       {!title && <div style={{ height: "4em" }} />}
       {children}

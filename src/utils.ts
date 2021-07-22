@@ -1,12 +1,12 @@
-import { ethers, BigNumberish, providers } from "ethers";
+import { ethers, providers } from "ethers";
 import { ERC721 } from "./hardhat/typechain/ERC721";
 import { ERC1155 } from "./hardhat/typechain/ERC1155";
 import { ERC20 } from "./hardhat/typechain/ERC20";
-import { PaymentToken } from "./types";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
-import { Renting } from "./contexts/graph/classes";
+import { Lending, Renting } from "./contexts/graph/classes";
+import { PaymentToken } from "@renft/sdk";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -129,50 +129,7 @@ export const decimalToPaddedHexString = (
   );
 };
 
-//TODO:eniko do we need this
-export const unpackPrice = (price: BigNumberish): number => {
-  // price is from 1 to 4294967295. i.e. from 0x00000001 to 0xffffffff
-  const numHex = decimalToPaddedHexString(Number(price), PRICE_BITSIZE).slice(
-    2
-  );
-  let whole = parseInt(numHex.slice(0, 4), 16);
-  let decimal = parseInt(numHex.slice(4), 16);
-  if (whole > 9999) whole = 9999;
-  if (decimal > 9999) decimal = 9999;
-  const number = parseFloat(`${whole}.${decimal}`);
-  return number;
-  // const w = BigNumber.from(whole).mul(scale);
-  // const d = BigNumber.from(decimal).mul(scale.div(10_000));
-  // const _price = w.add(d);
-  // // * think of a neat way to divide by 1e18
-  // return Number(_price) / divide;
-};
 
-export const packPrice = (price: number): string => {
-  if (price > 9999.9999) throw new Error("too high");
-  if (price < 0.0001) throw new Error("too low");
-  const stringVersion = price.toString();
-  const parts = stringVersion.split(".");
-  let res: string;
-  if (parts.length == 2) {
-    const whole = parts[0];
-    let decimal = parts[1];
-    while (decimal.length < 4) {
-      decimal += "0";
-    }
-    const wholeHex = decimalToPaddedHexString(Number(whole), 16);
-    const decimalHex = decimalToPaddedHexString(Number(decimal), 16);
-    const hexRepr = wholeHex.concat(decimalHex.slice(2));
-    res = hexRepr;
-  } else {
-    if (parts.length != 1) throw new Error("price packing issue");
-    const whole = parts[0];
-    const wholeHex = decimalToPaddedHexString(Number(whole), 16);
-    const decimalHex = "0000";
-    res = wholeHex.concat(decimalHex);
-  }
-  return res;
-};
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
@@ -306,4 +263,41 @@ export const nftReturnIsExpired = (rent: Renting): boolean => {
       1000 <
     moment.now();
   return isExpired;
+};
+
+enum EQUALITY {
+  LESS = -1,
+  EQUAL = 0,
+  GREATER = 1,
+}
+export const sortNfts = (
+  a: { tokenId: string; isERC721: boolean },
+  b: { tokenId: string; isERC721: boolean }
+): EQUALITY => {
+  {
+    if (a.isERC721 === b.isERC721) {
+      if (a.tokenId < b.tokenId) return EQUALITY.LESS;
+      if (a.tokenId > b.tokenId) return EQUALITY.GREATER;
+      return EQUALITY.EQUAL;
+    }
+    return a.isERC721 ? EQUALITY.LESS : EQUALITY.GREATER;
+  }
+};
+
+
+export const filterClaimed = (showClaimed: boolean) => (l: Lending | Renting) => {
+  if (!showClaimed) {
+    if (l.lending) return !l.lending.collateralClaimed;
+    return false;
+  }
+  return true;
+};
+export const mapAddRelendedField = (ids: Set<string>) => (l: Lending | Renting) => {
+  return {
+    ...l,
+    relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+  };
+};
+export const mapToIds = (items: Renting[] | Lending[]) => {
+  return new Set(items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`));
 };

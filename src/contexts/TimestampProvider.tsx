@@ -3,13 +3,13 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useCallback,
+  useCallback
 } from "react";
-import usePoller from "../hooks/usePoller";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";
-import createCancellablePromise from "../contexts/create-cancellable-promise";
 import UserContext from "./UserProvider";
+import { EMPTY, from, map, mergeMap, timer } from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 const debug = createDebugger("app:contracts:blocks");
 
@@ -25,31 +25,39 @@ export const TimestampProvider: React.FC = ({ children }) => {
 
   const getTimestamp = useCallback(() => {
     if (provider) {
-      const request = createCancellablePromise(provider.getBlock("latest"));
-      request.promise
-        .then((block: Block) => {
-          if (timeStamp !== block.timestamp * 1000)
-            setTimestamp(block.timestamp * 1000);
-        })
-        .catch((e) => {
+      return from(
+        provider.getBlock("latest").catch((e) => {
           if (e) debug(e);
-        });
-      return request.cancel;
+        })
+      ).pipe(
+        map((block: Block | void) => {
+          if (!block) return;
+          return block.timestamp * 1000;
+        })
+      );
     }
-    return;
+    return EMPTY;
   }, [provider, timeStamp]);
 
   useEffect(() => {
-    const cancel = getTimestamp();
+    const cancel = getTimestamp().subscribe((timestamp) => {
+      if (timestamp) setTimestamp(timestamp);
+    });
     () => {
-      if (cancel) cancel();
+      if (cancel) cancel.unsubscribe();
     };
   }, [getTimestamp, timeStamp]);
 
-  // this will cause a lot of rerender, do not setit for too low value
-  usePoller(() => {
-    getTimestamp();
-  }, 30_000);
+  useEffect(() => {
+    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+      .pipe(mergeMap(() => getTimestamp()))
+      .subscribe((timestamp) => {
+        if (timestamp) setTimestamp(timestamp);
+      });
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [getTimestamp]);
 
   return (
     <TimestampContext.Provider value={timeStamp}>

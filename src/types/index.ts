@@ -5,19 +5,19 @@ export type TokenId = string;
 export type URI = string;
 
 // ! this must be the same as in packages/contracts/Resolver.sol
-export enum PaymentToken {
-  SENTINEL, // 0
-  WETH, // 1
-  DAI, // 2
-  USDC, // 3
-  USDT, // 4
-  TUSD, // 5
-}
+// export enum PaymentToken {
+//   SENTINEL, // 0
+//   WETH, // 1
+//   DAI, // 2
+//   USDC, // 3
+//   USDT, // 4
+//   TUSD, // 5
+// }
 
 export enum TransactionStateEnum {
-  FAILED,
-  SUCCESS,
-  PENDING,
+  FAILED = 0,
+  SUCCESS = 1,
+  PENDING = 2
 }
 
 export enum NetworkName {

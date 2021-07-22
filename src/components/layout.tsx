@@ -2,6 +2,7 @@ import React from "react";
 import Helmet from "react-helmet";
 
 import "../style/index.scss";
+import "video-react/dist/video-react.css"
 
 const Layout: React.FC = ({ children }) => {
   return (

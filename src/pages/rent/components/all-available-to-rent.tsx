@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
 import CatalogueItem from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/items-wrapper";
+import ItemWrapper from "../../../components/common/items-wrapper";
 import BatchRentModal from "../../../modals/batch-rent";
-import ActionButton from "../../../components/action-button";
+import ActionButton from "../../../components/common/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import { isLending, Lending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
@@ -11,7 +11,7 @@ import {
   getUniqueCheckboxId,
   useBatchItems,
 } from "../../../controller/batch-controller";
-import Pagination from "../../../components/pagination";
+import Pagination from "../../../components/common/pagination";
 import LendingFields from "../../../components/lending-fields";
 import { NFTMetaContext } from "../../../contexts/NftMetaState";
 import { usePageController } from "../../../controller/page-controller";
@@ -27,7 +27,6 @@ const AvailableToRent: React.FC = () => {
     handleReset: handleBatchReset,
     onCheckboxChange,
     checkedLendingItems,
-    checkedRentingItems,
   } = useBatchItems();
   const {
     totalPages,
@@ -63,7 +62,11 @@ const AvailableToRent: React.FC = () => {
 
   //Prefetch metadata
   useEffect(() => {
-    fetchNfts(currentPage);
+    let isSubscribed = true;
+    if(isSubscribed) fetchNfts(currentPage);
+    return () => {
+      isSubscribed = false;
+    };
   }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(
@@ -77,7 +80,7 @@ const AvailableToRent: React.FC = () => {
 
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center">You cant rent anything yet</div>;
+    return <div className="center content__message">You can&apos;t rent anything yet</div>;
 
   return (
     <>
@@ -112,17 +115,9 @@ const AvailableToRent: React.FC = () => {
         currentPageNumber={currentPageNumber}
         onSetPage={onSetPage}
       />
-      {checkedLendingItems.length > 1 && (
+      {checkedLendingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedLendingItems.length} items`}
-          actionTitle="Rent All"
-          onCancel={handleBatchReset}
-          onClick={handleBatchRent}
-        />
-      )}
-      {checkedRentingItems.length > 1 && (
-        <BatchBar
-          title={`Selected ${checkedRentingItems.length} items`}
           actionTitle="Rent All"
           onCancel={handleBatchReset}
           onClick={handleBatchRent}

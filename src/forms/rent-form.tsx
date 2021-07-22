@@ -1,6 +1,6 @@
-import CssTextField from "../components/css-text-field";
+import CssTextField from "../components/common/css-text-field";
 
-import ActionButton from "../components/action-button";
+import ActionButton from "../components/common/action-button";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";
@@ -12,16 +12,20 @@ import {
   FieldArray,
   FormikBag,
 } from "formik";
-import { PaymentToken } from "../types";
+import { TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/useStartRent";
-import Loader from "../components/loader";
+import { TransactionWrapper } from "../components/transaction-wrapper";
+import { PaymentToken } from "@renft/sdk";
+import { TransactionStatus } from "../hooks/useTransactionWrapper";
+import { Observable } from "rxjs";
 
 type LendFormProps = {
   nfts: Lending[];
   isApproved: boolean;
   handleApproveAll: () => void;
-  handleSubmit: (arg: StartRentNft[]) => Promise<void>;
-  isApprovalLoading: boolean;
+  handleSubmit: (arg: StartRentNft[]) => Observable<TransactionStatus>;
+  approvalStatus: TransactionStatus;
+  onClose: () => void;
 };
 interface LendingWithKey extends Lending {
   key: string;
@@ -33,7 +37,8 @@ export const RentForm: React.FC<LendFormProps> = ({
   isApproved,
   handleApproveAll,
   handleSubmit,
-  isApprovalLoading,
+  approvalStatus,
+  onClose
 }) => {
   const [nft] = nfts;
   const initialValues: FormProps = {
@@ -45,10 +50,11 @@ export const RentForm: React.FC<LendFormProps> = ({
   };
   const onSubmit = (
     values: FormProps,
-    { setSubmitting }: FormikBag<FormProps, unknown>
+    { setSubmitting, setStatus }: FormikBag<FormProps, unknown>
   ) => {
     setSubmitting(true);
-    handleSubmit(
+    setStatus([TransactionStateEnum.PENDING]);
+    const sub = handleSubmit(
       values.inputs.map<StartRentNft>((nft) => ({
         address: nft.address,
         tokenId: nft.tokenId,
@@ -56,10 +62,18 @@ export const RentForm: React.FC<LendFormProps> = ({
         lendingId: nft.lending.id,
         rentDuration: (nft.duration as number).toString(),
         paymentToken: nft.lending.paymentToken,
+        isERC721: nft.isERC721
       }))
-    ).finally(() => {
-      setSubmitting(false);
-    });
+    )
+    .subscribe({
+      next: (status)=>{
+        setStatus(status)
+      },
+      complete: ()=>{
+        setSubmitting(false)
+        sub.unsubscribe()
+      }
+    })
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
@@ -72,8 +86,10 @@ export const RentForm: React.FC<LendFormProps> = ({
       } else if (input.duration > input.lending.maxRentDuration) {
         error.duration =
           "the duration cannot be greater then the max rent duration";
-      } else if (input.duration !== parseInt(input.duration.toString(), 10)) {
+      } else if (input.duration != parseInt(input.duration.toString(), 10)) {
         error.duration = "maxDuration must be a whole number";
+      } else if (!(/^\d+(\.\d+)?$/i).test(input.duration.toString())){
+        error.duration = "amount must be a number";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });
@@ -83,7 +99,6 @@ export const RentForm: React.FC<LendFormProps> = ({
   };
   return (
     <Formik
-      // TODO remove this
       // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
@@ -91,6 +106,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       validateOnMount
       validateOnBlur
       validateOnChange
+      initialStatus={[false, undefined]}
     >
       {({
         values,
@@ -102,7 +118,9 @@ export const RentForm: React.FC<LendFormProps> = ({
         isValid,
         isSubmitting,
         submitForm,
+        status,
       }) => {
+        const formSubmittedSuccessfully = status.status === TransactionStateEnum.SUCCESS
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
@@ -124,6 +142,7 @@ export const RentForm: React.FC<LendFormProps> = ({
                               ] as FormikErrors<LendingWithKey>)
                             : null
                         }
+                        disabled={formSubmittedSuccessfully}
                       ></ModalDialogSection>
                     );
                   }
@@ -133,26 +152,35 @@ export const RentForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <>
+                <TransactionWrapper
+                  isLoading={approvalStatus.isLoading}
+                  transactionHashes={approvalStatus.transactionHash}
+                  status={TransactionStateEnum.PENDING}
+                >
                   <ActionButton<Nft>
                     title="Approve Payment tokens"
                     nft={nft}
                     onClick={handleApproveAll}
-                    disabled={isApprovalLoading || isSubmitting}
+                    disabled={approvalStatus.isLoading || isSubmitting}
                   />
-                  {isApprovalLoading && <Loader />}
-                </>
+                </TransactionWrapper>
               )}
               {(isApproved || isSubmitting) && (
-                <>
+                <TransactionWrapper
+                  isLoading={isSubmitting}
+                  status={status.status}
+                  closeWindow={onClose}
+                  transactionHashes={status.transactionHash}
+                >
                   <ActionButton<Nft>
                     title={nfts.length > 1 ? "Rent all" : "Rent"}
                     nft={nft}
                     onClick={submitForm}
-                    disabled={!isValid || isSubmitting}
+                    disabled={
+                      !isValid ||  !isApproved || isSubmitting || formSubmittedSuccessfully
+                    }
                   />
-                  {isSubmitting && <Loader />}
-                </>
+                </TransactionWrapper>
               )}
             </div>
           </form>
@@ -181,14 +209,16 @@ const ModalDialogSection: React.FC<{
   index: number;
   touched: FormikTouched<LendingWithKey> | null;
   errors: FormikErrors<LendingWithKey> | null;
-}> = ({ item, index, handleChange, handleBlur, errors, touched }) => {
+  disabled: boolean;
+}> = ({ item, index, handleChange, handleBlur, errors, touched, disabled }) => {
   const token = item.lending.paymentToken;
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
-  const totalRent =
-    (item.lending.nftPrice || 0) +
-    (item.lending.dailyRentPrice || 0) * Number(item.duration);
+  const totalRent = 
+    (item.lending.nftPrice || 0) * Number(item.amount) +
+      (item.lending.dailyRentPrice || 0) * Number(item.duration)
+
 
   const renderItem = () => {
     const days = item.lending.maxRentDuration;
@@ -203,11 +233,17 @@ const ModalDialogSection: React.FC<{
   };
   return (
     <CommonInfo nft={item} key={getUniqueCheckboxId(item)}>
+      <div className="modal-dialog-for">
+        <div className="label">Rent Amount</div>
+        <div className="dot"></div>
+        {/* we can do this because checked items will have the right amount when we pass them here */}
+        <div className="label">{item.amount}</div>
+      </div>
       <CssTextField
         required
         label={renderItem()}
         variant="outlined"
-        type="number"
+        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{0,3}$' }}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -215,6 +251,7 @@ const ModalDialogSection: React.FC<{
           !!touched && touched.duration && Boolean(errors && errors.duration)
         }
         helperText={touched && touched.duration && errors && errors.duration}
+        disabled={disabled}
       />
       <div className="nft__meta_row">
         <div className="nft__meta_title">Daily rent price</div>
@@ -224,7 +261,7 @@ const ModalDialogSection: React.FC<{
         </div>
       </div>
       <div className="nft__meta_row">
-        <div className="nft__meta_title">Collateral</div>
+        <div className="nft__meta_title">Collateral (per item)</div>
         <div className="nft__meta_dot"></div>
         <div className="nft__meta_value">
           {nftPrice} {paymentToken}
@@ -237,9 +274,9 @@ const ModalDialogSection: React.FC<{
         <div className="nft__meta_dot"></div>
         <div className="nft__meta_value">
           {dailyRentPrice}
-          {` x ${item.duration ? item.duration : 0} days + ${nftPrice} = ${
-            totalRent ? totalRent : "? "
-          }`}
+          {` x ${item.duration ? item.duration : 0} days + ${Number(
+            nftPrice
+          )} x ${Number(item.amount)} = ${totalRent ? totalRent : "? "}`}
           {` ${paymentToken}`}
         </div>
       </div>

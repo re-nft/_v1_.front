@@ -97,12 +97,18 @@ async function loadContracts(
 }
 
 export const ContractsProvider: React.FC = ({ children }) => {
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
 
   const [contracts, setContracts] = useState<ContractsObject>({});
   useEffect(() => {
-    loadContracts(signer, setContracts);
-  }, [signer]);
+    if(signer) {
+      if(network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+        setContracts({})
+      }else {
+        loadContracts(signer, setContracts)
+      }
+    };
+  }, [signer, network]);
 
   return (
     <ContractContext.Provider value={contracts}>
