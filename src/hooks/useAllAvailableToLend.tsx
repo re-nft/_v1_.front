@@ -16,7 +16,15 @@ export const useAllAvailableToLend = (): {
 
   const allAvailableToLend: Nft[] = useMemo(() => {
     if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return [];
-    return [...devNfts, ...ERC1155, ...ERC721];
+    return [
+      ...devNfts,
+      ...ERC1155,
+      ...ERC721
+        //weird duplicated 721 from 1555
+        .filter(
+          (nft) => nft.address.toLowerCase() !== "0x2af75676692817d85121353f0d6e8e9ae6ad5576"
+        )
+    ];
   }, [ERC1155, ERC721, devNfts, network]);
   const isLoading = useMemo(() => {
     if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return false;

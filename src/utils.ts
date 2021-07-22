@@ -14,7 +14,7 @@ const debug = createDebugger("app:timer");
 const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
-  `${s.substr(0, 7)}...${s.substr(s.length - 7, 7)}`;
+  `${s.substr(0, 7)}...${s.substr(s.length - 3, 3)}`;
 
 export const THROWS = (): void => {
   throw new Error("must be implemented");
