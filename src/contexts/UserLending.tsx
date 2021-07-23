@@ -55,11 +55,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
       }>
     >(
       timeItAsync("Pulled Users ReNFT Lendings", async () => {
-        const address = await signer.getAddress().catch(() => {
-          // on disconnect
-          return "";
-        });
-        return request(subgraphURI, queryUserLendingRenft(address)).catch(
+        return request(subgraphURI, queryUserLendingRenft(currentAddress)).catch(
           () => {
             // ! let's warn with unique messages, without console logging the error message
             // ! that something went wrong. That way, if the app behaves incorrectly, we will
