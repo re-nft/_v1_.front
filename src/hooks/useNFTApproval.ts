@@ -46,7 +46,8 @@ export function useNFTApproval(nfts: Nft[]): {
             const contract = nft.contract();
             return contract.setApprovalForAll(contractAddress, true);
           })
-        )
+        ),
+        {action: 'nft approval', label: `${distinctItems.map((t => `address: ${t.address} tokenId: ${t.tokenId}`)).join(',')}`}
       );
     },
     [transactionWrapper]

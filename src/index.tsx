@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import dotenv from "dotenv";
 import Debug from "debug";
+import ReactGA from 'react-ga';
 
 dotenv.config();
 
@@ -10,6 +11,13 @@ console.log("REACT_APP_ENVIRONMENT ", process.env.REACT_APP_ENVIRONMENT);
 if (process.env.REACT_APP_DEBUG) {
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
+
+ReactGA.initialize('G-R0QE5R3S6L', {
+  gaOptions: {
+    siteSpeedSampleRate: 100
+  }
+});
+ReactGA.pageview(window.location.pathname + window.location.search);
 // if (IS_PROD && process.env.REACT_APP_ADDRESS) {
 //   throw Error("Please do not use ADDRESS in PRODUCTION env!");
 // }
@@ -37,6 +45,7 @@ import App from "./components/app-layout";
 import { StateProvider } from "./contexts/StateProvider";
 
 import { ErrorBoundary } from "react-error-boundary";
+import { NetworkName } from "./types";
 
 const ErrorFallback: React.FC<{
   error: Error;
