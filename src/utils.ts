@@ -303,7 +303,6 @@ export const mapToIds = (items: Renting[] | Lending[]) => {
 };
 
 
-
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
 // for example supporting 721 and 1155 standard at the same time
 // TODO: consider if it is possible to not support one or the other but still emit the event
