@@ -14,6 +14,11 @@ export const useAllAvailableToLend = (): {
   const { ERC1155, isLoading: erc1155Loading } = useFetchERC1155();
   const { network } = useContext(UserContext);
 
+  // TODO: general solution is in utils.ts: isDegenerateNft. It checks
+  // TODO: if the contract supports both 721 and 1155 at the same time
+  // TODO: it is not performmant, it requires multicall. Thus the cheat
+  // TODO: below with hardcoding
+
   const allAvailableToLend: Nft[] = useMemo(() => {
     if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return [];
     return [
@@ -34,6 +39,7 @@ export const useAllAvailableToLend = (): {
       ),
     ];
   }, [ERC1155, ERC721, devNfts, network]);
+
   const isLoading = useMemo(() => {
     if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return false;
     return erc1155Loading || erc721Loading || devIsLoading;
