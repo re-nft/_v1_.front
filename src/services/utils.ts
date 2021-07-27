@@ -1,5 +1,5 @@
 import { Nft } from "../contexts/graph/classes";
-import { getContractWithProvider, parseTokenURI } from "../utils";
+import { getContractWithProvider } from "../utils";
 
 // https://ipfs.github.io/public-gateway-checker/gateways.json
 export const IPFSGateway = "https://ipfs.io/ipfs/";
@@ -51,24 +51,8 @@ export const buildStaticIPFS_URL = (matched: string[]): string => {
 };
 
 
-export const getTokenUri = async (nft: Nft) => {
-  if (!nft.tokenURI) {
-    const contract = await getContractWithProvider(nft.address);
-    const uriSelector = nft.isERC721 ? contract.tokenURI : contract.uri;
-
-    uriSelector.bind(this);
-
-    return uriSelector(nft.tokenId)
-      .then((d: string) => {
-        return parseTokenURI(d, nft.tokenId);
-      })
-      .catch((e: Error) => {
-        return null;
-      });
-  }
-};
 export const normalizeTokenUri = async (nft: Nft): Promise<string> => {
-  let tokenURI: string = await getTokenUri(nft);
+  let tokenURI: string = nft.tokenURI;
   const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);
   if (isWeirdBaseURL) {
     // ! this is opensea, in my tests. And even though this weird base url says you need hex

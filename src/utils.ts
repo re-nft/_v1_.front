@@ -338,18 +338,3 @@ export const isDegenerateNft = async (
   return isDegenerate;
 };
 
-export const parseTokenURI = (uri: string, tokenId: string): string => {
-  // https://eips.ethereum.org/EIPS/eip-1155
-  // will contain {id}
-  const uriMatch = uri.match(/(^.+)(\{id\})/);
-  if (uriMatch) {
-    const [baseURI, _] = uriMatch;
-    const url = `${baseURI}${decimalToPaddedHexString(
-      Number(tokenId),
-      64
-    ).slice(2)}`;
-    return url;
-  }
-  return uri;
-};
-

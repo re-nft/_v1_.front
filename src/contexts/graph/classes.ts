@@ -24,6 +24,7 @@ class Nft {
   isERC721: boolean;
   _meta: NftToken["meta"] | undefined;
   mediaURI: string;
+  tokenURI: string;
   [k: string]: unknown;
 
   constructor(
@@ -42,6 +43,7 @@ class Nft {
 
     this._meta = options?.meta;
     this.mediaURI = options?.mediaURI ?? "";
+    this.tokenURI = options?.tokenURI ?? "";
   }
 }
 
