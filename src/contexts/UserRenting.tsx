@@ -72,14 +72,11 @@ export const UserRentingProvider: React.FC = ({ children }) => {
                   r.lending.nftAddress,
                   r.lending.tokenId,
                   parseLending(r.lending),
-                  r,
-                  signer
+                  r
                 )
             );
-          const normalizedLendings = renting.map((lending) => lending.toJSON());
-          const normalizedLendingNew = _renting.map((lending) =>
-            lending.toJSON()
-          );
+          const normalizedLendings = renting
+          const normalizedLendingNew = _renting;
 
           const difference = diffJson(
             normalizedLendings,

@@ -98,9 +98,9 @@ export const fetchNFTFromOtherSource = async (
   nft: Nft
 ): Promise<NftMetaWithId | NftError> => {
   const key = nftId(nft.address, nft.tokenId);
-  const tokenURI = normalizeTokenUri(nft);
+  const tokenURI = await normalizeTokenUri(nft);
 
-  if (nft._mediaURI) return { image: nft._mediaURI, id: key };
+  if (nft.mediaURI) return { image: nft.mediaURI, id: key };
   if (!tokenURI) {
     return { id: key, error: "No tokenUri" };
   }

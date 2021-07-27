@@ -65,8 +65,8 @@ export const usePageController = <T extends Nft>(): {
   // only modify the state if there are changes
   useEffect(() => {
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-    const oldStateNormalized = pageItems.map((l) => l.toJSON());
-    const newStateNormalized = newState.pageItems.map((l) => l.toJSON());
+    const oldStateNormalized = pageItems;
+    const newStateNormalized = newState.pageItems;
     const difference = diffJson(oldStateNormalized, newStateNormalized, {
       ignoreWhitespace: true,
     });

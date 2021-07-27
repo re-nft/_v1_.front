@@ -72,13 +72,13 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
               return userNotLender && userNotRenter;
             })
             .map((lending) => {
-              return new Lending(lending, signer);
+              return new Lending(lending);
             })
         );
       }),
       map((lendingsReNFT) => {
-        const normalizedLendings = nfts.map((l) => l.toJSON());
-        const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
+        const normalizedLendings = nfts;
+        const normalizedLendingNew = lendingsReNFT;
 
         const difference = diffJson(normalizedLendings, normalizedLendingNew, {
           ignoreWhitespace: true

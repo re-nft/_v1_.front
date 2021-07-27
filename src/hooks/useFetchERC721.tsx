@@ -51,7 +51,6 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
                 nft.tokenId,
                 "0",
                 nft.isERC721,
-                signer,
                 {
                   meta: nft.meta,
                   tokenURI: nft.tokenURI

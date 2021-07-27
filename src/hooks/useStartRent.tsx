@@ -5,7 +5,7 @@ import { getDistinctItems, getE20, sortNfts } from "../utils";
 import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
-import { ERC20 } from "../hardhat/typechain/ERC20";
+import { ERC20 } from "../types/typechain/ERC20";
 import { useContractAddress } from "../contexts/StateProvider";
 import UserContext from "../contexts/UserProvider";
 import { ContractContext } from "../contexts/ContractsProvider";

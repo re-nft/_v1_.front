@@ -73,7 +73,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             .filter((v) => v != null)
             .filter((v) => !v.collateralClaimed)
             .map((lending) => {
-              return new Lending(lending, signer);
+              return new Lending(lending);
             });
         }
       }),
@@ -82,10 +82,8 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           setLoading(false);
           return;
         }
-        const normalizedLendings = lending.map((lending) => lending.toJSON());
-        const normalizedLendingNew = lendings.map((lending) =>
-          lending.toJSON()
-        );
+        const normalizedLendings = lending;
+        const normalizedLendingNew = lendings;
 
         const difference = diffJson(normalizedLendings, normalizedLendingNew, {
           ignoreWhitespace: true

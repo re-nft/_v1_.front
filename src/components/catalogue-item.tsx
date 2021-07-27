@@ -17,6 +17,7 @@ import { Checkbox } from "./common/checkbox";
 import UserContext from "../contexts/UserProvider";
 // @ts-ignore
 import { Player } from "video-react";
+import { useLoadAmount } from "../hooks/useLoadAmount";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -49,7 +50,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
-  const [amount, setAmount] = useState<string>("0");
   const [currentVote, setCurrentVote] =
     useState<{
       downvote?: number;
@@ -57,6 +57,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
     }>();
   const [imageIsReady, setImageIsReady] = useState<boolean>(false);
   const [metas] = useContext(NFTMetaContext);
+  const amount = useLoadAmount(nft);
   const id = nftId(nft.address, nft.tokenId);
   const meta = metas[id];
   const noWallet = !signer;
@@ -98,15 +99,6 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const handleUpVote = useCallback(() => handleVote(1), [handleVote]);
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
-
-  useEffect(() => {
-    nft
-      .loadAmount(currentAddress)
-      .then((a) => {
-        setAmount(a);
-      })
-      .catch(() => console.warn("could not load amount"));
-  }, [checked, nft, meta?.image, currentAddress]);
 
   useEffect(() => {
     if (meta && !meta.loading) {
@@ -188,7 +180,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             />
             <CatalogueItemRow
               text="Amount"
-              value={nft.isERC721 ? "1" : amount}
+              value={amount}
             />
           </div>
           {children}

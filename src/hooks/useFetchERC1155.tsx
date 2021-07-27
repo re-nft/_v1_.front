@@ -51,7 +51,6 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
                 nft.tokenId,
                 "0",
                 nft.isERC721,
-                signer,
                 {
                   meta: nft.meta,
                   tokenURI: nft.tokenURI
