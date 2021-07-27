@@ -5,19 +5,23 @@ import dotenv from "dotenv";
 import Debug from "debug";
 import ReactGA from 'react-ga';
 
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 dotenv.config();
 
 console.log("REACT_APP_ENVIRONMENT ", process.env.REACT_APP_ENVIRONMENT);
+
 if (process.env.REACT_APP_DEBUG) {
   Debug.enable(process.env.REACT_APP_DEBUG);
 }
 
-ReactGA.initialize('G-R0QE5R3S6L', {
+ReactGA.initialize(process.env.REACT_APP_GA_ID || '', {
+  debug: window.location.hostname !== 'dapp.renft.io',
   gaOptions: {
-    siteSpeedSampleRate: 100
-  }
+    siteSpeedSampleRate: 100,
+  },
+  testMode: window.location.hostname !== 'dapp.renft.io'
 });
-ReactGA.pageview(window.location.pathname + window.location.search);
 // if (IS_PROD && process.env.REACT_APP_ADDRESS) {
 //   throw Error("Please do not use ADDRESS in PRODUCTION env!");
 // }
