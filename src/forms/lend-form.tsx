@@ -54,8 +54,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       tokenId: nft.tokenId,
       nft: nft,
       key: getUniqueCheckboxId(nft),
-      //TODO:eniko loadAmount
-      lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
+      lendAmount: undefined,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,

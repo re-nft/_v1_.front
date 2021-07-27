@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import CommonInfo from "../modals/common-info";
 import { FormikErrors, FormikTouched } from "formik";
 import MinimalSelect from "../components/common/select";
 import { LendInputProps } from "./lend-form";
 import CssTextField from "../components/common/css-text-field";
+import { useLoadAmount } from "../hooks/useLoadAmount";
 
 const voidFn = () => {
   // do nothing func
@@ -40,8 +41,10 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
     touched,
     disabled
   } = input;
-  const only1Item =
-    Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
+  const amount = useLoadAmount(lendingInput.nft);
+  const only1Item = useMemo(() => {
+    return Number(amount) === 1
+  }, [amount])
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>
@@ -50,13 +53,13 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           <div className="label">Available Amount</div>
           <div className="dot"></div>
           {/* we can do this because checked items will have the right amount when we pass them here */}
-          <div className="label">{lendingInput.nft.amount}</div>
+          <div className="label">{amount}</div>
         </div>
         <CssTextField
           required
           label="Amount"
           variant="outlined"
-          value={lendingInput.lendAmount ?? ""}
+          value={amount}
           inputProps={{ inputMode: 'numeric', pattern: '^[1-9][0-9]*$' }}
           onChange={only1Item ? voidFn : handleChange}
           onBlur={only1Item ? voidFn : handleBlur}
