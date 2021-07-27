@@ -40,7 +40,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               <Button
                 description="Approve Return"
                 disabled={approvalStatus.isLoading}
-                handleClick={handleApproveAll}
+                onClick={handleApproveAll}
               />
             </TransactionWrapper>
           )}
@@ -54,7 +54,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               <Button
                 description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
                 disabled={approvalStatus.isLoading || !isApproved}
-                handleClick={handleReturnNft}
+                onClick={handleReturnNft}
               />
             </TransactionWrapper>
           )}

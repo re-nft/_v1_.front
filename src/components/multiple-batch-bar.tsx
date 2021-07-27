@@ -33,7 +33,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
 
-            <Button handleClick={onStopRent} description="Stop rent"></Button>
+            <Button onClick={onStopRent} description="Stop rent"/>
           </div>
         </div>
       )}
@@ -51,9 +51,9 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
             <Button
-              handleClick={onClaim}
+              onClick={onClaim}
               description="Claim all"
-            ></Button>
+            />
           </div>
         </div>
       )}
@@ -76,7 +76,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
             <Button
-              handleClick={onStopLend}
+              onClick={onStopLend}
               description="Stop lend all"
             ></Button>
           </div>

@@ -13,6 +13,7 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
+import { Button } from "../components/common/button";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -28,9 +29,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
   }, [onRemoveFromFavorites, nft]);
 
   return (
-    <button className="nft__button" onClick={handleRemoveFromFavorites}>
-      Remove
-    </button>
+    <Button onClick={handleRemoveFromFavorites} description="Remove" />
   );
 };
 

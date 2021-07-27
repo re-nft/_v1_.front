@@ -4,7 +4,7 @@ import React from "react";
 import { CheckedIcon, CheckIcon } from "./checkbox-icon";
 
 type CheckboxProps = {
-  handleClick: () => void;
+  onChange: () => void;
   checked: boolean;
   disabled?: boolean;
 };
@@ -27,7 +27,7 @@ const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
-  handleClick,
+  onChange,
   disabled,
 }) => {
   return (
@@ -35,7 +35,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
       checked={checked}
       checkedIcon={<CheckedIcon />}
       icon={<CheckIcon />}
-      onChange={handleClick}
+      onChange={onChange}
       disableRipple
       disabled={disabled}
       size="medium"
