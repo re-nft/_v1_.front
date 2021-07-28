@@ -4,7 +4,10 @@ import { Lending } from "../contexts/graph/classes";
 import { sortNfts } from "../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import {
+  TransactionStatus,
+  useTransactionWrapper
+} from "./useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
@@ -39,7 +42,15 @@ export const useClaimColleteral = (): ((
         "Claim modal lendingId ",
         sortedNfts.map((nft) => nft.renting?.lendingId)
       );
-      return transactionWrapper(sdk.claimCollateral(...params));
+      return transactionWrapper(sdk.claimCollateral(...params), {
+        action: "claim",
+        label: `Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
+        Claim modal tokenId: ${sortedNfts.map((nft) => nft.tokenId)}
+        Claim modal lendingIds: ${sortedNfts.map(
+          (nft) => nft.renting?.lendingId
+        )}
+        `
+      });
     },
     [sdk, transactionWrapper]
   );
