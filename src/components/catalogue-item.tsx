@@ -160,7 +160,7 @@ const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <div className="spacer" />
             <Checkbox
               checked={!!checked}
-              handleClick={onCheckboxChange}
+              onChange={onCheckboxChange}
               disabled={disabled || noWallet}
             ></Checkbox>
           </div>

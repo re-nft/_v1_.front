@@ -1,7 +1,7 @@
 import React from "react";
 
 type ButtonProps = {
-  handleClick: () => void;
+  onClick: (e:any) => void;
   disabled?: boolean;
   description: string;
   datacy?: string
@@ -9,7 +9,7 @@ type ButtonProps = {
 
 export const Button: React.FC<ButtonProps> = React.forwardRef(({
   disabled,
-  handleClick,
+  onClick,
   description,
   datacy,
 }, ref) => {
@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(({
       ref={ref}
       className={`nft__button small ${disabled ? "disabled" : ""}`}
       disabled={disabled}
-      onClick={handleClick}
+      onClick={onClick}
       data-cy={datacy}
       type="button"
     >

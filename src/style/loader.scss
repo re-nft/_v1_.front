@@ -1,3 +1,5 @@
+@import "variables";
+
 .loader {
     display: inline-block;
     position: relative;
@@ -12,19 +14,19 @@
         animation: loader-anim 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 
         &.elem-one {
-            background: #35cca5;
+            background: $green;
             left: 8px;
             animation-delay: -0.24s;
         }
 
         &.elem-two {
-            background: #f99806;
+            background: $orange;
             left: 32px;
             animation-delay: -0.12s;
         }
 
         &.elem-three {
-            background: #9a65cb;
+            background: $purple;
             left: 56px;
             animation-delay: 0;
         }

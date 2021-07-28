@@ -4,7 +4,7 @@
 
     &__title {
         font-size: 22px;
-        color: #fff;
+        color: $white;
         padding-right: 16px;
     }
 }
@@ -13,7 +13,7 @@
     position: relative;
     width: 80px;
     height: 40px;
-    background: #000;
+    background: $black;
 
     &__pin {
         position: absolute;
@@ -23,8 +23,8 @@
         width: 36px;
         height: 36px;
         transition: all 250ms;
-        background: #36cba5;
-        box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c, 1px 1px 0 #299b7c;
+        background: $green;
+        box-shadow: 4px 4px 0 $green-dark, 3px 3px 0 $green-dark, 2px 2px 0 $green-dark, 1px 1px 0 $green-dark;
     }
 
     &__active {

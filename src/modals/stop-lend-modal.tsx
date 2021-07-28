@@ -39,7 +39,7 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
             <Button
               description={nfts.length > 1 ? "Stop Lend All" : "Stop Lend"}
               disabled={t.isLoading}
-              handleClick={handleStopLend}
+              onClick={handleStopLend}
             />
           </TransactionWrapper>
         </div>

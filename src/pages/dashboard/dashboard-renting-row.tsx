@@ -60,7 +60,7 @@ export const RentingRow: React.FC<{
     <Tr onClick={handleRowClicked}>
       <Td className="action-column">
         <Checkbox
-          handleClick={checkBoxChangeWrapped(rent)}
+          onChange={checkBoxChangeWrapped(rent)}
           checked={checked}
           disabled={isExpired || rent.relended}
         />
@@ -99,7 +99,7 @@ export const RentingRow: React.FC<{
           <Tooltip title={tooltip} aria-label={tooltip}>
             <span>
               <Button
-                handleClick={handleClick}
+                onClick={handleClick}
                 disabled={checked || isExpired || rent.relended}
                 description="Return it"
               />

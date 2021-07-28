@@ -1,7 +1,7 @@
 .leaderboard-leader {
     margin: 0 auto;
     display: flex;
-    color: #fff;
+    color: $white;
     font-size: 24px;
     justify-content: center;
     margin: 24px 0 60px;
@@ -28,9 +28,9 @@
     .img {
         width: 84px;
         height: 84px;
-        background: #fff;
+        background: $white;
         border-radius: 84px;
-        box-shadow: 4px 4px 0 #000;
+        box-shadow: 4px 4px 0 $black;
         margin-bottom: 8px;
     }
 
@@ -43,7 +43,7 @@
 
     .stat {
         width: 150px;
-        color: #fff;
+        color: $white;
         font-size: 19px;
         
         .nft__meta_row {
@@ -51,21 +51,21 @@
         }
         
         .nft__meta_dot {
-            border-color: #fff;
+            border-color: $white;
         }
         
         .nft__meta_value {
-            color: #fff;
+            color: $white;
         }
     }
 
     .result {
         position: absolute;
-        color: #F19C38;
+        color: $orange;
         font-size: 60px;
         position: absolute;
         font-weight: bold;
-        text-shadow: 4px 4px 0 #000;
+        text-shadow: 4px 4px 0 $black;
         display: flex;
         align-items: center;
         line-height: 1;
@@ -86,9 +86,9 @@
 }
 
 .leaderboard-list-item {
-    color: #fff;
+    color: $white;
     font-size: 22px;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid $white;
     margin-bottom: 8px;
     padding-bottom: 8px;
 

@@ -3,21 +3,21 @@
     left: 50%;
     top: 50%;
     z-index: 9999;
-    background: #f43e77;
-    border: 3px solid #000;
+    background: $red;
+    border: 3px solid $black;
     padding: 40px;
     display: flex;
     flex-direction: column;
     text-align: center;
     justify-content: center;
     transform: translate(-50%, -50%);
-    box-shadow: 15px 15px 0 #000, -15px -15px 0 #000;
+    box-shadow: 15px 15px 0 $black, -15px -15px 0 $black;
 
     &-failed {
         position: relative;
         width: 32px;
         height: 40px;
-        background: #000;
+        background: $black;
         transform: skew(-10deg, -10deg);
 
         &:before {
@@ -27,7 +27,7 @@
             position: absolute;    
             width: 32px;
             height: 40px;
-            background: #000;
+            background: $black;
         }
     }
 
@@ -35,7 +35,7 @@
         position: relative;
         width: 32px;
         height: 40px;
-        background: #000;
+        background: $black;
         transform: skew(-10deg, -10deg);
 
         &:before {
@@ -45,7 +45,7 @@
             position: absolute;    
             width: 32px;
             height: 40px;
-            background: #000;
+            background: $black;
         }
     }
 }

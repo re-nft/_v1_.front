@@ -32,7 +32,7 @@ export const Header = () => {
       {!installMetaMask && !currentAddress ? (
         <Button
           datacy="metamask-connect-button"
-          handleClick={connect}
+          onClick={connect}
           description="Please connect your wallet!"
         />
       ) : (
