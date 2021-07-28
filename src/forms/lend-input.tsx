@@ -43,7 +43,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
   } = input;
   const amount = useLoadAmount(lendingInput.nft);
   const only1Item = useMemo(() => {
-    return Number(amount) === 1
+    return amount === "1"
   }, [amount])
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
@@ -59,7 +59,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           required
           label="Amount"
           variant="outlined"
-          value={amount}
+          value={lendingInput.lendAmount ?? ""}
           inputProps={{ inputMode: 'numeric', pattern: '^[1-9][0-9]*$' }}
           onChange={only1Item ? voidFn : handleChange}
           onBlur={only1Item ? voidFn : handleBlur}

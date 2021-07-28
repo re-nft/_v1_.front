@@ -1,5 +1,4 @@
 import { Nft } from "../contexts/graph/classes";
-import { getContractWithProvider } from "../utils";
 
 // https://ipfs.github.io/public-gateway-checker/gateways.json
 export const IPFSGateway = "https://ipfs.io/ipfs/";

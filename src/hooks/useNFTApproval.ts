@@ -49,7 +49,7 @@ export function useNFTApproval(nfts: Nft[]): {
       return transactionWrapper(
         Promise.all(
           distinctItems.map((nft) => {
-            return getContractWithSigner(nft.address, signer).then(
+            return getContractWithSigner(nft.address, signer, nft.isERC721).then(
               (contract) => {
                 return contract.setApprovalForAll(contractAddress, true);
               }
@@ -72,7 +72,7 @@ export function useNFTApproval(nfts: Nft[]): {
 
       const result = await Promise.all(
         getDistinctItems(nft, "address").map((nft) => {
-          return getContractWithSigner(nft.address, signer).then((contract) => {
+          return getContractWithSigner(nft.address, signer, nft.isERC721).then((contract) => {
             return contract
               .isApprovedForAll(currentAddress, contractAddress)
               .then((isApproved) => {

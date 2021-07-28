@@ -1,15 +1,16 @@
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { fetchUserProd1155 } from "../services/graph";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";
 import { Nft } from "../contexts/graph/classes";
 import { NftToken } from "../contexts/graph/types";
-import { EMPTY, from, map } from "rxjs";
+import { EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
-import { devtools } from 'zustand/middleware'
+import { devtools } from "zustand/middleware";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 interface UserERC1155State {
   users: Record<
@@ -17,6 +18,7 @@ interface UserERC1155State {
     {
       nfts: Nft[];
       isLoading: boolean;
+      ids: Set<string>;
     }
   >;
   setUserNft: (user: string, items: Nft[]) => void;
@@ -24,56 +26,76 @@ interface UserERC1155State {
   setAmount: (user: string, id: string, amount: string) => void;
 }
 
-export const useERC1155 = create<UserERC1155State>(devtools((set, get) => ({
-  users: {},
-  setUserNft: (user: string, items: Nft[]) =>
-    set(
-      produce((state) => {
-        if (!get().users[user]) state.users[user] = {};
-        state.users[user].nfts = items;
-      })
-    ),
-  setLoading: (user: string, isLoading: boolean) =>
-    set(
-      produce((state) => {
-        if (!get().users[user]) state.users[user] = {};
-        state.users[user].isLoading = isLoading;
-      })
-    ),
-  setAmount: (user: string, id: string, amount: string) =>
-    set(
-      produce((state) => {
-        if (!get().users[user]) state.users[user] = {};
-        const nft = get().users[user]?.nfts?.find(
-          (nft: Nft) => getUniqueCheckboxId(nft) === id
-        );
-        if (nft) nft.amount = amount;
-      })
-    )
-})));
+export const useERC1155 = create<UserERC1155State>(
+  devtools((set, get) => ({
+    users: {},
+    setUserNft: (user: string, items: Nft[]) =>
+      set(
+        produce((state) => {
+          if (!get().users[user]) state.users[user] = {};
+          state.users[user].nfts = items;
+          state.users[user].ids = new Set(items.map(getUniqueCheckboxId));
+        })
+      ),
+    setLoading: (user: string, isLoading: boolean) =>
+      set(
+        produce((state) => {
+          if (!get().users[user]) state.users[user] = {};
+          state.users[user].isLoading = isLoading;
+        })
+      ),
+    setAmount: (user: string, id: string, amount: string) =>
+      set(
+        produce((state) => {
+          if (!get().users[user]) state.users[user] = {};
+          const nft = get().users[user]?.nfts?.find(
+            (nft: Nft) => getUniqueCheckboxId(nft) === id
+          );
+          if (nft) nft.amount = amount;
+        })
+      )
+  }))
+);
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { signer } = useContext(UserContext);
 
-  // TODO:eniko use cacheProvider or similar
-  const { nfts, isLoading } = useERC1155(
+  const isLoading = useERC1155(
     useCallback(
       (state) => {
         const selector = state.users[currentAddress];
-        if (!selector || !selector.nfts) return { nfts: [], isLoading: false };
-        return selector;
+        if (!selector) return false;
+        return selector.isLoading;
       },
       [currentAddress]
     ),
     shallow
   );
-  const setUserNft = useERC1155((state) => state.setUserNft);
-  const setLoading = useERC1155((state) => state.setLoading);
-
-  const ids = useMemo(() => {
-    return new Set(nfts?.map((nft) => getUniqueCheckboxId(nft as Nft)));
-  }, [nfts]);
+  const nfts = useERC1155(
+    useCallback(
+      (state) => {
+        const selector = state.users[currentAddress];
+        if (!selector || !selector.nfts) return [];
+        return selector.nfts;
+      },
+      [currentAddress]
+    ),
+    shallow
+  );
+  const ids = useERC1155(
+    useCallback(
+      (state) => {
+        const selector = state.users[currentAddress];
+        if (!selector || !selector.ids) return new Set();
+        return selector.ids;
+      },
+      [currentAddress]
+    ),
+    shallow
+  );
+  const setUserNft = useERC1155((state) => state.setUserNft, shallow);
+  const setLoading = useERC1155((state) => state.setLoading, shallow);
 
   useEffect(() => {
     function fetchAndCreate() {
@@ -125,11 +147,13 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         })
       );
     }
-    const subscription = fetchAndCreate().subscribe();
+    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+      .pipe(switchMap(fetchAndCreate))
+      .subscribe();
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, ids, nfts]);
+  }, [signer, currentAddress, ids]);
 
   return { ERC1155: nfts, isLoading };
 };
