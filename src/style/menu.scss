@@ -6,7 +6,7 @@
     width: 100%;
 
     &__item {
-        background: #9a65ca;
+        background: $purple;
         border: 0;
         font-family: 'Press Start 2P', cursive;
         text-transform: uppercase;
@@ -16,14 +16,14 @@
         text-decoration: none;
         white-space: nowrap;
         line-height: 1;
-        color: #fff;
-        box-shadow: 7px 7px 0 #6b3b9b, 
-        6px 6px 0 #6b3b9b, 
-        5px 5px 0 #6b3b9b, 
-        4px 4px 0 #6b3b9b,
-        3px 3px 0 #6b3b9b,
-        2px 2px 0 #6b3b9b, 
-        1px 1px 0 #6b3b9b;
+        color: $white;
+        box-shadow: 7px 7px 0 $purple-dark, 
+        6px 6px 0 $purple-dark, 
+        5px 5px 0 $purple-dark, 
+        4px 4px 0 $purple-dark,
+        3px 3px 0 $purple-dark,
+        2px 2px 0 $purple-dark, 
+        1px 1px 0 $purple-dark;
         cursor: pointer;
         outline: none;
         position: relative;
@@ -35,15 +35,15 @@
         }
         
         &:hover {
-            color: #fff;
-            background: #F19C38;
-            box-shadow: 7px 7px 0 #DF732C, 
-            6px 6px 0 #DF732C, 
-            5px 5px 0 #DF732C, 
-            4px 4px 0 #DF732C,
-            3px 3px 0 #DF732C,
-            2px 2px 0 #DF732C, 
-            1px 1px 0 #DF732C;
+            color: $white;
+            background: $orange;
+            box-shadow: 7px 7px 0 $orange-dark, 
+            6px 6px 0 $orange-dark, 
+            5px 5px 0 $orange-dark, 
+            4px 4px 0 $orange-dark,
+            3px 3px 0 $orange-dark,
+            2px 2px 0 $orange-dark, 
+            1px 1px 0 $orange-dark;
           
         }
         
@@ -61,9 +61,9 @@
         }
         
         &-active {
-            background: #F19C38;
-            color: #fff;
-            box-shadow: inset 3px 3px 0 #DF732C;
+            background: $orange;
+            color: $white;
+            box-shadow: inset 3px 3px 0 $orange-dark;
             top:6px;
             left:6px;
             &:before {
@@ -71,7 +71,7 @@
                 left:-4px;
             }
             &:hover {
-                box-shadow: inset 8px 8px 0 #DF732C;
+                box-shadow: inset 8px 8px 0 $orange-dark;
             }
         }
     }

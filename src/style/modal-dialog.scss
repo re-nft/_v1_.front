@@ -1,6 +1,6 @@
 .modal-dialog {
     background: rgb(238, 230, 246);
-    border: 3px solid rgb(153, 111, 200);
+    border: 3px solid $purple;
     padding: 24px;
     min-width: 450px;
 
@@ -9,7 +9,7 @@
     }
 
     .nft__meta_dot {
-        border-bottom: 2px dotted #000;
+        border-bottom: 2px dotted $black;
     }
 
     .nft__meta_value {
@@ -21,13 +21,13 @@
         display: flex;
         align-items: baseline;
         position: sticky;
-        background: #eee6f6;
+        background: $grey-light;
         top: 0;
         z-index: 2;
 
         .dot {
             flex-grow: 1;
-            border-bottom: 2px dotted #000;
+            border-bottom: 2px dotted $black;
             margin: 0 5px;
         }
     }
@@ -43,7 +43,7 @@
 
     &-button {
         position: sticky;
-        background: #eee6f6;
+        background: $grey-light;
         bottom: 0;
         padding: 0 0 24px;
         z-index: 9;

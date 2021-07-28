@@ -3,19 +3,19 @@
   width: 250px;
   display: flex;
   margin: 0 28px 40px;
-  color: #000;
+  color: $black;
   font-size: 21px;
   flex-direction: column;
-  background: #fff;
+  background: $white;
   z-index: 1;
-  border: 5px solid #000;
+  border: 5px solid $black;
   transition: all 250ms;
   top: 0;
   max-height: 38rem;
 
   &.checked,
   &:hover {
-    box-shadow: 8px 8px 0 #000;
+    box-shadow: 8px 8px 0 $black;
     top: -5px;
   }
 
@@ -37,7 +37,7 @@
   }
 
   &__meta {
-    color: #000;
+    color: $black;
 
     &_row {
       display: flex;
@@ -50,17 +50,17 @@
       max-width: 105px;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #000;
+      color: $black;
 
       a {
-        color: #000;
+        color: $black;
         text-decoration: none;
       }
     }
 
     &_dot {
       flex-grow: 1;
-      border-bottom: 2px dotted #000;
+      border-bottom: 2px dotted $black;
       margin: 0 8px;
     }
   }
@@ -127,11 +127,11 @@
     }
 
     &-plus {
-      color: #759d47;
+      color: $green;
     }
 
     &-minus {
-      color: #e25241;
+      color: $red;
     }
   }
 
@@ -141,7 +141,7 @@
   }
 
   .no-img {
-    color: #000;
+    color: $black;
     font-size: 40px;
     line-height: 300px;
     transform: rotate(45deg);
@@ -157,7 +157,7 @@
     border: none;
     cursor: pointer;
     transition: all 250ms;
-    color: #fff;
+    color: $white;
     font-family: "VT323";
     line-height: 1;
     font-size: 28px;
@@ -166,27 +166,27 @@
     padding: 5px 12px;
 
     &-plus {
-      background: #30cea4;
-      box-shadow: 5px 5px 0 #33b492, 4px 4px 0 #33b492, 3px 3px 0 #33b492,
-        2px 2px 0 #33b492, 1px 1px 0 #33b492;
+      background: $green;
+      box-shadow: 5px 5px 0 $green-dark, 4px 4px 0 $green-dark, 3px 3px 0 $green-dark,
+        2px 2px 0 $green-dark, 1px 1px 0 $green-dark;
     }
 
     &-minus {
-      background: #d8401b;
-      box-shadow: 5px 5px 0 #b43333, 4px 4px 0 #b43333, 3px 3px 0 #b43333,
-        2px 2px 0 #b43333, 1px 1px 0 #b43333;
+      background: $red;
+      box-shadow: 5px 5px 0 $red-dark, 4px 4px 0 $red-dark, 3px 3px 0 $red-dark,
+        2px 2px 0 $red-dark, 1px 1px 0 $red-dark;
     }
 
     &:hover {
-      background: #fc9706;
-      box-shadow: 5px 5px 0 #f58901, 4px 4px 0 #f58901, 3px 3px 0 #f58901,
-        2px 2px 0 #f58901, 1px 1px 0 #f58901;
+      background: $orange;
+      box-shadow: 5px 5px 0 $orange-dark, 4px 4px 0 $orange-dark, 3px 3px 0 $orange-dark,
+        2px 2px 0 $orange-dark, 1px 1px 0 $orange-dark;
     }
 
     &:active {
-      background: #9867cb;
-      box-shadow: 5px 5px 0 #8349be, 4px 4px 0 #8349be, 3px 3px 0 #8349be,
-        2px 2px 0 #8349be, 1px 1px 0 #8349be;
+      background: $purple;
+      box-shadow: 5px 5px 0 $purple-dark, 4px 4px 0 $purple-dark, 3px 3px 0 $purple-dark,
+        2px 2px 0 $purple-dark, 1px 1px 0 $purple-dark;
     }
 
     &:before {
@@ -198,17 +198,17 @@
       top: 0;
       left: 0;
       z-index: -1;
-      box-shadow: 10px 10px #000, 0px 10px #000, 10px 0px #000;
+      box-shadow: 10px 10px $black, 0px 10px $black, 10px 0px $black;
     }
   }
 
   &__button {
     position: relative;
-    background: #30cea4;
+    background: $green;
     border: none;
     cursor: pointer;
     transition: all 250ms;
-    color: #fff;
+    color: $white;
     font-family: 'Press Start 2P', cursive;
     line-height: 1;
     font-size: 14px;
@@ -217,74 +217,73 @@
     transition: all 250ms;
     padding: 10px 12px;
     box-shadow: 
-        7px 7px 0 #33b492, 
-        6px 6px 0 #33b492, 
-        5px 5px 0 #33b492, 
-        4px 4px 0 #33b492,
-        3px 3px 0 #33b492,
-        2px 2px 0 #33b492, 
-        1px 1px 0 #33b492;
+        7px 7px 0 $green-dark, 
+        6px 6px 0 $green-dark, 
+        5px 5px 0 $green-dark, 
+        4px 4px 0 $green-dark,
+        3px 3px 0 $green-dark,
+        2px 2px 0 $green-dark, 
+        1px 1px 0 $green-dark;
 
     &.small {
-      font-size: 20px;
-      padding: 2px 6px;
+      font-size: 10px;
     }
 
     &.disabled {
-      cursor: default;
-      background: #cacaca;
-      box-shadow: 7px 7px 0 #bdbdbd, 
-                  6px 6px 0 #bdbdbd, 
-                  5px 5px 0 #bdbdbd, 
-                  4px 4px 0 #bdbdbd, 
-                  3px 3px 0 #bdbdbd,
-                  2px 2px 0 #bdbdbd, 
-                  1px 1px 0 #bdbdbd;
+      cursor:not-allowed;
+      background: $grey;
+      box-shadow: 7px 7px 0 $grey-dark, 
+                  6px 6px 0 $grey-dark, 
+                  5px 5px 0 $grey-dark, 
+                  4px 4px 0 $grey-dark, 
+                  3px 3px 0 $grey-dark,
+                  2px 2px 0 $grey-dark, 
+                  1px 1px 0 $grey-dark;
 
       &:active,
       &:hover {
-        background: #cacaca;
-        box-shadow: 7px 7px 0 #bdbdbd, 
-                    6px 6px 0 #bdbdbd, 
-                    5px 5px 0 #bdbdbd, 
-                    4px 4px 0 #bdbdbd, 
-                    3px 3px 0 #bdbdbd,
-                    2px 2px 0 #bdbdbd, 
-                    1px 1px 0 #bdbdbd;
+        background: $grey;
+        box-shadow: 7px 7px 0 $grey-dark, 
+                    6px 6px 0 $grey-dark, 
+                    5px 5px 0 $grey-dark, 
+                    4px 4px 0 $grey-dark, 
+                    3px 3px 0 $grey-dark,
+                    2px 2px 0 $grey-dark, 
+                    1px 1px 0 $grey-dark;
       }
     }
 
     &:hover {
-      background: #fc9706;
-      box-shadow: 7px 7px 0 #f58901, 
-                  6px 6px 0 #f58901, 
-                  5px 5px 0 #f58901, 
-                  4px 4px 0 #f58901, 
-                  3px 3px 0 #f58901,
-                  2px 2px 0 #f58901, 
-                  1px 1px 0 #f58901;
+      background: $orange;
+      box-shadow: 7px 7px 0 $orange-dark, 
+                  6px 6px 0 $orange-dark, 
+                  5px 5px 0 $orange-dark, 
+                  4px 4px 0 $orange-dark, 
+                  3px 3px 0 $orange-dark,
+                  2px 2px 0 $orange-dark, 
+                  1px 1px 0 $orange-dark;
     }
 
     &:active {
-      background: #9867cb;
-      box-shadow: 7px 7px 0 #8349be,
-                  6px 6px 0 #8349be,
-                  5px 5px 0 #8349be,
-                  4px 4px 0 #8349be, 
-                  3px 3px 0 #8349be,
-                  2px 2px 0 #8349be, 
-                  1px 1px 0 #8349be;
+      background: $purple;
+      box-shadow: 7px 7px 0 $purple-dark,
+                  6px 6px 0 $purple-dark,
+                  5px 5px 0 $purple-dark,
+                  4px 4px 0 $purple-dark, 
+                  3px 3px 0 $purple-dark,
+                  2px 2px 0 $purple-dark, 
+                  1px 1px 0 $purple-dark;
     }
 
     &.red {
-      background: #f14c4c;
-      box-shadow: 7px 7px 0 #d82020, 
-                  6px 6px 0 #d82020, 
-                  5px 5px 0 #d82020, 
-                  4px 4px 0 #d82020, 
-                  3px 3px 0 #d82020,
-                  2px 2px 0 #d82020, 
-                  1px 1px 0 #d82020;
+      background: $red;
+      box-shadow: 7px 7px 0 $red-dark, 
+                  6px 6px 0 $red-dark, 
+                  5px 5px 0 $red-dark, 
+                  4px 4px 0 $red-dark, 
+                  3px 3px 0 $red-dark,
+                  2px 2px 0 $red-dark, 
+                  1px 1px 0 $red-dark;
     }
 
     &:before {
@@ -323,9 +322,9 @@
   cursor: pointer;
   box-sizing: border-box;
   transition: all 250ms;
-  background: #36cba5;
-  box-shadow: 4px 4px 0 #299b7c, 3px 3px 0 #299b7c, 2px 2px 0 #299b7c,
-    1px 1px 0 #299b7c;
+  background: $green;
+  box-shadow: 4px 4px 0 $green-dark, 3px 3px 0 $green-dark, 2px 2px 0 $green-dark,
+    1px 1px 0 $green-dark;
 
   &:before {
     content: "";
@@ -336,22 +335,22 @@
     top: 0;
     left: 0;
     z-index: -1;
-    box-shadow: 8px 0px #000, 0px 8px #000, 8px 8px #000;
+    box-shadow: 8px 0px $black, 0px 8px $black, 8px 8px $black;
   }
 
   &:hover {
-    background: #fc9706;
-    box-shadow: 4px 4px #df732c, 3px 3px #df732c, 2px 2px #df732c,
-      1px 1px #df732c;
+    background: $orange;
+    box-shadow: 4px 4px $orange-dark, 3px 3px $orange-dark, 2px 2px $orange-dark,
+      1px 1px $orange-dark;
   }
 
   &.checked {
-    background: #fc9706;
+    background: $orange;
     box-shadow: none;
 
     &:before {
-      box-shadow: 4px 0px #000, -4px -4px #000, -4px 7px #000, 6px 7px #000,
-        6px -4px #000;
+      box-shadow: 4px 0px $black, -4px -4px $black, -4px 7px $black, 6px 7px $black,
+        6px -4px $black;
     }
   }
 }
@@ -363,6 +362,7 @@
     margin: 6px auto;
     border-radius: 4px;
     background-image: linear-gradient(90deg, #ddd 0px, #e8e8e8 40px, #ddd 80px);
+    z-index:0;
     background-size: 250px;
     animation: skeletonAnim 1s infinite linear;
 
