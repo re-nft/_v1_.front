@@ -36,7 +36,7 @@ cypress/other/**/**.js
 cypress/videos
 
 # next.js
-/.next/
+.next/
 /out/
 *.pem
 # debug

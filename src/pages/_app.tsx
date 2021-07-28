@@ -7,14 +7,34 @@ import { StateProvider } from "../contexts/StateProvider";
 import AppLayout from "../components/app-layout";
 import Helmet from "react-helmet";
 import type { AppProps } from "next/app";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
+import ReactGA from "react-ga";
+import { useRouter } from "next/router";
+
+if (typeof window !== "undefined") {
+  ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
+    debug:
+      typeof window !== "undefined"
+        ? window.location.hostname !== "dapp.renft.io"
+        : true,
+    gaOptions: {
+      siteSpeedSampleRate: 100
+    },
+    testMode: window.location.hostname !== "dapp.renft.io"
+  });
+}
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
+  const { asPath } = useRouter();
+  
+  useEffect(() => {
+    ReactGA.pageview(asPath);
+  }, [asPath]);
 
   useEffect(() => {
     // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector('#jss-server-side');
+    const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement?.removeChild(jssStyles);
     }

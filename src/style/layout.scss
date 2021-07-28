@@ -123,7 +123,7 @@
         box-sizing: border-box;
         box-shadow: 5px 5px 0 $black;
         background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
-        z-index:0;
+        z-index:10;
     }
 
     &.footer-content {
@@ -189,7 +189,6 @@
 
     &__logo {
       background-image: url(./img/logo.svg);
-      z-index:0;
       background-size: auto 50px;
       background-repeat: no-repeat;
       height: 50px;
@@ -202,7 +201,6 @@
     &__lending {
         margin-top: 30px;
         background-image: url(./img/Lending-Headline.svg);
-        z-index:0;
         background-size: auto 50px;
         background-repeat: no-repeat;
         height: 50px;
@@ -213,7 +211,6 @@
     &__renting {
       margin-top: 30px;
       background-image: url(./img/Renting-Headline.svg);
-      z-index:0;
       background-size: auto 50px;
       background-repeat: no-repeat;
       height: 50px;
