@@ -20,7 +20,12 @@ export const useReturnIt = (): ((nfts: Renting[]) => Observable<TransactionStatu
           sortedNfts.map((nft) => nft.address),
           sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
           sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
-        )
+        ),
+        {action: 'Return nft', label: `
+          addresses: ${sortedNfts.map((nft) => nft.address)}
+          tokenIds: ${sortedNfts.map((nft) => BigNumber.from(nft.tokenId))}
+          lendingIds: ${sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))}
+        `}
       );
     },
     [sdk]

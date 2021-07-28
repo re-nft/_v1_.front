@@ -10,7 +10,6 @@ import { EMPTY, Observable } from "rxjs";
 import { LendInputDefined } from "../forms/lend-form";
 import { sortNfts } from "../utils";
 
-// ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:contract");
 //const debug = console.log;
 
@@ -63,7 +62,19 @@ export const useStartLend = (): ((
           dailyRentPrices,
           nftPrice,
           pmtTokens
-        )
+        ),
+        {
+          action: "lend",
+          label: `
+        addresses: ${addresses}
+        tokenIds: ${tokenIds}
+        amounts: ${amounts}
+        maxRentDurations: ${maxRentDurations}
+        dailyRentPrices: ${dailyRentPrices}
+        nftPrice: ${nftPrice}
+        tokens: ${pmtTokens}
+        `
+        }
       );
     },
     [sdk]
