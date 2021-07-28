@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { fetchUserProd1155 } from "../services/graph";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
@@ -6,24 +6,80 @@ import UserContext from "../contexts/UserProvider";
 import { Nft } from "../contexts/graph/classes";
 import { NftToken } from "../contexts/graph/types";
 import { EMPTY, from, map } from "rxjs";
+import create from "zustand";
+import shallow from "zustand/shallow";
+import produce from "immer";
+import { devtools } from 'zustand/middleware'
+
+interface UserERC1155State {
+  users: Record<
+    string,
+    {
+      nfts: Nft[];
+      isLoading: boolean;
+    }
+  >;
+  setUserNft: (user: string, items: Nft[]) => void;
+  setLoading: (user: string, isLoading: boolean) => void;
+  setAmount: (user: string, id: string, amount: string) => void;
+}
+
+export const useERC1155 = create<UserERC1155State>(devtools((set, get) => ({
+  users: {},
+  setUserNft: (user: string, items: Nft[]) =>
+    set(
+      produce((state) => {
+        if (!get().users[user]) state.users[user] = {};
+        state.users[user].nfts = items;
+      })
+    ),
+  setLoading: (user: string, isLoading: boolean) =>
+    set(
+      produce((state) => {
+        if (!get().users[user]) state.users[user] = {};
+        state.users[user].isLoading = isLoading;
+      })
+    ),
+  setAmount: (user: string, id: string, amount: string) =>
+    set(
+      produce((state) => {
+        if (!get().users[user]) state.users[user] = {};
+        const nft = get().users[user]?.nfts?.find(
+          (nft: Nft) => getUniqueCheckboxId(nft) === id
+        );
+        if (nft) nft.amount = amount;
+      })
+    )
+})));
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { signer } = useContext(UserContext);
 
   // TODO:eniko use cacheProvider or similar
-  const [nfts, setNfts] = useState<Nft[]>([]);
-  const [isLoading, setLoading] = useState(true);
+  const { nfts, isLoading } = useERC1155(
+    useCallback(
+      (state) => {
+        const selector = state.users[currentAddress];
+        if (!selector || !selector.nfts) return { nfts: [], isLoading: false };
+        return selector;
+      },
+      [currentAddress]
+    ),
+    shallow
+  );
+  const setUserNft = useERC1155((state) => state.setUserNft);
+  const setLoading = useERC1155((state) => state.setLoading);
 
   const ids = useMemo(() => {
-    return new Set(nfts.map((nft) => getUniqueCheckboxId(nft as Nft)));
+    return new Set(nfts?.map((nft) => getUniqueCheckboxId(nft as Nft)));
   }, [nfts]);
 
   useEffect(() => {
     function fetchAndCreate() {
       if (!signer) return EMPTY;
       if (!currentAddress) return EMPTY;
-      setLoading(true);
+      setLoading(currentAddress, true);
       //TODO:eniko current limitation is 5000 items for ERC1155
       return from<Promise<NftToken[]>>(
         Promise.allSettled([
@@ -46,16 +102,10 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           return result
             .filter((nft) => !ids.has(getUniqueCheckboxId(nft as Nft)))
             .map((nft) => {
-              return new Nft(
-                nft.address,
-                nft.tokenId,
-                "0",
-                nft.isERC721,
-                {
-                  meta: nft.meta,
-                  tokenURI: nft.tokenURI
-                }
-              );
+              return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
+                meta: nft.meta,
+                tokenURI: nft.tokenURI
+              });
             });
         }),
         map((usersNfts1155) => {
@@ -69,9 +119,9 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             }
           });
           if (items.length > 0) {
-            setNfts([...items, ...nfts]);
+            setUserNft(currentAddress, [...items, ...nfts]);
           }
-          setLoading(false);
+          setLoading(currentAddress, false);
         })
       );
     }

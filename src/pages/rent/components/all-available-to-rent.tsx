@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
-import CatalogueItem from "../../../components/catalogue-item";
+import { CatalogueItem } from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/common/items-wrapper";
 import BatchRentModal from "../../../modals/batch-rent";
 import ActionButton from "../../../components/common/action-button";
@@ -9,7 +9,7 @@ import { isLending, Lending } from "../../../contexts/graph/classes";
 import BatchBar from "../../../components/batch-bar";
 import {
   getUniqueCheckboxId,
-  useBatchItems,
+  useBatchItems
 } from "../../../controller/batch-controller";
 import Pagination from "../../../components/common/pagination";
 import LendingFields from "../../../components/lending-fields";
@@ -26,14 +26,14 @@ const AvailableToRent: React.FC = () => {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedLendingItems,
+    checkedLendingItems
   } = useBatchItems();
   const {
     totalPages,
     currentPageNumber,
     currentPage,
     onSetPage,
-    onPageControllerInit,
+    onPageControllerInit
   } = usePageController<Lending>();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const [_, fetchNfts] = useContext(NFTMetaContext);
@@ -63,7 +63,7 @@ const AvailableToRent: React.FC = () => {
   //Prefetch metadata
   useEffect(() => {
     let isSubscribed = true;
-    if(isSubscribed) fetchNfts(currentPage);
+    if (isSubscribed) fetchNfts(currentPage);
     return () => {
       isSubscribed = false;
     };
@@ -80,7 +80,11 @@ const AvailableToRent: React.FC = () => {
 
   if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
   if (!isLoading && currentPage.length === 0)
-    return <div className="center content__message">You can&apos;t rent anything yet</div>;
+    return (
+      <div className="center content__message">
+        You can&apos;t rent anything yet
+      </div>
+    );
 
   return (
     <>

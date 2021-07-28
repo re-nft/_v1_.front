@@ -4,7 +4,7 @@ import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
-import CatalogueItem from "../components/catalogue-item";
+import {CatalogueItem} from "../components/catalogue-item";
 import {
   getUniqueCheckboxId,
   useBatchItems,

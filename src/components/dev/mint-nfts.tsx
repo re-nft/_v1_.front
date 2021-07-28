@@ -1,5 +1,5 @@
 import React from "react";
-import { useMint } from "../hooks/useMint";
+import { useMint } from "../../hooks/useMint";
 
 export const MintNfts = () => {
   const { mintNFT } = useMint();

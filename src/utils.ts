@@ -12,8 +12,6 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
 
-const PRICE_BITSIZE = 32;
-
 export const short = (s: string): string =>
   `${s.substr(0, 7)}...${s.substr(s.length - 3, 3)}`;
 
@@ -338,3 +336,10 @@ export const isDegenerateNft = async (
   return isDegenerate;
 };
 
+export const isVideo = (image: string | undefined) =>
+image?.endsWith("mp4") ||
+image?.endsWith("mkv") ||
+image?.endsWith("webm") ||
+image?.endsWith("mov") ||
+image?.endsWith("avi") ||
+image?.endsWith("flv");

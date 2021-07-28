@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useContext, useState } from "react";
 
 import { Renting } from "../../../contexts/graph/classes";
 import NumericField from "../../../components/common/numeric-field";
-import CatalogueItem from "../../../components/catalogue-item";
+import {CatalogueItem} from "../../../components/catalogue-item";
 import ItemWrapper from "../../../components/common/items-wrapper";
 import ReturnModal from "../../../modals/return-modal";
 import ActionButton from "../../../components/common/action-button";

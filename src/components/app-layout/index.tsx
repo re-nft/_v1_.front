@@ -3,9 +3,8 @@ import {
   BrowserRouter as Router
 } from "react-router-dom";
 import Layout from "../layout";
-
-import { MintNfts } from "../mint-nfts";
-import { MintTokens } from "../mint-token";
+import { MintNfts } from "../dev/mint-nfts";
+import { MintTokens } from "../dev/mint-token";
 import { Header } from "./header";
 import { Footer } from "./footer";
 import { Menu } from "./menu";

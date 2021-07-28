@@ -27,6 +27,7 @@
     "formik": "2.2.8",
     "graphql": "15.5.0",
     "graphql-request": "3.4.0",
+    "immer": "9.0.5",
     "moment": "2.29.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -39,7 +40,7 @@
     "video-react": "0.14.1",
     "web3modal": "1.9.3",
     "yup": "^0.32.9",
-    "zustand": "3.5.7"
+    "zustand": "^3.5.7"
   },
   "devDependencies": {
     "@metamask/detect-provider": "^1.2.0",

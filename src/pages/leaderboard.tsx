@@ -1,5 +1,5 @@
 import React from "react";
-import CatalogueItemRow from "../components/catalogue-item-row";
+import CatalogueItemRow from "../components/catalogue-item/catalogue-item-row";
 
 const leaderboardData = [
   {

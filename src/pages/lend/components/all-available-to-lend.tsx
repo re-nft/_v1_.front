@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 import { Nft } from "../../../contexts/graph/classes";
 import ItemWrapper from "../../../components/common/items-wrapper";
 import BatchLendModal from "../../../modals/batch-lend";
-import CatalogueItem from "../../../components/catalogue-item";
+import { CatalogueItem } from "../../../components/catalogue-item";
 import ActionButton from "../../../components/common/action-button";
 import CatalogueLoader from "../../../components/catalogue-loader";
 import BatchBar from "../../../components/batch-bar";
