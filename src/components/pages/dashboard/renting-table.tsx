@@ -1,12 +1,12 @@
 import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
-import { Lending, Nft, Renting } from "../../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
 import {
   getUniqueCheckboxId,
   UniqueID
-} from "../../controller/batch-controller";
-import { nftReturnIsExpired } from "../../utils";
+} from "../../../controller/batch-controller";
+import { nftReturnIsExpired } from "../../../utils";
 
 export interface ExtendedRenting extends Renting {
   relended: boolean;

@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { Lending, Nft } from "../../contexts/graph/classes";
-import { TimestampContext } from "../../contexts/TimestampProvider";
-import { isClaimable } from "../../controller/batch-controller";
+import { Lending, Nft } from "../../../contexts/graph/classes";
+import { TimestampContext } from "../../../contexts/TimestampProvider";
+import { isClaimable } from "../../../controller/batch-controller";
 import { Tr, Td } from "react-super-responsive-table";
-import Checkbox from "../../components/common/checkbox";
-import { ShortenPopover } from "../../components/common/shorten-popover";
+import Checkbox from "../../common/checkbox";
+import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
 import { Tooltip } from "@material-ui/core";
-import { Button } from "../../components/common/button";
+import { Button } from "../../common/button";
 
 export const LendingRow: React.FC<{
   lend: Lending & { relended: boolean };

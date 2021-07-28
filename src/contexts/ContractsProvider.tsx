@@ -102,7 +102,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
   const [contracts, setContracts] = useState<ContractsObject>({});
   useEffect(() => {
     if(signer) {
-      if(network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+      if(network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
         setContracts({})
       }else {
         loadContracts(signer, setContracts)

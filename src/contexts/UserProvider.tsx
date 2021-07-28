@@ -42,15 +42,18 @@ export const UserProvider: React.FC = ({ children }) => {
   const [permissions, setPermissions] = useState<unknown[]>([]);
 
   const providerOptions = useMemo(() => ({}), []);
+  const hasWindow = useMemo(()=>{
+    return typeof window !== 'undefined'
+  }, [typeof window])
   // web3modal is only working in browser\]
   const web3Modal = useMemo(() => {
-    return typeof window !== "undefined"
+    return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
           providerOptions // required
         })
       : null;
-  }, [providerOptions]);
+  }, [providerOptions, hasWindow]);
 
   const initState = useCallback(async (provider) => {
     const web3p = new ethers.providers.Web3Provider(provider);
@@ -62,8 +65,9 @@ export const UserProvider: React.FC = ({ children }) => {
     const address = await _signer
       .getAddress()
       .then((t) => t.toLowerCase())
-      .catch(() => {
+      .catch((e) => {
         // do nothing
+        console.log(e)
       });
     setAddress(address || "");
     setProvider(provider);
@@ -99,7 +103,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    if (!window || !window.ethereum) return EMPTY;
+    if (!hasWindow || !window.ethereum) return EMPTY;
     return from<Promise<string[]>>(
       new Promise((resolve) => {
         window.ethereum
@@ -123,7 +127,7 @@ export const UserProvider: React.FC = ({ children }) => {
         }
       })
     );
-  }, [address, network, signer]);
+  }, [address, network, signer, hasWindow]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)

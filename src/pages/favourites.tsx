@@ -46,8 +46,6 @@ export const MyFavorites: React.FC = () => {
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const [_, fetchNfts] = useContext(NFTMetaContext);
   const {
-    // TODO deal with checkedItems state on favorites
-    checkedItems,
     onCheckboxChange,
   } = useBatchItems();
   const onRemoveFromFavorites = useCallback(
@@ -119,4 +117,4 @@ export const MyFavorites: React.FC = () => {
   );
 };
 
-export default React.memo(MyFavorites);
+export default MyFavorites;

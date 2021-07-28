@@ -1,6 +1,4 @@
-import { IconButton } from "@material-ui/core";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import GraphContext from "../../contexts/graph";
 import UserContext from "../../contexts/UserProvider";
@@ -8,24 +6,30 @@ import { useLookupAddress } from "../../hooks/useLookupAddress";
 import { Button } from "../common/button";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
-import MenuIcon from '@material-ui/icons/Menu';
+import Link from "next/link";
 
-export const Header = () => {
+export const Header: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network, connect } = useContext(UserContext);
   const [username, setUsername] = useState<string>();
   const { userData } = useContext(GraphContext);
-
-  const installMetaMask = !(window.web3 || window.ethereum);
   const lookupAddress = useLookupAddress();
+  const installMetaMask = useMemo(() => {
+    return typeof window === "undefined"
+      ? false
+      : !(window?.web3 || window?.ethereum);
+  }, [typeof window]);
+
   useEffect(() => {
     if (userData?.name !== "") {
       setUsername(userData?.name);
     }
   }, [userData]);
+
   const networkNotSupported = useMemo(() => {
-    return network !== process.env.REACT_APP_NETWORK_SUPPORTED;
+    return network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED;
   }, [network]);
+  
   return (
     <div className="header">
       <div className="header__logo"></div>
@@ -48,7 +52,7 @@ export const Header = () => {
               <p className="copy-text">
                 Please switch to{" "}
                 <span className="headline pink-text">
-                  {process.env.REACT_APP_NETWORK_SUPPORTED}
+                  {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}
                 </span>
               </p>
             )}
@@ -60,11 +64,13 @@ export const Header = () => {
 
               {!installMetaMask && !!currentAddress && (
                 <>
-                  <Link className="" to="/profile">
-                    <ShortenPopover
-                      longString={username || lookupAddress || currentAddress}
-                      data-cy="metamask-connect-button"
-                    />
+                  <Link href="/profile">
+                    <a>
+                      <ShortenPopover
+                        longString={username || lookupAddress || currentAddress}
+                        data-cy="metamask-connect-button"
+                      />
+                    </a>
                   </Link>
                 </>
               )}

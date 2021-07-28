@@ -20,7 +20,7 @@ export const useAllAvailableToLend = (): {
   // TODO: below with hardcoding
 
   const allAvailableToLend: Nft[] = useMemo(() => {
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return [];
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return [];
     return [
       ...devNfts,
       ...ERC1155.filter(
@@ -41,7 +41,7 @@ export const useAllAvailableToLend = (): {
   }, [ERC1155, ERC721, devNfts, network]);
 
   const isLoading = useMemo(() => {
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return false;
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return false;
     return erc1155Loading || erc721Loading || devIsLoading;
   }, [erc1155Loading, erc721Loading, devIsLoading, network]);
 

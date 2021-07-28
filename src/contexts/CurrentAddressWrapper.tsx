@@ -11,8 +11,8 @@ export const CurrentAddressProvider: React.FC = ({ children }) => {
   const [newAddress, setNewAddress] = useState(address);
   const previousAddress = usePrevious(newAddress);
   useEffect(() => {
-    if (process.env.REACT_APP_ADDRESS) {
-      setNewAddress(process.env.REACT_APP_ADDRESS);
+    if (process.env.NEXT_PUBLIC_ADDRESS) {
+      setNewAddress(process.env.NEXT_PUBLIC_ADDRESS);
     } else {
       if (previousAddress !== address) setNewAddress(address);
     }

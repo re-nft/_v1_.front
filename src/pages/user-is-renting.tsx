@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useContext, useState } from "react";
 
-import { Renting } from "../../../contexts/graph/classes";
-import NumericField from "../../../components/common/numeric-field";
-import {CatalogueItem} from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/common/items-wrapper";
-import ReturnModal from "../../../modals/return-modal";
-import ActionButton from "../../../components/common/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import BatchBar from "../../../components/batch-bar";
+import { Renting } from "../contexts/graph/classes";
+import NumericField from "../components/common/numeric-field";
+import { CatalogueItem } from "../components/catalogue-item";
+import ItemWrapper from "../components/common/items-wrapper";
+import ReturnModal from "../modals/return-modal";
+import ActionButton from "../components/common/action-button";
+import CatalogueLoader from "../components/catalogue-loader";
+import BatchBar from "../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../../../controller/batch-controller";
-import { Nft } from "../../../contexts/graph/classes";
-import Pagination from "../../../components/common/pagination";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { UserRentingContext } from "../../../contexts/UserRenting";
-import { usePageController } from "../../../controller/page-controller";
-import { nftReturnIsExpired } from "../../../utils";
-import UserContext from "../../../contexts/UserProvider";
+} from "../controller/batch-controller";
+import { Nft } from "../contexts/graph/classes";
+import Pagination from "../components/common/pagination";
+import { NFTMetaContext } from "../contexts/NftMetaState";
+import { UserRentingContext } from "../contexts/UserRenting";
+import { usePageController } from "../controller/page-controller";
+import { nftReturnIsExpired } from "../utils";
+import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
-
+import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 
 const UserRentings: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -87,23 +87,33 @@ const UserRentings: React.FC = () => {
 
   if (!signer) {
     return (
-      <div className="center content__message">Please connect your wallet!</div>
+      <RentSwitchWrapper>
+        <div className="center content__message">
+          Please connect your wallet!
+        </div>
+      </RentSwitchWrapper>
     );
   }
   if (isLoading && currentPage.length === 0) {
-    return <CatalogueLoader />;
+    return (
+      <RentSwitchWrapper>
+        <CatalogueLoader />
+      </RentSwitchWrapper>
+    );
   }
 
   if (!isLoading && currentPage.length === 0) {
     return (
-      <div className="center content__message">
-        You are not renting anything yet
-      </div>
+      <RentSwitchWrapper>
+        <div className="center content__message">
+          You are not renting anything yet
+        </div>
+      </RentSwitchWrapper>
     );
   }
 
   return (
-    <>
+    <RentSwitchWrapper>
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
@@ -161,7 +171,7 @@ const UserRentings: React.FC = () => {
           onClick={handleBatchStopRent}
         />
       )}
-    </>
+    </RentSwitchWrapper>
   );
 };
 

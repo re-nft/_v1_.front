@@ -38,3 +38,12 @@ src/hardhat/typechain/factories/**/*.ts
 #ignore
 cypress/other/**/**.js
 cypress/videos
+
+# next.js
+/.next/
+/out/
+*.pem
+# debug
+# local env files
+# vercel
+.vercel

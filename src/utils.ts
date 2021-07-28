@@ -178,7 +178,7 @@ export const getContractWithProvider = async (
 ): Promise<ERC721 | ERC1155> => {
   let contract: ERC721 | ERC1155;
   let isERC721 = false;
-  const provider = new JsonRpcProvider(process.env.REACT_APP_PROVIDER_URL)
+  const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL)
   // todo: don't think this will actually work
   // todo: need that schema from github
   try {

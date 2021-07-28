@@ -1,22 +1,23 @@
 import React, { useCallback, useState, useContext, useEffect } from "react";
 
-import { CatalogueItem } from "../../../components/catalogue-item";
-import ItemWrapper from "../../../components/common/items-wrapper";
-import BatchRentModal from "../../../modals/batch-rent";
-import ActionButton from "../../../components/common/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import { isLending, Lending } from "../../../contexts/graph/classes";
-import BatchBar from "../../../components/batch-bar";
+import { CatalogueItem } from "../components/catalogue-item";
+import ItemWrapper from "../components/common/items-wrapper";
+import BatchRentModal from "../modals/batch-rent";
+import ActionButton from "../components/common/action-button";
+import CatalogueLoader from "../components/catalogue-loader";
+import { isLending, Lending } from "../contexts/graph/classes";
+import BatchBar from "../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../../../controller/batch-controller";
-import Pagination from "../../../components/common/pagination";
-import LendingFields from "../../../components/lending-fields";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { usePageController } from "../../../controller/page-controller";
-import { AvailableForRentContext } from "../../../contexts/AvailableForRent";
-import UserContext from "../../../contexts/UserProvider";
+} from "../controller/batch-controller";
+import Pagination from "../components/common/pagination";
+import LendingFields from "../components/lending-fields";
+import { NFTMetaContext } from "../contexts/NftMetaState";
+import { usePageController } from "../controller/page-controller";
+import { AvailableForRentContext } from "../contexts/AvailableForRent";
+import UserContext from "../contexts/UserProvider";
+import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 
 // TODO: this f code is also the repeat of user-lendings and lendings
 const AvailableToRent: React.FC = () => {
@@ -78,16 +79,23 @@ const AvailableToRent: React.FC = () => {
     [onCheckboxChange]
   );
 
-  if (isLoading && currentPage.length === 0) return <CatalogueLoader />;
+  if (isLoading && currentPage.length === 0)
+    return (
+      <RentSwitchWrapper>
+        <CatalogueLoader />
+      </RentSwitchWrapper>
+    );
   if (!isLoading && currentPage.length === 0)
     return (
-      <div className="center content__message">
-        You can&apos;t rent anything yet
-      </div>
+      <RentSwitchWrapper>
+        <div className="center content__message">
+          You can&apos;t rent anything yet
+        </div>
+      </RentSwitchWrapper>
     );
 
   return (
-    <>
+    <RentSwitchWrapper>
       <BatchRentModal
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
@@ -127,7 +135,7 @@ const AvailableToRent: React.FC = () => {
           onClick={handleBatchRent}
         />
       )}
-    </>
+    </RentSwitchWrapper>
   );
 };
 

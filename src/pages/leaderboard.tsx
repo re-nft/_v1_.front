@@ -110,4 +110,4 @@ const Leaderboard: React.FC = () => {
   );
 };
 
-export default React.memo(Leaderboard);
+export default Leaderboard;

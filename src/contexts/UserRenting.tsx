@@ -37,7 +37,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
 
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return EMPTY;
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (renting && renting.length > 0) setRentings([]);
       return EMPTY;
     }

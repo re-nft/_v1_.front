@@ -7,7 +7,6 @@ import { NFTMetaContext } from "../../contexts/NftMetaState";
 import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
-import { CatalogueActions } from "./catalogue-actions";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
 export type CatalogueItemProps = {
@@ -20,7 +19,6 @@ export type CatalogueItemProps = {
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
-  isAlreadyFavourited,
   checked,
   onCheckboxChange,
   children,

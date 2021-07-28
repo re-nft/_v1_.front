@@ -1,13 +1,13 @@
 import moment from "moment";
 import React, { useCallback } from "react";
-import { Renting } from "../../contexts/graph/classes";
+import { Renting } from "../../../contexts/graph/classes";
 import { Tr, Td } from "react-super-responsive-table";
-import Checkbox from "../../components/common/checkbox";
+import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
-import { CountDown } from "../../components/common/countdown";
+import { CountDown } from "../../common/countdown";
 import { Tooltip } from "@material-ui/core";
-import { Button } from "../../components/common/button";
-import { ShortenPopover } from "../../components/common/shorten-popover";
+import { Button } from "../../common/button";
+import { ShortenPopover } from "../../common/shorten-popover";
 
 export const RentingRow: React.FC<{
   checked: boolean;
@@ -28,7 +28,8 @@ export const RentingRow: React.FC<{
   const handleClick = useCallback(() => {
     checkBoxChangeWrapped(rent)();
     openModal(true);
-  }, [checkBoxChangeWrapped, openModal]);
+  }, [checkBoxChangeWrapped, openModal, rent]);
+  
   const handleRowClicked = useCallback(() => {
     if (isExpired || rent.relended) return;
     checkBoxChangeWrapped(rent)();

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Skeleton = () => {
+export const Skeleton: React.FC = () => {
     return (
       <div className="skeleton">
         <div className="skeleton-item control"></div>
