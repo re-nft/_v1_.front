@@ -30,7 +30,14 @@ export const useStopLend = (): ((
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
         nfts.map((nft) => BigNumber.from(nft.lendingId))
       ];
-      return transactionWrapper(sdk.stopLending(...arr));
+      return transactionWrapper(sdk.stopLending(...arr), {
+        action: 'return nft', 
+        label: `
+          addresses: ${nfts.map((nft) => nft.address)}
+          tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
+          lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
+        `
+      });
     },
     [sdk]
   );

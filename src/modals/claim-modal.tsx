@@ -39,7 +39,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
               <Button
                 description={nfts.length > 1 ? "Claim All" : "Claim"}
                 disabled={t.isLoading}
-                handleClick={handleClaim}
+                onClick={handleClaim}
               />
             </TransactionWrapper>
         </div>

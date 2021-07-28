@@ -5,6 +5,7 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useLookupAddress } from "../hooks/useLookupAddress";
 import UserContext from "../contexts/UserProvider";
+import { Button } from "../components/common/button";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
@@ -87,9 +88,7 @@ const Profile: React.FC = () => {
                 ></textarea>
               </div>
               <div className="form__button">
-                <button className="nft__button" onClick={onSubmit}>
-                  Save
-                </button>
+                <Button onClick={onSubmit} description="Save"/>
               </div>
             </form>
           </div>

@@ -21,7 +21,7 @@ export enum TransactionStateEnum {
 }
 
 export enum NetworkName {
-  mainnet = "homestead", // this is called homestead
+  mainnet = "mainnet", // this is called homestead
   ropsten = "ropsten",
   localhost = "localhost",
 }

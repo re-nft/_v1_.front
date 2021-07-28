@@ -10,6 +10,7 @@ import Web3Modal from "web3modal";
 import { THROWS } from "../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import ReactGA from 'react-ga';
 
 const DefaultUser = {
   address: "",
@@ -59,7 +60,8 @@ export const UserProvider: React.FC = ({ children }) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
-    setNetworkName(name);
+    const nname = name === "homestead" ? "mainnet" : name;
+    setNetworkName(nname);
     const _signer = web3p.getSigner();
     setSigner(_signer);
     const address = await _signer
@@ -150,6 +152,10 @@ export const UserProvider: React.FC = ({ children }) => {
   const manuallyConnect = useCallback(() => {
     connect(true);
   }, [connect]);
+
+  useEffect(()=>{
+    ReactGA.set({ userId: address });
+  }, [address])
 
   const accountsChanged = useCallback(
     (arg) => {

@@ -55,7 +55,8 @@ export function useNFTApproval(nfts: Nft[]): {
               }
             );
           })
-        )
+        ),
+        {action: 'nft approval', label: `${distinctItems.map((t => `address: ${t.address} tokenId: ${t.tokenId}`)).join(',')}`}
       );
     },
     [transactionWrapper, signer]

@@ -113,7 +113,8 @@ export const useStartRent = (): {
           approvals.map((approval) =>
             approval.approve(contractAddress, MAX_UINT256)
           )
-        )
+        ),
+        {action: "Rent approve tokens", label: ''}
       ))
     }
   }, [approvals, contractAddress]);
@@ -139,7 +140,16 @@ export const useStartRent = (): {
       );
       debug("rentDurations", rentDurations);
       return transactionWrapper(
-        sdk.rent(addresses, tokenIds, lendingIds, rentDurations)
+        sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
+        {
+          action: 'rent',
+          label: `
+          addresses: ${addresses}
+          tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
+          lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
+          rentDurations: ${rentDurations}
+          `
+        }
       );
     },
     [sdk]

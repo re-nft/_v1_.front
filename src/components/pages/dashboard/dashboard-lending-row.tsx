@@ -75,7 +75,7 @@ export const LendingRow: React.FC<{
     <Tr onClick={onRowClick}>
       <Td className="action-column">
         <Checkbox
-          handleClick={checkBoxChangeWrapped(lend)}
+          onChange={checkBoxChangeWrapped(lend)}
           checked={checked}
           disabled={hasRenting && !claimable}
         />
@@ -98,7 +98,7 @@ export const LendingRow: React.FC<{
         <Tooltip title={claimTooltip} aria-label={claimTooltip}>
           <span>
             <Button
-              handleClick={handleClaim}
+              onClick={handleClaim}
               disabled={checked || !claimable}
               description="Claim"
             />
@@ -109,7 +109,7 @@ export const LendingRow: React.FC<{
         <Tooltip title={lendTooltip} aria-label={lendTooltip}>
           <span>
             <Button
-              handleClick={handleClickLend}
+              onClick={handleClickLend}
               disabled={checked || hasRenting}
               description="Stop lend"
             />
