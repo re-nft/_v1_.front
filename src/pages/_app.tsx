@@ -10,8 +10,6 @@ import type { AppProps } from "next/app";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
 
-
-
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
 
   useEffect(() => {
