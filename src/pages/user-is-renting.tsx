@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useContext, useState } from "react";
 
 import { Renting } from "../contexts/graph/classes";
-import NumericField from "../components/common/numeric-field";
 import { CatalogueItem } from "../components/catalogue-item";
 import ItemWrapper from "../components/common/items-wrapper";
 import ReturnModal from "../modals/return-modal";
@@ -21,6 +20,7 @@ import { nftReturnIsExpired } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
+import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
 
 const UserRentings: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -136,15 +136,13 @@ const UserRentings: React.FC = () => {
                 disabled={isExpired}
                 onCheckboxChange={checkBoxChangeWrapped(nft)}
               >
-                <NumericField
-                  text="Daily price"
+                <CatalogueItemRow
+                  text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
                   value={nft.lending.dailyRentPrice.toString()}
-                  unit={PaymentToken[PaymentToken.DAI]}
                 />
-                <NumericField
-                  text="Rent Duration"
+                <CatalogueItemRow
+                  text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
                   value={days.toString()}
-                  unit={days > 1 ? "days" : "day"}
                 />
                 <ActionButton<Nft>
                   title="Return It"

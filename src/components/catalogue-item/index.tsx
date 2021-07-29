@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from "react";
 
 import { Nft } from "../../contexts/graph/classes";
 import { nftId } from "../../services/firebase";
-import CatalogueItemRow from "./catalogue-item-row";
+import { CatalogueItemRow } from "./catalogue-item-row";
 import { NFTMetaContext } from "../../contexts/NftMetaState";
 import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
@@ -67,31 +67,28 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           <div className="nft__image">
             <CatalogueItemDisplay image={image} description={description} />
           </div>
-          <div className="nft__meta">
-            {name && <div className="nft__name">{name}</div>}
-            <CatalogueItemRow
-              text="Address"
-              value={
-                <a
-                  href={`https://etherscan.io/address/${nft.address}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {nft.address}
-                </a>
-              }
-            />
-            <CatalogueItemRow text="Token id" value={nft.tokenId} />
-            <CatalogueItemRow
-              text="Standard"
-              value={nft.isERC721 ? "721" : "1155"}
-            />
-            <CatalogueItemRow text="Amount" value={nft.amount} />
-          </div>
+          {name && <div className="nft__name">{name}</div>}
+          <CatalogueItemRow
+            text="Address"
+            value={
+              <a
+                href={`https://etherscan.io/address/${nft.address}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {nft.address}
+              </a>
+            }
+          />
+          <CatalogueItemRow text="Token id" value={nft.tokenId} />
+          <CatalogueItemRow
+            text="Standard"
+            value={nft.isERC721 ? "721" : "1155"}
+          />
+          <CatalogueItemRow text="Amount" value={nft.amount} />
           {children}
         </>
       )}
     </div>
   );
 };
-
