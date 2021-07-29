@@ -6,11 +6,11 @@ import { EMPTY, from, map, Observable } from "rxjs";
 import { Nft } from "../contexts/graph/classes";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getContractWithSigner, getDistinctItems } from "../utils";
-import { useContractAddress } from "../contexts/StateProvider";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";
 import { useObservable } from "./useObservable";
 import { TransactionStateEnum } from "../types";
+import { useContractAddress } from "./useContractAddress";
 
 export function useNFTApproval(nfts: Nft[]): {
   setApprovalForAll: (
