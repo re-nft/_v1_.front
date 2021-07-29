@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Footer = () => {
+export const Footer: React.FC = () => {
   return (
     <div className="content-wrapper footer">
       <div className="footer__message font-VT323">
@@ -10,7 +10,7 @@ export const Footer = () => {
       <div className="footer__content">
         <div className="copy">2021 ReNFT</div>
         <div className="copy">
-          App version: {process.env.REACT_APP_VERCEL_GIT_COMMIT_SHA}
+          App version: {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
         </div>
         <div className="soc">
           <a

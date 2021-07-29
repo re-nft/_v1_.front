@@ -1,18 +1,18 @@
 import { Contract } from "@ethersproject/contracts";
 import React, { createContext, useEffect, useState, useContext } from "react";
 import { Signer } from "@ethersproject/abstract-signer";
-import { ReNFT } from "../hardhat/typechain/ReNFT";
-import { Resolver } from "../hardhat/typechain/Resolver";
-import { E721 } from "../hardhat/typechain/E721";
-import { E721B } from "../hardhat/typechain/E721B";
-import { E1155 } from "../hardhat/typechain/E1155";
-import { E1155B } from "../hardhat/typechain/E1155B";
-import { WETH } from "../hardhat/typechain/WETH";
-import { DAI } from "../hardhat/typechain/DAI";
-import { USDC } from "../hardhat/typechain/USDC";
-import { USDT } from "../hardhat/typechain/USDT";
-import { TUSD } from "../hardhat/typechain/TUSD";
-import { Utils } from "../hardhat/typechain/Utils";
+import { ReNFT } from "../types/typechain/ReNFT";
+import { Resolver } from "../types/typechain/Resolver";
+import { E721 } from "../types/typechain/E721";
+import { E721B } from "../types/typechain/E721B";
+import { E1155 } from "../types/typechain/E1155";
+import { E1155B } from "../types/typechain/E1155B";
+import { WETH } from "../types/typechain/WETH";
+import { DAI } from "../types/typechain/DAI";
+import { USDC } from "../types/typechain/USDC";
+import { USDT } from "../types/typechain/USDT";
+import { TUSD } from "../types/typechain/TUSD";
+import { Utils } from "../types/typechain/Utils";
 import UserContext from "./UserProvider";
 import * as contractList from "../contracts/contracts.js";
 
@@ -102,7 +102,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
   const [contracts, setContracts] = useState<ContractsObject>({});
   useEffect(() => {
     if(signer) {
-      if(network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+      if(network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
         setContracts({})
       }else {
         loadContracts(signer, setContracts)

@@ -1,20 +1,21 @@
 import React, { useState, useCallback, useContext, useEffect } from "react";
-import { Nft } from "../../../contexts/graph/classes";
-import ItemWrapper from "../../../components/common/items-wrapper";
-import BatchLendModal from "../../../modals/batch-lend";
-import CatalogueItem from "../../../components/catalogue-item";
-import ActionButton from "../../../components/common/action-button";
-import CatalogueLoader from "../../../components/catalogue-loader";
-import BatchBar from "../../../components/batch-bar";
+import { Nft } from "../contexts/graph/classes";
+import ItemWrapper from "../components/common/items-wrapper";
+import BatchLendModal from "../modals/batch-lend";
+import { CatalogueItem } from "../components/catalogue-item";
+import ActionButton from "../components/common/action-button";
+import CatalogueLoader from "../components/catalogue-loader";
+import BatchBar from "../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../../../controller/batch-controller";
-import Pagination from "../../../components/common/pagination";
-import { usePageController } from "../../../controller/page-controller";
-import { NFTMetaContext } from "../../../contexts/NftMetaState";
-import { useAllAvailableToLend } from "../../../hooks/useAllAvailableToLend";
-import UserContext from "../../../contexts/UserProvider";
+} from "../controller/batch-controller";
+import Pagination from "../components/common/pagination";
+import { usePageController } from "../controller/page-controller";
+import { NFTMetaContext } from "../contexts/NftMetaState";
+import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
+import UserContext from "../contexts/UserProvider";
+import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 
 const Lendings: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -76,24 +77,34 @@ const Lendings: React.FC = () => {
 
   if (!signer) {
     return (
-      <div className="center content__message">Please connect your wallet!</div>
+      <LendSwitchWrapper>
+        <div className="center content__message">
+          Please connect your wallet!
+        </div>
+      </LendSwitchWrapper>
     );
   }
 
   if (isLoading && currentPage.length === 0) {
-    return <CatalogueLoader />;
+    return (
+      <LendSwitchWrapper>
+        <CatalogueLoader />
+      </LendSwitchWrapper>
+    );
   }
 
   if (!isLoading && currentPage.length === 0) {
     return (
-      <div className="center content__message">
-        You don&apos;t have any NFTs to lend
-      </div>
+      <LendSwitchWrapper>
+        <div className="center content__message">
+          You don&apos;t have any NFTs to lend
+        </div>
+      </LendSwitchWrapper>
     );
   }
 
   return (
-    <>
+    <LendSwitchWrapper>
       {modalOpen && (
         <BatchLendModal
           nfts={checkedNftItems}
@@ -135,7 +146,7 @@ const Lendings: React.FC = () => {
           onClick={handleBatchModalOpen}
         />
       )}
-    </>
+    </LendSwitchWrapper>
   );
 };
 

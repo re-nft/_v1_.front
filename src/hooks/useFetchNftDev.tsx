@@ -32,11 +32,11 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const previousAddress = usePrevious(currentAddress);
 
   const fetchAsync = useCallback(async () => {
-    if(network !== process.env.REACT_APP_NETWORK_SUPPORTED){
+    if(network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED){
       if (isLoading) setIsLoading(false);
       if(devNfts && devNfts.length > 0) setDevNfts([])
     };
-    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === "undefined") {
+    if (typeof process.env.NEXT_PUBLIC_FETCH_NFTS_DEV === "undefined") {
       if (isLoading) setIsLoading(false);
       return;
     }
@@ -74,7 +74,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721.address, tokenId.toString(), "1", true));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -88,7 +88,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721b.address, tokenId.toString(), "1", true));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -107,9 +107,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           new Nft(
             e1155.address,
             E1155IDs[i].toString(),
-            amountBalance[i],
+            amountBalance[i].toString(),
             false,
-            signer
           )
         );
       }
@@ -126,18 +125,15 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           new Nft(
             e1155b.address,
             E1155IDs[i].toString(),
-            amountBalance[i],
-            false,
-            signer
+            amountBalance[i].toString(),
+            false
           )
         );
       }
     }
 
-    const normalizedLendings = devNfts.map((nft) => nft.toJSON());
-    const normalizedLendingNew = usersNfts.map((nft) =>
-    nft.toJSON()
-    );
+    const normalizedLendings = devNfts
+    const normalizedLendingNew = usersNfts
 
     const difference = diffJson(
       normalizedLendings,

@@ -98,9 +98,9 @@ export const fetchNFTFromOtherSource = async (
   nft: Nft
 ): Promise<NftMetaWithId | NftError> => {
   const key = nftId(nft.address, nft.tokenId);
-  const tokenURI = normalizeTokenUri(nft);
+  const tokenURI = await normalizeTokenUri(nft);
 
-  if (nft._mediaURI) return { image: nft._mediaURI, id: key };
+  if (nft.mediaURI) return { image: nft.mediaURI, id: key };
   if (!tokenURI) {
     return { id: key, error: "No tokenUri" };
   }
@@ -109,10 +109,10 @@ export const fetchNFTFromOtherSource = async (
   const headers: Record<string, string> = {};
   const transformedUri = buildURI(tokenURI);
   if (
-    process.env.REACT_APP_OPENSEA_API &&
+    process.env.NEXT_PUBLIC_OPENSEA_API &&
     transformedUri.indexOf("api.opensea") > -1
   ) {
-    headers["X-API-KEY"] = process.env.REACT_APP_OPENSEA_API;
+    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API;
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
@@ -153,7 +153,7 @@ export const fetchNFTsFromOpenSea = async (
   asset_contract_addresses: Array<string>,
   token_ids: Array<string>
 ): Promise<Array<NftMetaWithId>> => {
-  if (!process.env.REACT_APP_OPENSEA_API) {
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
   return fetch(
@@ -163,7 +163,7 @@ export const fetchNFTsFromOpenSea = async (
     )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
-        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
+        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API,
       },
     }
   )

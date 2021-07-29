@@ -38,15 +38,15 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
-    if (!process.env.REACT_APP_RENFT_API) {
+    if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (lending && lending.length > 0) setLendings([]);
       return EMPTY;
     }
 
-    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
     setLoading(true);
 
     const fetchRequest = from<
@@ -73,7 +73,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
             .filter((v) => v != null)
             .filter((v) => !v.collateralClaimed)
             .map((lending) => {
-              return new Lending(lending, signer);
+              return new Lending(lending);
             });
         }
       }),
@@ -82,10 +82,8 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           setLoading(false);
           return;
         }
-        const normalizedLendings = lending.map((lending) => lending.toJSON());
-        const normalizedLendingNew = lendings.map((lending) =>
-          lending.toJSON()
-        );
+        const normalizedLendings = lending;
+        const normalizedLendingNew = lendings;
 
         const difference = diffJson(normalizedLendings, normalizedLendingNew, {
           ignoreWhitespace: true

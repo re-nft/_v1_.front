@@ -1,10 +1,10 @@
 import React from "react";
 import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
-import { Lending, Nft, Renting } from "../../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import {
   getUniqueCheckboxId,
   UniqueID
-} from "../../controller/batch-controller";
+} from "../../../controller/batch-controller";
 import { LendingRow } from "./dashboard-lending-row";
 
 export interface ExtendedLending extends Lending {

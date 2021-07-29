@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import CommonInfo from "../modals/common-info";
 import { FormikErrors, FormikTouched } from "formik";
 import MinimalSelect from "../components/common/select";
@@ -40,8 +40,10 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
     touched,
     disabled
   } = input;
-  const only1Item =
-    Number(lendingInput.nft.amount) === 1 || lendingInput.nft.isERC721;
+  const only1Item = useMemo(() => {
+    console.log(lendingInput.amount)
+    return lendingInput.amount === "1"
+  }, [lendingInput.amount])
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>
@@ -50,7 +52,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           <div className="label">Available Amount</div>
           <div className="dot"></div>
           {/* we can do this because checked items will have the right amount when we pass them here */}
-          <div className="label">{lendingInput.nft.amount}</div>
+          <div className="label">{lendingInput.amount}</div>
         </div>
         <CssTextField
           required

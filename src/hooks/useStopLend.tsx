@@ -1,11 +1,9 @@
 import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
-import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
-const debug = createDebugger("app:contracts:usestoplend");
 
 export const useStopLend = (): ((
   nfts: {

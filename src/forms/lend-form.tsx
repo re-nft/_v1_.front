@@ -18,6 +18,7 @@ type LendFormProps = {
   onClose: () => void
 };
 export type LendInputProps = {
+  amount: string
   lendAmount: number | undefined;
   maxDuration: number | undefined;
   borrowPrice: number | undefined;
@@ -54,7 +55,8 @@ export const LendForm: React.FC<LendFormProps> = ({
       tokenId: nft.tokenId,
       nft: nft,
       key: getUniqueCheckboxId(nft),
-      lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
+      lendAmount: nft.amount == "1" || nft.isERC721? 1 : undefined,
+      amount: nft.amount,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,
@@ -84,6 +86,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
+      enableReinitialize={true}
       validate={validate}
       validateOnMount
       validateOnBlur

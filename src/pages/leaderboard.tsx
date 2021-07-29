@@ -1,5 +1,5 @@
 import React from "react";
-import CatalogueItemRow from "../components/catalogue-item-row";
+import CatalogueItemRow from "../components/catalogue-item/catalogue-item-row";
 
 const leaderboardData = [
   {
@@ -110,4 +110,4 @@ const Leaderboard: React.FC = () => {
   );
 };
 
-export default React.memo(Leaderboard);
+export default Leaderboard;

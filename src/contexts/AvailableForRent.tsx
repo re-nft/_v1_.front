@@ -31,10 +31,10 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
   const previousAddress = usePrevious(currentAddress);
 
   const fetchRentings = useCallback(() => {
-    if (!process.env.REACT_APP_RENFT_API) {
+    if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (nfts && nfts.length > 0) setNfts([]);
       if (isLoading) setLoading(false);
       return EMPTY;
@@ -42,7 +42,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
 
     setLoading(true);
 
-    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
     const fetchRequest = from<Promise<{ lendings: LendingRaw[] }>>(
       timeItAsync(
         "Pulled All ReNFT Lendings",
@@ -72,13 +72,13 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
               return userNotLender && userNotRenter;
             })
             .map((lending) => {
-              return new Lending(lending, signer);
+              return new Lending(lending);
             })
         );
       }),
       map((lendingsReNFT) => {
-        const normalizedLendings = nfts.map((l) => l.toJSON());
-        const normalizedLendingNew = lendingsReNFT.map((l) => l.toJSON());
+        const normalizedLendings = nfts;
+        const normalizedLendingNew = lendingsReNFT;
 
         const difference = diffJson(normalizedLendings, normalizedLendingNew, {
           ignoreWhitespace: true

@@ -1,19 +1,17 @@
 import React, { useState, useCallback, useContext, useMemo } from "react";
 
-import {
-  useBatchItems
-} from "../../controller/batch-controller";
-import CatalogueLoader from "../../components/catalogue-loader";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import { UserLendingContext } from "../../contexts/UserLending";
-import { UserRentingContext } from "../../contexts/UserRenting";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
-import UserContext from "../../contexts/UserProvider";
-import { Toggle } from "../../components/common/toggle";
-import { ExtendedLending, LendingTable } from "./lending-table";
-import { ExtendedRenting, RentingTable } from "./renting-table";
-import { DashboardBatch } from "./dashboard-batch";
-import { mapAddRelendedField, mapToIds, filterClaimed } from "../../utils";
+import { useBatchItems } from "../controller/batch-controller";
+import CatalogueLoader from "../components/catalogue-loader";
+import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import { UserLendingContext } from "../contexts/UserLending";
+import { UserRentingContext } from "../contexts/UserRenting";
+import UserContext from "../contexts/UserProvider";
+import { Toggle } from "../components/common/toggle";
+import { ExtendedLending, LendingTable } from "../components/pages/dashboard/lending-table";
+import { ExtendedRenting, RentingTable } from "../components/pages/dashboard/renting-table";
+import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
+import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
+import PageLayout from "../components/page-layout";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -62,7 +60,6 @@ export const Dashboard: React.FC = () => {
       .filter(filterClaimed(showClaimed));
   }, [lendingItems, rentingItems, showClaimed]);
 
-
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
       return () => {
@@ -82,24 +79,34 @@ export const Dashboard: React.FC = () => {
 
   if (!signer) {
     return (
-      <div className="center content__message">Please connect your wallet!</div>
+      <PageLayout>
+        <div className="center content__message">
+          Please connect your wallet!
+        </div>
+      </PageLayout>
     );
   }
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
-    return <CatalogueLoader />;
+    return (
+      <PageLayout>
+        <CatalogueLoader />
+      </PageLayout>
+    );
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <div className="center content__message">
-        You aren&apos;t lending or renting yet. To start lending, head to the
-        lend tab.
-      </div>
+      <PageLayout>
+        <div className="center content__message">
+          You aren&apos;t lending or renting yet. To start lending, head to the
+          lend tab.
+        </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div>
+    <PageLayout>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
           <Toggle
@@ -136,7 +143,7 @@ export const Dashboard: React.FC = () => {
         checkedClaims={checkedClaims}
         toggleClaimModal={toggleClaimModal}
       />
-    </div>
+    </PageLayout>
   );
 };
 

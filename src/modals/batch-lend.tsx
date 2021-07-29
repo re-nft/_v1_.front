@@ -32,13 +32,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
     [startLend, onClose]
   );
 
-  useEffect(() => {
-    nfts.map((nft) =>
-      nft
-        .loadAmount(currentAddress)
-        .catch(() => console.warn("could not load amount"))
-    );
-  }, [nfts]);
 
   return (
     <Modal open={open} handleClose={onClose}>

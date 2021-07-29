@@ -49,8 +49,9 @@ export const buildStaticIPFS_URL = (matched: string[]): string => {
   return `${IPFSGateway}${cid}${path}`;
 };
 
-export const normalizeTokenUri = (nft: Nft): string => {
-  let tokenURI: string = nft._tokenURI;
+
+export const normalizeTokenUri = async (nft: Nft): Promise<string> => {
+  let tokenURI: string = nft.tokenURI;
   const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);
   if (isWeirdBaseURL) {
     // ! this is opensea, in my tests. And even though this weird base url says you need hex
@@ -74,11 +75,11 @@ export const buildURI = (tokenURI: string): string => {
     isJoyWorld(tokenURI) ||
     isNftBoxes(tokenURI) ||
     isGftAuthentic(tokenURI);
-  if (!process.env.REACT_APP_CORS_PROXY) {
+  if (!process.env.NEXT_PUBLIC_CORS_PROXY) {
     throw new Error("CORS_PROXY is not defined");
   }
   const fetchThis = isProxyable
-    ? `${process.env.REACT_APP_CORS_PROXY}${tokenURI}`
+    ? `${process.env.NEXT_PUBLIC_CORS_PROXY}${tokenURI}`
     : tokenURI;
   return fetchThis;
 };

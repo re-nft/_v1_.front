@@ -1,8 +1,8 @@
 import React from "react";
-import { useMint } from "../hooks/useMint";
-import { advanceTime } from "../utils";
+import { useMint } from "../../hooks/useMint";
+import { advanceTime } from "../../utils";
 
-export const MintTokens = () => {
+export const MintTokens: React.FC = () => {
   const { mintE20 } = useMint();
   return (
     <>
