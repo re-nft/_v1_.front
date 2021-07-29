@@ -6,7 +6,6 @@ import { MAX_UINT256 } from "../consts";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../types/typechain/ERC20";
-import { useContractAddress } from "../contexts/StateProvider";
 import UserContext from "../contexts/UserProvider";
 import { ContractContext } from "../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
@@ -17,6 +16,8 @@ import {
 import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "./useObservable";
 import { TransactionStateEnum } from "../types";
+import { useContractAddress } from "./useContractAddress";
+import { useResolverAddress } from "./useResolverAddress";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -42,6 +43,7 @@ export const useStartRent = (): {
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isCheckLoading, setCheckLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
+  const resolverAddress = useResolverAddress();
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
   const [approvalStatus, setObservable] = useObservable();
@@ -54,8 +56,7 @@ export const useStartRent = (): {
       if (!signer) return;
 
       setCheckLoading(true);
-      const resolver = Resolver.connect(signer);
-      //const deployed = await resolver.deployed()
+      const resolver = Resolver.attach(resolverAddress).connect(signer);
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
         .map((token) => resolver.getPaymentToken(token));
@@ -87,7 +88,7 @@ export const useStartRent = (): {
         );
       });
     },
-    [Resolver, contractAddress, currentAddress, signer]
+    [Resolver, contractAddress, currentAddress, signer, resolverAddress]
   );
   const isApproved = useMemo(() => {
     // use memo as there could be multiple tokens
@@ -100,22 +101,24 @@ export const useStartRent = (): {
     return approvals?.length < 1;
   }, [approvals, approvalStatus.isLoading]);
 
-  useEffect(()=>{
-    if(approvalStatus.status === TransactionStateEnum.SUCCESS){
-      setApprovals([])
+  useEffect(() => {
+    if (approvalStatus.status === TransactionStateEnum.SUCCESS) {
+      setApprovals([]);
     }
-  }, [approvalStatus.status])
-  
+  }, [approvalStatus.status]);
+
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      setObservable(transactionWrapper(
-        Promise.all(
-          approvals.map((approval) =>
-            approval.approve(contractAddress, MAX_UINT256)
-          )
-        ),
-        {action: "Rent approve tokens", label: ''}
-      ))
+      setObservable(
+        transactionWrapper(
+          Promise.all(
+            approvals.map((approval) =>
+              approval.approve(contractAddress, MAX_UINT256)
+            )
+          ),
+          { action: "Rent approve tokens", label: "" }
+        )
+      );
     }
   }, [approvals, contractAddress]);
 
@@ -142,7 +145,7 @@ export const useStartRent = (): {
       return transactionWrapper(
         sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
         {
-          action: 'rent',
+          action: "rent",
           label: `
           addresses: ${addresses}
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}

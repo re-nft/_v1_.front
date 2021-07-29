@@ -34,6 +34,7 @@ interface ContractsObject {
 export const ContractContext = createContext<ContractsObject>({});
 
 const loadContract = (contractName: string, signer: Signer | undefined) => {
+  
   const newContract = new Contract(
     require(`../contracts/${contractName}.address.js`),
     require(`../contracts/${contractName}.abi.js`),

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Layout from "./layout";
 import { MintNfts } from "../dev/mint-nfts";
 import { MintTokens } from "../dev/mint-token";
