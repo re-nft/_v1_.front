@@ -2,7 +2,6 @@ import { Address } from "../../types";
 import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
 import { parseLending, parseRenting } from "./utils";
 
-
 enum NftType {
   Nft,
   Lending,
@@ -23,9 +22,11 @@ class Nft {
   amount: string;
   isERC721: boolean;
   _meta: NftToken["meta"] | undefined;
-  mediaURI: string;
-  tokenURI: string;
-  [k: string]: unknown;
+  mediaURI = "";
+  tokenURI = "";
+  isVerified = false;
+  openseaURI = "";
+  raribleURI = "";
 
   constructor(
     nftAddress: Address,
@@ -42,8 +43,12 @@ class Nft {
     this.isERC721 = isERC721;
 
     this._meta = options?.meta;
-    this.mediaURI = options?.mediaURI ?? "";
-    this.tokenURI = options?.tokenURI ?? "";
+    if (options?.mediaURI) {
+      this.mediaURI = options.mediaURI;
+    }
+    if (options?.tokenURI) {
+      this.tokenURI = options.tokenURI;
+    }
   }
 }
 
@@ -92,29 +97,17 @@ class Renting extends Nft {
   }
 }
 
-
 // typeguard for Lending class
-export const isLending = (x: any): x is Lending => {
-  if ("type" in x) {
+export const isLending = (x: Nft | Lending | Renting): x is Lending => {
     return x.type === NftType.Lending;
-  }
-  return false;
 };
 
-// typeguard for Renting class
-export const isRenting = (x: any): x is Renting => {
-  if ("type" in x) {
+export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
     return x.type === NftType.Renting;
-  }
-  return false;
 };
 
-/* eslint-disable-next-line */
-export const isNft = (x: any): x is Nft => {
-  if ("type" in x) {
-    return x.type === NftType.Nft;
-  }
-  return false;
+export const isNft = (x: Nft | Lending | Renting): x is Nft => {
+  return x.type === NftType.Nft;
 };
 
 export { Nft, Lending, Renting };

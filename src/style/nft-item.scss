@@ -25,6 +25,20 @@
     text-align: center;
   }
 
+  &__link {
+    margin: 0;
+    display:flex;
+  }
+  &__icon {
+   margin-left: 5px;
+   &.small{
+     height: 20px;
+     width: 20px;
+     padding:0;
+     margin-bottom: -3px;
+   }
+  }
+
   &__image {
     width: 242px;
     height: 246px;

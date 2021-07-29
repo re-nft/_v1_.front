@@ -14,7 +14,7 @@ export type CatalogueItemProps = {
   checked?: boolean;
   isAlreadyFavourited?: boolean;
   onCheckboxChange: () => void;
-  disabled?: boolean;
+  disabled?: boolean
 };
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
@@ -37,7 +37,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     return meta && !meta.loading;
   }, [meta]);
 
-  const { name, image, description } = meta || {};
+  const { name, image, description, openseaLink, isVerified } = meta || {};
 
   return (
     <div
@@ -51,6 +51,12 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {imageIsReady && (
         <>
           <div className="nft__overlay">
+            <a className="nft__link" target="_blank" rel="noreferrer" href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`} >
+              <img src="/assets/rarible.png" className="nft__icon" />
+            </a>
+            {openseaLink && <a className="nft__link" target="_blank"  rel="noreferrer" href={openseaLink}>
+              <img src="/assets/opensea.png" className="nft__icon" />
+            </a>}
             {/* <CatalogueActions
               address={nft.address}
               tokenId={nft.tokenId}
@@ -67,7 +73,14 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           <div className="nft__image">
             <CatalogueItemDisplay image={image} description={description} />
           </div>
-          {name && <div className="nft__name">{name}</div>}
+          <div className="nft__name">
+            {name}
+            {isVerified && <a className="nft__link"  target="_blank" rel="noreferrer">
+              <img src="/assets/nft-verified.png" className="nft__icon small" />
+            </a>
+            }
+          </div>
+
           <CatalogueItemRow
             text="Address"
             value={
