@@ -2,7 +2,7 @@
   position: relative;
   width: 250px;
   display: flex;
-  margin: 0 28px 40px;
+  margin: 0 10px 40px;
   color: $black;
   font-size: 21px;
   flex-direction: column;
@@ -26,9 +26,9 @@
   }
 
   &__image {
-    width: 230px;
-    height: 230px;
-    border: 1px solid $grey;
+    width: 242px;
+    height: 246px;
+    border:grey solid 1px;
     display:flex;
     justify-content: center;
     align-items: center;
