@@ -5,12 +5,13 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";
 import { Nft } from "../contexts/graph/classes";
 import { NftToken } from "../contexts/graph/types";
-import { EMPTY, from, map, switchMap, timer } from "rxjs";
+import { EMPTY, from, map, mergeMap, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import { getContractWithProvider } from "../utils";
 
 interface UserERC1155State {
   users: Record<
@@ -96,6 +97,31 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   );
   const setUserNft = useERC1155((state) => state.setUserNft, shallow);
   const setLoading = useERC1155((state) => state.setLoading, shallow);
+  const setAmount = useERC1155((state) => state.setAmount, shallow);
+
+  useEffect(() => {
+    const getAvailableTokenAmountForUser = async (nft: Nft) => {
+      if (!currentAddress) return;
+      else {
+        const contract = await getContractWithProvider(
+          nft.address,
+          false
+        );
+        const amount = await contract
+          .balanceOf(currentAddress, nft.tokenId)
+          .catch((e) => {
+            //this only works on mainnet, as graph data are from mainnet
+            console.log(e)
+            return "0";
+          });
+        setAmount(currentAddress, getUniqueCheckboxId(nft), amount.toString());
+      }
+    };
+    const subscription = from(nfts).pipe(mergeMap(getAvailableTokenAmountForUser)).subscribe();
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [currentAddress, setAmount, nfts]);
 
   useEffect(() => {
     function fetchAndCreate() {

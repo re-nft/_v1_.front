@@ -14,10 +14,10 @@ import { useRouter } from "next/router";
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
-    debug:
-      typeof window !== "undefined"
-        ? window.location.hostname !== "dapp.renft.io"
-        : true,
+    debug: false,
+      // typeof window !== "undefined"
+      //   ? window.location.hostname !== "dapp.renft.io"
+      //   : true,
     gaOptions: {
       siteSpeedSampleRate: 100
     },

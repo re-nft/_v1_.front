@@ -52,7 +52,7 @@ export const getE721 = (
   address: string,
   signer: ethers.Signer | JsonRpcProvider
 ): ERC721 => {
-  const erc721Contract = new ERC721__factory().attach(address).connect(signer);
+  const erc721Contract = ERC721__factory.connect(address, signer);
   return erc721Contract;
 };
 
@@ -60,9 +60,7 @@ export const getE1155 = (
   address: string,
   signer: ethers.Signer | JsonRpcProvider
 ): ERC1155 => {
-  const erc1155Contract = new ERC1155__factory()
-    .attach(address)
-    .connect(signer);
+  const erc1155Contract = ERC1155__factory.connect(address, signer);
   return erc1155Contract;
 };
 
@@ -144,7 +142,7 @@ export const getContractWithProvider = async (
   tokenAddress: string,
   isERC721: boolean
 ): Promise<ERC721 | ERC1155> => {
-  const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL);
+  const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL, 'homestead');
   if (isERC721) {
     return getE721(tokenAddress, provider);
   } else {
