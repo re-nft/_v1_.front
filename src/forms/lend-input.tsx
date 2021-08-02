@@ -41,7 +41,6 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
     disabled
   } = input;
   const only1Item = useMemo(() => {
-    console.log(lendingInput.amount)
     return lendingInput.amount === "1"
   }, [lendingInput.amount])
   return (

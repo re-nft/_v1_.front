@@ -10,9 +10,14 @@ import {
 import shallow from "zustand/shallow";
 import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
+import { useExchangePrice } from "./useExchangePrice";
 
-export const toUSD = (token: PaymentToken, amount: number) => {
-  return 100;
+export const toUSD = (
+  token: PaymentToken,
+  amount: number,
+  tokenPerUSD: Record<PaymentToken, number>
+) => {
+  return amount * tokenPerUSD[token];
 };
 
 export const compare = (a: number, b: number) => {
@@ -26,19 +31,35 @@ export const compare = (a: number, b: number) => {
 };
 
 export const sortByDailyRentPrice =
-  (dir = "asc") =>
+  (tokenPerUSD: Record<PaymentToken, number>, dir = "asc") =>
   (a: Lending, b: Lending) => {
-    const priceA = toUSD(a.lending.paymentToken, a.lending.dailyRentPrice);
-    const priceB = toUSD(b.lending.paymentToken, b.lending.dailyRentPrice);
+    const priceA = toUSD(
+      a.lending.paymentToken,
+      a.lending.dailyRentPrice,
+      tokenPerUSD
+    );
+    const priceB = toUSD(
+      b.lending.paymentToken,
+      b.lending.dailyRentPrice,
+      tokenPerUSD
+    );
     const result = compare(priceA, priceB);
     return dir === "asc" ? result : result * -1;
   };
 
 export const sortByCollateral =
-  (dir = "asc") =>
+  (tokenPerUSD: Record<PaymentToken, number>, dir = "asc") =>
   (a: Lending, b: Lending) => {
-    const priceA = toUSD(a.lending.paymentToken, a.lending.nftPrice);
-    const priceB = toUSD(b.lending.paymentToken, b.lending.nftPrice);
+    const priceA = toUSD(
+      a.lending.paymentToken,
+      a.lending.nftPrice,
+      tokenPerUSD
+    );
+    const priceB = toUSD(
+      b.lending.paymentToken,
+      b.lending.nftPrice,
+      tokenPerUSD
+    );
     const result = compare(priceA, priceB);
     return dir === "asc" ? result : result * -1;
   };
@@ -47,11 +68,10 @@ export const sortByDuration =
   (dir = "asc") =>
   (a: Lending, b: Lending) => {
     const priceA = a.lending.maxRentDuration;
-    const priceB =b.lending.maxRentDuration;
+    const priceB = b.lending.maxRentDuration;
     const result = compare(priceA, priceB);
     return dir === "asc" ? result : result * -1;
   };
-
 
 export const useSearch = (items: Lending[]): Lending[] => {
   const filter = useNFTFilterBy(
@@ -67,6 +87,7 @@ export const useSearch = (items: Lending[]): Lending[] => {
     }, []),
     shallow
   );
+  const tokenPerUSD = useExchangePrice();
 
   const filterItems = useCallback((items: Lending[], filter: NftFilterType) => {
     switch (filter) {
@@ -83,39 +104,50 @@ export const useSearch = (items: Lending[]): Lending[] => {
       case "erc-1155":
         return items.filter((i) => !i.isERC721);
       case "punks":
-        return items.filter((i) => i.address === "");
+        return items.filter(
+          (i) =>
+            i.address.toLowerCase() ===
+            "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
+        );
       case "mooncats":
-        return items.filter((i) => i.address === "");
+        return items.filter(
+          (i) =>
+            i.address.toLowerCase() ===
+            "0x495f947276749ce646f68ac8c248420045cb7b5e"
+        );
       default:
         return items;
     }
   }, []);
-  const sortItems = useCallback((items: Lending[], sortBy: NftSortType) => {
-    switch (sortBy) {
-      case "all":
-        return items;
-      case "price-low-to-high":
-        return items.sort(sortByDailyRentPrice());
-      case "price-high-to-low":
-        return items.sort(sortByDailyRentPrice("desc"));
-      case "highest-collateral":
-        return items.sort(sortByCollateral());
-      case "lowest-collateral":
-        return items.sort(sortByCollateral("desc"));
-      default:
-        return items;
-    }
-  }, []);
+  const sortItems = useCallback(
+    (items: Lending[], sortBy: NftSortType, tokenPerUSD) => {
+      switch (sortBy) {
+        case "all":
+          return items;
+        case "price-low-to-high":
+          return items.sort(sortByDailyRentPrice(tokenPerUSD));
+        case "price-high-to-low":
+          return items.sort(sortByDailyRentPrice(tokenPerUSD, "desc"));
+        case "highest-collateral":
+          return items.sort(sortByCollateral(tokenPerUSD));
+        case "lowest-collateral":
+          return items.sort(sortByCollateral(tokenPerUSD, "desc"));
+        default:
+          return items;
+      }
+    },
+    []
+  );
 
   return useMemo(() => {
     if (filter === "all" && sortBy === "all") {
       return items;
     }
     if (filter === "all") {
-      return filterItems(items, filter);
+      return sortItems(items, sortBy, tokenPerUSD);
     } else if (sortBy === "all") {
-      return sortItems(items, sortBy);
+      return filterItems(items, filter);
     }
-    return sortItems(filterItems(items, filter), sortBy);
-  }, [items, filter, sortBy]);
+    return sortItems(filterItems(items, filter), sortBy, tokenPerUSD);
+  }, [items, filter, sortBy, tokenPerUSD]);
 };
