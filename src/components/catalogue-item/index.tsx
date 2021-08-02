@@ -65,6 +65,10 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     if (isCopied) setError(`Link copied to the clipboard ${copyLink}`, "info");
   }, [isCopied, copyLink, setError]);
 
+  const knownContract = useMemo(() => {
+    return nft.address.toLowerCase() === '0x0db8c099b426677f575d512874d45a767e9acc3c'
+  }, [nft.address])
+
   return (
     <div
       className={`nft ${checked ? "checked" : ""} ${
@@ -113,20 +117,20 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__name">
             {name}
-            {isRentPage && (
-              <>
-                <IconButton onClick={setCopied} size="small" aria-label="copy">
-                  <LinkIcon />
-                </IconButton>
-              </>
-            )}
-            {isVerified && (
+            {(isVerified || knownContract) && (
               <a className="nft__link" target="_blank" rel="noreferrer">
                 <img
                   src="/assets/nft-verified.png"
                   className="nft__icon small"
                 />
               </a>
+            )}
+            {isRentPage && (
+              <>
+                <IconButton onClick={setCopied} size="small" aria-label="copy">
+                  <LinkIcon />
+                </IconButton>
+              </>
             )}
           </div>
 
