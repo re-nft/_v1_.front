@@ -7,7 +7,7 @@ import React, {
   useState
 } from "react";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
-import { Lending, Nft } from "./graph/classes";
+import { Lending } from "./graph/classes";
 import { queryAllLendingRenft } from "./graph/queries";
 import { timeItAsync } from "../utils";
 import { diffJson } from "diff";
@@ -19,13 +19,13 @@ import { LendingRaw } from "./graph/types";
 
 export const AvailableForRentContext = createContext<{
   isLoading: boolean;
-  allAvailableToRent: Nft[];
+  allAvailableToRent: Lending[];
 }>({ isLoading: true, allAvailableToRent: [] });
 
 export const AvailableForRentProvider: React.FC = ({ children }) => {
   const { signer, network } = useContext(UserContext);
 
-  const [nfts, setNfts] = useState<Nft[]>([]);
+  const [nfts, setNfts] = useState<Lending[]>([]);
   const [isLoading, setLoading] = useState(true);
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);

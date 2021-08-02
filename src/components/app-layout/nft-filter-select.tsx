@@ -7,12 +7,13 @@ import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { CategorySelect, CategoryMenuItem } from "../common/category-select";
 
+export type NftFilterType = 'all' | 'art' | 'utility' | 'gaming' | 'erc-721' | 'erc-1155' | 'punks' | 'mooncats';
 interface NftFilterState {
-  filters: string;
+  filters: NftFilterType;
   setFilters: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
 }
 
-export const useFilterBy = create<NftFilterState>(
+export const useNFTFilterBy = create<NftFilterState>(
   devtools((set, get) => ({
     filters: "all",
     setFilters: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
@@ -25,8 +26,8 @@ export const useFilterBy = create<NftFilterState>(
 );
 
 export const NftFilterSelect = () => {
-  const setNftFilter = useFilterBy((state) => state.setFilters, shallow);
-  const filter = useFilterBy(
+  const setNftFilter = useNFTFilterBy((state) => state.setFilters, shallow);
+  const filter = useNFTFilterBy(
     useCallback((state) => {
       return state.filters;
     }, []),

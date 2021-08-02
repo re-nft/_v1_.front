@@ -7,15 +7,26 @@ import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { CategorySelect, CategoryMenuItem } from "../common/category-select";
 
+export type NftSortType =
+  | "all"
+ // | "recently-listed"
+//  | "recently-rented"
+  | "price-low-to-high"
+  | "price-high-to-low"
+  | "highest-collateral"
+  | "lowest-collateral";
+
 interface NftSortbyState {
-  sortBy: string;
-  setSortby: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
+  sortBy: NftSortType;
+  setSortby: (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => void;
 }
 
-export const useFilterBy = create<NftSortbyState>(
+export const useNFTSortBy = create<NftSortbyState>(
   devtools((set, get) => ({
-    sortBy: "",
-    setSortby: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+    sortBy: "all",
+    setSortby: (event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
       set(
         produce((state) => {
           state.sortBy = event.target.value;
@@ -24,14 +35,14 @@ export const useFilterBy = create<NftSortbyState>(
   }))
 );
 export const NftSortBySelect = () => {
-  const setSortBy = useFilterBy((state) => state.setSortby, shallow);
-  const sortBy = useFilterBy(
+  const setSortBy = useNFTSortBy((state) => state.setSortby, shallow);
+  const sortBy = useNFTSortBy(
     useCallback((state) => {
       return state.sortBy;
     }, []),
     shallow
   );
-  
+
   return (
     <FormControl>
       <CategorySelect
@@ -40,14 +51,25 @@ export const NftSortBySelect = () => {
         value={sortBy}
         onChange={setSortBy}
       >
-        <CategoryMenuItem value='all'>Sort by</CategoryMenuItem>
-        <CategoryMenuItem value='recently-listed'>Recently Listed</CategoryMenuItem>
-        <CategoryMenuItem value='recently-rented'>Recently Rented</CategoryMenuItem>
-        <CategoryMenuItem value='ending-soon'>Ending soon</CategoryMenuItem>
-        <CategoryMenuItem value='price-low-to-high'>Price: Low to High</CategoryMenuItem>
-        <CategoryMenuItem value='price-high-to-low'>Price: High to Low</CategoryMenuItem>
-        <CategoryMenuItem value='highest-collateral'>Highest Collateral</CategoryMenuItem>
-        <CategoryMenuItem value='lowest-collateral'>Lowest Colletaral</CategoryMenuItem>
+        <CategoryMenuItem value="all">Sort by</CategoryMenuItem>
+        <CategoryMenuItem value="recently-listed">
+          Recently Listed
+        </CategoryMenuItem>
+        {/* <CategoryMenuItem value="recently-rented">
+          Recently Rented
+        </CategoryMenuItem> */}
+        <CategoryMenuItem value="price-low-to-high">
+          Price: Low to High
+        </CategoryMenuItem>
+        <CategoryMenuItem value="price-high-to-low">
+          Price: High to Low
+        </CategoryMenuItem>
+        <CategoryMenuItem value="highest-collateral">
+          Highest Collateral
+        </CategoryMenuItem>
+        <CategoryMenuItem value="lowest-collateral">
+          Lowest Colletaral
+        </CategoryMenuItem>
       </CategorySelect>
     </FormControl>
   );
