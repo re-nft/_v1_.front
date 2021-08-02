@@ -27,6 +27,8 @@ export const Modal: React.FC<ModalProps> = ({
       keepMounted
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
+      maxWidth="sm"
+      fullWidth
     >
       <div className="modal-dialog">{children}</div>
     </Dialog>

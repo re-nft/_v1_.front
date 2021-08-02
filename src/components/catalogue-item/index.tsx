@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 
 import { Nft } from "../../contexts/graph/classes";
 import { nftId } from "../../services/firebase";
@@ -8,13 +8,18 @@ import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
+import useClipboard from "react-use-clipboard";
+import LinkIcon from "@material-ui/icons/Link";
+import IconButton from "@material-ui/core/IconButton";
+import { SnackAlertContext } from "../../contexts/SnackProvider";
+import { useRouter } from "next/router";
 
 export type CatalogueItemProps = {
   nft: Nft;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
   onCheckboxChange: () => void;
-  disabled?: boolean
+  disabled?: boolean;
 };
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
@@ -26,6 +31,19 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 }) => {
   const { signer } = useContext(UserContext);
   const [metas] = useContext(NFTMetaContext);
+  const { pathname } = useRouter();
+  
+  const copyLink = useMemo(() => {
+    const href =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://dapp.renft.io";
+    return `${href}/rent/${nft.address}/${nft.tokenId}`;
+  }, [typeof window !== "undefined", nft.address, nft.tokenId]);
+
+  const [isCopied, setCopied] = useClipboard(copyLink);
+  const { setError } = useContext(SnackAlertContext);
+
   const id = useMemo(
     () => nftId(nft.address, nft.tokenId),
     [nft.address, nft.tokenId]
@@ -39,6 +57,14 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const { name, image, description, openseaLink, isVerified } = meta || {};
 
+  const isRentPage = useMemo(() => {
+    return pathname === "/" || pathname.includes("/rent");
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isCopied) setError(`Link copied to the clipboard ${copyLink}`, "info");
+  }, [isCopied, copyLink, setError]);
+
   return (
     <div
       className={`nft ${checked ? "checked" : ""} ${
@@ -51,12 +77,24 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       {imageIsReady && (
         <>
           <div className="nft__overlay">
-            <a className="nft__link" target="_blank" rel="noreferrer" href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`} >
+            <a
+              className="nft__link"
+              target="_blank"
+              rel="noreferrer"
+              href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`}
+            >
               <img src="/assets/rarible.png" className="nft__icon" />
             </a>
-            {openseaLink && <a className="nft__link" target="_blank"  rel="noreferrer" href={openseaLink}>
-              <img src="/assets/opensea.png" className="nft__icon" />
-            </a>}
+            {openseaLink && (
+              <a
+                className="nft__link"
+                target="_blank"
+                rel="noreferrer"
+                href={openseaLink}
+              >
+                <img src="/assets/opensea.png" className="nft__icon" />
+              </a>
+            )}
             {/* <CatalogueActions
               address={nft.address}
               tokenId={nft.tokenId}
@@ -75,10 +113,21 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__name">
             {name}
-            {isVerified && <a className="nft__link"  target="_blank" rel="noreferrer">
-              <img src="/assets/nft-verified.png" className="nft__icon small" />
-            </a>
-            }
+            {isRentPage && (
+              <>
+                <IconButton onClick={setCopied} size="small" aria-label="copy">
+                  <LinkIcon />
+                </IconButton>
+              </>
+            )}
+            {isVerified && (
+              <a className="nft__link" target="_blank" rel="noreferrer">
+                <img
+                  src="/assets/nft-verified.png"
+                  className="nft__icon small"
+                />
+              </a>
+            )}
           </div>
 
           <CatalogueItemRow

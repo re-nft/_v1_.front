@@ -173,4 +173,5 @@ const UserRentings: React.FC = () => {
   );
 };
 
-export default React.memo(UserRentings);
+export default UserRentings;
+
