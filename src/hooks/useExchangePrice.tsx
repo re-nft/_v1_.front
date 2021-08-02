@@ -25,7 +25,7 @@ const useExchangePriceStore = create<TOKEN_PRICE>((set, get) => ({
   setWETH: (price: number) =>
     set(
       produce((state) => {
-        state.WETH_USD = price;
+        state.tokenPerUSD[PaymentToken.WETH] = price;
       })
     )
 }));
@@ -44,6 +44,7 @@ const getPrice = (): Promise<number> =>
       return data.bundles[0].ethPriceUSD;
     })
     .catch((e) => {
+      console.log(e)
       return 0;
     });
 
