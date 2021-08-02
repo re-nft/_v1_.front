@@ -5,10 +5,10 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper
-} from "./useTransactionWrapper";
+} from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
-import { LendInputDefined } from "../forms/lend-form";
-import { sortNfts } from "../utils";
+import { LendInputDefined } from "../../forms/lend-form";
+import { sortNfts } from "../../utils";
 
 const debug = createDebugger("app:contract");
 //const debug = console.log;

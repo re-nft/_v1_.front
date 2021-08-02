@@ -3,7 +3,7 @@ import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { useObservable } from "../hooks/useObservable";
-import { useStopLend } from "../hooks/useStopLend";
+import { useStopLend } from "../hooks/contract/useStopLend";
 import Modal from "./modal";
 
 type ReturnModalProps = {

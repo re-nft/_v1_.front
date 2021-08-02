@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import UserContext from "../../contexts/UserProvider";
-import { useContractAddress } from "../../hooks/useContractAddress";
+import { useContractAddress } from "../../hooks/contract/useContractAddress";
 import { NetworkName } from "../../types";
 
 export const Footer: React.FC = () => {

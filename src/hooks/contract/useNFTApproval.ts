@@ -1,15 +1,15 @@
 import {
   TransactionStatus,
   useTransactionWrapper
-} from "./useTransactionWrapper";
+} from "../useTransactionWrapper";
 import { EMPTY, from, map, Observable } from "rxjs";
-import { Nft } from "../contexts/graph/classes";
+import { Nft } from "../../contexts/graph/classes";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { getContractWithSigner, getDistinctItems } from "../utils";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import UserContext from "../contexts/UserProvider";
-import { useObservable } from "./useObservable";
-import { TransactionStateEnum } from "../types";
+import { getContractWithSigner, getDistinctItems } from "../../utils";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import UserContext from "../../contexts/UserProvider";
+import { useObservable } from "../useObservable";
+import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 
 export function useNFTApproval(nfts: Nft[]): {

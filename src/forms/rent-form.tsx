@@ -13,7 +13,7 @@ import {
   FormikBag
 } from "formik";
 import { TransactionStateEnum } from "../types";
-import { StartRentNft } from "../hooks/useStartRent";
+import { StartRentNft } from "../hooks/contract/useStartRent";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { PaymentToken } from "@renft/sdk";
 import { TransactionStatus } from "../hooks/useTransactionWrapper";

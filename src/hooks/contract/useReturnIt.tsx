@@ -1,10 +1,10 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { EMPTY, Observable } from "rxjs";
-import { Renting } from "../contexts/graph/classes";
-import { sortNfts } from "../utils";
+import { Renting } from "../../contexts/graph/classes";
+import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
-import { TransactionStatus, useTransactionWrapper } from "./useTransactionWrapper";
+import { TransactionStatus, useTransactionWrapper } from "../useTransactionWrapper";
 
 export const useReturnIt = (): ((nfts: Renting[]) => Observable<TransactionStatus>) => {
   const sdk = useSDK();

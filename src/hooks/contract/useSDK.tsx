@@ -1,7 +1,7 @@
 import { useContext, useMemo } from "react";
 import { ReNFT } from "@renft/sdk";
 
-import UserContext from "../contexts/UserProvider";
+import UserContext from "../../contexts/UserProvider";
 import { useContractAddress } from "./useContractAddress";
 
 

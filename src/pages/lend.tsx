@@ -13,7 +13,7 @@ import {
 import Pagination from "../components/common/pagination";
 import { usePageController } from "../controller/page-controller";
 import { NFTMetaContext } from "../contexts/NftMetaState";
-import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../hooks/contract/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 

@@ -1,13 +1,13 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { Lending } from "../contexts/graph/classes";
-import { sortNfts } from "../utils";
+import { Lending } from "../../contexts/graph/classes";
+import { sortNfts } from "../../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper
-} from "./useTransactionWrapper";
+} from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
