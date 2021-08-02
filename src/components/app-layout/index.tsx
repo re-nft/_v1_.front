@@ -1,15 +1,13 @@
 import React from "react";
 import Layout from "./layout";
-import { MintNfts } from "../dev/mint-nfts";
-import { MintTokens } from "../dev/mint-token";
+
 import { Header } from "./header";
 import { Footer } from "./footer";
 import { Menu } from "./menu";
-import { NftFilterSelect } from "./nft-filter-select";
-import { NftSortBySelect } from "./nft-sortby-select";
+import { SearchMenu } from "./search-menu";
+import { DevMenu } from "./dev-menu";
 
 const App: React.FC = ({ children }) => {
-  const showMint = process.env.NEXT_PUBLIC_SHOW_MINT === "true";
   return (
     <Layout>
       <div className="content-wrapper mb-l">
@@ -17,17 +15,8 @@ const App: React.FC = ({ children }) => {
       </div>
       <div className="content-wrapper mb-l">
         <Menu />
-        <NftFilterSelect />
-        <NftSortBySelect />
-
-        {showMint && (
-          <>
-            <MintNfts />
-            <div>
-              <MintTokens />
-            </div>
-          </>
-        )}
+        <SearchMenu/>
+        <DevMenu/>
       </div>
       {/* CONTENT */}
       <div className="content-wrapper main-content mb-l">{children}</div>
