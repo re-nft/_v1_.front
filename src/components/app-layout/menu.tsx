@@ -29,7 +29,7 @@ const ROUTES = [
   }
 ];
 const isPathActive = (linkPath: string, pathname: string) => {
-  if (pathname === linkPath) return true;
+  if (pathname.includes(linkPath) && linkPath !== '/') return true;
   if (pathname === "/user-is-renting" && linkPath === "/") return true;
   if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
   return false;

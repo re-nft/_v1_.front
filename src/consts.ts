@@ -11,4 +11,4 @@ export const MAX_UINT256 =
 export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 
 export const IS_PROD =
-  process.env["NEXT_PUBLIC_ENVIRONMENT"]?.toLowerCase() === "production";
+  process.env["NODE_ENV"]?.toLowerCase() === "production";

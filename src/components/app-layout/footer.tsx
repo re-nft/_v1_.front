@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
+import UserContext from "../../contexts/UserProvider";
+import { useContractAddress } from "../../hooks/useContractAddress";
+import { NetworkName } from "../../types";
 
 export const Footer: React.FC = () => {
+  const { network } = useContext(UserContext);
+  const contractAddress = useContractAddress();
+
+  const etherScanUrl = useMemo(() => {
+    if (network === NetworkName.ropsten) {
+      return "https://ropsten.etherscan.io/address";
+    }
+    return "https://etherscan.io/address";
+  }, [network]);
   return (
     <div className="content-wrapper footer">
       <div className="footer__message font-VT323">
         Contracts have been thoroughly tested and peer reviewed, but not
         audited. Use at your own risk.
+        <a
+            style={{ fontSize: "14px", display: "block" }}
+            href={`${etherScanUrl}/${contractAddress}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Contract on etherscan: ${contractAddress}
+          </a>
       </div>
       <div className="footer__content">
         <div className="copy">2021 ReNFT</div>

@@ -66,7 +66,7 @@ export interface OpenSeaAsset extends Asset {
   imagePreviewUrl: string;
   imageUrlOriginal: string;
   imageUrlThumbnail: string;
-  openseaLink: string;
+  permalink: string;
   externalLink: string;
   // traits: object[];
   numSales: number;
@@ -172,6 +172,7 @@ export const fetchNFTsFromOpenSea = async (
       return r.assets.map(snakeCaseToCamelCase).map((nft: OpenSeaAsset) => {
         return {
           ...nft,
+          openseaLink: nft.permalink,
           image:
             nft.imagePreviewUrl ||
             nft.imageUrlThumbnail ||
@@ -185,3 +186,5 @@ export const fetchNFTsFromOpenSea = async (
       return []
     });
 };
+
+

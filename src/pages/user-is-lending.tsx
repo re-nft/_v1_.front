@@ -155,4 +155,4 @@ const UserCurrentlyLending: React.FC = () => {
   );
 };
 
-export default React.memo(UserCurrentlyLending);
+export default UserCurrentlyLending;

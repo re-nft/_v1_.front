@@ -1,7 +1,7 @@
 import React from "react";
 
 type ButtonProps = {
-  onClick: (e:any) => void;
+  onClick: (e:unknown) => void;
   disabled?: boolean;
   description: string;
   datacy?: string

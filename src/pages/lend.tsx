@@ -149,5 +149,4 @@ const Lendings: React.FC = () => {
     </LendSwitchWrapper>
   );
 };
-
-export default React.memo(Lendings);
+export default Lendings;

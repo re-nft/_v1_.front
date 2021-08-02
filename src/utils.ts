@@ -199,7 +199,7 @@ export const advanceTime = async (seconds: number): Promise<void> => {
 };
 
 export const getDistinctItems = <
-  T extends Record<string | number | symbol, unknown>
+  T extends Object
 >(
   nfts: T[],
   property: keyof T

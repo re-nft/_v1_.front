@@ -148,5 +148,4 @@ export const Dashboard: React.FC = () => {
 };
 
 // this keeps rerendering
-
-export default React.memo(Dashboard);
+export default Dashboard;

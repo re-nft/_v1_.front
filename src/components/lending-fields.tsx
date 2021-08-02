@@ -1,26 +1,23 @@
 import React from "react";
-import NumericField from "./common/numeric-field";
 import { Lending } from "../contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
+import { CatalogueItemRow } from "./catalogue-item/catalogue-item-row";
 
 const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
   const days = parseInt(String(nft.lending.maxRentDuration), 10);
   return (
     <>
-      <NumericField
-        text="Daily price"
+      <CatalogueItemRow
+        text={`Daily price [${PaymentToken[nft.lending.paymentToken]}]`}
         value={nft.lending.dailyRentPrice.toString()}
-        unit={PaymentToken[nft.lending.paymentToken]}
       />
-      <NumericField
-        text="Max duration"
-        value={String(days)}
-        unit={days > 1 ? "days" : "day"}
+      <CatalogueItemRow
+        text={`Max duration [${days > 1 ? "days" : "day"}]`}
+        value={days.toString()}
       />
-      <NumericField
-        text="Collateral"
+      <CatalogueItemRow
+        text={`Collateral [${PaymentToken[nft.lending.paymentToken]}]`}
         value={nft.lending.nftPrice.toString()}
-        unit={PaymentToken[nft.lending.paymentToken]}
       />
     </>
   );

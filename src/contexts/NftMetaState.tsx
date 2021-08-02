@@ -20,6 +20,9 @@ const fetchMetas = (_items: Nft[]) => {
 
 interface MetaLoading extends NftTokenMetaWithId {
   loading?: boolean;
+  openseaLink?: string
+  raribleLink?: string
+  isVerified?: boolean
 }
 
 export const NFTMetaContext = createContext<
@@ -166,20 +169,20 @@ export const NFTMetaProvider: React.FC = ({ children }) => {
     });
     const fetchRequest = fetchNFTsFromOpenSea(contractAddress, tokenIds);
 
-    fetchRequest.then((data) => {
-      const found = data.reduce((acc, nft) => {
+    fetchRequest.then((founds) => {
+      const foundIds = founds.reduce((acc, nft) => {
         acc.add(nft.id);
         return acc;
       }, new Set());
       const notFounds = fetchReady.filter((nft: NftTokenMetaWithId) => {
-        return !found.has(nft.id);
+        return !foundIds.has(nft.id);
       });
-      preloadImages(data);
+      preloadImages(founds);
       dispatch({
         type: "SET_OPENSEA_RESULT",
         payload: {
           notFounds,
-          founds: data,
+          founds,
         },
       });
     });
