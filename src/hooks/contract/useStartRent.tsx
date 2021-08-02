@@ -17,7 +17,7 @@ import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "../useObservable";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
-import { useResolverAddress } from "../useResolverAddress";
+import { useResolverAddress } from "./useResolverAddress";
 
 const debug = createDebugger("app:contract:startRent");
 
