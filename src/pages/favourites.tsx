@@ -12,7 +12,7 @@ import {
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../hooks/useMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
-import { useAllAvailableToLend } from "../hooks/contract/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import { Button } from "../components/common/button";
 
 type RemoveButtonProps = {

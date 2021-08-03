@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { AvailableToRent } from "../../components/pages/available-to-rent";
-import { AvailableForRentContext } from "../../contexts/AvailableForRent";
+import { useAllAvailableForRent } from "../../hooks/useAllAvailableForRent";
 import { useSearch } from "../../hooks/useSearch";
 
 
 const AvailableToRentPage: React.FC = () => {
-  const { allAvailableToRent, isLoading } = useContext(AvailableForRentContext);
+  const { allAvailableToRent, isLoading } = useAllAvailableForRent();
   const items = useSearch(allAvailableToRent)
   return (
     <AvailableToRent

@@ -6,6 +6,8 @@ import Pagination from "../components/common/pagination";
 import { useFetchMeta } from "../hooks/useMetaState";
 import { hasDifference } from "../utils";
 import { getUniqueCheckboxId } from "../hooks/useBatchItems";
+import { useDebounce } from "../hooks/useDebounce";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 
 const defaultSate = {
   pageItems: [],
@@ -107,16 +109,18 @@ export const PaginationList = <
   // init page state
   useEffect(() => {
     let isSubscribed = true;
+    if(isLoading) return;
     if (isSubscribed) onPageControllerInit(nfts);
     return () => {
       isSubscribed = false;
     };
-  }, [nfts, onPageControllerInit]);
+  }, [nfts, onPageControllerInit, isLoading]);
 
   // Fetch meta state
   useEffect(() => {
+    if(isLoading) return;
     fetchMeta(currentPage);
-  }, [currentPage]);
+  }, [currentPage, isLoading]);
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;

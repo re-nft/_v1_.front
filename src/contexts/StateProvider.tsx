@@ -1,7 +1,6 @@
 import React from "react";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
-import { AvailableForRentProvider } from "./AvailableForRent";
 import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
@@ -20,9 +19,7 @@ export const StateProvider: React.FC = ({ children }) => {
               <TransactionStateProvider>
                   <UserLendingProvider>
                     <UserRentingProvider>
-                      <AvailableForRentProvider>
                         <TimestampProvider>{children}</TimestampProvider>
-                      </AvailableForRentProvider>
                     </UserRentingProvider>
                   </UserLendingProvider>
               </TransactionStateProvider>

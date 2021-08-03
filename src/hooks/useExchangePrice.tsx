@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import create from "zustand";
 import request from "graphql-request";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import { timer, from, switchMap, map } from "rxjs";
 import produce from "immer";
 import shallow from "zustand/shallow";
+import create from "zustand";
+
 import { PaymentToken } from "@renft/sdk";
 
 interface TOKEN_PRICE {

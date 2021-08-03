@@ -99,11 +99,11 @@ class Renting extends Nft {
 
 // typeguard for Lending class
 export const isLending = (x: Nft | Lending | Renting): x is Lending => {
-    return x.type === NftType.Lending;
+  return x.type === NftType.Lending;
 };
 
 export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
-    return x.type === NftType.Renting;
+  return x.type === NftType.Renting;
 };
 
 export const isNft = (x: Nft | Lending | Renting): x is Nft => {

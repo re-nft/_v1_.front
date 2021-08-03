@@ -9,7 +9,7 @@ import {
   UniqueID,
   useBatchItems
 } from "../hooks/useBatchItems";
-import { useAllAvailableToLend } from "../hooks/contract/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
