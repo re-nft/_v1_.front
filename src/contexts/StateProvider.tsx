@@ -2,7 +2,6 @@ import React from "react";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
 import { AvailableForRentProvider } from "./AvailableForRent";
-import { NFTMetaProvider } from "./NftMetaState";
 import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
@@ -19,7 +18,6 @@ export const StateProvider: React.FC = ({ children }) => {
           <ContractsProvider>
             <GraphProvider>
               <TransactionStateProvider>
-                <NFTMetaProvider>
                   <UserLendingProvider>
                     <UserRentingProvider>
                       <AvailableForRentProvider>
@@ -27,7 +25,6 @@ export const StateProvider: React.FC = ({ children }) => {
                       </AvailableForRentProvider>
                     </UserRentingProvider>
                   </UserLendingProvider>
-                </NFTMetaProvider>
               </TransactionStateProvider>
             </GraphProvider>
           </ContractsProvider>

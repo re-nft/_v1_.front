@@ -10,7 +10,7 @@ import {
   useBatchItems
 } from "../hooks/useBatchItems";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { NFTMetaContext } from "../contexts/NftMetaState";
+import { NFTMetaContext } from "../hooks/useMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../hooks/contract/useAllAvailableToLend";
 import { Button } from "../components/common/button";

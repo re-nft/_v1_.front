@@ -81,8 +81,7 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
 
         const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
 
-        //const difference = true;
-        // we need to update the signer if currentAddress is non-null
+        setNfts(lendingsReNFT)
         if (currentAddress !== previousAddress) {
           setNfts(lendingsReNFT);
         } else if (hasDiff) {

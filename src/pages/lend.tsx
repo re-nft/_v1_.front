@@ -1,17 +1,48 @@
 import React, { useState, useCallback, useContext } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../contexts/graph/classes";
 import BatchLendModal from "../modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import {
   getUniqueCheckboxId,
+  UniqueID,
   useBatchItems
 } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/contract/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
+
+
+const LendCatalagoueItem: React.FC<{
+  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  nft: Nft,
+  checkBoxChangeWrapped: (nft: Nft) => () => void,
+  handleStartLend: (nft: Nft) =>() => void
+}> = ({
+  checkedItems,
+  nft,
+  checkBoxChangeWrapped,
+  handleStartLend
+}) => {
+  const checked = !!checkedItems[getUniqueCheckboxId(nft)];
+
+  return (
+    <CatalogueItem
+      nft={nft}
+      checked={checked}
+      onCheckboxChange={checkBoxChangeWrapped(nft)}
+    >
+      <ActionButton<Nft>
+        nft={nft}
+        title="Lend now"
+        onClick={handleStartLend(nft)}
+        disabled={checked}
+      />
+    </CatalogueItem>
+  );
+}
 
 const Lendings: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -26,7 +57,7 @@ const Lendings: React.FC = () => {
   }, [setModalOpen, handleReset]);
 
   const handleStartLend = useCallback(
-    async (nft: Nft) => {
+    (nft: Nft) => () => {
       onCheckboxChange(nft);
       setModalOpen(true);
     },
@@ -44,29 +75,6 @@ const Lendings: React.FC = () => {
       };
     },
     [onCheckboxChange]
-  );
-
-  const renderChild = useCallback(
-    (nft: Nft) => {
-      const checked = !!checkedItems[getUniqueCheckboxId(nft)];
-
-      return (
-        <CatalogueItem
-          key={getUniqueCheckboxId(nft)}
-          nft={nft}
-          checked={checked}
-          onCheckboxChange={checkBoxChangeWrapped(nft)}
-        >
-          <ActionButton<Nft>
-            nft={nft}
-            title="Lend now"
-            onClick={handleStartLend}
-            disabled={checked}
-          />
-        </CatalogueItem>
-      );
-    },
-    [checkedItems]
   );
 
   const renderEmptyResult = useCallback(()=>{
@@ -97,7 +105,12 @@ const Lendings: React.FC = () => {
       )}
       <PaginationList
         nfts={allAvailableToLend}
-        renderItem={renderChild}
+        Item={LendCatalagoueItem}
+        itemProps={{
+          checkedItems,
+          checkBoxChangeWrapped,
+          handleStartLend
+        }}
         isLoading={isLoading}
         renderEmptyResult={renderEmptyResult}
       />

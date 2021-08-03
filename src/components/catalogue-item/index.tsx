@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useMemo } from "react";
-
+import React, { useContext, useEffect, useMemo, useCallback } from "react";
 import { Nft } from "../../contexts/graph/classes";
 import { nftId } from "../../services/firebase";
 import { CatalogueItemRow } from "./catalogue-item-row";
-import { NFTMetaContext } from "../../contexts/NftMetaState";
 import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
@@ -13,6 +11,8 @@ import LinkIcon from "@material-ui/icons/Link";
 import IconButton from "@material-ui/core/IconButton";
 import { SnackAlertContext } from "../../contexts/SnackProvider";
 import { useRouter } from "next/router";
+import { useNftMetaState } from "../../hooks/useMetaState";
+import shallow from "zustand/shallow";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -30,7 +30,17 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   disabled
 }) => {
   const { signer } = useContext(UserContext);
-  const [metas] = useContext(NFTMetaContext);
+  const id = useMemo(
+    () => nftId(nft.address, nft.tokenId),
+    [nft.address, nft.tokenId]
+  );
+  const meta = useNftMetaState(
+    useCallback((state) => {
+      return state.metas[id] || {};
+    }, [id]),
+    shallow
+  );
+
   const { pathname } = useRouter();
   
   const copyLink = useMemo(() => {
@@ -43,19 +53,11 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const [isCopied, setCopied] = useClipboard(copyLink);
   const { setError } = useContext(SnackAlertContext);
-
-  const id = useMemo(
-    () => nftId(nft.address, nft.tokenId),
-    [nft.address, nft.tokenId]
-  );
-  const meta = useMemo(() => metas[id], [metas, id]);
-  const noWallet = !signer;
-
   const imageIsReady = useMemo(() => {
     return meta && !meta.loading;
   }, [meta]);
 
-  const { name, image, description, openseaLink, isVerified } = meta || {};
+  const { name, image, description, openseaLink } = meta;
 
   const isRentPage = useMemo(() => {
     return pathname === "/" || pathname.includes("/rent");
@@ -109,7 +111,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <Checkbox
               checked={!!checked}
               onChange={onCheckboxChange}
-              disabled={disabled || noWallet}
+              disabled={disabled || !signer}
             ></Checkbox>
           </div>
           <div className="nft__image">
@@ -117,7 +119,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
           <div className="nft__name">
             {name}
-            {(isVerified || knownContract) && (
+            {(knownContract) && (
               <a className="nft__link" target="_blank" rel="noreferrer">
                 <img
                   src="/assets/nft-verified.png"
