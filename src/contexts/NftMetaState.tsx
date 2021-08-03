@@ -137,10 +137,10 @@ const initialState = {
 };
 
 const preloadImages = (metas: MetaLoading[]) => {
-  metas.map((meta) => {
-    const img = new Image();
-    if (meta.image) img.src = meta.image;
-  });
+  // metas.map((meta) => {
+  //   const img = new Image();
+  //   if (meta.image) img.src = meta.image;
+  // });
 };
 
 export const NFTMetaProvider: React.FC = ({ children }) => {

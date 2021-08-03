@@ -8,7 +8,7 @@ import { CatalogueItem } from "../components/catalogue-item";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../controller/batch-controller";
+} from "../hooks/useBatchItems";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { NFTMetaContext } from "../contexts/NftMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";

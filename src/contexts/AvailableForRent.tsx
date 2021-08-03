@@ -9,8 +9,7 @@ import React, {
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Lending } from "./graph/classes";
 import { queryAllLendingRenft } from "./graph/queries";
-import { timeItAsync } from "../utils";
-import { diffJson } from "diff";
+import { hasDifference, timeItAsync } from "../utils";
 import UserContext from "./UserProvider";
 import { usePrevious } from "../hooks/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../consts";
@@ -80,19 +79,13 @@ export const AvailableForRentProvider: React.FC = ({ children }) => {
         const normalizedLendings = nfts;
         const normalizedLendingNew = lendingsReNFT;
 
-        const difference = diffJson(normalizedLendings, normalizedLendingNew, {
-          ignoreWhitespace: true
-        });
+        const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
 
         //const difference = true;
         // we need to update the signer if currentAddress is non-null
         if (currentAddress !== previousAddress) {
           setNfts(lendingsReNFT);
-        } else if (
-          difference &&
-          difference[1] &&
-          (difference[1].added || difference[1].removed)
-        ) {
+        } else if (hasDiff) {
           setNfts(lendingsReNFT);
         }
         setLoading(false);

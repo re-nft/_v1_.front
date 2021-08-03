@@ -10,6 +10,7 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
+import '../scripts/wdyr'
 //@ts-ignore
 import NProgress from 'nprogress'
 

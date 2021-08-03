@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
+import { getUniqueCheckboxId } from "./useBatchItems";
 import { fetchUserProd1155 } from "../services/graph";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";

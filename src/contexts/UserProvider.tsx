@@ -7,10 +7,10 @@ import React, {
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
-import { THROWS } from "../utils";
+import { hasDifference, THROWS } from "../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import ReactGA from 'react-ga';
+import ReactGA from "react-ga";
 
 const DefaultUser = {
   address: "",
@@ -24,7 +24,6 @@ const DefaultUser = {
 type UserContextType = {
   address: string;
   connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
-  provider: unknown;
   signer: Signer | undefined;
   web3Provider: ethers.providers.Web3Provider | undefined;
   network: string;
@@ -43,9 +42,9 @@ export const UserProvider: React.FC = ({ children }) => {
   const [permissions, setPermissions] = useState<unknown[]>([]);
 
   const providerOptions = useMemo(() => ({}), []);
-  const hasWindow = useMemo(()=>{
-    return typeof window !== 'undefined'
-  }, [typeof window])
+  const hasWindow = useMemo(() => {
+    return typeof window !== "undefined";
+  }, [typeof window]);
   // web3modal is only working in browser\]
   const web3Modal = useMemo(() => {
     return hasWindow
@@ -69,7 +68,7 @@ export const UserProvider: React.FC = ({ children }) => {
       .then((t) => t.toLowerCase())
       .catch((e) => {
         // do nothing
-        console.log(e)
+        console.log(e);
       });
     setAddress(address || "");
     setProvider(provider);
@@ -120,16 +119,19 @@ export const UserProvider: React.FC = ({ children }) => {
           });
       })
     ).pipe(
-      map((permissions: string[]) => {
-        setPermissions(permissions);
-        if (permissions.length < 1) {
-          if (signer) setSigner(undefined);
-          if (address) setAddress("");
-          if (network) setNetworkName("");
+      map((newPermissions: string[]) => {
+        if (hasDifference(newPermissions, permissions)) {
+          setPermissions(newPermissions);
+          if (newPermissions.length < 1) {
+            if (signer) setSigner(undefined);
+            if (address) setAddress("");
+            if (network) setNetworkName("");
+          }
         }
+        return;
       })
     );
-  }, [address, network, signer, hasWindow]);
+  }, [address, network, signer, hasWindow, permissions]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -153,9 +155,9 @@ export const UserProvider: React.FC = ({ children }) => {
     connect(true);
   }, [connect]);
 
-  useEffect(()=>{
+  useEffect(() => {
     ReactGA.set({ userId: address });
-  }, [address])
+  }, [address]);
 
   const accountsChanged = useCallback(
     (arg) => {
@@ -205,11 +207,11 @@ export const UserProvider: React.FC = ({ children }) => {
     };
   }, [accountsChanged, chainChanged, provider]);
 
+
   return (
     <UserContext.Provider
       value={{
         connect: manuallyConnect,
-        provider,
         signer,
         address,
         web3Provider,

@@ -1,23 +1,19 @@
-import React, { useContext, useCallback, useEffect, useState } from "react";
+import React, { useContext, useCallback, useState, useMemo } from "react";
 
-import ItemWrapper from "../components/common/items-wrapper";
 import { Lending, isLending } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
-import CatalogueLoader from "../components/catalogue-loader";
 import BatchBar from "../components/batch-bar";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../controller/batch-controller";
-import Pagination from "../components/common/pagination";
-import { usePageController } from "../controller/page-controller";
+} from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
-import { NFTMetaContext } from "../contexts/NftMetaState";
 import { UserLendingContext } from "../contexts/UserLending";
 import UserContext from "../contexts/UserProvider";
 import { StopLendModal } from "../modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
+import { PaginationList } from "../components/pagination-list";
 
 const UserCurrentlyLending: React.FC = () => {
   const { signer } = useContext(UserContext);
@@ -27,16 +23,13 @@ const UserCurrentlyLending: React.FC = () => {
     checkedLendingItems,
     onCheckboxChange
   } = useBatchItems();
-  const {
-    totalPages,
-    currentPageNumber,
-    currentPage,
-    onSetPage,
-    onPageControllerInit
-  } = usePageController<Lending>();
+
   const { userLending, isLoading } = useContext(UserLendingContext);
-  const [_, fetchNfts] = useContext(NFTMetaContext);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const lendingItems = useMemo(() => {
+    return userLending.filter(isLending);
+  }, [userLending]);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
@@ -55,23 +48,6 @@ const UserCurrentlyLending: React.FC = () => {
     [onCheckboxChange]
   );
 
-  useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed) onPageControllerInit(userLending.filter(isLending));
-    return () => {
-      isSubscribed = false;
-    };
-  }, [onPageControllerInit, userLending]);
-
-  //Prefetch metadata
-  useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed) fetchNfts(currentPage);
-    return () => {
-      isSubscribed = false;
-    };
-  }, [currentPage, fetchNfts]);
-
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
       return () => {
@@ -80,6 +56,38 @@ const UserCurrentlyLending: React.FC = () => {
     },
     [onCheckboxChange]
   );
+  const renderChild = useCallback(
+    (nft: Lending) => {
+      const hasRenting = !!nft.renting;
+      const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
+      return (
+        <CatalogueItem
+          key={getUniqueCheckboxId(nft)}
+          checked={isChecked}
+          nft={nft}
+          onCheckboxChange={checkBoxChangeWrapped(nft)}
+          disabled={hasRenting}
+        >
+          <LendingFields nft={nft} />
+          <ActionButton<Lending>
+            nft={nft}
+            disabled={hasRenting || isChecked}
+            title="Stop Lending"
+            onClick={handleClickNft}
+          />
+        </CatalogueItem>
+      );
+    },
+    [checkedItems]
+  );
+
+  const renderEmptyResult = useCallback(() => {
+    return (
+      <div className="center content__message">
+        You are not lending anything yet
+      </div>
+    );
+  }, []);
 
   if (!signer) {
     return (
@@ -90,20 +98,6 @@ const UserCurrentlyLending: React.FC = () => {
       </LendSwitchWrapper>
     );
   }
-  if (isLoading && currentPage.length === 0)
-    return (
-      <LendSwitchWrapper>
-        <CatalogueLoader />
-      </LendSwitchWrapper>
-    );
-  if (!isLoading && currentPage.length === 0)
-    return (
-      <LendSwitchWrapper>
-        <div className="center content__message">
-          You are not lending anything yet
-        </div>
-      </LendSwitchWrapper>
-    );
 
   // TODO: this bloody code is repeat of ./lendings.tsx
   return (
@@ -115,33 +109,11 @@ const UserCurrentlyLending: React.FC = () => {
           nfts={checkedLendingItems}
         />
       )}
-      <ItemWrapper>
-        {currentPage.map((nft: Lending) => {
-          const hasRenting = !!nft.renting;
-          const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
-          return (
-            <CatalogueItem
-              key={getUniqueCheckboxId(nft)}
-              checked={isChecked}
-              nft={nft}
-              onCheckboxChange={checkBoxChangeWrapped(nft)}
-              disabled={hasRenting}
-            >
-              <LendingFields nft={nft} />
-              <ActionButton<Lending>
-                nft={nft}
-                disabled={hasRenting || isChecked}
-                title="Stop Lending"
-                onClick={handleClickNft}
-              />
-            </CatalogueItem>
-          );
-        })}
-      </ItemWrapper>
-      <Pagination
-        totalPages={totalPages}
-        currentPageNumber={currentPageNumber}
-        onSetPage={onSetPage}
+      <PaginationList
+        nfts={lendingItems}
+        renderItem={renderChild}
+        isLoading={isLoading}
+        renderEmptyResult={renderEmptyResult}
       />
       {checkedLendingItems.length > 0 && (
         <BatchBar

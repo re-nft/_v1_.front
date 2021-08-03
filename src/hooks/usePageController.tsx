@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { diffJson } from "diff";
 import { Nft } from "../contexts/graph/classes";
+import { hasDifference } from "../utils";
 
 const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1,
+  totalPages: 1
 };
 
 type State<T> = {
@@ -19,7 +19,6 @@ type State<T> = {
 const PAGE_SIZE = 20;
 
 export const usePageController = <T extends Nft>(): {
-  handleReset: () => void;
   onPageControllerInit: (pageItems: T[]) => void;
   onSetPage: (pageNumber: number) => void;
   currentPage: T[];
@@ -28,9 +27,7 @@ export const usePageController = <T extends Nft>(): {
 } => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
     useState<State<T>>(defaultSate);
-  const handleReset = useCallback(() => {
-    setState(defaultSate);
-  }, []);
+
   const [newState, setNewState] = useState<State<T>>(defaultSate);
 
   const getCurrentPage = useCallback(
@@ -56,7 +53,7 @@ export const usePageController = <T extends Nft>(): {
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage,
+        currentPage
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -67,18 +64,12 @@ export const usePageController = <T extends Nft>(): {
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
     const oldStateNormalized = pageItems;
     const newStateNormalized = newState.pageItems;
-    const difference = diffJson(oldStateNormalized, newStateNormalized, {
-      ignoreWhitespace: true,
-    });
+    const hasDiff = hasDifference(oldStateNormalized, newStateNormalized);
     //const difference = true;
-    if (
-      difference &&
-      difference[1] &&
-      (difference[1].added || difference[1].removed)
-    ) {
+    if (hasDiff) {
       setState((prevState) => ({
         ...prevState,
-        ...newState,
+        ...newState
       }));
     }
   }, [pageItems, newState]);
@@ -90,17 +81,16 @@ export const usePageController = <T extends Nft>(): {
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems),
+        currentPage: getCurrentPage(1, totalPages, newItems)
       });
     },
     [getCurrentPage]
   );
   return {
-    handleReset,
     onPageControllerInit,
     onSetPage,
     currentPage,
     currentPageNumber,
-    totalPages,
+    totalPages
   };
 };

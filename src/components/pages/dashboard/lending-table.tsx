@@ -4,7 +4,7 @@ import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import {
   getUniqueCheckboxId,
   UniqueID
-} from "../../../controller/batch-controller";
+} from "../../../hooks/useBatchItems";
 import { LendingRow } from "./dashboard-lending-row";
 
 export interface ExtendedLending extends Lending {

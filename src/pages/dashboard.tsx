@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext, useMemo } from "react";
 
-import { useBatchItems } from "../controller/batch-controller";
+import { useBatchItems } from "../hooks/useBatchItems";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { UserLendingContext } from "../contexts/UserLending";

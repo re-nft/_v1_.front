@@ -1,20 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { isLending, Lending, Nft } from "../../contexts/graph/classes";
-import { NFTMetaContext } from "../../contexts/NftMetaState";
 import UserContext from "../../contexts/UserProvider";
 import {
   getUniqueCheckboxId,
   useBatchItems
-} from "../../controller/batch-controller";
-import { usePageController } from "../../controller/page-controller";
+} from "../../hooks/useBatchItems";
 import BatchRentModal from "../../modals/batch-rent";
 import BatchBar from "../batch-bar";
 import { CatalogueItem } from "../catalogue-item";
-import CatalogueLoader from "../catalogue-loader";
 import ActionButton from "../common/action-button";
-import ItemWrapper from "../common/items-wrapper";
-import Pagination from "../common/pagination";
 import LendingFields from "../lending-fields";
+import { PaginationList } from "../pagination-list";
 import { RentSwitchWrapper } from "../rent-switch-wrapper";
 
 export const AvailableToRent: React.FC<{
@@ -28,20 +24,12 @@ export const AvailableToRent: React.FC<{
     onCheckboxChange,
     checkedLendingItems
   } = useBatchItems();
-  const {
-    totalPages,
-    currentPageNumber,
-    currentPage,
-    onSetPage,
-    onPageControllerInit
-  } = usePageController<Lending>();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
-  const [_, fetchNfts] = useContext(NFTMetaContext);
   const noWallet = !signer;
 
-  useEffect(() => {
-    onPageControllerInit(allAvailableToRent.filter(isLending));
-  }, [allAvailableToRent, onPageControllerInit]);
+  const lendingItems = useMemo(() => {
+    return allAvailableToRent.filter(isLending);
+  }, [allAvailableToRent]);
 
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
@@ -60,15 +48,6 @@ export const AvailableToRent: React.FC<{
     setOpenBatchModel(true);
   }, []);
 
-  //Prefetch metadata
-  useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed) fetchNfts(currentPage);
-    return () => {
-      isSubscribed = false;
-    };
-  }, [currentPage, fetchNfts]);
-
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
       return () => {
@@ -78,20 +57,36 @@ export const AvailableToRent: React.FC<{
     [onCheckboxChange]
   );
 
-  if (isLoading && currentPage.length === 0)
+  const renderChild = useCallback(
+    (nft: Lending) => {
+      const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
+      return (
+        <CatalogueItem
+          key={getUniqueCheckboxId(nft)}
+          nft={nft}
+          checked={isChecked}
+          onCheckboxChange={checkBoxChangeWrapped(nft)}
+        >
+          <LendingFields nft={nft} />
+          <ActionButton<Lending>
+            onClick={handleBatchModalOpen}
+            nft={nft}
+            title="Rent Now"
+            disabled={isChecked || noWallet}
+          />
+        </CatalogueItem>
+      );
+    },
+    [checkedItems]
+  );
+
+  const renderEmptyResult = useCallback(() => {
     return (
-      <RentSwitchWrapper>
-        <CatalogueLoader />
-      </RentSwitchWrapper>
+      <div className="center content__message">
+        You can&apos;t rent anything yet
+      </div>
     );
-  if (!isLoading && currentPage.length === 0)
-    return (
-      <RentSwitchWrapper>
-        <div className="center content__message">
-          You can&apos;t rent anything yet
-        </div>
-      </RentSwitchWrapper>
-    );
+  }, []);
 
   return (
     <RentSwitchWrapper>
@@ -100,31 +95,11 @@ export const AvailableToRent: React.FC<{
         handleClose={handleBatchModalClose}
         nft={checkedLendingItems}
       />
-      <ItemWrapper>
-        {currentPage.map((nft: Lending) => {
-          const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
-          return (
-            <CatalogueItem
-              key={getUniqueCheckboxId(nft)}
-              nft={nft}
-              checked={isChecked}
-              onCheckboxChange={checkBoxChangeWrapped(nft)}
-            >
-              <LendingFields nft={nft} />
-              <ActionButton<Lending>
-                onClick={handleBatchModalOpen}
-                nft={nft}
-                title="Rent Now"
-                disabled={isChecked || noWallet}
-              />
-            </CatalogueItem>
-          );
-        })}
-      </ItemWrapper>
-      <Pagination
-        totalPages={totalPages}
-        currentPageNumber={currentPageNumber}
-        onSetPage={onSetPage}
+      <PaginationList
+        nfts={lendingItems}
+        renderItem={renderChild}
+        isLoading={isLoading}
+        renderEmptyResult={renderEmptyResult}
       />
       {checkedLendingItems.length > 0 && (
         <BatchBar

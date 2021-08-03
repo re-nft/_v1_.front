@@ -10,6 +10,7 @@ import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
+import { diffJson } from "diff";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -129,7 +130,7 @@ export const timeItAsync = async <T>(
 export const getContractWithSigner = async (
   tokenAddress: string,
   signer: ethers.Signer,
-  isERC721: boolean,
+  isERC721: boolean
 ): Promise<ERC721 | ERC1155> => {
   if (isERC721) {
     return getE721(tokenAddress, signer);
@@ -142,7 +143,10 @@ export const getContractWithProvider = async (
   tokenAddress: string,
   isERC721: boolean
 ): Promise<ERC721 | ERC1155> => {
-  const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL, 'homestead');
+  const provider = new JsonRpcProvider(
+    process.env.NEXT_PUBLIC_PROVIDER_URL,
+    "homestead"
+  );
   if (isERC721) {
     return getE721(tokenAddress, provider);
   } else {
@@ -198,9 +202,7 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   }
 };
 
-export const getDistinctItems = <
-  T extends Object
->(
+export const getDistinctItems = <T extends Object>(
   nfts: T[],
   property: keyof T
 ): T[] => {
@@ -302,3 +304,18 @@ export const isVideo = (image: string | undefined) =>
   image?.endsWith("mov") ||
   image?.endsWith("avi") ||
   image?.endsWith("flv");
+
+export const hasDifference = (a: Record<string, unknown> | unknown[], b: Record<string, unknown> | unknown[]) => {
+  const difference = diffJson(a, b, {
+    ignoreWhitespace: true
+  });
+  //const difference = true;
+  if (
+    difference &&
+    difference[1] &&
+    (difference[1].added || difference[1].removed)
+  ) {
+    return true;
+  }
+  return false;
+};

@@ -1,5 +1,5 @@
 import ActionButton from "../components/common/action-button";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
+import { getUniqueCheckboxId } from "../hooks/useBatchItems";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";

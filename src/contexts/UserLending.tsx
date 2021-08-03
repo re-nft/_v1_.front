@@ -7,11 +7,10 @@ import React, {
   useEffect
 } from "react";
 
-import { timeItAsync } from "../utils";
+import { hasDifference, timeItAsync } from "../utils";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
-import { diffJson } from "diff";
 import UserContext from "./UserProvider";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { usePrevious } from "../hooks/usePrevious";
@@ -55,16 +54,17 @@ export const UserLendingProvider: React.FC = ({ children }) => {
       }>
     >(
       timeItAsync("Pulled Users ReNFT Lendings", async () => {
-        return request(subgraphURI, queryUserLendingRenft(currentAddress)).catch(
-          () => {
-            // ! let's warn with unique messages, without console logging the error message
-            // ! that something went wrong. That way, if the app behaves incorrectly, we will
-            // ! know where to look. Right now I am running into an issue of localising the
-            // ! problem why user's lending does not show and there is no console.warn here
-            console.warn("could not pull users ReNFT lendings");
-            return {};
-          }
-        );
+        return request(
+          subgraphURI,
+          queryUserLendingRenft(currentAddress)
+        ).catch(() => {
+          // ! let's warn with unique messages, without console logging the error message
+          // ! that something went wrong. That way, if the app behaves incorrectly, we will
+          // ! know where to look. Right now I am running into an issue of localising the
+          // ! problem why user's lending does not show and there is no console.warn here
+          console.warn("could not pull users ReNFT lendings");
+          return {};
+        });
       })
     ).pipe(
       map((response) => {
@@ -85,16 +85,10 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         const normalizedLendings = lending;
         const normalizedLendingNew = lendings;
 
-        const difference = diffJson(normalizedLendings, normalizedLendingNew, {
-          ignoreWhitespace: true
-        });
+        const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
         if (currentAddress !== previousAddress) {
           setLendings(lendings);
-        } else if (
-          difference &&
-          difference[1] &&
-          (difference[1].added || difference[1].removed)
-        ) {
+        } else if (hasDiff) {
           setLendings(lendings);
         }
         setLoading(false);

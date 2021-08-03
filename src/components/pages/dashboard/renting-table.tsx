@@ -5,7 +5,7 @@ import { RentingRow } from "./dashboard-renting-row";
 import {
   getUniqueCheckboxId,
   UniqueID
-} from "../../../controller/batch-controller";
+} from "../../../hooks/useBatchItems";
 import { nftReturnIsExpired } from "../../../utils";
 
 export interface ExtendedRenting extends Renting {
