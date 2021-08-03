@@ -1,5 +1,4 @@
 import "../style/index.scss";
-import "video-react/dist/video-react.css";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
@@ -11,6 +10,8 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
+//@ts-ignore
+import NProgress from 'nprogress'
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
@@ -26,11 +27,30 @@ if (typeof window !== "undefined") {
 }
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
-  const { asPath } = useRouter();
+  const router = useRouter();
   
   useEffect(() => {
-    ReactGA.pageview(asPath);
-  }, [asPath]);
+    const handleStart = (url: string) => {
+      NProgress.start()
+    }
+    const handleStop = () => {
+      NProgress.done()
+    }
+
+    router.events.on('routeChangeStart', handleStart)
+    router.events.on('routeChangeComplete', handleStop)
+    router.events.on('routeChangeError', handleStop)
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart)
+      router.events.off('routeChangeComplete', handleStop)
+      router.events.off('routeChangeError', handleStop)
+    }
+  }, [router])
+
+  useEffect(() => {
+    ReactGA.pageview(router.asPath);
+  }, [router.asPath]);
 
   useEffect(() => {
     // Remove the server-side injected CSS.
