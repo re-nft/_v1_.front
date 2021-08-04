@@ -11,6 +11,7 @@ import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
+import { useSearch } from "../hooks/useSearch";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
@@ -101,6 +102,7 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
 const Lendings: React.FC = () => {
   const { signer } = useContext(UserContext);
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
+  const items = useSearch(allAvailableToLend);
 
   if (!signer) {
     return (
@@ -115,7 +117,7 @@ const Lendings: React.FC = () => {
   return (
     <LendSwitchWrapper>
       <PaginationList
-        nfts={allAvailableToLend}
+        nfts={items}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You don&apos;t have any NFTs to lend"

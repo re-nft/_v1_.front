@@ -15,6 +15,7 @@ import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
 import { PaginationList } from "../components/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
+import { useSearch } from "../hooks/useSearch";
 
 const RentingCatalogueItem: React.FC<{
   nft: Renting;
@@ -127,6 +128,7 @@ const UserRentings: React.FC = () => {
   const rentingItems = useMemo(() => {
     return userRenting.filter(isRenting);
   }, [userRenting]);
+  const items = useSearch(rentingItems);
 
   if (!signer) {
     return (
@@ -140,7 +142,7 @@ const UserRentings: React.FC = () => {
   return (
     <RentSwitchWrapper>
       <PaginationList
-        nfts={rentingItems}
+        nfts={items}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not renting anything yet"

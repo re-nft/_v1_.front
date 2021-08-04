@@ -13,6 +13,7 @@ import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
+import { useSearch } from "../hooks/useSearch";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -40,7 +41,9 @@ const LendingCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({ currentPage }) => {
+const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
+  currentPage
+}) => {
   const {
     checkedItems,
     handleReset: batchHandleReset,
@@ -49,8 +52,6 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({ currentPage }) =>
   } = useBatchItems();
 
   const [modalOpen, setModalOpen] = useState(false);
-
- 
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
@@ -116,7 +117,8 @@ const UserCurrentlyLending: React.FC = () => {
   const lendingItems = useMemo(() => {
     return userLending.filter(isLending);
   }, [userLending]);
-
+  
+  const items = useSearch(lendingItems);
 
   if (!signer) {
     return (
@@ -131,7 +133,7 @@ const UserCurrentlyLending: React.FC = () => {
   return (
     <LendSwitchWrapper>
       <PaginationList
-        nfts={lendingItems}
+        nfts={items}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not lending anything yet"
