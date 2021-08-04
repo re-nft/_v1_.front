@@ -13,6 +13,10 @@ const ItemWrapper: React.FC<{
           speed: 0.2
         }
       }}
+      decisionData={{
+        stagger: "forward",
+        spring: "wobble"
+      }}
     >
       <div className="content__row content__items">{children}</div>
     </Flipper>

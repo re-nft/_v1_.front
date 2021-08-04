@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Lending, Nft, Renting } from "../../contexts/graph/classes";
 import UserContext from "../../contexts/UserProvider";
 import { useBatchItems } from "../../hooks/useBatchItems";
@@ -81,6 +81,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
       <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Lending) => (
           <RentCatalogueItem
+            key={nft.id}
             nft={nft}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}

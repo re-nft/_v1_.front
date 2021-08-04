@@ -68,7 +68,9 @@ export const PaginationList = <T extends Nft>({
   // only modify the state if there are changes
   useEffect(() => {
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-    setState(newState);
+    if (pageItems.length === 0 || newState.pageItems.length === 0)
+      setState(newState);
+    else if (pageItems[0].id !== newState.pageItems[0].id) setState(newState);
   }, [pageItems, newState]);
 
   const onPageControllerInit = useCallback(
