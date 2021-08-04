@@ -1,7 +1,6 @@
 import CssTextField from "../components/common/css-text-field";
 
 import ActionButton from "../components/common/action-button";
-import { getUniqueCheckboxId } from "../hooks/useBatchItems";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
@@ -44,7 +43,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   const [nft] = nfts;
   const initialValues: FormProps = {
     inputs: nfts.map<LendingWithKey>((nft) => ({
-      key: getUniqueCheckboxId(nft),
+      key: nft.id,
       duration: undefined,
       ...nft
     }))
@@ -235,7 +234,7 @@ const ModalDialogSection: React.FC<{
     );
   };
   return (
-    <CommonInfo nft={item} key={getUniqueCheckboxId(item)}>
+    <CommonInfo nft={item} key={item.id}>
       <div className="modal-dialog-for">
         <div className="label">Rent Amount</div>
         <div className="dot"></div>

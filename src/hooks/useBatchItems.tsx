@@ -4,40 +4,14 @@ import {
   Nft,
   Lending,
   Renting,
-  isNft,
-  isLending,
-  isRenting,
 } from "../contexts/graph/classes";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
-import { THROWS } from "../utils";
+import { isLending, isNft, isRenting, THROWS, UniqueID } from "../utils";
 import moment from "moment";
 import { IRenting } from "../contexts/graph/types";
 import { TimestampContext } from "../contexts/TimestampProvider";
 
-export type UniqueID = string;
 
-const getUniqueID = (
-  nftAddress: string,
-  tokenId: string,
-  lendingId?: string
-): UniqueID => {
-  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
-    lendingId ?? 0
-  }`;
-};
 
-const getLendingId = (item: Nft): string => {
-  let lendingID = "0";
-  if (isLending(item)) lendingID = item.lending.id;
-  else if (isRenting(item))
-    lendingID = item.renting.lendingId
-      .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
-      .concat("renting");
-  return lendingID;
-};
-export const getUniqueCheckboxId = (item: Nft): string => {
-  return getUniqueID(item.address, item.tokenId, getLendingId(item));
-};
 
 export type BatchContextType = {
   // needs to be a hashmap because we need to check the presence in O(1) time
@@ -73,7 +47,7 @@ const shouldDelete =
   (item: Renting | Lending | Nft) => {
     const keys = new Set(items);
     if (keys && keys.size > 0) {
-      const id = getUniqueCheckboxId(item);
+      const id = item.id;
       if (id) {
         return keys.has(id);
       }
@@ -129,7 +103,7 @@ export const useBatchItems: () => BatchContextType = () => {
 
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
     (item) => {
-      const uniqueID = getUniqueCheckboxId(item);
+      const uniqueID = item.id;
       let newState = {};
       // if contained in prev, remove
       if (checkedItems[uniqueID]) {

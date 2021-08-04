@@ -5,12 +5,13 @@ import { ERC20 } from "./types/typechain/ERC20";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
-import { Lending, Renting } from "./contexts/graph/classes";
+import { Lending, Nft, NftType, Renting } from "./contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -319,3 +320,39 @@ export const hasDifference = (a: Record<string, unknown> | unknown[], b: Record<
   }
   return false;
 };
+export type UniqueID = string;
+
+// typeguard for Lending class
+export const isLending = (x: Nft | Lending | Renting): x is Lending => {
+  return x.type === NftType.Lending;
+};
+
+export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
+  return x.type === NftType.Renting;
+};
+
+export const isNft = (x: Nft | Lending | Renting): x is Nft => {
+  return x.type === NftType.Nft;
+};
+export const getUniqueID = (
+  nftAddress: string,
+  tokenId: string,
+  lendingId?: string
+): UniqueID => {
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
+    lendingId ?? 0
+  }`;
+};
+
+// const getLendingId = (item: Nft): string => {
+//   let lendingID = "0";
+//   if (isLending(item)) lendingID = item.lending.id;
+//   else if (isRenting(item))
+//     lendingID = item.renting.lendingId
+//       .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
+//       .concat("renting");
+//   return lendingID;
+// };
+// export const getUniqueCheckboxId = (item: Nft): string => {
+//   return getUniqueID(item.address, item.tokenId, getLendingId(item));
+// };

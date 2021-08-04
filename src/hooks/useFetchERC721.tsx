@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect } from "react";
-import { getUniqueCheckboxId } from "./useBatchItems";
 import { fetchUserProd721 } from "../services/graph";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";
@@ -8,9 +7,7 @@ import { NftToken } from "../contexts/graph/types";
 import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import produce from "immer";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { hasDifference } from "../utils";
 
 interface UserERC721State {
   users: Record<
@@ -27,22 +24,45 @@ interface UserERC721State {
 const useERC721 = create<UserERC721State>((set, get) => ({
   users: {},
   setUserNft: (user: string, items: Nft[]) =>
-    set(
-      produce((state) => {
-        if (!get().users[user]) state.users[user] = {};
-        const previousNfts = get().users[user].nfts || [];
-        if (hasDifference(previousNfts, items)) {
-          state.users[user].nfts = items;
+    set((state) => {
+      const previousNfts = state.users[user]?.nfts || [];
+      const newNFTS = items.reduce((acc, item) => {
+        acc.set(item.id, item);
+        return acc;
+      }, new Map<string, Nft>());
+      let nfts = [];
+      if (previousNfts.length === 0 || items.length === 0) {
+        nfts = items;
+      } else {
+        nfts = previousNfts.filter((item) => {
+          return newNFTS.has(item.id);
+        });
+      }
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          [`${user}`]: {
+            ...state.users[user],
+            nfts
+          }
         }
-      })
-    ),
+      };
+    }),
   setLoading: (user: string, isLoading: boolean) =>
-    set(
-      produce((state) => {
-        if (!get().users[user]) state.users[user] = {};
-        state.users[user].isLoading = isLoading;
-      })
-    )
+    set((state) => {
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          [`${user}`]: {
+            ...state.users[user],
+            isLoading
+          }
+        }
+       
+      };
+    })
 }));
 
 const fetchERC721 = (currentAddress: string) => {
@@ -75,10 +95,9 @@ const fetchERC721 = (currentAddress: string) => {
           });
         })
         .forEach((nft) => {
-          const id = getUniqueCheckboxId(nft);
-          if (!resultIds.has(id)) {
+          if (!resultIds.has(nft.id)) {
             items.push(nft);
-            resultIds.add(id);
+            resultIds.add(nft.id);
           }
         });
       return items;
@@ -123,9 +142,9 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         map((items) => {
           if (items) setUserNft(currentAddress, items);
         }),
-        debounceTime(500),
+        debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
-          setLoading(currentAddress, false)
+          setLoading(currentAddress, false);
         })
       )
       .subscribe();

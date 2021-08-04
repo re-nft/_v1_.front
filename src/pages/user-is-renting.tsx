@@ -1,18 +1,16 @@
 import React, { useCallback, useContext, useState, useMemo } from "react";
 
-import { isRenting, Lending, Renting } from "../contexts/graph/classes";
+import { Lending, Renting } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../modals/return-modal";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import {
-  getUniqueCheckboxId,
-  UniqueID,
   useBatchItems
 } from "../hooks/useBatchItems";
 import { Nft } from "../contexts/graph/classes";
 import { UserRentingContext } from "../contexts/UserRenting";
-import { nftReturnIsExpired } from "../utils";
+import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
@@ -25,7 +23,7 @@ const RentingCatalogueItem: React.FC<{
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   handleReturnNft: (nft: Renting) => () => void;
 }> = ({ nft, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
-  const id = getUniqueCheckboxId(nft);
+  const id = nft.id;
   const checked = !!checkedItems[id];
   const isExpired = nftReturnIsExpired(nft);
   const days = nft.renting.rentDuration;

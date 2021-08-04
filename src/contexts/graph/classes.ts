@@ -1,8 +1,9 @@
 import { Address } from "../../types";
+import { getUniqueID } from "../../utils";
 import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
 import { parseLending, parseRenting } from "./utils";
 
-enum NftType {
+export enum NftType {
   Nft,
   Lending,
   Renting
@@ -16,6 +17,7 @@ type NftOptions = {
 
 class Nft {
   type = NftType.Nft;
+  id: string;
   nftAddress: Address;
   address: Address;
   tokenId: string;
@@ -39,9 +41,7 @@ class Nft {
     this.nftAddress = nftAddress;
     this.tokenId = tokenId;
     this.amount = amount;
-
     this.isERC721 = isERC721;
-
     this._meta = options?.meta;
     if (options?.mediaURI) {
       this.mediaURI = options.mediaURI;
@@ -49,6 +49,8 @@ class Nft {
     if (options?.tokenURI) {
       this.tokenURI = options.tokenURI;
     }
+    //TODO:eniko check if we still need to do this
+    this.id = getUniqueID(nftAddress, tokenId, "0")
   }
 }
 
@@ -97,17 +99,6 @@ class Renting extends Nft {
   }
 }
 
-// typeguard for Lending class
-export const isLending = (x: Nft | Lending | Renting): x is Lending => {
-  return x.type === NftType.Lending;
-};
 
-export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
-  return x.type === NftType.Renting;
-};
-
-export const isNft = (x: Nft | Lending | Renting): x is Nft => {
-  return x.type === NftType.Nft;
-};
 
 export { Nft, Lending, Renting };

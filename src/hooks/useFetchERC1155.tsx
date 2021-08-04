@@ -1,17 +1,23 @@
 import { useCallback, useContext, useEffect } from "react";
-import { getUniqueCheckboxId } from "./useBatchItems";
 import { fetchUserProd1155 } from "../services/graph";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import UserContext from "../contexts/UserProvider";
 import { Nft } from "../contexts/graph/classes";
 import { NftToken } from "../contexts/graph/types";
-import { debounceTime, EMPTY, from, map, mergeMap, switchMap, timer } from "rxjs";
+import {
+  debounceTime,
+  EMPTY,
+  from,
+  map,
+  mergeMap,
+  switchMap,
+  timer
+} from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { getContractWithProvider, hasDifference } from "../utils";
+import { getContractWithProvider } from "../utils";
 
 interface UserERC1155State {
   users: Record<
@@ -56,10 +62,9 @@ const fetchERC1155 = (currentAddress: string) => {
           });
         })
         .forEach((nft) => {
-          const id = getUniqueCheckboxId(nft as Nft);
-          if (!resultIds.has(id)) {
+          if (!resultIds.has(nft.id)) {
             items.push(nft);
-            resultIds.add(id);
+            resultIds.add(nft.id);
           }
         });
       return items;
@@ -70,32 +75,60 @@ export const useERC1155 = create<UserERC1155State>(
   devtools((set, get) => ({
     users: {},
     setUserNft: (user: string, items: Nft[]) =>
-      set(
-        produce((state) => {
-          if (!get().users[user]) state.users[user] = {};
-          const previousNfts = get().users[user].nfts || [];
-          if (hasDifference(previousNfts, items)) {
-            state.users[user].nfts = items;
+      set((state) => {
+        const previousNfts = state.users[user]?.nfts || [];
+        const map = items.reduce((acc, item) => {
+          acc.set(item.id, item);
+          return acc;
+        }, new Map<string, Nft>());
+        let nfts = [];
+        if (previousNfts.length === 0 || items.length === 0) {
+          nfts = items;
+        } else {
+          nfts = previousNfts.filter((item) => {
+            return map.has(item.id);
+          });
+        }
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              nfts
+            }
           }
-        })
-      ),
+        };
+      }),
     setLoading: (user: string, isLoading: boolean) =>
-      set(
-        produce((state) => {
-          if (!get().users[user]) state.users[user] = {};
-          state.users[user].isLoading = isLoading;
-        })
-      ),
+      set((state) => {
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              isLoading
+            }
+          }
+        };
+      }),
     setAmount: (user: string, id: string, amount: string) =>
-      set(
-        produce((state) => {
-          if (!get().users[user]) state.users[user] = {};
-          const nft = get().users[user]?.nfts?.find(
-            (nft: Nft) => getUniqueCheckboxId(nft) === id
-          );
-          if (nft) nft.amount = amount;
-        })
-      )
+      set((state) => {
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              nfts: state.users[user]?.nfts.map((nft) => {
+                if (nft.id === id) nft.amount = amount;
+                return nft;
+              })
+            }
+          }
+        };
+      })
   }))
 );
 
@@ -139,7 +172,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             console.log(e);
             return "0";
           });
-        setAmount(currentAddress, getUniqueCheckboxId(nft), amount.toString());
+        setAmount(currentAddress, nft.id, amount.toString());
       }
     };
     const subscription = from(nfts)
@@ -162,9 +195,9 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         map((items) => {
           if (items) setUserNft(currentAddress, items);
         }),
-        debounceTime(500),
+        debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
-          setLoading(currentAddress, false)
+          setLoading(currentAddress, false);
         })
       )
       .subscribe();

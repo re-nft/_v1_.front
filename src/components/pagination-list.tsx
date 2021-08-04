@@ -5,9 +5,6 @@ import CatalogueLoader from "../components/catalogue-loader";
 import Pagination from "../components/common/pagination";
 import { useFetchMeta } from "../hooks/useMetaState";
 import { hasDifference } from "../utils";
-import { getUniqueCheckboxId } from "../hooks/useBatchItems";
-import { useDebounce } from "../hooks/useDebounce";
-import { SECOND_IN_MILLISECONDS } from "../consts";
 
 const defaultSate = {
   pageItems: [],
@@ -133,7 +130,7 @@ export const PaginationList = <
     <>
       <ItemWrapper>
         {currentPage.map((nft) => (
-          <Item nft={nft} {...itemProps} key={getUniqueCheckboxId(nft)} />
+          <Item nft={nft} {...itemProps} key={nft.id} />
         ))}
       </ItemWrapper>
       <Pagination

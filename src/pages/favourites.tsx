@@ -6,11 +6,9 @@ import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import { CatalogueItem } from "../components/catalogue-item";
 import {
-  getUniqueCheckboxId,
   useBatchItems
 } from "../hooks/useBatchItems";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { NFTMetaContext } from "../hooks/useMetaState";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import { Button } from "../components/common/button";
@@ -41,7 +39,6 @@ export const MyFavorites: React.FC = () => {
     refreshUserData
   } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
-  const [_, fetchNfts] = useContext(NFTMetaContext);
   const { onCheckboxChange } = useBatchItems();
   const onRemoveFromFavorites = useCallback(
     (nft: Nft) => {
@@ -65,10 +62,6 @@ export const MyFavorites: React.FC = () => {
     setNftItems(items);
   }, [allAvailableToLend, userData]);
 
-  //Prefetch metadata
-  useEffect(() => {
-    fetchNfts(nftItems);
-  }, [nftItems, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -88,13 +81,13 @@ export const MyFavorites: React.FC = () => {
   if (!isLoading && nftItems.length === 0) {
     return <div className="center">You dont have any added in favorites</div>;
   }
-
+  // TODO pagination control
   return (
     <div className="content">
       <div className="content__row content__items">
         {nftItems.map((nft) => (
           <CatalogueItem
-            key={getUniqueCheckboxId(nft)}
+            key={nft.id}
             nft={nft}
             isAlreadyFavourited
             onCheckboxChange={checkBoxChangeWrapped(nft)}

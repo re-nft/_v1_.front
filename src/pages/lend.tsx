@@ -5,14 +5,13 @@ import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import {
-  getUniqueCheckboxId,
-  UniqueID,
   useBatchItems
 } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
+import { UniqueID } from "../utils";
 
 
 const LendCatalagoueItem: React.FC<{
@@ -26,7 +25,7 @@ const LendCatalagoueItem: React.FC<{
   checkBoxChangeWrapped,
   handleStartLend
 }) => {
-  const checked = !!checkedItems[getUniqueCheckboxId(nft)];
+  const checked = !!checkedItems[nft.id];
 
   return (
     <CatalogueItem

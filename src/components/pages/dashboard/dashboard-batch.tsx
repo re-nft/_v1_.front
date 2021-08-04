@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import MultipleBatchBar from "../../multiple-batch-bar";
 import { Lending, Renting } from "../../../contexts/graph/classes";
-import { getUniqueCheckboxId } from "../../../hooks/useBatchItems";
 import ClaimModal from "../../../modals/claim-modal";
 import ReturnModal from "../../../modals/return-modal";
 import StopLendModal from "../../../modals/stop-lend-modal";
@@ -52,7 +51,7 @@ export const DashboardBatch: React.FC<{
           onClose={() => {
             toggleReturnModal(false);
             handleResetRenting(
-              checkedRentingItems.map((i) => getUniqueCheckboxId(i))
+              checkedRentingItems.map((i) => i.id)
             );
           }}
         />
@@ -64,7 +63,7 @@ export const DashboardBatch: React.FC<{
           onClose={() => {
             toggleLendModal(false);
             handleResetLending(
-              lendinItemsStopLendable.map((i) => getUniqueCheckboxId(i))
+              lendinItemsStopLendable.map((i) => i.id)
             );
           }}
         />
@@ -76,7 +75,7 @@ export const DashboardBatch: React.FC<{
           onClose={() => {
             toggleClaimModal(false);
             handleResetLending(
-              checkedClaims.map((i) => getUniqueCheckboxId(i))
+              checkedClaims.map((i) => i.id)
             );
           }}
         />

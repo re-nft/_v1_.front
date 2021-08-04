@@ -1,12 +1,10 @@
 import React, { useContext, useCallback, useState, useMemo } from "react";
 
-import { Lending, isLending, Renting, Nft } from "../contexts/graph/classes";
+import { Lending, Renting, Nft } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import {
-  getUniqueCheckboxId,
-  UniqueID,
   useBatchItems
 } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
@@ -15,6 +13,7 @@ import UserContext from "../contexts/UserProvider";
 import { StopLendModal } from "../modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
+import { isLending, UniqueID } from "../utils";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -23,7 +22,7 @@ const LendingCatalogueItem: React.FC<{
   handleClickNft: (nft: Lending) => void;
 }> = ({ nft, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
   const hasRenting = !!nft.renting;
-  const isChecked = !!checkedItems[getUniqueCheckboxId(nft)];
+  const isChecked = !!checkedItems[nft.id];
   return (
     <CatalogueItem
       checked={isChecked}

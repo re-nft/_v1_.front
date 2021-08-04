@@ -1,10 +1,7 @@
 import React from "react";
 import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
-import {
-  getUniqueCheckboxId,
-  UniqueID
-} from "../../../hooks/useBatchItems";
+import { UniqueID } from "../../../utils";
 import { LendingRow } from "./dashboard-lending-row";
 
 export interface ExtendedLending extends Lending {
@@ -54,7 +51,7 @@ export const LendingTable: React.FC<{
         </Thead>
         <Tbody>
           {lendingItems.map((lend) => {
-            const id = getUniqueCheckboxId(lend);
+            const id = lend.id;
             const hasRenting = !!lend.renting;
             const checked = !!checkedItems[id];
             return (

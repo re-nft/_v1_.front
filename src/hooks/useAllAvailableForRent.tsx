@@ -3,12 +3,11 @@ import { useContext, useEffect, useMemo } from "react";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { queryAllLendingRenft } from "../contexts/graph/queries";
-import { hasDifference, timeItAsync } from "../utils";
+import { timeItAsync } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { EMPTY, from, map, switchMap, timer } from "rxjs";
+import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
-import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
@@ -42,29 +41,40 @@ const fetchRentings = () => {
 interface allAvailableForRent {
   isLoading: boolean;
   nfts: Lending[];
-  setNfts: (nfts: Nft[]) => void;
+  setNfts: (nfts: Lending[]) => void;
   setLoading: (loading: boolean) => void;
 }
 
 const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
   isLoading: false,
   nfts: [],
-  setNfts: (nfts: Nft[]) =>
-    set(
-      produce((state) => {
-        state.isLoading = false;
-        const previousNfts = get().nfts;
-        if (hasDifference(previousNfts, nfts)) {
-          state.nfts = nfts;
-        }
-      })
-    ),
+  setNfts: (items: Lending[]) =>
+    set((state) => {
+      const previousNfts = state.nfts || [];
+      const map = items.reduce((acc, item) => {
+        acc.set(item.id, item);
+        return acc;
+      }, new Map<string, Nft>());
+      let nfts = [];
+      if (previousNfts.length === 0 || items.length === 0) {
+        nfts = items;
+      } else {
+        nfts = previousNfts.filter((item) => {
+          return map.has(item.id);
+        });
+      }
+      return {
+        ...state,
+        nfts
+      };
+    }),
   setLoading: (isLoading: boolean) =>
-    set(
-      produce((state) => {
-        state.isLoading = isLoading;
-      })
-    )
+    set((state) => {
+      return {
+        ...state,
+        isLoading
+      };
+    })
 }));
 
 export const useAllAvailableForRent = () => {
@@ -81,13 +91,16 @@ export const useAllAvailableForRent = () => {
         switchMap(() => {
           if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
             if (nfts && nfts.length > 0) return [];
-            return EMPTY;
+            return [];
           }
           setLoading(true);
           return fetchRentings();
         }),
         map((items) => {
-          setNfts(items);
+          if(items) setNfts(items);
+        }),
+        debounceTime(SECOND_IN_MILLISECONDS),
+        map(() => {
           setLoading(false);
         })
       )
@@ -95,7 +108,7 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchRentings, currentAddress, setLoading]);
+  }, [fetchRentings, currentAddress, setLoading, network]);
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
@@ -103,7 +116,8 @@ export const useAllAvailableForRent = () => {
       // empty address show all renting
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
       // ! therefore, this check is !==
-      const userNotLender = l.lending.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
+      const userNotLender =
+        l.lending.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
       const userNotRenter =
         l.renting && l.renting.renterAddress
           ? l.renting.renterAddress.toLowerCase() !== currentAddress
