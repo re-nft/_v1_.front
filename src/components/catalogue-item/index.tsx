@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useCallback } from "react";
+import React, { useContext, useMemo, useCallback } from "react";
 import { Nft } from "../../contexts/graph/classes";
 import { nftId } from "../../services/firebase";
 import { CatalogueItemRow } from "./catalogue-item-row";
@@ -6,14 +6,12 @@ import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
-import useClipboard from "react-use-clipboard";
-import LinkIcon from "@material-ui/icons/Link";
-import IconButton from "@material-ui/core/IconButton";
-import { SnackAlertContext } from "../../contexts/SnackProvider";
+
 import { useRouter } from "next/router";
 import { useNftMetaState } from "../../hooks/useMetaState";
 import shallow from "zustand/shallow";
 import { Flipped, spring } from "react-flip-toolkit";
+import { CopyLink } from "../copy-link";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -31,21 +29,25 @@ const onElementAppear = (el: HTMLElement, index: number) =>
     delay: index * 50
   });
 
-const onExit = (type: "grid" | "list") => (el: HTMLElement, index: number, removeElement: () => void) => {
-  spring({
-    config: { overshootClamping: true },
-    onUpdate: (val) => {
-      el.style.transform = `scale${type === "grid" ? "X" : "Y"}(${1 - Number(val)})`;
-    },
-    delay: index * 50,
-    onComplete: removeElement
-  });
+const onExit =
+  (type: "grid" | "list") =>
+  (el: HTMLElement, index: number, removeElement: () => void) => {
+    spring({
+      config: { overshootClamping: true },
+      onUpdate: (val) => {
+        el.style.transform = `scale${type === "grid" ? "X" : "Y"}(${
+          1 - Number(val)
+        })`;
+      },
+      delay: index * 50,
+      onComplete: removeElement
+    });
 
-  return () => {
-    el.style.opacity = "";
-    removeElement();
+    return () => {
+      el.style.opacity = "";
+      removeElement();
+    };
   };
-};
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
@@ -70,17 +72,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 
   const { pathname } = useRouter();
-
-  const copyLink = useMemo(() => {
-    const href =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://dapp.renft.io";
-    return `${href}/rent/${nft.address}/${nft.tokenId}`;
-  }, [typeof window !== "undefined", nft.address, nft.tokenId]);
-
-  const [isCopied, setCopied] = useClipboard(copyLink);
-  const { setError } = useContext(SnackAlertContext);
   const imageIsReady = useMemo(() => {
     return meta && !meta.loading;
   }, [meta]);
@@ -97,10 +88,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     }
     return false;
   }, []);
-
-  useEffect(() => {
-    if (isCopied) setError(`Link copied to the clipboard ${copyLink}`, "info");
-  }, [isCopied, copyLink, setError]);
 
   const knownContract = useMemo(() => {
     return (
@@ -182,15 +169,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                     </a>
                   )}
                   {isRentPage && (
-                    <>
-                      <IconButton
-                        onClick={setCopied}
-                        size="small"
-                        aria-label="copy"
-                      >
-                        <LinkIcon />
-                      </IconButton>
-                    </>
+                    <CopyLink address={nft.address} tokenId={nft.tokenId} />
                   )}
                 </div>
               </>
