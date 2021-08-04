@@ -4,27 +4,20 @@ import BatchLendModal from "../modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
-import {
-  useBatchItems
-} from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { UniqueID } from "../utils";
-
+import ItemWrapper from "../components/common/items-wrapper";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
-  nft: Nft,
-  checkBoxChangeWrapped: (nft: Nft) => () => void,
-  handleStartLend: (nft: Nft) =>() => void
-}> = ({
-  checkedItems,
-  nft,
-  checkBoxChangeWrapped,
-  handleStartLend
-}) => {
+  nft: Nft;
+  checkBoxChangeWrapped: (nft: Nft) => () => void;
+  handleStartLend: (nft: Nft) => () => void;
+}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend }) => {
   const checked = !!checkedItems[nft.id];
 
   return (
@@ -41,15 +34,12 @@ const LendCatalagoueItem: React.FC<{
       />
     </CatalogueItem>
   );
-}
+};
 
-const Lendings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
+  const [modalOpen, setModalOpen] = useState(false);
   const { checkedItems, handleReset, onCheckboxChange, checkedNftItems } =
     useBatchItems();
-  const { allAvailableToLend, isLoading } = useAllAvailableToLend();
-  const [modalOpen, setModalOpen] = useState(false);
-
   const handleClose = useCallback(() => {
     setModalOpen(false);
     handleReset();
@@ -76,12 +66,41 @@ const Lendings: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const renderEmptyResult = useCallback(()=>{
-    return (<div className="center content__message">
-        You don&apos;t have any NFTs to lend
-      </div>
-    )
-  }, [])
+  return (
+    <div>
+      {modalOpen && (
+        <BatchLendModal
+          nfts={checkedNftItems}
+          open={modalOpen}
+          onClose={handleClose}
+        />
+      )}
+      <ItemWrapper>
+        {currentPage.map((nft: Nft) => (
+          <LendCatalagoueItem
+            nft={nft}
+            key={nft.id}
+            checkedItems={checkedItems}
+            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            handleStartLend={handleStartLend}
+          />
+        ))}
+      </ItemWrapper>
+      {checkedNftItems.length > 0 && (
+        <BatchBar
+          title={`Selected ${checkedNftItems.length} items`}
+          actionTitle="Lend All"
+          onCancel={handleReset}
+          onClick={handleBatchModalOpen}
+        />
+      )}
+    </div>
+  );
+};
+
+const Lendings: React.FC = () => {
+  const { signer } = useContext(UserContext);
+  const { allAvailableToLend, isLoading } = useAllAvailableToLend();
 
   if (!signer) {
     return (
@@ -95,32 +114,12 @@ const Lendings: React.FC = () => {
 
   return (
     <LendSwitchWrapper>
-      {modalOpen && (
-        <BatchLendModal
-          nfts={checkedNftItems}
-          open={modalOpen}
-          onClose={handleClose}
-        />
-      )}
       <PaginationList
         nfts={allAvailableToLend}
-        Item={LendCatalagoueItem}
-        itemProps={{
-          checkedItems,
-          checkBoxChangeWrapped,
-          handleStartLend
-        }}
+        ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
-        renderEmptyResult={renderEmptyResult}
+        emptyResultMessage="You don&apos;t have any NFTs to lend"
       />
-      {checkedNftItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedNftItems.length} items`}
-          actionTitle="Lend All"
-          onCancel={handleReset}
-          onClick={handleBatchModalOpen}
-        />
-      )}
     </LendSwitchWrapper>
   );
 };

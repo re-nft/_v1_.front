@@ -4,9 +4,7 @@ import { Lending, Renting, Nft } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
-import {
-  useBatchItems
-} from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
 import { UserLendingContext } from "../contexts/UserLending";
 import UserContext from "../contexts/UserProvider";
@@ -14,6 +12,7 @@ import { StopLendModal } from "../modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
+import ItemWrapper from "../components/common/items-wrapper";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -41,8 +40,7 @@ const LendingCatalogueItem: React.FC<{
   );
 };
 
-const UserCurrentlyLending: React.FC = () => {
-  const { signer } = useContext(UserContext);
+const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({ currentPage }) => {
   const {
     checkedItems,
     handleReset: batchHandleReset,
@@ -50,12 +48,9 @@ const UserCurrentlyLending: React.FC = () => {
     onCheckboxChange
   } = useBatchItems();
 
-  const { userLending, isLoading } = useContext(UserLendingContext);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const lendingItems = useMemo(() => {
-    return userLending.filter(isLending);
-  }, [userLending]);
+ 
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
@@ -83,13 +78,45 @@ const UserCurrentlyLending: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const renderEmptyResult = useCallback(() => {
-    return (
-      <div className="center content__message">
-        You are not lending anything yet
-      </div>
-    );
-  }, []);
+  return (
+    <div>
+      {modalOpen && (
+        <StopLendModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          nfts={checkedLendingItems}
+        />
+      )}
+      <ItemWrapper>
+        {currentPage.map((nft: Lending) => (
+          <LendingCatalogueItem
+            nft={nft}
+            key={nft.id}
+            checkedItems={checkedItems}
+            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            handleClickNft={handleClickNft}
+          />
+        ))}
+      </ItemWrapper>
+      {checkedLendingItems.length > 0 && (
+        <BatchBar
+          title={`Selected ${checkedLendingItems.length} items`}
+          actionTitle="Stop Lending"
+          onClick={handleOpenModal}
+          onCancel={batchHandleReset}
+        />
+      )}
+    </div>
+  );
+};
+const UserCurrentlyLending: React.FC = () => {
+  const { signer } = useContext(UserContext);
+  const { userLending, isLoading } = useContext(UserLendingContext);
+
+  const lendingItems = useMemo(() => {
+    return userLending.filter(isLending);
+  }, [userLending]);
+
 
   if (!signer) {
     return (
@@ -103,32 +130,12 @@ const UserCurrentlyLending: React.FC = () => {
 
   return (
     <LendSwitchWrapper>
-      {modalOpen && (
-        <StopLendModal
-          open={modalOpen}
-          onClose={handleCloseModal}
-          nfts={checkedLendingItems}
-        />
-      )}
       <PaginationList
         nfts={lendingItems}
-        Item={LendingCatalogueItem}
-        itemProps={{
-          checkedItems,
-          handleClickNft,
-          checkBoxChangeWrapped
-        }}
+        ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
-        renderEmptyResult={renderEmptyResult}
+        emptyResultMessage="You are not lending anything yet"
       />
-      {checkedLendingItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedLendingItems.length} items`}
-          actionTitle="Stop Lending"
-          onClick={handleOpenModal}
-          onCancel={batchHandleReset}
-        />
-      )}
     </LendSwitchWrapper>
   );
 };

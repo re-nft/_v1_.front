@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Nft } from "../contexts/graph/classes";
-import ItemWrapper from "../components/common/items-wrapper";
-import CatalogueLoader from "../components/catalogue-loader";
-import Pagination from "../components/common/pagination";
+import CatalogueLoader from "./catalogue-loader";
+import Pagination from "./common/pagination";
 import { useFetchMeta } from "../hooks/useMetaState";
-import { hasDifference } from "../utils";
 
 const defaultSate = {
   pageItems: [],
@@ -22,21 +20,16 @@ type State<T> = {
 
 const PAGE_SIZE = 20;
 
-export const PaginationList = <
-  T extends Nft,
-  V extends Record<string, unknown>
->({
+export const PaginationList = <T extends Nft>({
   nfts,
-  Item,
+  ItemsRenderer,
   isLoading,
-  renderEmptyResult,
-  itemProps
+  emptyResultMessage
 }: {
   nfts: T[] | T[];
   isLoading: boolean;
-  Item: React.FC<{ nft: T } & V>;
-  renderEmptyResult: () => JSX.Element;
-  itemProps: V;
+  ItemsRenderer: React.FC<{ currentPage: T[] }>;
+  emptyResultMessage: string;
 }) => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
     useState<State<T>>(defaultSate);
@@ -75,16 +68,7 @@ export const PaginationList = <
   // only modify the state if there are changes
   useEffect(() => {
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-    const oldStateNormalized = pageItems;
-    const newStateNormalized = newState.pageItems;
-    const hasDiff = hasDifference(oldStateNormalized, newStateNormalized);
-    //const difference = true;
-    if (hasDiff) {
-      setState((prevState) => ({
-        ...prevState,
-        ...newState
-      }));
-    }
+    setState(newState);
   }, [pageItems, newState]);
 
   const onPageControllerInit = useCallback(
@@ -106,7 +90,7 @@ export const PaginationList = <
   // init page state
   useEffect(() => {
     let isSubscribed = true;
-    if(isLoading) return;
+    if (isLoading) return;
     if (isSubscribed) onPageControllerInit(nfts);
     return () => {
       isSubscribed = false;
@@ -115,7 +99,7 @@ export const PaginationList = <
 
   // Fetch meta state
   useEffect(() => {
-    if(isLoading) return;
+    if (isLoading) return;
     fetchMeta(currentPage);
   }, [currentPage, isLoading]);
 
@@ -124,15 +108,11 @@ export const PaginationList = <
   }
 
   if (!isLoading && currentPage.length === 0) {
-    return renderEmptyResult();
+    return <div className="center content__message">{emptyResultMessage}</div>;
   }
   return (
     <>
-      <ItemWrapper>
-        {currentPage.map((nft) => (
-          <Item nft={nft} {...itemProps} key={nft.id} />
-        ))}
-      </ItemWrapper>
+      <ItemsRenderer currentPage={currentPage}></ItemsRenderer>
       <Pagination
         totalPages={totalPages}
         currentPageNumber={currentPageNumber}

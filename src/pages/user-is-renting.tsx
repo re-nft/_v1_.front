@@ -5,9 +5,7 @@ import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../modals/return-modal";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
-import {
-  useBatchItems
-} from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/useBatchItems";
 import { Nft } from "../contexts/graph/classes";
 import { UserRentingContext } from "../contexts/UserRenting";
 import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
@@ -16,6 +14,7 @@ import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
 import { PaginationList } from "../components/pagination-list";
+import ItemWrapper from "../components/common/items-wrapper";
 
 const RentingCatalogueItem: React.FC<{
   nft: Renting;
@@ -52,15 +51,15 @@ const RentingCatalogueItem: React.FC<{
   );
 };
 
-const UserRentings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
+  currentPage
+}) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
     checkedRentingItems
   } = useBatchItems();
-  const { userRenting, isLoading } = useContext(UserRentingContext);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
@@ -79,9 +78,6 @@ const UserRentings: React.FC = () => {
     },
     [onCheckboxChange]
   );
-  const rentingItems = useMemo(() => {
-    return userRenting.filter(isRenting);
-  }, [userRenting]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -91,13 +87,46 @@ const UserRentings: React.FC = () => {
     },
     [onCheckboxChange]
   );
-  const renderEmptyResult = useCallback(() => {
-    return (
-      <div className="center content__message">
-        You are not renting anything yet
-      </div>
-    );
-  }, []);
+  return (
+    <div>
+      {modalOpen && (
+        <ReturnModal
+          open={modalOpen}
+          nfts={checkedRentingItems}
+          onClose={handleCloseModal}
+        />
+      )}
+      <ItemWrapper>
+        {currentPage.map((nft: Renting) => (
+          <RentingCatalogueItem
+            nft={nft}
+            key={nft.id}
+            checkedItems={checkedItems}
+            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            handleReturnNft={handleReturnNft}
+          />
+        ))}
+      </ItemWrapper>
+      {checkedRentingItems.length > 0 && (
+        <BatchBar
+          title={`Selected ${checkedRentingItems.length} items`}
+          actionTitle={
+            checkedRentingItems.length > 1 ? "Return all NFTs" : "Return NFT"
+          }
+          onCancel={handleBatchReset}
+          onClick={handleBatchStopRent}
+        />
+      )}
+    </div>
+  );
+};
+const UserRentings: React.FC = () => {
+  const { signer } = useContext(UserContext);
+  const { userRenting, isLoading } = useContext(UserRentingContext);
+
+  const rentingItems = useMemo(() => {
+    return userRenting.filter(isRenting);
+  }, [userRenting]);
 
   if (!signer) {
     return (
@@ -110,34 +139,12 @@ const UserRentings: React.FC = () => {
   }
   return (
     <RentSwitchWrapper>
-      {modalOpen && (
-        <ReturnModal
-          open={modalOpen}
-          nfts={checkedRentingItems}
-          onClose={handleCloseModal}
-        />
-      )}
       <PaginationList
         nfts={rentingItems}
-        Item={RentingCatalogueItem}
-        itemProps={{
-          checkedItems,
-          handleReturnNft,
-          checkBoxChangeWrapped
-        }}
+        ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
-        renderEmptyResult={renderEmptyResult}
+        emptyResultMessage="You are not renting anything yet"
       />
-      {checkedRentingItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedRentingItems.length} items`}
-          actionTitle={
-            checkedRentingItems.length > 1 ? "Return all NFTs" : "Return NFT"
-          }
-          onCancel={handleBatchReset}
-          onClick={handleBatchStopRent}
-        />
-      )}
     </RentSwitchWrapper>
   );
 };

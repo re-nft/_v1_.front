@@ -6,7 +6,7 @@ import { queryAllLendingRenft } from "../contexts/graph/queries";
 import { timeItAsync } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
+import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
 import create from "zustand";
@@ -97,7 +97,7 @@ export const useAllAvailableForRent = () => {
           return fetchRentings();
         }),
         map((items) => {
-          if(items) setNfts(items);
+          if (items) setNfts(items);
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
