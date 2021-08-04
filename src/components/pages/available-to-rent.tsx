@@ -7,10 +7,10 @@ import { isLending, UniqueID } from "../../utils";
 import BatchBar from "../batch-bar";
 import { CatalogueItem } from "../catalogue-item";
 import ActionButton from "../common/action-button";
-import ItemWrapper from "../common/items-wrapper";
 import LendingFields from "../lending-fields";
 import { PaginationList } from "../pagination-list";
 import { RentSwitchWrapper } from "../rent-switch-wrapper";
+import ItemWrapper from "../common/items-wrapper";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
@@ -77,11 +77,11 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
         handleClose={handleBatchModalClose}
         nft={checkedLendingItems}
       />
-      <ItemWrapper>
+
+      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Lending) => (
           <RentCatalogueItem
             nft={nft}
-            key={nft.id}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleBatchModalOpen={handleBatchModalOpen}
