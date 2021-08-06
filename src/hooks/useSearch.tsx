@@ -1,8 +1,5 @@
 import { useCallback, useMemo } from "react";
-import {
-  NftFilterType,
-  useNFTFilterBy
-} from "../components/app-layout/nft-filter-select";
+import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import {
   NftSortType,
   useNFTSortBy
@@ -12,6 +9,9 @@ import { Lending, Nft } from "../contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
+import { useNftMetaState } from "./useMetaState";
+import { NO_COLLECTION } from "../consts";
+import { nftId } from "../services/firebase";
 
 export const toUSD = (
   paymentToken: PaymentToken,
@@ -36,14 +36,11 @@ export const sortByDailyRentPrice =
   };
 
 export const sortByCollateral =
-  <T extends Nft>(
-    dir: "asc" | "desc" = "asc"
-  ) =>
+  <T extends Nft>(dir: "asc" | "desc" = "asc") =>
   (
     a: T & { priceInUSD: number; collateralInUSD: number },
     b: T & { priceInUSD: number; collateralInUSD: number }
   ) => {
- 
     const result = compare(a.collateralInUSD, b.collateralInUSD);
     return dir === "desc" ? result : result * -1;
   };
@@ -72,42 +69,38 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     shallow
   );
   const tokenPerUSD = useExchangePrice();
+  const metas = useNftMetaState(useCallback((state) => state.metas, []));
+  const keys = useNftMetaState(useCallback((state) => state.keys, []));
+
+  const categories = useMemo(() => {
+    return Object.keys(metas).reduce((acc, id) => {
+      const meta = metas[id];
+      if (meta.collection) {
+        const collectionName = metas[id].collection?.name || NO_COLLECTION;
+        const set = acc.get(collectionName) || new Set();
+        set.add(id);
+        acc.set(collectionName, set);
+      } else {
+        const set = acc.get(NO_COLLECTION) || new Set();
+        set.add(id);
+        acc.set(NO_COLLECTION, set);
+      }
+      return acc;
+    }, new Map<string, Set<string>>());
+  }, [keys]);
 
   const filterItems = useCallback(
     (
       items: (T & { priceInUSD: number; collateralInUSD: number })[],
-      filter: NftFilterType
+      filter: string | null
     ) => {
-      switch (filter) {
-        case "all":
-          return items;
-        case "art":
-          return items;
-        case "utility":
-          return items;
-        case "gaming":
-          return items;
-        case "erc-721":
-          return items.filter((i) => i.isERC721);
-        case "erc-1155":
-          return items.filter((i) => !i.isERC721);
-        case "punks":
-          return items.filter(
-            (i) =>
-              i.address.toLowerCase() ===
-              "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
-          );
-        case "mooncats":
-          return items.filter(
-            (i) =>
-              i.address.toLowerCase() ===
-              "0x495f947276749ce646f68ac8c248420045cb7b5e"
-          );
-        default:
-          return items;
-      }
+      if (!filter) return items;
+      const category = categories.get(filter);
+      return items.filter((item) => {
+        return category?.has(nftId(item.address, item.tokenId || ""));
+      });
     },
-    []
+    [categories]
   );
   const sortItems = useCallback(
     (
@@ -115,7 +108,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         priceInUSD: number;
         collateralInUSD: number;
       })[],
-      sortBy: NftSortType,
+      sortBy: NftSortType
     ) => {
       switch (sortBy) {
         case "all":
@@ -158,4 +151,35 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
 
     return r;
   }, [items, filter, sortBy, tokenPerUSD]);
+};
+
+export const useSearchOptions = () => {
+  const metas = useNftMetaState(
+    useCallback((state) => state.metas, []),
+    shallow
+  );
+  const keys = useNftMetaState(
+    useCallback((state) => state.keys, []),
+    shallow
+  );
+  return useMemo(() => {
+    const set = new Set<string>();
+    const arr: { name: string; description: string }[] = [];
+    Object.keys(metas).forEach((id: string) => {
+      const meta = metas[id];
+      if (meta.collection) {
+        const name = meta.collection.name || NO_COLLECTION;
+        if(!set.has(name)){
+          set.add(name);
+          arr.push(meta.collection);
+        }
+ 
+      } else {
+        if (!set.has(NO_COLLECTION)) {
+          set.add(NO_COLLECTION);
+        }
+      }
+    });
+    return arr;
+  }, [keys]);
 };

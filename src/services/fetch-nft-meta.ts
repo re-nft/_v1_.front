@@ -1,4 +1,4 @@
-import { NftToken } from "../contexts/graph/types";
+import { NftToken, NftTokenMeta } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
 import { nftId } from "./firebase";
 import fetch from "cross-fetch";
@@ -11,7 +11,7 @@ import {
   snakeCaseToCamelCase,
 } from "./utils";
 
-export type NftMetaWithId = NftToken["meta"] & { id: string };
+export type NftMetaWithId = NftTokenMeta & { id: string };
 export type NftError = { id: string; error: string };
 
 export interface Asset {
@@ -50,11 +50,51 @@ export interface OpenSeaAssetContract extends OpenSeaFees {
 }
 
 /**
+ * Annotated collection with OpenSea metadata
+ */
+ export interface OpenSeaCollection extends OpenSeaFees {
+  // Name of the collection
+  name: string
+  // Slug, used in URL
+  slug: string
+  // Accounts allowed to edit this collection
+  editors: string[]
+  // Whether this collection is hidden from the homepage
+  hidden: boolean
+  // Whether this collection is featured
+  featured: boolean
+  // Date collection was created
+  createdDate: Date,
+
+  // Description of the collection
+  description: string
+  // Image for the collection
+  imageUrl: string
+  // Image for the collection, large
+  largeImageUrl: string
+  // Image for the collection when featured
+  featuredImageUrl: string
+  // Object with stats about the collection
+  stats: object
+  // Data about displaying cards
+  displayData: object,
+  // Tokens allowed for this collection
+ // paymentTokens: OpenSeaFungibleToken[]
+  // Address for dev fee payouts
+  payoutAddress?: string,
+  // Array of trait types for the collection
+ // traitStats: OpenSeaTraitStats,
+  // Link to the collection's main website
+  externalLink?: string
+  // Link to the collection's wiki, if available
+  wikiLink?: string
+}
+/**
  * Annotated asset spec with OpenSea metadata
  */
 export interface OpenSeaAsset extends Asset {
   assetContract: OpenSeaAssetContract;
-  // collection: OpenSeaCollection;
+  collection: OpenSeaCollection;
   name: string;
   description: string;
   // owner: OpenSeaAccount;
@@ -173,6 +213,11 @@ export const fetchNFTsFromOpenSea = async (
         return {
           ...nft,
           openseaLink: nft.permalink,
+          collection: {
+            name: nft.collection?.name,
+            description: nft.collection?.description,
+            imageUrl: nft.collection?.imageUrl,
+          },
           image:
             nft.imagePreviewUrl ||
             nft.imageUrlThumbnail ||

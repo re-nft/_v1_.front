@@ -57,7 +57,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         return request(
           subgraphURI,
           queryUserLendingRenft(currentAddress)
-        ).catch(() => {
+        ).catch((e) => {
           // ! let's warn with unique messages, without console logging the error message
           // ! that something went wrong. That way, if the app behaves incorrectly, we will
           // ! know where to look. Right now I am running into an issue of localising the

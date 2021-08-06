@@ -1,56 +1,97 @@
-import { FormControl } from "@material-ui/core";
+import { TextField, withStyles } from "@material-ui/core";
 import React, { useCallback } from "react";
 
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
-import { CategorySelect, CategoryMenuItem } from "../common/category-select";
+import { Autocomplete } from "@material-ui/lab";
+import { useSearchOptions } from "../../hooks/useSearch";
 
-export type NftFilterType = 'all' | 'art' | 'utility' | 'gaming' | 'erc-721' | 'erc-1155' | 'punks' | 'mooncats';
 interface NftFilterState {
-  filters: NftFilterType;
-  setFilters: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
+  filters: string | null;
+  setFilters: (value: string | null) => void;
 }
 
 export const useNFTFilterBy = create<NftFilterState>(
   devtools((set, get) => ({
-    filters: "all",
-    setFilters: ( event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+    filters: null,
+    setFilters: (value) =>
       set(
         produce((state) => {
-          state.filters = event.target.value;
+          state.filters = value;
         })
       )
   }))
 );
 
+const style = {
+  root: {
+    color: "black",
+    width: "15rem !important",
+    fontFamily: "VT323",
+    fontSize: "14px"
+  },
+  inputRoot: {
+    border: "3px solid black",
+    color: "black",
+    paddingRight: "0",
+    marginTop: "0 !important",
+    height: "45px",
+    fontFamily: "VT323",
+    fontSize: "14px",
+    paddingLeft: "10px"
+  }
+};
+const StyledAutocomplete = withStyles(style)(Autocomplete);
+
 export const NftFilterSelect = () => {
   const setNftFilter = useNFTFilterBy((state) => state.setFilters, shallow);
-  const filter = useNFTFilterBy(
-    useCallback((state) => {
-      return state.filters;
-    }, []),
-    shallow
+  const options: { name: string }[] = useSearchOptions();
+  const onChange = useCallback(
+    (e_, value) => {
+      if (!value) {
+        setNftFilter(null);
+      } else {
+        setNftFilter(value.name);
+      }
+    },
+    [options]
   );
 
+  if (options.length < 1) return null;
   return (
-    <FormControl>
-      <CategorySelect
-        labelId="nft-filter-by-select-label"
-        id="nft-filter-by"
-        value={filter}
-        onChange={setNftFilter}
-      >
-        <CategoryMenuItem value="all">All Nfts</CategoryMenuItem>
-        <CategoryMenuItem value="art">Art</CategoryMenuItem>
-        <CategoryMenuItem value="utility">Utility</CategoryMenuItem>
-        <CategoryMenuItem value="gaming">Gaming</CategoryMenuItem>
-        <CategoryMenuItem value="erc-721">ERC-721</CategoryMenuItem>
-        <CategoryMenuItem value="erc-1155">ERC-1155</CategoryMenuItem>
-        <CategoryMenuItem value="punks">Punks</CategoryMenuItem>
-        <CategoryMenuItem value="mooncats">Mooncats</CategoryMenuItem>
-      </CategorySelect>
-    </FormControl>
+    <StyledAutocomplete
+      options={options}
+      getOptionLabel={(option) => option.name}
+      getOptionSelected={(option, value) => option.name == value.name}
+      style={{ width: 300 }}
+      onChange={onChange}
+      renderInput={(params) => (
+        <>
+          <TextField {...params} />
+        </>
+      )}
+      renderOption={(option) => (
+        <>
+          <span
+            style={{
+              display: "inline-flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <img
+              alt={option.description}
+              src={option.imageUrl}
+              width="20"
+              height="20"
+              style={{ marginRight: "5px" }}
+            />
+            <span>{option.name}</span>
+          </span>
+        </>
+      )}
+    />
   );
 };

@@ -5,6 +5,11 @@ export type NftTokenMeta = {
   name?: string;
   image?: string;
   description?: string;
+  openseaLink?: string;
+  collection?: {
+    name: string;
+    description: string;
+  }
 };
 
 export interface NftTokenMetaWithId extends NftTokenMeta {
