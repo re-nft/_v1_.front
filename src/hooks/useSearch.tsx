@@ -153,6 +153,12 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
   }, [items, filter, sortBy, tokenPerUSD]);
 };
 
+export interface CategoryOptions {
+  name: string,
+  description: string,
+  imageUrl: string
+}
+
 export const useSearchOptions = () => {
   const metas = useNftMetaState(
     useCallback((state) => state.metas, []),
@@ -164,7 +170,7 @@ export const useSearchOptions = () => {
   );
   return useMemo(() => {
     const set = new Set<string>();
-    const arr: { name: string; description: string }[] = [];
+    const arr: CategoryOptions[] = [];
     Object.keys(metas).forEach((id: string) => {
       const meta = metas[id];
       if (meta.collection) {

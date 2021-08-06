@@ -9,6 +9,7 @@ export type NftTokenMeta = {
   collection?: {
     name: string;
     description: string;
+    imageUrl: string;
   }
 };
 

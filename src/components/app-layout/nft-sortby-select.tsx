@@ -24,7 +24,7 @@ interface NftSortbyState {
 }
 
 export const useNFTSortBy = create<NftSortbyState>(
-  devtools((set, get) => ({
+  devtools((set) => ({
     sortBy: "all",
     setSortby: (event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
       set(
@@ -34,7 +34,7 @@ export const useNFTSortBy = create<NftSortbyState>(
       )
   }))
 );
-export const NftSortBySelect = () => {
+export const NftSortBySelect: React.FC = () => {
   const setSortBy = useNFTSortBy((state) => state.setSortby, shallow);
   const sortBy = useNFTSortBy(
     useCallback((state) => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Lending, Nft, Renting } from "../../contexts/graph/classes";
 import UserContext from "../../contexts/UserProvider";
 import { useBatchItems } from "../../hooks/useBatchItems";

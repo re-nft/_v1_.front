@@ -103,7 +103,7 @@ export const PaginationList = <T extends Nft>({
   useEffect(() => {
     if (isLoading) return;
     fetchMeta(currentPage);
-  }, [currentPage, isLoading]);
+  }, [currentPage, isLoading, fetchMeta]);
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;

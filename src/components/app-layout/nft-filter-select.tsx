@@ -6,7 +6,7 @@ import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { Autocomplete } from "@material-ui/lab";
-import { useSearchOptions } from "../../hooks/useSearch";
+import { CategoryOptions, useSearchOptions } from "../../hooks/useSearch";
 
 interface NftFilterState {
   filters: string | null;
@@ -14,7 +14,7 @@ interface NftFilterState {
 }
 
 export const useNFTFilterBy = create<NftFilterState>(
-  devtools((set, get) => ({
+  devtools((set) => ({
     filters: null,
     setFilters: (value) =>
       set(
@@ -45,9 +45,10 @@ const style = {
 };
 const StyledAutocomplete = withStyles(style)(Autocomplete);
 
-export const NftFilterSelect = () => {
+
+export const NftFilterSelect: React.FC = () => {
   const setNftFilter = useNFTFilterBy((state) => state.setFilters, shallow);
-  const options: { name: string }[] = useSearchOptions();
+  const options: CategoryOptions[] = useSearchOptions();
   const onChange = useCallback(
     (e_, value) => {
       if (!value) {
@@ -63,7 +64,9 @@ export const NftFilterSelect = () => {
   return (
     <StyledAutocomplete
       options={options}
+      // @ts-ignore
       getOptionLabel={(option) => option.name}
+      // @ts-ignore
       getOptionSelected={(option, value) => option.name == value.name}
       style={{ width: 300 }}
       onChange={onChange}
@@ -82,12 +85,15 @@ export const NftFilterSelect = () => {
             }}
           >
             <img
+              // @ts-ignore
               alt={option.description}
+              // @ts-ignore
               src={option.imageUrl}
               width="20"
               height="20"
               style={{ marginRight: "5px" }}
             />
+            {/* @ts-ignore */}
             <span>{option.name}</span>
           </span>
         </>

@@ -1,7 +1,7 @@
 import useClipboard from "react-use-clipboard";
 import LinkIcon from "@material-ui/icons/Link";
 import IconButton from "@material-ui/core/IconButton";
-import { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 
 export const CopyLink: React.FC<{
