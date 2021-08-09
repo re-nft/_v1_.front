@@ -8,10 +8,11 @@ export const Footer: React.FC = () => {
 
   const etherScanUrl = useMemo(() => {
     if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.ropsten) {
-      return "https://ropsten.etherscan.io/address";
+      return `https://ropsten.etherscan.io/address/${contractAddress}`;
     }
-    return "https://etherscan.io/address";
-  }, []);
+    return `https://etherscan.io/address/${contractAddress}`;
+  }, [contractAddress]);
+
   return (
     <div className="content-wrapper footer">
       <div className="footer__message font-VT323">
@@ -19,11 +20,11 @@ export const Footer: React.FC = () => {
         audited. Use at your own risk.
         <a
             style={{ fontSize: "14px", display: "block" }}
-            href={`${etherScanUrl}/${contractAddress}`}
+            href={etherScanUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Contract on etherscan: ${contractAddress}
+            Contract on etherscan: {contractAddress}
           </a>
       </div>
       <div className="footer__content">
