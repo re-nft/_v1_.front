@@ -49,10 +49,10 @@ export const useNftMetaState = create<NftMetaState>(
         set(
           produce((state) => {
             fetching.forEach((nft) => {
-              const id = nft.id;
+              const id = nft.nId;
               if (!state.metas[id]) {
                 state.metas[id] = {
-                  id: nft.id,
+                  id: nft.nId,
                   loading: true
                 };
                 state.nfts.push(nft);
@@ -65,34 +65,33 @@ export const useNftMetaState = create<NftMetaState>(
         set(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
-            const foundSet = new Set(founds.map((f) => f.id));
             founds.map((meta) => {
-              if (!state.metas[meta.id]) state.metas[meta.id] = {};
-              state.metas[meta.id].loading = false;
-              state.metas[meta.id].name = meta.name;
-              state.metas[meta.id].image = meta.image;
-              state.metas[meta.id].description = meta.description;
-              state.metas[meta.id].collection = meta.collection;
-              state.metas[meta.id].openseaLink = meta.openseaLink;
+                state.metas[meta.nId].loading = false;
+                state.metas[meta.nId].name = meta.name;
+                state.metas[meta.nId].image = meta.image;
+                state.metas[meta.nId].description = meta.description;
+                state.metas[meta.nId].collection = meta.collection;
+                state.metas[meta.nId].openseaLink = meta.openseaLink;
             });
+            const foundSet = new Set(founds.map((f) => f.nId));
             state.fetchReadyOpenSea = state.fetchReadyOpenSea.filter(
-              (n: NftTokenMetaWithId) => !foundSet.has(n.id)
+              (n: NftTokenMetaWithId) => !foundSet.has(n.nId)
             );
             state.fetchReadyIPFS = notFounds;
-            state.keys.push(...founds.map((f) => f.id));
+            state.keys.push(...founds.map((f) => f.nId));
           })
         ),
       setIPFSResult: (meta: NftMetaWithId) =>
         set(
           produce((state) => {
-            state.metas[meta.id].loading = false;
-            state.metas[meta.id].name = meta.name;
-            state.metas[meta.id].image = meta.image;
-            state.metas[meta.id].description = meta.description;
+            state.metas[meta.nId].loading = false;
+            state.metas[meta.nId].name = meta.name;
+            state.metas[meta.nId].image = meta.image;
+            state.metas[meta.nId].description = meta.description;
             state.fetchingIPFS = state.fetchReadyIPFS.filter(
-              (n: NftMetaWithId) => meta.id !== n.id
+              (n: NftMetaWithId) => meta.nId !== n.nId
             );
-            state.keys.push(...meta.id);
+            state.keys.push(...meta.nId);
           })
         )
     }),
@@ -143,11 +142,11 @@ export const useFetchMeta = () => {
       .pipe(
         map((founds: Array<NftMetaWithId>) => {
           const foundIds = founds.reduce((acc, nft) => {
-            acc.add(nft.id);
+            acc.add(nft.nId);
             return acc;
           }, new Set());
           const notFounds = fetchReady.filter((nft: NftTokenMetaWithId) => {
-            return !foundIds.has(nft.id);
+            return !foundIds.has(nft.nId);
           });
           preloadImages(founds);
           setOpenseaResult(founds, notFounds);
@@ -162,8 +161,8 @@ export const useFetchMeta = () => {
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
     if (fetchReady.length < 1) return;
-    const fetchSet = new Set(fetchReadyIPFS.map((v: MetaLoading) => v.id));
-    const fetchNfts = nfts.filter((nft) => fetchSet.has(nft.id));
+    const fetchSet = new Set(fetchReadyIPFS.map((v: MetaLoading) => v.nId));
+    const fetchNfts = nfts.filter((nft) => fetchSet.has(nft.nId));
     const subscription = from(fetchNfts)
       .pipe(
         mergeMap((nft) => {
@@ -185,7 +184,7 @@ export const useFetchMeta = () => {
       if (items.length < 1) return;
       const fetching: Nft[] = [];
       items.forEach((nft) => {
-        if (!metas[nft.id]) {
+        if (!metas[nft.nId]) {
           fetching.push({
             ...nft
           });

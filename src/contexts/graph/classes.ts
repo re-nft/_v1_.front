@@ -51,6 +51,7 @@ class Nft {
     }
     //TODO:eniko check if we still need to do this
     this.id = getUniqueID(nftAddress, tokenId, "0")
+    this.nId = getUniqueID(nftAddress, tokenId)
   }
 }
 

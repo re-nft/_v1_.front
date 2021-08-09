@@ -57,16 +57,12 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   disabled
 }) => {
   const { signer } = useContext(UserContext);
-  const id = useMemo(
-    () => nftId(nft.address, nft.tokenId),
-    [nft.address, nft.tokenId]
-  );
   const meta = useNftMetaState(
     useCallback(
       (state) => {
-        return state.metas[id] || {};
+        return state.metas[nft.nId] || {};
       },
-      [id]
+      [nft.nId]
     ),
     shallow
   );

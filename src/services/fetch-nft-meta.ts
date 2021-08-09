@@ -1,6 +1,5 @@
 import { NftToken, NftTokenMeta } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
-import { nftId } from "./firebase";
 import fetch from "cross-fetch";
 import {
   arrayToURI,
@@ -8,8 +7,9 @@ import {
   buildURI,
   matchIPFS_URL,
   normalizeTokenUri,
-  snakeCaseToCamelCase,
+  snakeCaseToCamelCase
 } from "./utils";
+import { getUniqueID } from '../utils';
 
 export type NftMetaWithId = NftTokenMeta & { id: string };
 export type NftError = { id: string; error: string };
@@ -137,7 +137,7 @@ async function fetchWithTimeout(
 export const fetchNFTFromOtherSource = async (
   nft: Nft
 ): Promise<NftMetaWithId | NftError> => {
-  const key = nftId(nft.address, nft.tokenId);
+  const key = getUniqueID(nft.address, nft.tokenId, "0");
   const tokenURI = await normalizeTokenUri(nft);
 
   if (nft.mediaURI) return { image: nft.mediaURI, id: key };
@@ -223,7 +223,7 @@ export const fetchNFTsFromOpenSea = async (
             nft.imageUrlThumbnail ||
             nft.imageUrl ||
             nft.imageUrlOriginal,
-          id: nftId(nft.assetContract.address, nft.tokenId || ""),
+          nId: getUniqueID(nft.assetContract.address, nft.tokenId || ""),
         };
       });
     }).catch((e)=>{

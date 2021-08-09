@@ -111,7 +111,7 @@ export const UserProvider: React.FC = ({ children }) => {
           .request({ method: "wallet_getPermissions" })
           .then((w: any) => {
             //TODO they keep changing wallet_getPermissions
-            resolve(w[0].caveats[1].value);
+            resolve(w[0]?.caveats[1]?.value || {});
           })
           .catch((error: unknown) => {
             console.warn("wallet_getPermissions", error);
