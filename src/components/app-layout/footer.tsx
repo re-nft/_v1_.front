@@ -6,14 +6,17 @@ import address from "../../contracts/ReNFT.address";
 export const Footer: React.FC = () => {
   const contractAddress = useContractAddress();
 
-  const etherScanUrl = useMemo(() => {
+  const addressWithFallback = useMemo(() => {
     // need to fallback, even if we didn't load the contracts yet
     const addressWithFallback = contractAddress || address;
+    return addressWithFallback
+  }, [contractAddress]);
+  const etherScanUrl = useMemo(() => {
     if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.ropsten) {
       return `https://ropsten.etherscan.io/address/${addressWithFallback}`;
     }
     return `https://etherscan.io/address/${addressWithFallback}`;
-  }, [contractAddress]);
+  }, [addressWithFallback]);
 
   return (
     <div className="content-wrapper footer">
@@ -26,7 +29,7 @@ export const Footer: React.FC = () => {
           target="_blank"
           rel="noreferrer"
         >
-          Contract on etherscan: {contractAddress}
+          Contract on etherscan: {addressWithFallback}
         </a>
       </div>
       <div className="footer__content">
