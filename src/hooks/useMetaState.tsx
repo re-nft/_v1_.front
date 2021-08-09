@@ -89,7 +89,7 @@ export const useNftMetaState = create<NftMetaState>(
             state.fetchingIPFS = state.fetchReadyIPFS.filter(
               (n: NftTokenMeta) => meta.nId !== n.nId
             );
-            state.keys.push(...meta.nId);
+            state.keys.push(meta.nId);
           })
         )
     }),

@@ -83,7 +83,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       }
       return acc;
     }, new Map<string, Set<string>>());
-  }, [keys]);
+  }, [keys, metas]);
 
   const filterItems = useCallback(
     (
