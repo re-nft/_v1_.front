@@ -142,7 +142,7 @@ export const fetchNFTFromOtherSource = async (
 
   if (nft.mediaURI) return { image: nft.mediaURI, id: key };
   if (!tokenURI) {
-    return { id: key, error: "No tokenUri" };
+    return { nId: key, error: "No tokenUri" };
   }
 
   // It's still possible that the tokenUri points to opensea...
@@ -170,7 +170,7 @@ export const fetchNFTFromOtherSource = async (
             "is not IPFS URL, but we are downloading meta as if it is O_O",
             data
           );
-          return { id: key, error: "non-ipfs url" };
+          return { nId: key, error: "non-ipfs url" };
         }
         const image = imageIsIPFS_URL
           ? buildStaticIPFS_URL(imageIsIPFS_URL)
@@ -180,11 +180,11 @@ export const fetchNFTFromOtherSource = async (
           image: image,
           description: data?.description,
           name: data?.name,
-          id: key,
+          nId: key,
         };
       })
       .catch(() => {
-        return { id: key, error: "unknown error" };
+        return { nId: key, error: "unknown error" };
       })
   );
 };

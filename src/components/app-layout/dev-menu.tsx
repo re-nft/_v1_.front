@@ -6,12 +6,10 @@ export const DevMenu: React.FC = () => {
   const showMint = process.env.NEXT_PUBLIC_SHOW_MINT === "true";
   return (
     showMint ? (
-      <>
+      <div className='content-wrapper mb-l' style={{flexWrap: "wrap"}}>
         <MintNfts />
-        <div>
-          <MintTokens />
-        </div>
-      </>
+        <MintTokens />
+      </div>
     ): null
   );
 };

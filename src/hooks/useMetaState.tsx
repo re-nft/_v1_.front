@@ -49,10 +49,9 @@ export const useNftMetaState = create<NftMetaState>(
         set(
           produce((state) => {
             fetching.forEach((nft) => {
-              const id = nft.nId;
-              if (!state.metas[id]) {
-                state.metas[id] = {
-                  id: nft.nId,
+              if (!state.metas[nft.id]) {
+                state.metas[nft.nId] = {
+                  nId: nft.nId,
                   loading: true
                 };
                 state.nfts.push(nft);
