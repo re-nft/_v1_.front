@@ -1,76 +1,41 @@
-import { FormControl } from "@material-ui/core";
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
-import { CategorySelect, CategoryMenuItem } from "../common/category-select";
-
-export type NftSortType =
-  | "all"
- // | "recently-listed"
-//  | "recently-rented"
-  | "price-low-to-high"
-  | "price-high-to-low"
-  | "highest-collateral"
-  | "lowest-collateral";
+import { CategorySelect } from "../common/category-select";
+import { useSortOptions } from "../../hooks/useSearch";
 
 interface NftSortbyState {
-  sortBy: NftSortType;
-  setSortby: (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => void;
+  sortBy: string;
+  setSortby: (value: string) => void;
 }
 
 export const useNFTSortBy = create<NftSortbyState>(
   devtools((set) => ({
-    sortBy: "all",
-    setSortby: (event: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+    sortBy: "Sort by",
+    setSortby: (value) =>
       set(
         produce((state) => {
-          state.sortBy = event.target.value;
+          state.sortBy = value;
         })
       )
   }))
 );
 export const NftSortBySelect: React.FC = () => {
   const setSortBy = useNFTSortBy((state) => state.setSortby, shallow);
-  const sortBy = useNFTSortBy(
-    useCallback((state) => {
-      return state.sortBy;
-    }, []),
-    shallow
-  );
-
+  const sortBy = useNFTSortBy((state) => state.sortBy, shallow);
+  const options = useSortOptions();
+  const value = useMemo(()=>{
+    return options.find(f => f.name === sortBy);
+  }, [options, sortBy])
   return (
-    <FormControl>
-      <CategorySelect
-        labelId="nft-sortby-by-select-label"
-        id="nft-sortby-by"
-        value={sortBy}
-        onChange={setSortBy}
-      >
-        <CategoryMenuItem value="all">Sort by</CategoryMenuItem>
-        <CategoryMenuItem value="recently-listed">
-          Recently Listed
-        </CategoryMenuItem>
-        {/* <CategoryMenuItem value="recently-rented">
-          Recently Rented
-        </CategoryMenuItem> */}
-        <CategoryMenuItem value="price-low-to-high">
-          Price: Low to High
-        </CategoryMenuItem>
-        <CategoryMenuItem value="price-high-to-low">
-          Price: High to Low
-        </CategoryMenuItem>
-        <CategoryMenuItem value="highest-collateral">
-          Highest Collateral
-        </CategoryMenuItem>
-        <CategoryMenuItem value="lowest-collateral">
-          Lowest Colletaral
-        </CategoryMenuItem>
-      </CategorySelect>
-    </FormControl>
+    <CategorySelect
+      value={value}
+      setValue={setSortBy}
+      options={options}
+      defaultValue={{ name: "Sort by", description: "", imageUrl: "" }}
+    ></CategorySelect>
   );
 };

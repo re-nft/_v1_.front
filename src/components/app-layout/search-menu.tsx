@@ -4,9 +4,13 @@ import { NftSortBySelect } from "./nft-sortby-select";
 
 export const SearchMenu: React.FC = () => {
   return (
-    <>
-      <NftFilterSelect />
-      <NftSortBySelect />
-    </>
+    <div className="menu menu__search">
+      <div className="menu__item">
+        <NftFilterSelect />
+      </div>
+      <div className="menu__item">
+        <NftSortBySelect />
+      </div>
+    </div>
   );
 };

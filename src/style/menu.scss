@@ -75,4 +75,16 @@
             }
         }
     }
+
+    &.menu__search {
+        justify-content: flex-end;
+        .menu__item{
+            padding:0;
+            background-color: white;
+            box-shadow: none;
+            &:before {
+                content: none;
+            }
+        }
+    }
 }

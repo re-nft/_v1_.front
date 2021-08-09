@@ -1,9 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
-import {
-  NftSortType,
-  useNFTSortBy
-} from "../components/app-layout/nft-sortby-select";
+import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
@@ -11,7 +8,6 @@ import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
 import { useNftMetaState } from "./useMetaState";
 import { NO_COLLECTION } from "../consts";
-import { nftId } from "../services/firebase";
 
 export const toUSD = (
   paymentToken: PaymentToken,
@@ -108,21 +104,21 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         priceInUSD: number;
         collateralInUSD: number;
       })[],
-      sortBy: NftSortType
+      sortBy: string
     ) => {
       switch (sortBy) {
-        case "all":
+        case "Sort by":
           return items;
-        case "price-low-to-high":
+        case "Price: Low to High":
           items.sort(sortByDailyRentPrice());
           return items;
-        case "price-high-to-low":
+        case "Price: High to Low":
           items.sort(sortByDailyRentPrice("desc"));
           return items;
-        case "highest-collateral":
+        case "Highest Collateral":
           items.sort(sortByCollateral());
           return items;
-        case "lowest-collateral":
+        case "Lowest Colletaral":
           items.sort(sortByCollateral("desc"));
           return items;
         default:
@@ -154,9 +150,9 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
 };
 
 export interface CategoryOptions {
-  name: string,
-  description: string,
-  imageUrl: string
+  name: string;
+  description: string;
+  imageUrl: string;
 }
 
 export const useSearchOptions = () => {
@@ -175,11 +171,10 @@ export const useSearchOptions = () => {
       const meta = metas[id];
       if (meta.collection) {
         const name = meta.collection.name || NO_COLLECTION;
-        if(!set.has(name)){
+        if (!set.has(name)) {
           set.add(name);
           arr.push(meta.collection);
         }
- 
       } else {
         if (!set.has(NO_COLLECTION)) {
           set.add(NO_COLLECTION);
@@ -188,4 +183,15 @@ export const useSearchOptions = () => {
     });
     return arr;
   }, [keys]);
+};
+
+export const useSortOptions = () => {
+  return useMemo(() => {
+    return [
+      { name: "Price: Low to High", description: "", imageUrl: "" },
+      { name: "Price: High to Low", description: "", imageUrl: "" },
+      { name: "Highest Collateral", description: "", imageUrl: "" },
+      { name: "Lowest Colletaral", description: "", imageUrl: "" }
+    ];
+  }, []);
 };
