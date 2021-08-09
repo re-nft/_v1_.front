@@ -89,7 +89,7 @@ export const useAllAvailableForRent = () => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
-          if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
+          if (network && network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
             if (nfts && nfts.length > 0) return [];
             return [];
           }
