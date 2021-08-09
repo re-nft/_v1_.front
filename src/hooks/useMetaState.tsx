@@ -2,17 +2,16 @@ import { useCallback, useEffect } from "react";
 import {
   fetchNFTFromOtherSource,
   fetchNFTsFromOpenSea,
-  NftMetaWithId
 } from "../services/fetch-nft-meta";
 import { Nft } from "../contexts/graph/classes";
-import { NftTokenMetaWithId } from "../contexts/graph/types";
+import { NftTokenMeta } from "../contexts/graph/types";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 import { from, map, mergeMap } from "rxjs";
 
-interface MetaLoading extends NftTokenMetaWithId {
+interface MetaLoading extends NftTokenMeta {
   loading?: boolean;
 }
 
@@ -23,10 +22,10 @@ type NftMetaState = {
   fetchReadyOpenSea: Nft[];
   fetchReadyIPFS: Nft[];
   setFetchReady: (items: Nft[]) => void;
-  setIPFSResult: (items: NftMetaWithId) => void;
+  setIPFSResult: (items: NftTokenMeta) => void;
   setOpenseaResult: (
-    items: NftMetaWithId[],
-    notFounds: NftMetaWithId[]
+    items: NftTokenMeta[],
+    notFounds: NftTokenMeta[]
   ) => void;
 };
 
@@ -60,7 +59,7 @@ export const useNftMetaState = create<NftMetaState>(
             });
           })
         ),
-      setOpenseaResult: (founds: NftMetaWithId[], notFounds: NftMetaWithId[]) =>
+      setOpenseaResult: (founds: NftTokenMeta[], notFounds: NftTokenMeta[]) =>
         set(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
@@ -74,13 +73,13 @@ export const useNftMetaState = create<NftMetaState>(
             });
             const foundSet = new Set(founds.map((f) => f.nId));
             state.fetchReadyOpenSea = state.fetchReadyOpenSea.filter(
-              (n: NftTokenMetaWithId) => !foundSet.has(n.nId)
+              (n: NftTokenMeta) => !foundSet.has(n.nId)
             );
             state.fetchReadyIPFS = notFounds;
             state.keys.push(...founds.map((f) => f.nId));
           })
         ),
-      setIPFSResult: (meta: NftMetaWithId) =>
+      setIPFSResult: (meta: NftTokenMeta) =>
         set(
           produce((state) => {
             state.metas[meta.nId].loading = false;
@@ -88,7 +87,7 @@ export const useNftMetaState = create<NftMetaState>(
             state.metas[meta.nId].image = meta.image;
             state.metas[meta.nId].description = meta.description;
             state.fetchingIPFS = state.fetchReadyIPFS.filter(
-              (n: NftMetaWithId) => meta.nId !== n.nId
+              (n: NftTokenMeta) => meta.nId !== n.nId
             );
             state.keys.push(...meta.nId);
           })
@@ -139,12 +138,12 @@ export const useFetchMeta = () => {
 
     const subscription = from(fetchNFTsFromOpenSea(contractAddress, tokenIds))
       .pipe(
-        map((founds: Array<NftMetaWithId>) => {
+        map((founds: Array<NftTokenMeta>) => {
           const foundIds = founds.reduce((acc, nft) => {
             acc.add(nft.nId);
             return acc;
           }, new Set());
-          const notFounds = fetchReady.filter((nft: NftTokenMetaWithId) => {
+          const notFounds = fetchReady.filter((nft: NftTokenMeta) => {
             return !foundIds.has(nft.nId);
           });
           preloadImages(founds);

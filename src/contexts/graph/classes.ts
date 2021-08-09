@@ -17,7 +17,10 @@ type NftOptions = {
 
 class Nft {
   type = NftType.Nft;
+  // unique id, is different for nft/lending/renting
   id: string;
+  // unique nft id = contractAddress + tokenid, doesn't differentiate between lending/renting
+  nId: string;
   nftAddress: Address;
   address: Address;
   tokenId: string;

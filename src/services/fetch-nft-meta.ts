@@ -11,8 +11,7 @@ import {
 } from "./utils";
 import { getUniqueID } from '../utils';
 
-export type NftMetaWithId = NftTokenMeta & { id: string };
-export type NftError = { id: string; error: string };
+export type NftError = { nId: string; error: string };
 
 export interface Asset {
   tokenId: string | null;
@@ -136,11 +135,11 @@ async function fetchWithTimeout(
 
 export const fetchNFTFromOtherSource = async (
   nft: Nft
-): Promise<NftMetaWithId | NftError> => {
+): Promise<NftTokenMeta | NftError> => {
   const key = getUniqueID(nft.address, nft.tokenId, "0");
   const tokenURI = await normalizeTokenUri(nft);
 
-  if (nft.mediaURI) return { image: nft.mediaURI, id: key };
+  if (nft.mediaURI) return { image: nft.mediaURI, nId: key };
   if (!tokenURI) {
     return { nId: key, error: "No tokenUri" };
   }
@@ -192,7 +191,7 @@ export const fetchNFTFromOtherSource = async (
 export const fetchNFTsFromOpenSea = async (
   asset_contract_addresses: Array<string>,
   token_ids: Array<string>
-): Promise<Array<NftMetaWithId>> => {
+): Promise<Array<NftTokenMeta>> => {
   if (!process.env.NEXT_PUBLIC_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
