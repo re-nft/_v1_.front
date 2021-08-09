@@ -73,7 +73,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
   const keys = useNftMetaState(useCallback((state) => state.keys, []));
 
   const categories = useMemo(() => {
-    return Object.keys(metas).reduce((acc, id) => {
+    return keys.reduce((acc, id) => {
       const meta = metas[id];
       if (meta.collection) {
         const collectionName = metas[id].collection?.name || NO_COLLECTION;
@@ -97,7 +97,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       if (!filter) return items;
       const category = categories.get(filter);
       return items.filter((item) => {
-        return category?.has(nftId(item.address, item.tokenId || ""));
+        return category?.has(item.nId);
       });
     },
     [categories]
