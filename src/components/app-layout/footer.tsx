@@ -4,15 +4,14 @@ import { useContractAddress } from "../../hooks/contract/useContractAddress";
 import { NetworkName } from "../../types";
 
 export const Footer: React.FC = () => {
-  const { network } = useContext(UserContext);
   const contractAddress = useContractAddress();
 
   const etherScanUrl = useMemo(() => {
-    if (network === NetworkName.ropsten) {
+    if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.ropsten) {
       return "https://ropsten.etherscan.io/address";
     }
     return "https://etherscan.io/address";
-  }, [network]);
+  }, []);
   return (
     <div className="content-wrapper footer">
       <div className="footer__message font-VT323">
