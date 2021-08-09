@@ -6,8 +6,6 @@ import { NetworkName } from "../../types";
 
 export const useContractAddress = (): string => {
     const { ReNFT } = useContext(ContractContext);
-    const { network } = useContext(UserContext);
-  
-    return network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
+
+    return process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
   };
-  
