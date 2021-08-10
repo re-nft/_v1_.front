@@ -29,15 +29,16 @@ export const NftFilterSelect: React.FC = () => {
   const filters = useNFTFilterBy((state) => state.filters, shallow);
   const options: CategoryOptions[] = useSearchOptions();
   const value = useMemo(() => {
-    return options.find((f) => f.name === filters);
+    return options.find((f) => f.value === filters);
   }, [filters, options]);
+
   if (options.length < 1) return null;
   return (
     <CategorySelect
       value={value}
       options={options}
       setValue={setNftFilter}
-      defaultValue={{ name: "All NFTs", description: "", imageUrl: "" }}
+      defaultValue={{ label: "All NFTs", value: "all", imageUrl: "" }}
     />
   );
 };

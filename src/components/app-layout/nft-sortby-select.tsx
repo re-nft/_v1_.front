@@ -14,7 +14,7 @@ interface NftSortbyState {
 
 export const useNFTSortBy = create<NftSortbyState>(
   devtools((set) => ({
-    sortBy: "Sort by",
+    sortBy: "",
     setSortby: (value) =>
       set(
         produce((state) => {
@@ -28,14 +28,15 @@ export const NftSortBySelect: React.FC = () => {
   const sortBy = useNFTSortBy((state) => state.sortBy, shallow);
   const options = useSortOptions();
   const value = useMemo(()=>{
-    return options.find(f => f.name === sortBy);
+    return options.find(f => f.value === sortBy);
   }, [options, sortBy])
+
   return (
     <CategorySelect
       value={value}
       setValue={setSortBy}
       options={options}
-      defaultValue={{ name: "Sort by", description: "", imageUrl: "" }}
+      defaultValue={{ label: "Sort by", value: "all", imageUrl: "" }}
     ></CategorySelect>
   );
 };

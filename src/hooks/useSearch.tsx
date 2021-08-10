@@ -107,19 +107,17 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       sortBy: string
     ) => {
       switch (sortBy) {
-        case "Sort by":
-          return items;
-        case "Price: Low to High":
+        case "p-lh":
           items.sort(sortByDailyRentPrice());
           return items;
-        case "Price: High to Low":
+        case "p-hl":
           items.sort(sortByDailyRentPrice("desc"));
           return items;
-        case "Highest Collateral":
-          items.sort(sortByCollateral());
-          return items;
-        case "Lowest Colletaral":
+        case "hc":
           items.sort(sortByCollateral("desc"));
+          return items;
+        case "lc":
+          items.sort(sortByCollateral());
           return items;
         default:
           return items;
@@ -138,20 +136,15 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
         : 1
     }));
-    if (filter !== "all") {
-      r = filterItems(r, filter);
-    }
-    if (sortBy !== "all") {
-      r = sortItems([...r], sortBy);
-    }
-
+    r = filterItems(r, filter);
+    r = sortItems([...r], sortBy);
     return r;
   }, [items, filter, sortBy, tokenPerUSD]);
 };
 
 export interface CategoryOptions {
-  name: string;
-  description: string;
+  value: string;
+  label: string;
   imageUrl: string;
 }
 
@@ -173,7 +166,11 @@ export const useSearchOptions = () => {
         const name = meta.collection.name || NO_COLLECTION;
         if (!set.has(name)) {
           set.add(name);
-          arr.push(meta.collection);
+          arr.push({
+                value: meta.collection.name,
+                label: meta.collection.name,
+                imageUrl: meta.collection.imageUrl,
+            });
         }
       } else {
         if (!set.has(NO_COLLECTION)) {
@@ -188,10 +185,10 @@ export const useSearchOptions = () => {
 export const useSortOptions = () => {
   return useMemo(() => {
     return [
-      { name: "Price: Low to High", description: "", imageUrl: "" },
-      { name: "Price: High to Low", description: "", imageUrl: "" },
-      { name: "Highest Collateral", description: "", imageUrl: "" },
-      { name: "Lowest Colletaral", description: "", imageUrl: "" }
+      { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
+      { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
+      { label: "Highest Collateral", value: "hc", imageUrl: "" },
+      { label: "Lowest Colletaral",  value: "lc", imageUrl: "" }
     ];
   }, []);
 };

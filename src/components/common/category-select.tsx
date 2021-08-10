@@ -1,127 +1,130 @@
-import { TextField, withStyles } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
 import React, { useCallback } from "react";
-import { CategoryOptions } from '../../hooks/useSearch'
+import { CategoryOptions } from "../../hooks/useSearch";
+import Select, { components } from "react-select";
 
-const style = {
-  root: {
+const customStyles = {
+  option: (provided: any, state: any) => ({
+    ...provided,
+    color: state.isSelected || state.isFocused ? "white" : "black",
+    backgroundColor: state.isSelected || state.isFocused ? "black" : "white"
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "black"
+  }),
+  control: (provided: any, state: any) => ({
+    // none of react-select's styles are passed to <Control />
+    ...provided,
+    zIndex: 100,
     color: "black",
-    width: "15rem !important",
+    width: "13rem",
     fontFamily: "VT323",
     fontSize: "14px",
-    textTransform: 'uppercase'
-  },
-  inputRoot: {
+    lineHeight: "19px",
+    textTransform: "uppercase",
+    borderRadius: 0,
     border: "3px solid black",
-    color: "black",
-    paddingRight: "0",
-    marginTop: "0 !important",
-    height: "45px",
-    fontFamily: "VT323",
-    fontSize: "14px",
-    paddingLeft: "10px",
-    "&:after": {
-        content: "none"
-    },
-    "&:before": {
-        content: "none"
+    boxShadow: `7px 7px black`,
+    "&:hover": {
+      borderColor: state.isFocused ? "#6a3a95" : "black"
     }
+  }),
+  menu: (provided: any) => ({
+    // none of react-select's styles are passed to <Control />
+    ...provided,
+    color: "black",
+    zIndex: 100,
+    borderRadius: 0,
+    marginTop: "20px",
+    border: "3px solid black",
+    boxShadow: `7px 7px black,
+    6px 6px 0 black,
+    5px 5px 0 black,
+    4px 4px 0 black,
+    3px 3px 0 black,
+    2px 2px 0 black,
+    1px 1px 0 black;`
+  }),
+  menuList: (provided: any) => ({
+    ...provided,
+    paddingTop: 0,
+    paddingBottom: 0
+  }),
+  singleValue: (provided: any, state: any) => {
+    const opacity = state.isDisabled ? 0.5 : 1;
+    const transition = "opacity 300ms";
+
+    return { ...provided, opacity, transition };
   },
-  input: {
-    textTransform: 'uppercase',
-  },
-  paper: {
-      marginTop: '20px',
-      border: '3px solid black',
-      borderRadius: 0,
-      boxShadow: `7px 7px black,
-        6px 6px 0 black,
-        5px 5px 0 black,
-        4px 4px 0 black,
-        3px 3px 0 black,
-        2px 2px 0 black,
-        1px 1px 0 black;`
-  },
-  listbox: {
-      padding: '0',
-  },
-  option: {
-      textTransform: 'capitalize',
-      "&:active, &:hover, &:focus, &[data-focus='true']": {
-          backgroundColor: 'black',
-          color: 'white'
-      }
-  }
+  input: (provided: any, state: any) => ({
+    ...provided,
+    borderColor: state.isFocused ? "purple" : "black"
+  })
 };
-//@ts-ignore
-const StyledAutocomplete = withStyles(style)(Autocomplete);
+
+const Control: React.FC<unknown> = ({ children, ...rest }) => {
+  //@ts-ignore
+  const imageUrl = rest.selectProps?.imageUrl;
+  return (
+    // @ts-ignore
+    <components.Control {...rest}>
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          style={{ marginLeft: "10px", height: "20px", width: "20px" }}
+        />
+      )}
+      {children}
+    </components.Control>
+  );
+};
+
+const Option: React.FC<unknown> = ({ children, ...rest }) => {
+  console.log(rest)
+  //@ts-ignore
+  const imageUrl = rest.data?.imageUrl;
+  return (
+    // @ts-ignore
+    <components.Option {...rest}>
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          style={{ marginRight: "10px",  height: "20px", width: "20px" }}
+        />
+      )}
+      {children}
+    </components.Option>
+  );
+};
 
 
 export const CategorySelect: React.FC<{
-  options: CategoryOptions[],
-  setValue: (v:string) => void,
-  defaultValue: CategoryOptions,
-  value: CategoryOptions | undefined,
-}> = ({
-    options,
-    setValue,
-    defaultValue,
-    value
-}) => {
+  options: CategoryOptions[];
+  setValue: (v: string) => void;
+  defaultValue: CategoryOptions;
+  value: CategoryOptions | undefined;
+}> = ({ options, setValue, defaultValue, value }) => {
   const onChange = useCallback(
-    (e_, value) => {
-      if (!value) {
-        setValue(defaultValue.name);
-      } else {
-        setValue(value.name);
-      }
+    (option) => {
+      setValue(option?.value || "");
     },
     [options]
   );
-
   if (options.length < 1) return null;
   return (
-    <StyledAutocomplete
+    <Select
+      isClearable
+      placeholder={defaultValue.label}
       options={options}
-      value={value || defaultValue}
-      // @ts-ignore
-      getOptionLabel={(option) => option.name}
-      // @ts-ignore
-      getOptionSelected={(option, value) => option.name == value.name}
-      style={{ width: 300 }}
+      imageUrl={value?.imageUrl}
+      value={value}
+      instanceId={defaultValue.value}
+      styles={customStyles}
       onChange={onChange}
-      renderInput={(params: any) => (
-        <>
-          <TextField {...params} />
-        </>
-      )}
-      // @ts-ignore
-      renderOption={(option: CategoryOptions) => (
-        <>
-          <span
-            style={{
-              display: "inline-flex",
-              justifyContent: "center",
-              alignItems: "center",
-              textTransform: 'uppercase'
-
-            }}
-          >
-          {option.imageUrl && <img
-              // @ts-ignore
-              alt={option.description}
-              // @ts-ignore
-              src={option.imageUrl}
-              width="20"
-              height="20"
-              style={{ marginRight: "5px" }}
-            />
-            }
-            {/* @ts-ignore */}
-            <span>{option.name}</span>
-          </span>
-        </>
-      )}
+      components={{
+        Control,
+        Option
+      }}
     />
   );
 };
