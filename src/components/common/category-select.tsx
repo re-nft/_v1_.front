@@ -58,7 +58,9 @@ const customStyles = {
   },
   input: (provided: any, state: any) => ({
     ...provided,
-    borderColor: state.isFocused ? "purple" : "black"
+    color: "black",
+    borderColor: state.isFocused ? "purple" : "black",
+    opacity: 1
   })
 };
 
@@ -80,7 +82,6 @@ const Control: React.FC<unknown> = ({ children, ...rest }) => {
 };
 
 const Option: React.FC<unknown> = ({ children, ...rest }) => {
-  console.log(rest)
   //@ts-ignore
   const imageUrl = rest.data?.imageUrl;
   return (
@@ -89,7 +90,7 @@ const Option: React.FC<unknown> = ({ children, ...rest }) => {
       {imageUrl && (
         <img
           src={imageUrl}
-          style={{ marginRight: "10px",  height: "20px", width: "20px" }}
+          style={{ marginRight: "10px", height: "20px", width: "20px" }}
         />
       )}
       {children}
@@ -97,13 +98,13 @@ const Option: React.FC<unknown> = ({ children, ...rest }) => {
   );
 };
 
-
 export const CategorySelect: React.FC<{
   options: CategoryOptions[];
   setValue: (v: string) => void;
   defaultValue: CategoryOptions;
   value: CategoryOptions | undefined;
-}> = ({ options, setValue, defaultValue, value }) => {
+  instanceId: string;
+}> = ({ options, setValue, defaultValue, value, instanceId }) => {
   const onChange = useCallback(
     (option) => {
       setValue(option?.value || "");
@@ -118,7 +119,9 @@ export const CategorySelect: React.FC<{
       options={options}
       imageUrl={value?.imageUrl}
       value={value}
-      instanceId={defaultValue.value}
+      // NOTE 1: force stupid instanceid to rerender a new component, as state is kept around
+      // NOTE 2: set instanceId for server side as well
+      instanceId={instanceId}
       styles={customStyles}
       onChange={onChange}
       components={{

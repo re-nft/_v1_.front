@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { CategorySelect } from "../common/category-select";
 
 import create from "zustand";
@@ -6,6 +6,7 @@ import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
 import { CategoryOptions, useSearchOptions } from "../../hooks/useSearch";
+import { useRouter } from "next/router";
 
 interface NftFilterState {
   filters: string | null;
@@ -14,7 +15,7 @@ interface NftFilterState {
 
 export const useNFTFilterBy = create<NftFilterState>(
   devtools((set) => ({
-    filters: null,
+    filters: "",
     setFilters: (value) =>
       set(
         produce((state) => {
@@ -32,13 +33,30 @@ export const NftFilterSelect: React.FC = () => {
     return options.find((f) => f.value === filters);
   }, [filters, options]);
 
+  const router = useRouter();
+  const instanceId = useMemo(()=>{
+    return `filter-${router.pathname}`;
+  }, [router.pathname])
+  
+  useEffect(() => {
+    const handleStop = () => {
+      setNftFilter("");
+    };
+    router.events.on("routeChangeStart", handleStop);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStop);
+    };
+  }, [router, setNftFilter]);
+
   if (options.length < 1) return null;
   return (
     <CategorySelect
+      instanceId={instanceId}
       value={value}
       options={options}
       setValue={setNftFilter}
-      defaultValue={{ label: "All NFTs", value: "all", imageUrl: "" }}
+      defaultValue={{ label: "All NFTs", value: "", imageUrl: "" }}
     />
   );
 };
