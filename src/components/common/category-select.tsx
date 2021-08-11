@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
-//@ts-ignore  
 import Select, { components } from "react-select";
 
 const customStyles = {
@@ -110,7 +109,7 @@ export const CategorySelect: React.FC<{
     (option) => {
       setValue(option?.value || "");
     },
-    [options]
+    [options, setValue]
   );
   if (options.length < 1) return null;
   return (
