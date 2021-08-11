@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
+//@ts-ignore
 import Select, { components } from "react-select";
 
 const customStyles = {
@@ -113,6 +114,7 @@ export const CategorySelect: React.FC<{
   );
   if (options.length < 1) return null;
   return (
+    //@ts-ignore
     <Select
       isClearable
       placeholder={defaultValue.label}
