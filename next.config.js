@@ -1,4 +1,8 @@
-module.exports = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+const nextConfig = {
   env: {
     PUBLIC_URL: ''
   },
@@ -9,3 +13,6 @@ module.exports = {
   },
 
 }
+
+
+module.exports = withBundleAnalyzer(nextConfig)

@@ -33,7 +33,7 @@ export const Header: React.FC = () => {
   return (
     <div className="header">
       <div className="header__logo"></div>
-      {!installMetaMask && !currentAddress ? (
+      {!installMetaMask && (!currentAddress || !network) ? (
         <Button
           datacy="metamask-connect-button"
           onClick={connect}

@@ -27,6 +27,7 @@
 
   &__link {
     margin: 0;
+    padding-top: 5px;
   }
   &__icon {
    margin-left: 5px;
@@ -358,6 +359,7 @@
 
 .skeleton {
   height: 510px;
+  width: 250px;
   &-item {
     background: rgb(243, 243, 243);
     margin: 6px auto;

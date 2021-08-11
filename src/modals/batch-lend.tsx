@@ -3,9 +3,9 @@ import React, { useCallback, useContext, useEffect } from "react";
 import Modal from "./modal";
 
 import { Nft } from "../contexts/graph/classes";
-import { useNFTApproval } from "../hooks/useNFTApproval";
+import { useNFTApproval } from "../hooks/contract/useNFTApproval";
 
-import { useStartLend } from "../hooks/useStartLend";
+import { useStartLend } from "../hooks/contract/useStartLend";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 

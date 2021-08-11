@@ -1,4 +1,3 @@
-// import "video-react/dist/video-react.css"
 import React from "react";
 
 const Layout: React.FC = ({ children }) => {

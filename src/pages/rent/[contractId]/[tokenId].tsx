@@ -2,10 +2,10 @@ import { useRouter } from "next/router";
 import React, { useContext, useMemo } from "react";
 import { AvailableToRent } from "../../../components/pages/available-to-rent";
 import { RentSwitchWrapper } from "../../../components/rent-switch-wrapper";
-import { AvailableForRentContext } from "../../../contexts/AvailableForRent";
+import { useAllAvailableForRent } from "../../../hooks/useAllAvailableForRent";
 
 const AvailableToRentPage: React.FC = () => {
-  const { allAvailableToRent, isLoading } = useContext(AvailableForRentContext);
+  const { allAvailableToRent, isLoading } = useAllAvailableForRent();
   const {
     query: { contractId, tokenId }
   } = useRouter();

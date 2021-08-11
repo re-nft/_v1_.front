@@ -1,5 +1,4 @@
 import ActionButton from "../components/common/action-button";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
@@ -54,7 +53,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     inputs: nfts.map<LendInputProps>((nft) => ({
       tokenId: nft.tokenId,
       nft: nft,
-      key: getUniqueCheckboxId(nft),
+      key: nft.id,
       lendAmount: nft.amount == "1" || nft.isERC721? 1 : undefined,
       amount: nft.amount,
       maxDuration: undefined,

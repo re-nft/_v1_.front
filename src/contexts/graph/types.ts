@@ -3,13 +3,17 @@ import { Address, TokenId } from "../../types";
 
 export type NftTokenMeta = {
   name?: string;
+  nId: string;
   image?: string;
   description?: string;
+  openseaLink?: string;
+  collection?: {
+    name: string;
+    description: string;
+    imageUrl: string;
+  }
 };
 
-export interface NftTokenMetaWithId extends NftTokenMeta {
-  id: string;
-}
 
 export type NftToken = {
   address: Address;

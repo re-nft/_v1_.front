@@ -1,44 +1,66 @@
-import React, { useCallback, useEffect, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useMemo } from "react";
 
-import { Renting } from "../contexts/graph/classes";
+import { Lending, Renting } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
-import ItemWrapper from "../components/common/items-wrapper";
 import ReturnModal from "../modals/return-modal";
 import ActionButton from "../components/common/action-button";
-import CatalogueLoader from "../components/catalogue-loader";
 import BatchBar from "../components/batch-bar";
-import {
-  getUniqueCheckboxId,
-  useBatchItems
-} from "../controller/batch-controller";
+import { useBatchItems } from "../hooks/useBatchItems";
 import { Nft } from "../contexts/graph/classes";
-import Pagination from "../components/common/pagination";
-import { NFTMetaContext } from "../contexts/NftMetaState";
 import { UserRentingContext } from "../contexts/UserRenting";
-import { usePageController } from "../controller/page-controller";
-import { nftReturnIsExpired } from "../utils";
+import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
+import { PaginationList } from "../components/pagination-list";
+import ItemWrapper from "../components/common/items-wrapper";
+import { useSearch } from "../hooks/useSearch";
 
-const UserRentings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+const RentingCatalogueItem: React.FC<{
+  nft: Renting;
+  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkBoxChangeWrapped: (nft: Renting) => () => void;
+  handleReturnNft: (nft: Renting) => () => void;
+}> = ({ nft, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
+  const id = nft.id;
+  const checked = !!checkedItems[id];
+  const isExpired = nftReturnIsExpired(nft);
+  const days = nft.renting.rentDuration;
+  return (
+    <CatalogueItem
+      nft={nft}
+      checked={checked}
+      disabled={isExpired}
+      onCheckboxChange={checkBoxChangeWrapped(nft)}
+    >
+      <CatalogueItemRow
+        text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
+        value={nft.lending.dailyRentPrice.toString()}
+      />
+      <CatalogueItemRow
+        text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
+        value={days.toString()}
+      />
+      <ActionButton<Nft>
+        title="Return It"
+        disabled={isExpired}
+        nft={nft}
+        onClick={handleReturnNft(nft)}
+      />
+    </CatalogueItem>
+  );
+};
+
+const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
+  currentPage
+}) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
     checkedRentingItems
   } = useBatchItems();
-  const {
-    totalPages,
-    currentPageNumber,
-    currentPage,
-    onSetPage,
-    onPageControllerInit
-  } = usePageController<Renting>();
-  const { userRenting, isLoading } = useContext(UserRentingContext);
-  const [_, fetchNfts] = useContext(NFTMetaContext);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
@@ -51,30 +73,12 @@ const UserRentings: React.FC = () => {
   }, [setModalOpen]);
 
   const handleReturnNft = useCallback(
-    (nft) => {
+    (nft) => () => {
       onCheckboxChange(nft);
       setModalOpen(true);
     },
     [onCheckboxChange]
   );
-
-  useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed)
-      onPageControllerInit(userRenting.filter((nft) => nft.renting));
-    return () => {
-      isSubscribed = false;
-    };
-  }, [onPageControllerInit, userRenting]);
-
-  //Prefetch metadata
-  useEffect(() => {
-    let isSubscribed = true;
-    if (isSubscribed) fetchNfts(currentPage);
-    return () => {
-      isSubscribed = false;
-    };
-  }, [currentPage, fetchNfts]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -84,36 +88,8 @@ const UserRentings: React.FC = () => {
     },
     [onCheckboxChange]
   );
-
-  if (!signer) {
-    return (
-      <RentSwitchWrapper>
-        <div className="center content__message">
-          Please connect your wallet!
-        </div>
-      </RentSwitchWrapper>
-    );
-  }
-  if (isLoading && currentPage.length === 0) {
-    return (
-      <RentSwitchWrapper>
-        <CatalogueLoader />
-      </RentSwitchWrapper>
-    );
-  }
-
-  if (!isLoading && currentPage.length === 0) {
-    return (
-      <RentSwitchWrapper>
-        <div className="center content__message">
-          You are not renting anything yet
-        </div>
-      </RentSwitchWrapper>
-    );
-  }
-
   return (
-    <RentSwitchWrapper>
+    <div>
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
@@ -122,43 +98,16 @@ const UserRentings: React.FC = () => {
         />
       )}
       <ItemWrapper>
-        {currentPage.length > 0 &&
-          currentPage.map((nft: Renting) => {
-            const id = getUniqueCheckboxId(nft);
-            const checked = !!checkedItems[id];
-            const isExpired = nftReturnIsExpired(nft);
-            const days = nft.renting.rentDuration;
-            return (
-              <CatalogueItem
-                key={id}
-                nft={nft}
-                checked={checked}
-                disabled={isExpired}
-                onCheckboxChange={checkBoxChangeWrapped(nft)}
-              >
-                <CatalogueItemRow
-                  text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
-                  value={nft.lending.dailyRentPrice.toString()}
-                />
-                <CatalogueItemRow
-                  text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
-                  value={days.toString()}
-                />
-                <ActionButton<Nft>
-                  title="Return It"
-                  disabled={isExpired}
-                  nft={nft}
-                  onClick={() => handleReturnNft(nft)}
-                />
-              </CatalogueItem>
-            );
-          })}
+        {currentPage.map((nft: Renting) => (
+          <RentingCatalogueItem
+            nft={nft}
+            key={nft.id}
+            checkedItems={checkedItems}
+            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            handleReturnNft={handleReturnNft}
+          />
+        ))}
       </ItemWrapper>
-      <Pagination
-        totalPages={totalPages}
-        currentPageNumber={currentPageNumber}
-        onSetPage={onSetPage}
-      />
       {checkedRentingItems.length > 0 && (
         <BatchBar
           title={`Selected ${checkedRentingItems.length} items`}
@@ -169,9 +118,37 @@ const UserRentings: React.FC = () => {
           onClick={handleBatchStopRent}
         />
       )}
+    </div>
+  );
+};
+const UserRentings: React.FC = () => {
+  const { signer } = useContext(UserContext);
+  const { userRenting, isLoading } = useContext(UserRentingContext);
+
+  const rentingItems = useMemo(() => {
+    return userRenting.filter(isRenting);
+  }, [userRenting]);
+  const items = useSearch(rentingItems);
+
+  if (!signer) {
+    return (
+      <RentSwitchWrapper>
+        <div className="center content__message">
+          Please connect your wallet!
+        </div>
+      </RentSwitchWrapper>
+    );
+  }
+  return (
+    <RentSwitchWrapper>
+      <PaginationList
+        nfts={items}
+        ItemsRenderer={ItemsRenderer}
+        isLoading={isLoading}
+        emptyResultMessage="You are not renting anything yet"
+      />
     </RentSwitchWrapper>
   );
 };
 
 export default UserRentings;
-

@@ -3,9 +3,9 @@ import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Nft, Renting } from "../contexts/graph/classes";
 import { useObservable } from "../hooks/useObservable";
-import { useReturnIt } from "../hooks/useReturnIt";
+import { useReturnIt } from "../hooks/contract/useReturnIt";
 import Modal from "./modal";
-import { useNFTApproval } from "../hooks/useNFTApproval";
+import { useNFTApproval } from "../hooks/contract/useNFTApproval";
 
 type ReturnModalProps = {
   nfts: Renting[];

@@ -139,7 +139,6 @@ Cypress.Commands.add("connectToAccounts", (token) => {
 
 Cypress.Commands.add("addDefaultAccounts", () => {
   cy.getAccountsLength().then((length) => {
-    console.log("account length", length);
     if (length !== 5) {
       cy.switchToMetamaskWindow();
       // add 4 more accounts

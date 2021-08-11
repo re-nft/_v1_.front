@@ -1,31 +1,36 @@
-import React, { useContext, useMemo } from "react";
-import UserContext from "../../contexts/UserProvider";
-import { useContractAddress } from "../../hooks/useContractAddress";
+import React, { useMemo } from "react";
+import { useContractAddress } from "../../hooks/contract/useContractAddress";
 import { NetworkName } from "../../types";
+import address from "../../contracts/ReNFT.address";
 
 export const Footer: React.FC = () => {
-  const { network } = useContext(UserContext);
   const contractAddress = useContractAddress();
 
+  const addressWithFallback = useMemo(() => {
+    // need to fallback, even if we didn't load the contracts yet
+    const addressWithFallback = contractAddress || address;
+    return addressWithFallback
+  }, [contractAddress]);
   const etherScanUrl = useMemo(() => {
-    if (network === NetworkName.ropsten) {
-      return "https://ropsten.etherscan.io/address";
+    if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.ropsten) {
+      return `https://ropsten.etherscan.io/address/${addressWithFallback}`;
     }
-    return "https://etherscan.io/address";
-  }, [network]);
+    return `https://etherscan.io/address/${addressWithFallback}`;
+  }, [addressWithFallback]);
+
   return (
     <div className="content-wrapper footer">
       <div className="footer__message font-VT323">
         Contracts have been thoroughly tested and peer reviewed, but not
         audited. Use at your own risk.
         <a
-            style={{ fontSize: "14px", display: "block" }}
-            href={`${etherScanUrl}/${contractAddress}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Contract on etherscan: ${contractAddress}
-          </a>
+          style={{ fontSize: "14px", display: "block" }}
+          href={etherScanUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Contract on etherscan: {addressWithFallback}
+        </a>
       </div>
       <div className="footer__content">
         <div className="copy">2021 ReNFT</div>

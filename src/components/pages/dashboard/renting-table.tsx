@@ -2,11 +2,7 @@ import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
-import {
-  getUniqueCheckboxId,
-  UniqueID
-} from "../../../controller/batch-controller";
-import { nftReturnIsExpired } from "../../../utils";
+import { nftReturnIsExpired, UniqueID } from "../../../utils";
 
 export interface ExtendedRenting extends Renting {
   relended: boolean;
@@ -53,13 +49,13 @@ export const RentingTable: React.FC<{
         </Thead>
         <Tbody>
           {rentingItems.map((rent: Renting & { relended: boolean }) => {
-            const checked = !!checkedItems[getUniqueCheckboxId(rent)];
+            const checked = !!checkedItems[rent.id];
             const isExpired = nftReturnIsExpired(rent);
             return (
               <RentingRow
                 checked={checked}
                 rent={rent}
-                key={getUniqueCheckboxId(rent)}
+                key={rent.id}
                 openModal={toggleReturnModal}
                 currentAddress={currentAddress}
                 checkBoxChangeWrapped={checkBoxChangeWrapped}

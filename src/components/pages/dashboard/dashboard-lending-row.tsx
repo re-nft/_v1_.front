@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { Lending, Nft } from "../../../contexts/graph/classes";
 import { TimestampContext } from "../../../contexts/TimestampProvider";
-import { isClaimable } from "../../../controller/batch-controller";
+import { isClaimable } from "../../../hooks/useBatchItems";
 import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";

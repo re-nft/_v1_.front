@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-import { diffJson } from "diff";
+import React, { useCallback, useEffect, useState } from "react";
 import { Nft } from "../contexts/graph/classes";
+import CatalogueLoader from "./catalogue-loader";
+import Pagination from "./common/pagination";
+import { useFetchMeta } from "../hooks/useMetaState";
 
 const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1,
+  totalPages: 1
 };
 
 type State<T> = {
@@ -18,19 +20,20 @@ type State<T> = {
 
 const PAGE_SIZE = 20;
 
-export const usePageController = <T extends Nft>(): {
-  handleReset: () => void;
-  onPageControllerInit: (pageItems: T[]) => void;
-  onSetPage: (pageNumber: number) => void;
-  currentPage: T[];
-  currentPageNumber: number;
-  totalPages: number;
-} => {
+export const PaginationList = <T extends Nft>({
+  nfts,
+  ItemsRenderer,
+  isLoading,
+  emptyResultMessage
+}: {
+  nfts: T[] | T[];
+  isLoading: boolean;
+  ItemsRenderer: React.FC<{ currentPage: T[] }>;
+  emptyResultMessage: string;
+}) => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
     useState<State<T>>(defaultSate);
-  const handleReset = useCallback(() => {
-    setState(defaultSate);
-  }, []);
+
   const [newState, setNewState] = useState<State<T>>(defaultSate);
 
   const getCurrentPage = useCallback(
@@ -56,7 +59,7 @@ export const usePageController = <T extends Nft>(): {
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage,
+        currentPage
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -65,23 +68,11 @@ export const usePageController = <T extends Nft>(): {
   // only modify the state if there are changes
   useEffect(() => {
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
-    const oldStateNormalized = pageItems;
-    const newStateNormalized = newState.pageItems;
-    const difference = diffJson(oldStateNormalized, newStateNormalized, {
-      ignoreWhitespace: true,
-    });
-    //const difference = true;
-    if (
-      difference &&
-      difference[1] &&
-      (difference[1].added || difference[1].removed)
-    ) {
-      setState((prevState) => ({
-        ...prevState,
-        ...newState,
-      }));
-    }
+    if (pageItems.length === 0 || newState.pageItems.length === 0)
+      setState(newState);
+    else if (pageItems[0].id !== newState.pageItems[0].id) setState(newState);
   }, [pageItems, newState]);
+
   const onPageControllerInit = useCallback(
     (newItems: T[]): void => {
       const totalItems = newItems.length || 0;
@@ -90,17 +81,45 @@ export const usePageController = <T extends Nft>(): {
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems),
+        currentPage: getCurrentPage(1, totalPages, newItems)
       });
     },
     [getCurrentPage]
   );
-  return {
-    handleReset,
-    onPageControllerInit,
-    onSetPage,
-    currentPage,
-    currentPageNumber,
-    totalPages,
-  };
+
+  const fetchMeta = useFetchMeta();
+
+  // init page state
+  useEffect(() => {
+    let isSubscribed = true;
+    if (isLoading) return;
+    if (isSubscribed) onPageControllerInit(nfts);
+    return () => {
+      isSubscribed = false;
+    };
+  }, [nfts, onPageControllerInit, isLoading]);
+
+  // Fetch meta state
+  useEffect(() => {
+    if (isLoading) return;
+    fetchMeta(currentPage);
+  }, [currentPage, isLoading, fetchMeta]);
+
+  if (isLoading && currentPage.length === 0) {
+    return <CatalogueLoader />;
+  }
+
+  if (!isLoading && currentPage.length === 0) {
+    return <div className="center content__message">{emptyResultMessage}</div>;
+  }
+  return (
+    <>
+      <ItemsRenderer currentPage={currentPage}></ItemsRenderer>
+      <Pagination
+        totalPages={totalPages}
+        currentPageNumber={currentPageNumber}
+        onSetPage={onSetPage}
+      />
+    </>
+  );
 };
