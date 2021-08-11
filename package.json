@@ -40,7 +40,7 @@
     "react-flip-toolkit": "7.0.13",
     "react-ga": "3.3.0",
     "react-helmet": "6.1.0",
-    "react-select": "4.3.1",
+    "react-select": "git@github.com:eenagy/react-select.git ",
     "react-super-responsive-table": "5.2.0",
     "react-use-clipboard": "1.0.7",
     "rxjs": "7.2.0",

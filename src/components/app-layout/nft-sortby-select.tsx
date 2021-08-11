@@ -41,10 +41,10 @@ export const NftSortBySelect: React.FC = () => {
     const handleStop = () => {
       setSortBy("");
     };
-    router.events.on("routeChangeStart", handleStop);
+    router.events.on("routeChangeComplete", handleStop);
 
     return () => {
-      router.events.off("routeChangeStart", handleStop);
+      router.events.off("routeChangeComplete", handleStop);
     };
   }, [router, setSortBy]);
 

@@ -42,10 +42,10 @@ export const NftFilterSelect: React.FC = () => {
     const handleStop = () => {
       setNftFilter("");
     };
-    router.events.on("routeChangeStart", handleStop);
+    router.events.on("routeChangeComplete", handleStop);
 
     return () => {
-      router.events.off("routeChangeStart", handleStop);
+      router.events.off("routeChangeComplete", handleStop);
     };
   }, [router, setNftFilter]);
 
