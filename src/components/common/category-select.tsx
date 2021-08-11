@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
+//@ts-ignore  
 import Select, { components } from "react-select";
 
 const customStyles = {
@@ -117,6 +118,7 @@ export const CategorySelect: React.FC<{
       isClearable
       placeholder={defaultValue.label}
       options={options}
+      //@ts-ignore
       imageUrl={value?.imageUrl}
       value={value}
       // NOTE 1: force stupid instanceid to rerender a new component, as state is kept around
