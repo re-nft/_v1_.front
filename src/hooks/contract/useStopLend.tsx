@@ -3,7 +3,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
@@ -30,7 +30,7 @@ export const useStopLend = (): ((
       const arr: [string[], BigNumber[], BigNumber[]] = [
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => BigNumber.from(nft.lendingId))
+        nfts.map((nft) => BigNumber.from(nft.lendingId)),
       ];
       return transactionWrapper(sdk.stopLending(...arr), {
         action: "return nft",
@@ -38,7 +38,7 @@ export const useStopLend = (): ((
           addresses: ${nfts.map((nft) => nft.address)}
           tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
           lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
-        `
+        `,
       });
     },
     [sdk]

@@ -17,13 +17,11 @@ const fetchRentings = () => {
   }
   const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
   return from<Promise<{ lendings: LendingRaw[] }>>(
-    timeItAsync(
-      "Pulled All ReNFT Lendings",
-      async () =>
-        request(subgraphURI, queryAllLendingRenft).catch(() => {
-          console.warn("could not pull all ReNFT lendings");
-          return {};
-        })
+    timeItAsync("Pulled All ReNFT Lendings", async () =>
+      request(subgraphURI, queryAllLendingRenft).catch(() => {
+        console.warn("could not pull all ReNFT lendings");
+        return {};
+      })
     )
   ).pipe(
     map((response) => Object.values(response?.lendings || [])),
@@ -65,16 +63,16 @@ const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
       }
       return {
         ...state,
-        nfts
+        nfts,
       };
     }),
   setLoading: (isLoading: boolean) =>
     set((state) => {
       return {
         ...state,
-        isLoading
+        isLoading,
       };
-    })
+    }),
 }));
 
 export const useAllAvailableForRent = () => {
@@ -89,7 +87,10 @@ export const useAllAvailableForRent = () => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
-          if (network && network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
+          if (
+            network &&
+            network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED
+          ) {
             if (nfts && nfts.length > 0) return [];
             return [];
           }

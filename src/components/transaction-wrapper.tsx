@@ -14,8 +14,8 @@ export const TransactionWrapper: React.FC<{
   status: TransactionStateEnum;
   closeWindow?: () => void | undefined;
 }> = ({ isLoading, children, transactionHashes, status, closeWindow }) => {
-  const {network} = useContext(UserContext);
-  const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS)
+  const { network } = useContext(UserContext);
+  const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS);
   const [showMessage, setShowMessage] = useState(false);
   const imageSource = useMemo(() => {
     switch (status) {
@@ -48,19 +48,17 @@ export const TransactionWrapper: React.FC<{
     };
   }, [closeWindow, isLoading, status]);
 
-  const etherScanUrl = useMemo(()=>{
-    if(network === NetworkName.ropsten){
-      return "https://ropsten.etherscan.io/tx"
+  const etherScanUrl = useMemo(() => {
+    if (network === NetworkName.ropsten) {
+      return "https://ropsten.etherscan.io/tx";
     }
-    return "https://etherscan.io/tx"
-  }, [
-    network
-  ])
+    return "https://etherscan.io/tx";
+  }, [network]);
 
   return (
     <>
       {transactionLoading ? (
-        <div style={{ display: "block" }} data-cy='transaction-loading'>
+        <div style={{ display: "block" }} data-cy="transaction-loading">
           <img src={imageSource}></img>
           {transactionHashes?.map((hash) => {
             return (

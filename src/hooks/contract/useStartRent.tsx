@@ -11,7 +11,7 @@ import { ContractContext } from "../../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "../useObservable";
@@ -151,7 +151,7 @@ export const useStartRent = (): {
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
-          `
+          `,
         }
       );
     },
@@ -164,7 +164,7 @@ export const useStartRent = (): {
     handleApproveAll,
     isApproved,
     approvalStatus: {
-      ...approvalStatus
-    }
+      ...approvalStatus,
+    },
   };
 };

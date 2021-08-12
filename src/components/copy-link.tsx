@@ -5,8 +5,8 @@ import React, { useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 
 export const CopyLink: React.FC<{
-    tokenId: string,
-    address: string
+  tokenId: string;
+  address: string;
 }> = ({ tokenId, address }) => {
   const { setError } = useContext(SnackAlertContext);
   const copyLink = useMemo(() => {
@@ -28,4 +28,3 @@ export const CopyLink: React.FC<{
     </IconButton>
   );
 };
-

@@ -193,23 +193,23 @@ Cypress.Commands.add("mintTUSD", () => {
   mintE20(5);
 });
 
-Cypress.Commands.add('selectWETH', () => {
+Cypress.Commands.add("selectWETH", () => {
   cy.get("#mui-component-select-inputs\\.0\\.pmToken").click();
   cy.get(".MuiMenu-list > li:nth-child(2)").click();
-})
-Cypress.Commands.add('selectDAI', () => {
+});
+Cypress.Commands.add("selectDAI", () => {
   cy.get("#mui-component-select-inputs\\.0\\.pmToken").click();
   cy.get(".MuiMenu-list > li:nth-child(3)").click();
-})
-Cypress.Commands.add('selectUSDC', () => {
+});
+Cypress.Commands.add("selectUSDC", () => {
   cy.get("#mui-component-select-inputs\\.0\\.pmToken").click();
   cy.get(".MuiMenu-list > li:nth-child(4)").click();
-})
-Cypress.Commands.add('selectUSDT', () => {
+});
+Cypress.Commands.add("selectUSDT", () => {
   cy.get("#mui-component-select-inputs\\.0\\.pmToken").click();
   cy.get(".MuiMenu-list > li:nth-child(5)").click();
-})
-Cypress.Commands.add('selectTUSD', () => {
+});
+Cypress.Commands.add("selectTUSD", () => {
   cy.get("#mui-component-select-inputs\\.0\\.pmToken").click();
   cy.get(".MuiMenu-list > li:nth-child(6)").click();
-})
+});

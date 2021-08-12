@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback
+  useCallback,
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
@@ -18,7 +18,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: ""
+  network: "",
 };
 
 type UserContextType = {
@@ -50,7 +50,7 @@ export const UserProvider: React.FC = ({ children }) => {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions // required
+          providerOptions, // required
         })
       : null;
   }, [providerOptions, hasWindow]);
@@ -207,7 +207,6 @@ export const UserProvider: React.FC = ({ children }) => {
     };
   }, [accountsChanged, chainChanged, provider]);
 
-
   return (
     <UserContext.Provider
       value={{
@@ -215,7 +214,7 @@ export const UserProvider: React.FC = ({ children }) => {
         signer,
         address,
         web3Provider,
-        network
+        network,
       }}
     >
       {children}

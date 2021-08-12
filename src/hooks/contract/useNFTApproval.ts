@@ -1,6 +1,6 @@
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, from, map, Observable } from "rxjs";
 import { Nft } from "../../contexts/graph/classes";
@@ -49,14 +49,21 @@ export function useNFTApproval(nfts: Nft[]): {
       return transactionWrapper(
         Promise.all(
           distinctItems.map((nft) => {
-            return getContractWithSigner(nft.address, signer, nft.isERC721).then(
-              (contract) => {
-                return contract.setApprovalForAll(contractAddress, true);
-              }
-            );
+            return getContractWithSigner(
+              nft.address,
+              signer,
+              nft.isERC721
+            ).then((contract) => {
+              return contract.setApprovalForAll(contractAddress, true);
+            });
           })
         ),
-        {action: 'nft approval', label: `${distinctItems.map((t => `address: ${t.address} tokenId: ${t.tokenId}`)).join(',')}`}
+        {
+          action: "nft approval",
+          label: `${distinctItems
+            .map((t) => `address: ${t.address} tokenId: ${t.tokenId}`)
+            .join(",")}`,
+        }
       );
     },
     [transactionWrapper, signer]
@@ -73,16 +80,18 @@ export function useNFTApproval(nfts: Nft[]): {
 
       const result = await Promise.all(
         getDistinctItems(nft, "address").map((nft) => {
-          return getContractWithSigner(nft.address, signer, nft.isERC721).then((contract) => {
-            return contract
-              .isApprovedForAll(currentAddress, contractAddress)
-              .then((isApproved) => {
-                return [nft, isApproved, null];
-              })
-              .catch((e) => {
-                return [nft, false, e];
-              });
-          });
+          return getContractWithSigner(nft.address, signer, nft.isERC721).then(
+            (contract) => {
+              return contract
+                .isApprovedForAll(currentAddress, contractAddress)
+                .then((isApproved) => {
+                  return [nft, isApproved, null];
+                })
+                .catch((e) => {
+                  return [nft, false, e];
+                });
+            }
+          );
         })
       );
       const nonApproved = result
@@ -132,7 +141,7 @@ export function useNFTApproval(nfts: Nft[]): {
     setApprovalForAll,
     setObservable,
     nonApprovedNft,
-    currentAddress
+    currentAddress,
   ]);
 
   return {
@@ -140,6 +149,6 @@ export function useNFTApproval(nfts: Nft[]): {
     isApprovalForAll,
     isApproved,
     approvalStatus,
-    handleApproveAll
+    handleApproveAll,
   };
 }

@@ -17,7 +17,7 @@ export type URI = string;
 export enum TransactionStateEnum {
   FAILED = 0,
   SUCCESS = 1,
-  PENDING = 2
+  PENDING = 2,
 }
 
 export enum NetworkName {

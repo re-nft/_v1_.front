@@ -16,7 +16,7 @@ type ReturnModalProps = {
 export const ReturnModal: React.FC<ReturnModalProps> = ({
   nfts,
   open,
-  onClose
+  onClose,
 }) => {
   const returnIt = useReturnIt();
   const [returnT, setReturnObservable] = useObservable();

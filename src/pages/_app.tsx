@@ -10,44 +10,44 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
-import '../scripts/wdyr'
+import "../scripts/wdyr";
 //@ts-ignore
-import NProgress from 'nprogress'
+import NProgress from "nprogress";
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
     debug: false,
-      // typeof window !== "undefined"
-      //   ? window.location.hostname !== "dapp.renft.io"
-      //   : true,
+    // typeof window !== "undefined"
+    //   ? window.location.hostname !== "dapp.renft.io"
+    //   : true,
     gaOptions: {
-      siteSpeedSampleRate: 100
+      siteSpeedSampleRate: 100,
     },
-    testMode: window.location.hostname !== "dapp.renft.io"
+    testMode: window.location.hostname !== "dapp.renft.io",
   });
 }
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  
+
   useEffect(() => {
     const handleStart = (url: string) => {
-      NProgress.start()
-    }
+      NProgress.start();
+    };
     const handleStop = () => {
-      NProgress.done()
-    }
+      NProgress.done();
+    };
 
-    router.events.on('routeChangeStart', handleStart)
-    router.events.on('routeChangeComplete', handleStop)
-    router.events.on('routeChangeError', handleStop)
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleStop);
+    router.events.on("routeChangeError", handleStop);
 
     return () => {
-      router.events.off('routeChangeStart', handleStart)
-      router.events.off('routeChangeComplete', handleStop)
-      router.events.off('routeChangeError', handleStop)
-    }
-  }, [router])
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleStop);
+      router.events.off("routeChangeError", handleStop);
+    };
+  }, [router]);
 
   useEffect(() => {
     ReactGA.pageview(router.asPath);

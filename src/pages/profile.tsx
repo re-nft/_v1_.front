@@ -49,7 +49,9 @@ const Profile: React.FC = () => {
   }, [userData]);
 
   if (!signer) {
-    return <div className="center content__message">Please connect your wallet!</div>;
+    return (
+      <div className="center content__message">Please connect your wallet!</div>
+    );
   }
 
   if (isLoading) {
@@ -88,7 +90,7 @@ const Profile: React.FC = () => {
                 ></textarea>
               </div>
               <div className="form__button">
-                <Button onClick={onSubmit} description="Save"/>
+                <Button onClick={onSubmit} description="Save" />
               </div>
             </form>
           </div>

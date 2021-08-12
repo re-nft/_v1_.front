@@ -19,14 +19,14 @@ type MinimalSelectProps = {
       ? void
       : (e: string | React.ChangeEvent<unknown>) => void;
   };
-  disabled?: boolean
+  disabled?: boolean;
 };
 
 const MinimalSelect: React.FC<MinimalSelectProps> = ({
   handleChange,
   selectedValue,
   name,
-  disabled
+  disabled,
 }) => {
   const minimalSelectClasses = useMinimalSelectStyles();
 

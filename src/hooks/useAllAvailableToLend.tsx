@@ -28,7 +28,7 @@ export const useAllAvailableToLend = (): {
           "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
     );
   }, [ERC1155]);
-  
+
   const filteredERC721 = useMemo(() => {
     return ERC721.filter(
       (nft) =>

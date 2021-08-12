@@ -4,7 +4,7 @@ import React, {
   useState,
   useRef,
   useMemo,
-  useEffect
+  useEffect,
 } from "react";
 import PaginationTextField from "./pagination-textfield";
 
@@ -17,9 +17,10 @@ type PaginationProps = {
 const Pagination: React.FC<PaginationProps> = ({
   currentPageNumber,
   onSetPage,
-  totalPages
+  totalPages,
 }) => {
-  const [shadowPageNumber, setShadowPageNumber] = useState<number | "">(currentPageNumber);
+  const [shadowPageNumber, setShadowPageNumber] =
+    useState<number | "">(currentPageNumber);
   const [error, setError] = useState("");
   const onSetFirstPage = useCallback(() => onSetPage(1), [onSetPage]);
   const onSetLastPage = useCallback(
@@ -39,9 +40,9 @@ const Pagination: React.FC<PaginationProps> = ({
     (e) => {
       const num = Number(e.target.value);
       if (ref.current) clearTimeout(ref.current);
-      if(e.target.value === ""){
+      if (e.target.value === "") {
         setShadowPageNumber("");
-        return
+        return;
       }
       if (num != parseInt(e.target.value, 10)) {
         setError("Please choose a valid page number!");
@@ -114,7 +115,7 @@ const Pagination: React.FC<PaginationProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">/{totalPages}</InputAdornment>
-              )
+              ),
             }}
           />
         </li>

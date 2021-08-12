@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
 import PageLayout from "./page-layout";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 
 export enum RentSpecificity {
   ALL,
-  RENTING
+  RENTING,
 }
 
-export const RentSwitchWrapper: React.FC = ({
-  children
-}) => {
+export const RentSwitchWrapper: React.FC = ({ children }) => {
   const router = useRouter();
-  const specificity = useMemo(()=>{
-    return router.pathname === '/user-is-renting' ? RentSpecificity.RENTING: RentSpecificity.ALL
-  }, [router.pathname])
+  const specificity = useMemo(() => {
+    return router.pathname === "/user-is-renting"
+      ? RentSpecificity.RENTING
+      : RentSpecificity.ALL;
+  }, [router.pathname]);
 
   const switchSpecificity = useCallback(() => {
     if (specificity == RentSpecificity.ALL) {

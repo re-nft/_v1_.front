@@ -38,13 +38,13 @@ const RentCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
-  currentPage
+  currentPage,
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedLendingItems
+    checkedLendingItems,
   } = useBatchItems();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {

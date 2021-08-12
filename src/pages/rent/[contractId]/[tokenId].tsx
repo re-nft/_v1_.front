@@ -7,7 +7,7 @@ import { useAllAvailableForRent } from "../../../hooks/useAllAvailableForRent";
 const AvailableToRentPage: React.FC = () => {
   const { allAvailableToRent, isLoading } = useAllAvailableForRent();
   const {
-    query: { contractId, tokenId }
+    query: { contractId, tokenId },
   } = useRouter();
 
   const match = useMemo(() => {

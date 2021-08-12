@@ -1,98 +1,98 @@
 .leaderboard-leader {
-    margin: 0 auto;
+  margin: 0 auto;
+  display: flex;
+  color: $white;
+  font-size: 24px;
+  justify-content: center;
+  margin: 24px 0 60px;
+
+  &-item {
+    width: 220px;
     display: flex;
-    color: $white;
-    font-size: 24px;
-    justify-content: center;
-    margin: 24px 0 60px;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-top: 90px;
 
-    &-item {
-        width: 220px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    &.first {
+      margin-top: 0;
+
+      .result {
         position: relative;
-        margin-top: 90px;
+        top: 0;
+        left: 0;
+      }
+    }
+  }
 
-        &.first {
-            margin-top: 0;
+  .img {
+    width: 84px;
+    height: 84px;
+    background: $white;
+    border-radius: 84px;
+    box-shadow: 4px 4px 0 $black;
+    margin-bottom: 8px;
+  }
 
-            .result {
-                position: relative;
-                top: 0;
-                left: 0;
-            }
-        }
+  .name {
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+  }
+
+  .stat {
+    width: 150px;
+    color: $white;
+    font-size: 19px;
+
+    .nft__meta_row {
+      line-height: 1;
     }
 
-    .img {
-        width: 84px;
-        height: 84px;
-        background: $white;
-        border-radius: 84px;
-        box-shadow: 4px 4px 0 $black;
-        margin-bottom: 8px;
+    .nft__meta_dot {
+      border-color: $white;
     }
 
-    .name {
-        width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1;
+    .nft__meta_value {
+      color: $white;
     }
+  }
 
-    .stat {
-        width: 150px;
-        color: $white;
-        font-size: 19px;
-        
-        .nft__meta_row {
-            line-height: 1;
-        }
-        
-        .nft__meta_dot {
-            border-color: $white;
-        }
-        
-        .nft__meta_value {
-            color: $white;
-        }
+  .result {
+    position: absolute;
+    color: $orange;
+    font-size: 60px;
+    position: absolute;
+    font-weight: bold;
+    text-shadow: 4px 4px 0 $black;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    top: 40px;
+    left: 140px;
+
+    div:first-child {
+      top: 3px;
+      position: relative;
     }
-
-    .result {
-        position: absolute;
-        color: $orange;
-        font-size: 60px;
-        position: absolute;
-        font-weight: bold;
-        text-shadow: 4px 4px 0 $black;
-        display: flex;
-        align-items: center;
-        line-height: 1;
-        top: 40px;
-       left: 140px;
-
-        div:first-child {
-            top: 3px;
-            position: relative;
-        }
-    }
+  }
 }
 
 .leaderboard-list {
-    width: 420px;
-    margin: 0 auto;
-    text-align: center;
+  width: 420px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .leaderboard-list-item {
-    color: $white;
-    font-size: 22px;
-    border-bottom: 2px solid $white;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
+  color: $white;
+  font-size: 22px;
+  border-bottom: 2px solid $white;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
 
-    &:last-child {
-        border-bottom: 0;
-    }
+  &:last-child {
+    border-bottom: 0;
+  }
 }

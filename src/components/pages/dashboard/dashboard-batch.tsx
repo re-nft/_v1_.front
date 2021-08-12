@@ -28,7 +28,7 @@ export const DashboardBatch: React.FC<{
   handleResetLending,
   isClaimModalOpen,
   checkedClaims,
-  toggleClaimModal
+  toggleClaimModal,
 }) => {
   const checkedClaimsLength = useMemo(() => {
     return checkedClaims.length;
@@ -50,9 +50,7 @@ export const DashboardBatch: React.FC<{
           open={isReturnModalOpen}
           onClose={() => {
             toggleReturnModal(false);
-            handleResetRenting(
-              checkedRentingItems.map((i) => i.id)
-            );
+            handleResetRenting(checkedRentingItems.map((i) => i.id));
           }}
         />
       )}
@@ -62,9 +60,7 @@ export const DashboardBatch: React.FC<{
           open={isLendModalOpen}
           onClose={() => {
             toggleLendModal(false);
-            handleResetLending(
-              lendinItemsStopLendable.map((i) => i.id)
-            );
+            handleResetLending(lendinItemsStopLendable.map((i) => i.id));
           }}
         />
       )}
@@ -74,9 +70,7 @@ export const DashboardBatch: React.FC<{
           open={isClaimModalOpen}
           onClose={() => {
             toggleClaimModal(false);
-            handleResetLending(
-              checkedClaims.map((i) => i.id)
-            );
+            handleResetLending(checkedClaims.map((i) => i.id));
           }}
         />
       )}

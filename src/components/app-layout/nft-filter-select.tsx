@@ -21,7 +21,7 @@ export const useNFTFilterBy = create<NftFilterState>(
         produce((state) => {
           state.filters = value;
         })
-      )
+      ),
   }))
 );
 
@@ -34,10 +34,10 @@ export const NftFilterSelect: React.FC = () => {
   }, [filters, options]);
 
   const router = useRouter();
-  const instanceId = useMemo(()=>{
+  const instanceId = useMemo(() => {
     return `filter-${router.pathname}`;
-  }, [router.pathname])
-  
+  }, [router.pathname]);
+
   useEffect(() => {
     const handleStop = () => {
       setNftFilter("");

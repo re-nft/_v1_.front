@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,15 +18,9 @@
     "sourceMap": true,
     "downlevelIteration": true
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "linterOptions": {
-    "exclude": [
-      "src/hardhat"
-    ]
+    "exclude": ["src/hardhat"]
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

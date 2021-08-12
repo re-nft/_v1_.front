@@ -17,11 +17,11 @@ export const StateProvider: React.FC = ({ children }) => {
           <ContractsProvider>
             <GraphProvider>
               <TransactionStateProvider>
-                  <UserLendingProvider>
-                    <UserRentingProvider>
-                        <TimestampProvider>{children}</TimestampProvider>
-                    </UserRentingProvider>
-                  </UserLendingProvider>
+                <UserLendingProvider>
+                  <UserRentingProvider>
+                    <TimestampProvider>{children}</TimestampProvider>
+                  </UserRentingProvider>
+                </UserLendingProvider>
               </TransactionStateProvider>
             </GraphProvider>
           </ContractsProvider>

@@ -3,7 +3,7 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";

@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   const addressWithFallback = useMemo(() => {
     // need to fallback, even if we didn't load the contracts yet
     const addressWithFallback = contractAddress || address;
-    return addressWithFallback
+    return addressWithFallback;
   }, [contractAddress]);
   const etherScanUrl = useMemo(() => {
     if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.ropsten) {

@@ -15,7 +15,7 @@ type ReturnModalProps = {
 export const StopLendModal: React.FC<ReturnModalProps> = ({
   open,
   onClose,
-  nfts
+  nfts,
 }) => {
   const stopLending = useStopLend();
   const [t, setObservable] = useObservable();

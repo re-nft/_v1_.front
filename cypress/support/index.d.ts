@@ -12,7 +12,7 @@ declare namespace Cypress {
     getAccountsLength(): number;
     addAccount(): Chainable<Element>;
     confirmMetamaskTransaction(): Chainable<Element>;
-    changeAccount(n:number): Chainable<Element>;
+    changeAccount(n: number): Chainable<Element>;
     unlock(): Chainable<Element>;
     addNetwork(): Chainable<Element>;
     acceptAccess(): Chainable<Element>;
@@ -20,8 +20,8 @@ declare namespace Cypress {
     rejectTransaction(): Chainable<Element>;
     addNetwork(): Chainable<Element>;
     initialSetup(): Chainable<Element>;
-    switchToMetamaskWindow(): Chainable<Element>
-    switchToCypressWindow(): Chainable<Element>
+    switchToMetamaskWindow(): Chainable<Element>;
+    switchToCypressWindow(): Chainable<Element>;
     // END: cypress-metamask commands
 
     //BEGIN: local commands
@@ -29,21 +29,21 @@ declare namespace Cypress {
     connectDisconnect(): Chainable<Element>;
     addDefaultAccounts(): Chainable<Element>;
     //mint nfts
-    mint_i721a(): Chainable<Element>
-    mint_i721b(): Chainable<Element>
-    mint_i1155a(): Chainable<Element>
-    mint_i1155b(): Chainable<Element>
+    mint_i721a(): Chainable<Element>;
+    mint_i721b(): Chainable<Element>;
+    mint_i1155a(): Chainable<Element>;
+    mint_i1155b(): Chainable<Element>;
     // mint tokens
-    mintWETH(): Chainable<Element>
-    mintDAI(): Chainable<Element>
-    mintUSDC(): Chainable<Element>
-    mintUSDT(): Chainable<Element>
-    mintTUSD(): Chainable<Element>
-    selectWETH(): Chainable<Element>
-    selectDAI(): Chainable<Element>
-    selectUSDC(): Chainable<Element>
-    selectUSDT(): Chainable<Element>
-    selectTUSD(): Chainable<Element>
+    mintWETH(): Chainable<Element>;
+    mintDAI(): Chainable<Element>;
+    mintUSDC(): Chainable<Element>;
+    mintUSDT(): Chainable<Element>;
+    mintTUSD(): Chainable<Element>;
+    selectWETH(): Chainable<Element>;
+    selectDAI(): Chainable<Element>;
+    selectUSDC(): Chainable<Element>;
+    selectUSDT(): Chainable<Element>;
+    selectTUSD(): Chainable<Element>;
     //END: local commands
   }
 }

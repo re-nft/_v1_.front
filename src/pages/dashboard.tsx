@@ -7,15 +7,21 @@ import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import UserContext from "../contexts/UserProvider";
 import { Toggle } from "../components/common/toggle";
-import { ExtendedLending, LendingTable } from "../components/pages/dashboard/lending-table";
-import { ExtendedRenting, RentingTable } from "../components/pages/dashboard/renting-table";
+import {
+  ExtendedLending,
+  LendingTable,
+} from "../components/pages/dashboard/lending-table";
+import {
+  ExtendedRenting,
+  RentingTable,
+} from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
 import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
 import PageLayout from "../components/page-layout";
 
 enum DashboardViewType {
   LIST_VIEW,
-  MINIATURE_VIEW
+  MINIATURE_VIEW,
 }
 
 export const Dashboard: React.FC = () => {
@@ -33,7 +39,7 @@ export const Dashboard: React.FC = () => {
     checkedItems,
     checkedLendingItems,
     checkedRentingItems,
-    checkedClaims
+    checkedClaims,
   } = useBatchItems();
   const { userRenting: rentingItems, isLoading: userRentingLoading } =
     useContext(UserRentingContext);

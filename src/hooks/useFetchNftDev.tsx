@@ -151,7 +151,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     currentAddress,
     isLoading,
     devNfts,
-    previousAddress
+    previousAddress,
   ]);
 
   useEffect(() => {

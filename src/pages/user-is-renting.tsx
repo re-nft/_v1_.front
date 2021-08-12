@@ -53,13 +53,13 @@ const RentingCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
-  currentPage
+  currentPage,
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedRentingItems
+    checkedRentingItems,
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 

@@ -3,7 +3,7 @@ import {
   addOrRemoveUserFavorite,
   nftId,
   upvoteOrDownvote,
-  getNftVote
+  getNftVote,
 } from "../../services/firebase";
 import { CalculatedUserVote, UsersVote } from "../../contexts/graph/types";
 import { calculateVoteByUser } from "../../services/vote";

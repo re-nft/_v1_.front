@@ -120,7 +120,7 @@ const Lendings: React.FC = () => {
         nfts={items}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
-        emptyResultMessage="You don&apos;t have any NFTs to lend"
+        emptyResultMessage="You don't have any NFTs to lend"
       />
     </LendSwitchWrapper>
   );

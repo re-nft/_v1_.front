@@ -15,9 +15,9 @@ const App: React.FC = ({ children }) => {
       </div>
       <div className="content-wrapper mb-l">
         <Menu />
-        <SearchMenu/>
+        <SearchMenu />
       </div>
-      <DevMenu/>
+      <DevMenu />
       {/* CONTENT */}
       <div className="content-wrapper main-content mb-l">{children}</div>
       {/* FOOTER */}

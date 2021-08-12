@@ -10,7 +10,7 @@ export const useObservable = (): [
   const [value, setValue] = useState<TransactionStatus>({
     hasFailure: false,
     status: TransactionStateEnum.PENDING,
-    isLoading: false
+    isLoading: false,
   });
   const [observable, setObservable] =
     useState<Observable<TransactionStatus>>(EMPTY);

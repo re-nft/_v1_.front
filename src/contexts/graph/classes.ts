@@ -6,7 +6,7 @@ import { parseLending, parseRenting } from "./utils";
 export enum NftType {
   Nft,
   Lending,
-  Renting
+  Renting,
 }
 
 type NftOptions = {
@@ -53,8 +53,8 @@ class Nft {
       this.tokenURI = options.tokenURI;
     }
     //TODO:eniko check if we still need to do this
-    this.id = getUniqueID(nftAddress, tokenId, "0")
-    this.nId = getUniqueID(nftAddress, tokenId)
+    this.id = getUniqueID(nftAddress, tokenId, "0");
+    this.nId = getUniqueID(nftAddress, tokenId);
   }
 }
 
@@ -102,7 +102,5 @@ class Renting extends Nft {
     this.id = rentingRaw.id;
   }
 }
-
-
 
 export { Nft, Lending, Renting };

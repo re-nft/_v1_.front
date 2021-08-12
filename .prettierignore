@@ -1,0 +1,6 @@
+.husky
+.next
+.vercel
+build
+node_modules
+public

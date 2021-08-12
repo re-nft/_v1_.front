@@ -18,7 +18,7 @@ type LendModalProps = {
 export const BatchLendModal: React.FC<LendModalProps> = ({
   nfts,
   open,
-  onClose
+  onClose,
 }) => {
   const startLend = useStartLend();
   const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
@@ -31,7 +31,6 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 
     [startLend, onClose]
   );
-
 
   return (
     <Modal open={open} handleClose={onClose}>

@@ -112,7 +112,6 @@ export const fetchUserProd1155 = async (
   return tokens;
 };
 
-
 export type FetchUserRentingReturn =
   | {
       users?:

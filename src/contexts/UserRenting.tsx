@@ -3,7 +3,7 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
@@ -24,7 +24,7 @@ export type UserRentingContextType = {
 export const UserRentingContext = createContext<UserRentingContextType>({
   userRenting: [],
   isLoading: false,
-  refetchRenting: () => EMPTY
+  refetchRenting: () => EMPTY,
 });
 
 export const UserRentingProvider: React.FC = ({ children }) => {
@@ -108,7 +108,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
       value={{
         userRenting: renting,
         isLoading,
-        refetchRenting: fetchRenting
+        refetchRenting: fetchRenting,
       }}
     >
       {children}

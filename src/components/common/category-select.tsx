@@ -7,11 +7,11 @@ const customStyles = {
   option: (provided: any, state: any) => ({
     ...provided,
     color: state.isSelected || state.isFocused ? "white" : "black",
-    backgroundColor: state.isSelected || state.isFocused ? "black" : "white"
+    backgroundColor: state.isSelected || state.isFocused ? "black" : "white",
   }),
   placeholder: (provided: any) => ({
     ...provided,
-    color: "black"
+    color: "black",
   }),
   control: (provided: any, state: any) => ({
     // none of react-select's styles are passed to <Control />
@@ -27,8 +27,8 @@ const customStyles = {
     border: "3px solid black",
     boxShadow: `7px 7px black`,
     "&:hover": {
-      borderColor: state.isFocused ? "#6a3a95" : "black"
-    }
+      borderColor: state.isFocused ? "#6a3a95" : "black",
+    },
   }),
   menu: (provided: any) => ({
     // none of react-select's styles are passed to <Control />
@@ -44,12 +44,12 @@ const customStyles = {
     4px 4px 0 black,
     3px 3px 0 black,
     2px 2px 0 black,
-    1px 1px 0 black;`
+    1px 1px 0 black;`,
   }),
   menuList: (provided: any) => ({
     ...provided,
     paddingTop: 0,
-    paddingBottom: 0
+    paddingBottom: 0,
   }),
   singleValue: (provided: any, state: any) => {
     const opacity = state.isDisabled ? 0.5 : 1;
@@ -61,8 +61,8 @@ const customStyles = {
     ...provided,
     color: "black",
     borderColor: state.isFocused ? "purple" : "black",
-    opacity: 1
-  })
+    opacity: 1,
+  }),
 };
 
 const Control: React.FC<unknown> = ({ children, ...rest }) => {
@@ -129,7 +129,7 @@ export const CategorySelect: React.FC<{
       onChange={onChange}
       components={{
         Control,
-        Option
+        Option,
       }}
     />
   );

@@ -33,14 +33,11 @@ describe("Lending", () => {
       it("if approve button shows can approve the nft to lend without filling out details", () => {
         //TODO this is complicated because i keep rerunning the test, also using the same hardhat node, without restart
         cy.get("body").then(($body) => {
-          if (
-            $body.find(".nft__control .nft__button:disabled")
-              .length > 0
-          ) {
+          if ($body.find(".nft__control .nft__button:disabled").length > 0) {
             // lend button, do nothing
-          }else {
+          } else {
             // approve case, approve nft
-            cy.wait(2000)
+            cy.wait(2000);
             cy.get(
               ".modal-dialog-button > :nth-child(1) > .nft__control > .nft__button"
             ).click();
@@ -81,7 +78,7 @@ describe("Lending", () => {
 
       it("then the items shows up in is-lending screen", () => {
         cy.get(".toggle").click();
-        // graph returns 
+        // graph returns
         cy.get(".content__items .nft .nft__erc721").should("have.length", 1);
       });
       it("and the item shows up in dashboard lending section with correct details", () => {

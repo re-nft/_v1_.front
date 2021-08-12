@@ -37,12 +37,16 @@ export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
     return <div>Expired!</div>;
   }
   return (
-    <div style={{ display: 'flex', justifyItems: 'flex-end', alignContent: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        justifyItems: "flex-end",
+        alignContent: "center",
+      }}
+    >
       <span style={{ display: "flex" }}>{days}d&nbsp;</span>
       <span style={{ display: "flex" }}>{hours}h&nbsp;</span>
-      <span style={{ display: "flex" }}>
-        {minutes}m&nbsp;
-      </span>
+      <span style={{ display: "flex" }}>{minutes}m&nbsp;</span>
       <span style={{ display: "flex" }}>{seconds}s</span>
     </div>
   );

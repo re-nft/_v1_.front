@@ -18,7 +18,6 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
   lendingNumber,
   rentingNumber,
 }) => {
-
   if (rentingNumber < 1 && lendingNumber < 1 && claimsNumber < 1) return null;
   return (
     <div className="batch">
@@ -33,7 +32,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
 
-            <Button onClick={onStopRent} description="Stop rent"/>
+            <Button onClick={onStopRent} description="Stop rent" />
           </div>
         </div>
       )}
@@ -50,14 +49,11 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button
-              onClick={onClaim}
-              description="Claim all"
-            />
+            <Button onClick={onClaim} description="Claim all" />
           </div>
         </div>
       )}
-      {(lendingNumber - claimsNumber) > 0 && (
+      {lendingNumber - claimsNumber > 0 && (
         <div
           className="batch__inner"
           style={{
@@ -75,10 +71,7 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
           </div>
           <div className="column">
             <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button
-              onClick={onStopLend}
-              description="Stop lend all"
-            ></Button>
+            <Button onClick={onStopLend} description="Stop lend all"></Button>
           </div>
         </div>
       )}

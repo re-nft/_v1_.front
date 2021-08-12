@@ -64,6 +64,6 @@ export const useMint = () => {
   );
   return {
     mintE20,
-    mintNFT
-  }
+    mintNFT,
+  };
 };

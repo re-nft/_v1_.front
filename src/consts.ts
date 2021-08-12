@@ -10,7 +10,6 @@ export const MAX_UINT256 =
 
 export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 
-export const IS_PROD =
-  process.env["NODE_ENV"]?.toLowerCase() === "production";
+export const IS_PROD = process.env["NODE_ENV"]?.toLowerCase() === "production";
 
-export const NO_COLLECTION  = 'No collection'
+export const NO_COLLECTION = "No collection";

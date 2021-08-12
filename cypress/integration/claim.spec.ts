@@ -1,6 +1,4 @@
 /// <reference types="cypress" />
 /// <reference types="../support" />
 
-describe("Claim", () => {
-    
-})
+describe("Claim", () => {});

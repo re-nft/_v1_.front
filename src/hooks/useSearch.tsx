@@ -134,7 +134,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         : 1,
       collateralInUSD: isLending(r)
         ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
-        : 1
+        : 1,
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -167,10 +167,10 @@ export const useSearchOptions = () => {
         if (!set.has(name)) {
           set.add(name);
           arr.push({
-                value: meta.collection.name,
-                label: meta.collection.name,
-                imageUrl: meta.collection.imageUrl,
-            });
+            value: meta.collection.name,
+            label: meta.collection.name,
+            imageUrl: meta.collection.imageUrl,
+          });
         }
       } else {
         if (!set.has(NO_COLLECTION)) {
@@ -188,7 +188,7 @@ export const useSortOptions = () => {
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Colletaral",  value: "lc", imageUrl: "" }
+      { label: "Lowest Colletaral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };

@@ -5,9 +5,7 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { addOrRemoveUserFavorite } from "../services/firebase";
 import { CatalogueItem } from "../components/catalogue-item";
-import {
-  useBatchItems
-} from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/useBatchItems";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { myFavorites } from "../services/calculate-my-favorites";
 import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
@@ -20,7 +18,7 @@ type RemoveButtonProps = {
 
 const RemoveButton: React.FC<RemoveButtonProps> = ({
   nft,
-  onRemoveFromFavorites
+  onRemoveFromFavorites,
 }) => {
   const handleRemoveFromFavorites = useCallback(() => {
     onRemoveFromFavorites(nft);
@@ -36,7 +34,7 @@ export const MyFavorites: React.FC = () => {
   const {
     userData,
     isLoading: userDataIsLoading,
-    refreshUserData
+    refreshUserData,
   } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const { onCheckboxChange } = useBatchItems();
@@ -61,7 +59,6 @@ export const MyFavorites: React.FC = () => {
     const items = myFavorites(userData, allAvailableToLend);
     setNftItems(items);
   }, [allAvailableToLend, userData]);
-
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
