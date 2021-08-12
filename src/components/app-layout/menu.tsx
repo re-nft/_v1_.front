@@ -5,15 +5,15 @@ import { useRouter } from "next/router";
 const ROUTES = [
   {
     path: "/",
-    name: "Rent"
+    name: "Rent",
   },
   {
     path: "/lend",
-    name: "Lend"
+    name: "Lend",
   },
   {
     path: "/dashboard",
-    name: "My Dashboard"
+    name: "My Dashboard",
   },
   // {
   //   path: "/favourites",
@@ -25,12 +25,13 @@ const ROUTES = [
   // },
   {
     path: "/faq",
-    name: "FAQ"
-  }
+    name: "FAQ",
+  },
 ];
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
-  if (pathname.includes(linkPath) && linkPath !== '/') return true;
+  if (pathname.includes(linkPath) && linkPath !== "/") return true;
+  if (pathname.includes("/rent") && linkPath !== "/") return true;
   if (pathname === "/user-is-renting" && linkPath === "/") return true;
   if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
   return false;
