@@ -99,7 +99,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
       if (hasFailure) setError("Transaction is not successful!", "warning");
       return [hasFailure, hasPending];
     },
-    []
+    [setError]
   );
 
   const getHashStatus = useCallback(
@@ -127,7 +127,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         })
       );
     },
-    [getTransactionsStatus, transactions, waitForTransactions, provider]
+    [getTransactionsStatus, transactions, provider, setError]
   );
   const setHash = useCallback(
     (
@@ -165,7 +165,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         })
       );
     },
-    [getTransactionsStatus, provider, waitForTransactions]
+    [getTransactionsStatus, provider, setError]
   );
 
   return (

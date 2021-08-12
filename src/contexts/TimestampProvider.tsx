@@ -37,7 +37,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
       );
     }
     return EMPTY;
-  }, [provider, timeStamp]);
+  }, [provider]);
 
   useEffect(() => {
     const cancel = getTimestamp().subscribe((timestamp) => {

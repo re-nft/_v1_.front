@@ -66,7 +66,7 @@ export function useNFTApproval(nfts: Nft[]): {
         }
       );
     },
-    [transactionWrapper, signer]
+    [transactionWrapper, signer, currentAddress]
   );
 
   // check if approved
@@ -79,7 +79,8 @@ export function useNFTApproval(nfts: Nft[]): {
       if (!signer) return [false, []];
 
       const result = await Promise.all(
-        getDistinctItems(nft, "address").map((nft) => {
+        //@ts-ignore
+        getDistinctItems(nft, "address").map((nft: Nft) => {
           return getContractWithSigner(nft.address, signer, nft.isERC721).then(
             (contract) => {
               return contract
@@ -125,7 +126,7 @@ export function useNFTApproval(nfts: Nft[]): {
     return () => {
       subscription.unsubscribe();
     };
-  }, [nfts, currentAddress, contractAddress]);
+  }, [nfts, currentAddress, contractAddress, isApprovalForAll]);
 
   useEffect(() => {
     if (approvalStatus.status === TransactionStateEnum.SUCCESS) {
@@ -141,7 +142,7 @@ export function useNFTApproval(nfts: Nft[]): {
     setApprovalForAll,
     setObservable,
     nonApprovedNft,
-    currentAddress,
+    contractAddress,
   ]);
 
   return {

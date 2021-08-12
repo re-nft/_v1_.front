@@ -44,7 +44,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
     return typeof window !== "undefined";
-  }, [typeof window]);
+  }, []);
   // web3modal is only working in browser\]
   const web3Modal = useMemo(() => {
     return hasWindow

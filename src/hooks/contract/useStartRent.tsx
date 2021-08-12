@@ -99,7 +99,7 @@ export const useStartRent = (): {
     if (approvalStatus.isLoading) return false;
     if (!approvals) return true;
     return approvals?.length < 1;
-  }, [approvals, approvalStatus.isLoading]);
+  }, [approvals, approvalStatus.isLoading, isCheckLoading]);
 
   useEffect(() => {
     if (approvalStatus.status === TransactionStateEnum.SUCCESS) {
@@ -120,7 +120,7 @@ export const useStartRent = (): {
         )
       );
     }
-  }, [approvals, contractAddress]);
+  }, [approvals, contractAddress, setObservable, transactionWrapper]);
 
   const startRent = useCallback(
     (nfts: StartRentNft[]) => {
@@ -155,7 +155,7 @@ export const useStartRent = (): {
         }
       );
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
 
   return {

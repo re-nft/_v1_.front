@@ -151,7 +151,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyOpenSea]);
+  }, [fetchReadyOpenSea, setOpenseaResult]);
 
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
@@ -172,7 +172,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyIPFS, nfts]);
+  }, [fetchReadyIPFS, nfts, setIPFSResult]);
 
   return useCallback(
     (items: Nft[]) => {
@@ -187,6 +187,6 @@ export const useFetchMeta = () => {
       });
       if (fetching.length > 0) setFetchReady(fetching);
     },
-    [metas]
+    [metas, setFetchReady]
   );
 };

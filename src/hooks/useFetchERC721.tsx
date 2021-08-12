@@ -150,7 +150,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, signer]);
+  }, [signer, currentAddress, setLoading, setUserNft]);
 
   return { ERC721: nfts, isLoading };
 };

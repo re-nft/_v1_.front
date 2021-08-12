@@ -46,7 +46,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     (items: StartRentNft[]): Observable<TransactionStatus> => {
       return startRent(items);
     },
-    [handleClose, isApproved, startRent]
+    [startRent]
   );
   return (
     <Modal open={open} handleClose={handleClose}>

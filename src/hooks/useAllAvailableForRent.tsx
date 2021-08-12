@@ -109,7 +109,7 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchRentings, currentAddress, setLoading, network]);
+  }, [currentAddress, setLoading, network, nfts, setNfts]);
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;

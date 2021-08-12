@@ -204,7 +204,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress]);
+  }, [signer, currentAddress, setUserNft, setLoading]);
 
   return { ERC1155: nfts, isLoading };
 };

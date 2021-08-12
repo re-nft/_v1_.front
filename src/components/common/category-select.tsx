@@ -110,7 +110,7 @@ export const CategorySelect: React.FC<{
     (option) => {
       setValue(option?.value || "");
     },
-    [options, setValue]
+    [setValue]
   );
   if (options.length < 1) return null;
   return (

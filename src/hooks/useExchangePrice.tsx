@@ -66,7 +66,7 @@ export const useExchangePrice = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, []);
+  }, [setWETH]);
 
   return tokenPerUSD;
 };

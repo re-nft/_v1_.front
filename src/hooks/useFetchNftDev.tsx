@@ -152,6 +152,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     isLoading,
     devNfts,
     previousAddress,
+    network,
   ]);
 
   useEffect(() => {

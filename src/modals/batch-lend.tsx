@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 
 import Modal from "./modal";
 
@@ -7,7 +7,6 @@ import { useNFTApproval } from "../hooks/contract/useNFTApproval";
 
 import { useStartLend } from "../hooks/contract/useStartLend";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -22,14 +21,13 @@ export const BatchLendModal: React.FC<LendModalProps> = ({
 }) => {
   const startLend = useStartLend();
   const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
-  const currentAddress = useContext(CurrentAddressWrapper);
 
   const handleLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
       return startLend(lendingInputs);
     },
 
-    [startLend, onClose]
+    [startLend]
   );
 
   return (

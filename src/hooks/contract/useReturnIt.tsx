@@ -38,6 +38,6 @@ export const useReturnIt = (): ((
         }
       );
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
 };

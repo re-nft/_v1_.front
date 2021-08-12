@@ -14,11 +14,14 @@ export const Header: React.FC = () => {
   const [username, setUsername] = useState<string>();
   const { userData } = useContext(GraphContext);
   const lookupAddress = useLookupAddress();
+
+  const hasWindow = useMemo(() => {
+    return typeof window !== "undefined";
+  }, []);
+
   const installMetaMask = useMemo(() => {
-    return typeof window === "undefined"
-      ? false
-      : !(window?.web3 || window?.ethereum);
-  }, [typeof window]);
+    return !hasWindow ? false : !(window?.web3 || window?.ethereum);
+  }, [hasWindow]);
 
   useEffect(() => {
     if (userData?.name !== "") {

@@ -23,7 +23,7 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
   const handleStopLend = useCallback(() => {
     const items = nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }));
     setObservable(stopLending(items));
-  }, [nfts, stopLending]);
+  }, [nfts, stopLending, setObservable]);
 
   return (
     <Modal open={open} handleClose={onClose}>

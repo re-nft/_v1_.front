@@ -139,7 +139,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
     return r;
-  }, [items, filter, sortBy, tokenPerUSD]);
+  }, [items, filter, sortBy, tokenPerUSD, filterItems, sortItems]);
 };
 
 export interface CategoryOptions {
@@ -160,7 +160,7 @@ export const useSearchOptions = () => {
   return useMemo(() => {
     const set = new Set<string>();
     const arr: CategoryOptions[] = [];
-    Object.keys(metas).forEach((id: string) => {
+    keys.forEach((id: string) => {
       const meta = metas[id];
       if (meta.collection) {
         const name = meta.collection.name || NO_COLLECTION;
@@ -179,7 +179,7 @@ export const useSearchOptions = () => {
       }
     });
     return arr;
-  }, [keys]);
+  }, [keys, metas]);
 };
 
 export const useSortOptions = () => {

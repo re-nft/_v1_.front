@@ -76,7 +76,7 @@ export const useStartLend = (): ((
         }
       );
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
   return startLend;
 };
