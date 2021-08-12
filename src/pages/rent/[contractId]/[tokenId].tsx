@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { AvailableToRent } from "../../../components/pages/available-to-rent";
 import { RentSwitchWrapper } from "../../../components/rent-switch-wrapper";
 import { useAllAvailableForRent } from "../../../hooks/useAllAvailableForRent";

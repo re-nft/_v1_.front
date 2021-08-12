@@ -1,0 +1,10 @@
+.next
+.husky
+.vercel
+build
+node_modules
+public
+src/contracts
+babel.config.js
+next.config.js
+src/scripts/wdyr.js

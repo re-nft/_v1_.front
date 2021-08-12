@@ -1,5 +1,5 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
-import React, { useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { ContractContext } from "../../contexts/ContractsProvider";
 import { NetworkName } from "../../types";
 

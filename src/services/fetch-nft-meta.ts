@@ -1,4 +1,4 @@
-import { NftToken, NftTokenMeta } from "../contexts/graph/types";
+import { NftTokenMeta } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
 import fetch from "cross-fetch";
 import {
@@ -74,9 +74,9 @@ export interface OpenSeaCollection extends OpenSeaFees {
   // Image for the collection when featured
   featuredImageUrl: string;
   // Object with stats about the collection
-  stats: object;
+  //stats: object;
   // Data about displaying cards
-  displayData: object;
+  //displayData: object;
   // Tokens allowed for this collection
   // paymentTokens: OpenSeaFungibleToken[]
   // Address for dev fee payouts

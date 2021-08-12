@@ -203,7 +203,7 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   }
 };
 
-export const getDistinctItems = <T extends Object>(
+export const getDistinctItems = <T extends Record<any, unknown>>(
   nfts: T[],
   property: keyof T
 ): T[] => {
