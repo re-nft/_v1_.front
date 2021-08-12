@@ -10,8 +10,6 @@
     "build": "next build && next export -o build",
     "test": "jest test",
     "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx' 'src/*.tsx' 'src/*.ts'",
-    "cy:open": "cross-env CYPRESS_REMOTE_DEBUGGING_PORT=9222 cypress open",
-    "cy:run": "cross-env CYPRESS_REMOTE_DEBUGGING_PORT=9222 cypress run --browser chrome",
     "analyze": "cross-env ANALYZE=true yarn build",
     "serve": "serve .next/analyze",
     "prepare": "husky install"
@@ -66,8 +64,6 @@
     "@typescript-eslint/parser": "4.24.0",
     "babel-eslint": "10.1.0",
     "cross-env": "7.0.3",
-    "cypress": "7.7.0",
-    "cypress-metamask": "git+https://github.com/eenagy/cypress-metamask",
     "eslint": "7.20.0",
     "eslint-config-next": "^11.0.1",
     "eslint-config-prettier": "7.2.0",
