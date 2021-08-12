@@ -13,7 +13,7 @@ class MyDocument extends Document {
           <meta name="description" content="reNFT - P2P NFT rentals" />
           <meta
             name="ui-version"
-            content={`${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}`}
+            content={`${process.env.VERCEL_GIT_COMMIT_SHA}`}
           />
           <link
             rel="apple-touch-icon"
@@ -130,7 +130,7 @@ MyDocument.getInitialProps = async (ctx) => {
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />)
+      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
     });
 
   const initialProps = await Document.getInitialProps(ctx);
@@ -140,8 +140,8 @@ MyDocument.getInitialProps = async (ctx) => {
     // Styles fragment is rendered after the app and page rendering finish.
     styles: [
       ...React.Children.toArray(initialProps.styles),
-      sheets.getStyleElement()
-    ]
+      sheets.getStyleElement(),
+    ],
   };
 };
 export default MyDocument;
