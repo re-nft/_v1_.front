@@ -13,7 +13,7 @@ class MyDocument extends Document {
           <meta name="description" content="reNFT - P2P NFT rentals" />
           <meta
             name="ui-version"
-            content={`${process.env.VERCEL_GIT_COMMIT_SHA}`}
+            content={`${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}`}
           />
           <link
             rel="apple-touch-icon"

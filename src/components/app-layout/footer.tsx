@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
       <div className="footer__content">
         <div className="copy">2021 ReNFT</div>
         <div className="copy">
-          App version: {process.env.VERCEL_GIT_COMMIT_SHA}
+          App version: {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}
         </div>
         <div className="soc">
           <a
