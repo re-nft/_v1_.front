@@ -7,7 +7,7 @@
     "dev": "cross-env VERCEL_GIT_COMMIT_SHA=`git rev-parse --short HEAD` next dev",
     "start": "next start",
     "prod": "serve -s build",
-    "build": "next build && next export -o build",
+    "build": "next build",
     "test": "jest test",
     "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx' 'src/*.tsx' 'src/*.ts'",
     "analyze": "cross-env ANALYZE=true yarn build",
