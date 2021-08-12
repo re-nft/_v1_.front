@@ -18,7 +18,7 @@ const ItemWrapper: React.FC<{
         spring: "wobble",
       }}
     >
-      <div className="content__row content__items">{children}</div>
+      <div className="flex flex-wrap pt-8 justify-center">{children}</div>
     </Flipper>
   );
 };

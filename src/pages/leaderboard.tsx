@@ -58,8 +58,8 @@ const Leaderboard: React.FC = () => {
   const [one, two, three] = leaderboardData.slice(0).slice(0, 3);
   const rest = leaderboardData.slice(3);
   return (
-    <div className="content">
-      <div className="content__row content__leaderboard">
+    <div className="flex relative flex-col py-4 min-h-screen">
+      <div className="">
         <div className="leaderboard-leader">
           <div className="leaderboard-leader-item">
             <div className="img"></div>

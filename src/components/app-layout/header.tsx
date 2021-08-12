@@ -45,16 +45,18 @@ export const Header: React.FC = () => {
       ) : (
         <div className="header__wallet">
           <div className="header__wallet-network">
-            <p className="headline pink-text">
+            <p className="font-display text-sm leading-loose text-rn-purple">
               {network} &nbsp;{" "}
               {networkNotSupported && (
-                <span className="copy-text black-text">is not supported</span>
+                <span className="text-2xl leading-tight text-black">
+                  is not supported
+                </span>
               )}
             </p>
             {networkNotSupported && (
-              <p className="copy-text">
+              <p className="text-2xl leading-tight">
                 Please switch to{" "}
-                <span className="headline pink-text">
+                <span className="font-display text-sm leading-loose text-rn-purple">
                   {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}
                 </span>
               </p>

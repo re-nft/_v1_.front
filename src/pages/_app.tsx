@@ -1,5 +1,6 @@
 import "../style/index.scss";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import "tailwindcss/tailwind.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";
