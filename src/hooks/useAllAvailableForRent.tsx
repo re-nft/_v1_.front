@@ -20,7 +20,7 @@ const fetchRentings = () => {
     timeItAsync(
       "Pulled All ReNFT Lendings",
       async () =>
-        await request(subgraphURI, queryAllLendingRenft).catch(() => {
+        request(subgraphURI, queryAllLendingRenft).catch(() => {
           console.warn("could not pull all ReNFT lendings");
           return {};
         })
