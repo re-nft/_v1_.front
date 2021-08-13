@@ -15,7 +15,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex relative flex-col py-4 min-h-screen">
+    <div className="flex relative flex-col py-4 min-h-screen w-full">
       {title && (
         <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
       )}

@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="flex relative flex-col py-4 min-h-screen">
+    <div className="flex relative flex-col py-4 min-h-screen w-full">
       <div className="content__row profile-page">
         <div className="profile-header">
           <div className="avatar"></div>

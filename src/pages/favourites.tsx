@@ -80,7 +80,7 @@ export const MyFavorites: React.FC = () => {
   }
   // TODO pagination control
   return (
-    <div className="flex relative flex-col py-4 min-h-screen">
+    <div className="flex relative flex-col py-4 min-h-screen w-full">
       <div className="flex flex-wrap pt-8 justify-center">
         {nftItems.map((nft) => (
           <CatalogueItem

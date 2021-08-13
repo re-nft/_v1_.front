@@ -1,7 +1,6 @@
 import React from "react";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheets } from "@material-ui/core/styles";
-import { theme } from "../components/theme";
 
 class MyDocument extends Document {
   render(): React.ReactElement {
@@ -9,7 +8,7 @@ class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <meta charSet="utf-8" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
+          <meta name="theme-color" content="black" />
           <meta name="description" content="reNFT - P2P NFT rentals" />
           <meta
             name="ui-version"
