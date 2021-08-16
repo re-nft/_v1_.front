@@ -4,6 +4,7 @@
     flex-wrap: wrap;
     align-items: flex-end;
     align-content: flex-start;
+
     width: 100%;
 
     &__item {
@@ -87,5 +88,8 @@
                 content: none;
             }
         }
+    }
+    &.menu-wrapper {
+        align-items: center;
     }
 }
