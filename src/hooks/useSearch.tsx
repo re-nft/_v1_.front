@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
@@ -8,6 +8,27 @@ import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
 import { useNftMetaState } from "./useMetaState";
 import { NO_COLLECTION } from "../consts";
+import create from "zustand";
+import produce from "immer";
+import { devtools } from "zustand/middleware";
+import { useRouter } from "next/router";
+
+interface NftSearchState {
+  nfts: Set<string>;
+  setSearchNfts: (nfts: Nft[]) => void;
+}
+
+export const useSearchNfts = create<NftSearchState>(
+  devtools((set) => ({
+    nfts: new Set(),
+    setSearchNfts: (nfts) =>
+      set(
+        produce((state) => {
+          state.nfts = new Set(nfts.map((n) => n.nId));
+        })
+      ),
+  }))
+);
 
 export const toUSD = (
   paymentToken: PaymentToken,
@@ -67,6 +88,8 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
   const tokenPerUSD = useExchangePrice();
   const metas = useNftMetaState(useCallback((state) => state.metas, []));
   const keys = useNftMetaState(useCallback((state) => state.keys, []));
+  const setSearchNfts = useSearchNfts((state) => state.setSearchNfts, shallow);
+  const router = useRouter();
 
   const categories = useMemo(() => {
     return keys.reduce((acc, id) => {
@@ -125,6 +148,18 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     },
     []
   );
+  useEffect(() => {
+    const handleStop = () => {
+      // reset items upon page navigation, resetting filter is not enough
+      // when filter was not selected, it won't reset the searchitems
+      setSearchNfts(items);
+    };
+    router.events.on("routeChangeComplete", handleStop);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleStop);
+    };
+  }, [router, items]);
 
   return useMemo(() => {
     let r = items.map((r) => ({
@@ -134,12 +169,13 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         : 1,
       collateralInUSD: isLending(r)
         ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
-        : 1
+        : 1,
     }));
+    setSearchNfts(r);
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
     return r;
-  }, [items, filter, sortBy, tokenPerUSD]);
+  }, [items, filter, sortBy, tokenPerUSD, setSearchNfts]);
 };
 
 export interface CategoryOptions {
@@ -157,20 +193,23 @@ export const useSearchOptions = () => {
     useCallback((state) => state.keys, []),
     shallow
   );
+
+  const activeNfts = useSearchNfts((state) => state.nfts, shallow);
   return useMemo(() => {
     const set = new Set<string>();
     const arr: CategoryOptions[] = [];
-    Object.keys(metas).forEach((id: string) => {
+    keys.forEach((id: string) => {
+      if (!activeNfts.has(id)) return;
       const meta = metas[id];
       if (meta.collection) {
         const name = meta.collection.name || NO_COLLECTION;
         if (!set.has(name)) {
           set.add(name);
           arr.push({
-                value: meta.collection.name,
-                label: meta.collection.name,
-                imageUrl: meta.collection.imageUrl,
-            });
+            value: meta.collection.name,
+            label: meta.collection.name,
+            imageUrl: meta.collection.imageUrl,
+          });
         }
       } else {
         if (!set.has(NO_COLLECTION)) {
@@ -179,7 +218,7 @@ export const useSearchOptions = () => {
       }
     });
     return arr;
-  }, [keys]);
+  }, [keys, metas, activeNfts.size]);
 };
 
 export const useSortOptions = () => {
@@ -188,7 +227,7 @@ export const useSortOptions = () => {
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Colletaral",  value: "lc", imageUrl: "" }
+      { label: "Lowest Colletaral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };
