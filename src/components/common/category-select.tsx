@@ -9,8 +9,9 @@ const customStyles = {
     color: state.isSelected || state.isFocused ? "white" : "black",
     backgroundColor: state.isSelected || state.isFocused ? "black" : "white",
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided: any, state: any) => ({
     ...provided,
+    display: state.isFocused ? "none" : "block",
     color: "black",
   }),
   control: (provided: any, state: any) => ({
@@ -106,7 +107,6 @@ export const CategorySelect: React.FC<{
     },
     [options, setValue]
   );
-  if (options.length < 1) return null;
   return (
     //@ts-ignore
     <Select

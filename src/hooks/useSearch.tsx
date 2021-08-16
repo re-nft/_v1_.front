@@ -14,17 +14,17 @@ import { devtools } from "zustand/middleware";
 import { useRouter } from "next/router";
 
 interface NftSearchState {
-  nfts: Set<string>;
+  nfts: string[];
   setSearchNfts: (nfts: Nft[]) => void;
 }
 
 export const useSearchNfts = create<NftSearchState>(
   devtools((set) => ({
-    nfts: new Set(),
+    nfts: [],
     setSearchNfts: (nfts) =>
       set(
         produce((state) => {
-          state.nfts = new Set(nfts.map((n) => n.nId));
+          state.nfts = nfts.map((n) => n.nId);
         })
       ),
   }))
@@ -159,8 +159,11 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     return () => {
       router.events.off("routeChangeComplete", handleStop);
     };
-  }, [router, items]);
+  }, [router, items, setSearchNfts]);
 
+  useEffect(() => {
+    setSearchNfts(items);
+  }, [items, setSearchNfts]);
   return useMemo(() => {
     let r = items.map((r) => ({
       ...r,
@@ -171,11 +174,10 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
         : 1,
     }));
-    setSearchNfts(r);
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
     return r;
-  }, [items, filter, sortBy, tokenPerUSD, setSearchNfts]);
+  }, [items, filter, sortBy, tokenPerUSD]);
 };
 
 export interface CategoryOptions {
@@ -194,12 +196,17 @@ export const useSearchOptions = () => {
     shallow
   );
 
-  const activeNfts = useSearchNfts((state) => state.nfts, shallow);
+  const activeNfts = useSearchNfts(
+    useCallback((state) => state.nfts, []),
+    shallow
+  );
+
   return useMemo(() => {
     const set = new Set<string>();
     const arr: CategoryOptions[] = [];
+    const searchSet = new Set(activeNfts);
     keys.forEach((id: string) => {
-      if (!activeNfts.has(id)) return;
+      if (!searchSet.has(id)) return;
       const meta = metas[id];
       if (meta.collection) {
         const name = meta.collection.name || NO_COLLECTION;
@@ -218,7 +225,7 @@ export const useSearchOptions = () => {
       }
     });
     return arr;
-  }, [keys, metas, activeNfts.size]);
+  }, [keys, metas, activeNfts]);
 };
 
 export const useSortOptions = () => {
