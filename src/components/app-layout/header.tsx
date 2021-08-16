@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
   const networkNotSupported = useMemo(() => {
     return network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED;
   }, [network]);
-  
+
   return (
     <div className="header">
       <div className="header__logo"></div>
@@ -37,7 +37,7 @@ export const Header: React.FC = () => {
         <Button
           datacy="metamask-connect-button"
           onClick={connect}
-          description="Please connect your wallet!"
+          description="Connect"
         />
       ) : (
         <div className="header__wallet">

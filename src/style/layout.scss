@@ -60,7 +60,7 @@
     }
 
     p {
-        margin-bottom: 16px;
+         margin-bottom: 16px;
     }
 }
 
@@ -121,7 +121,7 @@
         display: flex;
         border: 4px solid $black;
         box-sizing: border-box;
-        box-shadow: 5px 5px 0 $black;
+        box-shadow: 7px 7px 0 $black;
         background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
         z-index:10;
     }
@@ -194,6 +194,9 @@
       height: 50px;
       width: 300px;
       flex-grow: 1;
+    }
+    .nft__button {
+        margin-right: 3px;
     }
   }
   .dashboard-header {
