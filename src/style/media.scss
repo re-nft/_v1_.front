@@ -11,7 +11,7 @@
     }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1000px) {   
     .menu {
         justify-content: normal;
         flex-wrap: wrap;
@@ -52,6 +52,16 @@
 }
 
 @media screen and (max-width: 580px) {
+    .menu-wrapper{
+        flex-direction: column;
+    }
+    .menu {
+        align-content: center;
+    }
+    .menu.menu__search  .menu__item {
+        display: flex;
+        justify-content: center;
+    }
     .main {
         padding: 0 12px;
     }

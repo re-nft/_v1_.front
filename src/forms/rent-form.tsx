@@ -9,7 +9,7 @@ import {
   FormikErrors,
   FormikTouched,
   FieldArray,
-  FormikBag
+  FormikBag,
 } from "formik";
 import { TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/contract/useStartRent";
@@ -38,15 +38,15 @@ export const RentForm: React.FC<LendFormProps> = ({
   handleApproveAll,
   handleSubmit,
   approvalStatus,
-  onClose
+  onClose,
 }) => {
   const [nft] = nfts;
   const initialValues: FormProps = {
     inputs: nfts.map<LendingWithKey>((nft) => ({
       key: nft.id,
       duration: undefined,
-      ...nft
-    }))
+      ...nft,
+    })),
   };
   const onSubmit = (
     values: FormProps,
@@ -62,7 +62,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         lendingId: nft.lending.id,
         rentDuration: (nft.duration as number).toString(),
         paymentToken: nft.lending.paymentToken,
-        isERC721: nft.isERC721
+        isERC721: nft.isERC721,
       }))
     ).subscribe({
       next: (status) => {
@@ -71,7 +71,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       complete: () => {
         setSubmitting(false);
         sub.unsubscribe();
-      }
+      },
     });
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
@@ -117,7 +117,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         isValid,
         isSubmitting,
         submitForm,
-        status
+        status,
       }) => {
         const formSubmittedSuccessfully =
           status.status === TransactionStateEnum.SUCCESS;
@@ -265,11 +265,25 @@ const ModalDialogSection: React.FC<{
       />
       <CatalogueItemRow
         text={`Rent [${paymentToken}]`}
-        value={`${dailyRentPrice} ${` x ${
-          item.duration ? item.duration : 0
-        } days + ${Number(nftPrice)} x ${Number(item.amount)} = ${
-          totalRent ? totalRent : "? "
-        }`}`}
+        value={
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              overflow: "visible",
+            }}
+          >
+            <span>
+              &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
+              {item.duration ? item.duration : 0} days
+            </span>
+            <span>
+              + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+            </span>
+            <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
+          </div>
+        }
       />
     </CommonInfo>
   );
