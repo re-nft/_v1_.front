@@ -49,7 +49,6 @@ export const NftFilterSelect: React.FC = () => {
     };
   }, [router, setNftFilter]);
 
-  if (options.length < 1) return null;
   return (
     <CategorySelect
       instanceId={instanceId}
