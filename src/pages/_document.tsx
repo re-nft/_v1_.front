@@ -96,7 +96,6 @@ class MyDocument extends Document {
             content="reNFT - P2P NFT rentals"
             key="og:description"
           />
-          <meta property="og:image" content="" key="og:image" />
 
           <meta
             property="twitter:card"
@@ -109,7 +108,6 @@ class MyDocument extends Document {
             key="twitter:description"
             content="reNFT - P2P NFT rentals"
           />
-          <meta property="twitter:image" key="twitter:image" content="" />
         </Head>
 
         <body>

@@ -34,6 +34,12 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
     return typeof window !== "undefined" ? window.location.toString() : "";
   }, [typeof window]);
 
+  const origin = useMemo(() => {
+    return typeof window !== "undefined"
+      ? window.location.origin.toString()
+      : "";
+  }, [typeof window]);
+
   useEffect(() => {
     const handleStart = (url: string) => {
       NProgress.start();
@@ -72,6 +78,16 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:url" content={url} key="og:url" />
         <meta property="twitter:url" key="twitter:url" content={url} />
+        <meta
+          property="twitter:image"
+          key="twitter:image"
+          content={`${origin}/favicon.png`}
+        />
+        <meta
+          property="og:image"
+          content={`${origin}/favicon.png`}
+          key="og:image"
+        />
       </Head>
 
       <StateProvider>
