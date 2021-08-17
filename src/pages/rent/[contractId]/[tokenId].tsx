@@ -29,7 +29,7 @@ const AvailableToRentPage: React.FC = () => {
   //   useCallback(
   //     (state) => {
   //       const id = all[0]?.nId;
-  //       return id && state.metas ? state.metas[id]?.image : "";
+  //       return id &&   state.metas ? state.metas[id]?.image : "";
   //     },
   //     [all]
   //   ),

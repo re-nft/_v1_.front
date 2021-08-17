@@ -26,7 +26,7 @@ const onElementAppear = (el: HTMLElement, index: number) =>
     onUpdate: (val) => {
       el.style.opacity = val.toString();
     },
-    delay: index * 50
+    delay: index * 50,
   });
 
 const onExit =
@@ -40,7 +40,7 @@ const onExit =
         })`;
       },
       delay: index * 50,
-      onComplete: removeElement
+      onComplete: removeElement,
     });
 
     return () => {
@@ -54,7 +54,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   checked,
   onCheckboxChange,
   children,
-  disabled
+  disabled,
 }) => {
   const { signer } = useContext(UserContext);
   const meta = useNftMetaState(
@@ -193,8 +193,10 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                   text="Standard"
                   value={nft.isERC721 ? "721" : "1155"}
                 />
-                <CatalogueItemRow text="Amount" value={nft.amount} />
+
                 {children}
+                {/* <CatalogueItemRow text="priceInUSD" value={nft.priceInUSD} /> */}
+                {/* <CatalogueItemRow text="collateralInUSD" value={nft.collateralInUSD} /> */}
               </>
             </Flipped>
           </>

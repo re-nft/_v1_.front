@@ -49,7 +49,7 @@ export const sortByDailyRentPrice =
     b: T & { priceInUSD: number; collateralInUSD: number }
   ) => {
     const result = compare(a.priceInUSD, b.priceInUSD);
-    return dir === "desc" ? result : result * -1;
+    return dir !== "desc" ? result : result * -1;
   };
 
 export const sortByCollateral =
@@ -59,7 +59,7 @@ export const sortByCollateral =
     b: T & { priceInUSD: number; collateralInUSD: number }
   ) => {
     const result = compare(a.collateralInUSD, b.collateralInUSD);
-    return dir === "desc" ? result : result * -1;
+    return dir !== "desc" ? result : result * -1;
   };
 
 export const sortByDuration =
