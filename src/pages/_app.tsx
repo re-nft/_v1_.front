@@ -35,7 +35,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   }, [typeof window]);
 
   useEffect(() => {
-    console.log(router);
     const handleStart = (url: string) => {
       NProgress.start();
     };
