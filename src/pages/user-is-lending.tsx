@@ -42,13 +42,13 @@ const LendingCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
-  currentPage
+  currentPage,
 }) => {
   const {
     checkedItems,
     handleReset: batchHandleReset,
     checkedLendingItems,
-    onCheckboxChange
+    onCheckboxChange,
   } = useBatchItems();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -88,7 +88,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
           nfts={checkedLendingItems}
         />
       )}
-      <ItemWrapper>
+      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Lending) => (
           <LendingCatalogueItem
             nft={nft}
@@ -117,7 +117,7 @@ const UserCurrentlyLending: React.FC = () => {
   const lendingItems = useMemo(() => {
     return userLending.filter(isLending);
   }, [userLending]);
-  
+
   const items = useSearch(lendingItems);
 
   if (!signer) {

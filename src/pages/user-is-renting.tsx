@@ -53,13 +53,13 @@ const RentingCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
-  currentPage
+  currentPage,
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedRentingItems
+    checkedRentingItems,
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -97,7 +97,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
           onClose={handleCloseModal}
         />
       )}
-      <ItemWrapper>
+      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Renting) => (
           <RentingCatalogueItem
             nft={nft}
