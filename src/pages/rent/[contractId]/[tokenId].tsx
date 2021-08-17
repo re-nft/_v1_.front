@@ -56,6 +56,7 @@ const AvailableToRentPage: React.FC<{
   );
 };
 // This gets called on every request
+// this will bake metatags into every request to a shared url
 export async function getServerSideProps({
   params: { contractId, tokenId },
   req,
