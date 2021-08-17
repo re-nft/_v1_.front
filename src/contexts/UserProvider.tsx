@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback
+  useCallback,
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
@@ -18,7 +18,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: ""
+  network: "",
 };
 
 type UserContextType = {
@@ -50,30 +50,30 @@ export const UserProvider: React.FC = ({ children }) => {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions // required
+          providerOptions, // required
         })
       : null;
   }, [providerOptions, hasWindow]);
 
-  const initState = useCallback(async (provider) => {
+  const initState = async (provider) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
     const nname = name === "homestead" ? "mainnet" : name;
-    setNetworkName(nname);
-    const _signer = web3p.getSigner();
-    setSigner(_signer);
-    const address = await _signer
+    const signer = web3p.getSigner();
+    const address = await signer
       .getAddress()
       .then((t) => t.toLowerCase())
       .catch((e) => {
         // do nothing
         console.log(e);
       });
+    setNetworkName(nname);
+    setSigner(signer);
     setAddress(address || "");
     setProvider(provider);
     setWeb3Provider(web3p);
-  }, []);
+  };
 
   const connect = useCallback(
     (manual: boolean) => {
@@ -87,16 +87,12 @@ export const UserProvider: React.FC = ({ children }) => {
             .connect()
             .then((provider) => {
               resolve(provider);
+              return initState(provider);
             })
             .catch(() => {
               resolve(null);
             })
         )
-      ).pipe(
-        map((provider) => {
-          if (!provider) return EMPTY;
-          return from(initState(provider));
-        })
       );
     },
     [web3Modal, permissions, signer, initState]
@@ -207,7 +203,6 @@ export const UserProvider: React.FC = ({ children }) => {
     };
   }, [accountsChanged, chainChanged, provider]);
 
-
   return (
     <UserContext.Provider
       value={{
@@ -215,7 +210,7 @@ export const UserProvider: React.FC = ({ children }) => {
         signer,
         address,
         web3Provider,
-        network
+        network,
       }}
     >
       {children}
