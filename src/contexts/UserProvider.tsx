@@ -55,7 +55,7 @@ export const UserProvider: React.FC = ({ children }) => {
       : null;
   }, [providerOptions, hasWindow]);
 
-  const initState = async (provider) => {
+  const initState = async (provider: any) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
