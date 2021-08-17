@@ -30,15 +30,9 @@ if (typeof window !== "undefined") {
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
-  const url = useMemo(() => {
-    return typeof window !== "undefined" ? window.location.toString() : "";
-  }, [typeof window]);
-
   const origin = useMemo(() => {
-    return typeof window !== "undefined"
-      ? window.location.origin.toString()
-      : "";
-  }, [typeof window]);
+    return "http://dapp.renft.io";
+  }, []);
 
   useEffect(() => {
     const handleStart = (url: string) => {
@@ -76,8 +70,8 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>ReNFT</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta property="og:url" content={url} key="og:url" />
-        <meta property="twitter:url" key="twitter:url" content={url} />
+        <meta property="og:url" content={origin} key="og:url" />
+        <meta property="twitter:url" key="twitter:url" content={origin} />
         <meta
           property="twitter:image"
           key="twitter:image"
