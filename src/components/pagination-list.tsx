@@ -8,7 +8,7 @@ const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1
+  totalPages: 1,
 };
 
 type State<T> = {
@@ -24,7 +24,7 @@ export const PaginationList = <T extends Nft>({
   nfts,
   ItemsRenderer,
   isLoading,
-  emptyResultMessage
+  emptyResultMessage,
 }: {
   nfts: T[] | T[];
   isLoading: boolean;
@@ -59,7 +59,7 @@ export const PaginationList = <T extends Nft>({
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage
+        currentPage,
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -70,7 +70,11 @@ export const PaginationList = <T extends Nft>({
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
     if (pageItems.length === 0 || newState.pageItems.length === 0)
       setState(newState);
-    else if (pageItems[0].id !== newState.pageItems[0].id) setState(newState);
+    else if (
+      pageItems.length !== newState.pageItems.length ||
+      pageItems[0].id !== newState.pageItems[0].id
+    )
+      setState(newState);
   }, [pageItems, newState]);
 
   const onPageControllerInit = useCallback(
@@ -81,7 +85,7 @@ export const PaginationList = <T extends Nft>({
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems)
+        currentPage: getCurrentPage(1, totalPages, newItems),
       });
     },
     [getCurrentPage]

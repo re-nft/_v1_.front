@@ -115,9 +115,10 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     ) => {
       if (!filter) return items;
       const category = categories.get(filter);
-      return items.filter((item) => {
+      const filteredItems = items.filter((item) => {
         return category?.has(item.nId);
       });
+      return filteredItems;
     },
     [categories]
   );
@@ -177,7 +178,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
     return r;
-  }, [items, filter, sortBy, tokenPerUSD]);
+  }, [items, filter, sortBy, tokenPerUSD, filterItems, sortItems]);
 };
 
 export interface CategoryOptions {
@@ -186,7 +187,7 @@ export interface CategoryOptions {
   imageUrl: string;
 }
 
-export const useSearchOptions = () => {
+export const useSearchOptions = (): CategoryOptions[] => {
   const metas = useNftMetaState(
     useCallback((state) => state.metas, []),
     shallow
@@ -228,7 +229,7 @@ export const useSearchOptions = () => {
   }, [keys, metas, activeNfts]);
 };
 
-export const useSortOptions = () => {
+export const useSortOptions = (): CategoryOptions[] => {
   return useMemo(() => {
     return [
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
