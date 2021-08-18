@@ -77,11 +77,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         <meta
           property="twitter:image"
           key="twitter:image"
-          content={`${origin}/seo.jpg`}
+          content={`${origin}/assets/seo.jpg`}
         />
         <meta
           property="og:image"
-          content={`${origin}/favicon.jpg`}
+          content={`${origin}/assets/favicon.jpg`}
           key="og:image"
         />
       </Head>
