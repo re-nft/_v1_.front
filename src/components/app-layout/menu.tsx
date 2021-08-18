@@ -39,14 +39,18 @@ const isPathActive = (linkPath: string, pathname: string) => {
 export const Menu: React.FC = () => {
   const { pathname } = useRouter();
   return (
-    <div className="menu">
+    <div className="flex ">
       {ROUTES.map((route) => {
         const isActive = isPathActive(route.path, pathname);
         return (
           <Link key={route.path} href={route.path}>
-            <a className={`menu__item ${isActive ? "menu__item-active" : ""}`}>
-              {route.name}
-            </a>
+            <div className="flex-1 mr-2">
+              <a
+                className={`menu__item ${isActive ? "menu__item--active" : ""}`}
+              >
+                <div>{route.name}</div>
+              </a>
+            </div>
           </Link>
         );
       })}

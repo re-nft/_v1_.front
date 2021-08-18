@@ -3,7 +3,7 @@ import CommonInfo from "../modals/common-info";
 import { FormikErrors, FormikTouched } from "formik";
 import MinimalSelect from "../components/common/select";
 import { LendInputProps } from "./lend-form";
-import CssTextField from "../components/common/css-text-field";
+import { TextField } from "../components/common/text-field";
 
 const voidFn = () => {
   // do nothing func
@@ -53,12 +53,11 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           {/* we can do this because checked items will have the right amount when we pass them here */}
           <div className="label">{lendingInput.amount}</div>
         </div>
-        <CssTextField
+        <TextField
           required
           label="Amount"
-          variant="outlined"
           value={lendingInput.lendAmount ?? ""}
-          inputProps={{ inputMode: "numeric", pattern: "^[1-9][0-9]*$" }}
+          //inputProps={{ inputMode: "numeric", pattern: "^[1-9][0-9]*$" }}
           onChange={only1Item ? voidFn : handleChange}
           onBlur={only1Item ? voidFn : handleBlur}
           id={`inputs.${index}.lendAmount`}
@@ -74,12 +73,11 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           }
         />
 
-        <CssTextField
+        <TextField
           required
           label="Max lend duration"
-          variant="outlined"
           value={lendingInput?.maxDuration ?? ""}
-          inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
+          //inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.maxDuration`}
@@ -94,15 +92,14 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           }
           disabled={disabled}
         />
-        <CssTextField
+        <TextField
           required
           label="Borrow Price"
-          variant="outlined"
           value={lendingInput.borrowPrice ?? ""}
-          inputProps={{
-            inputMode: "numeric",
-            pattern: "^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$",
-          }}
+          // inputProps={{
+          //   inputMode: "numeric",
+          //   pattern: "^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$",
+          // }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.borrowPrice`}
@@ -117,15 +114,14 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           }
           disabled={disabled}
         />
-        <CssTextField
+        <TextField
           required
           label="Collateral"
-          variant="outlined"
           value={lendingInput.nftPrice ?? ""}
-          inputProps={{
-            inputMode: "numeric",
-            pattern: "^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$",
-          }}
+          // inputProps={{
+          //   inputMode: "numeric",
+          //   pattern: "^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$",
+          // }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.nftPrice`}

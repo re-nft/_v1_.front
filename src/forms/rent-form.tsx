@@ -1,4 +1,4 @@
-import CssTextField from "../components/common/css-text-field";
+import { TextField } from "../components/common/text-field";
 
 import ActionButton from "../components/common/action-button";
 import { Lending, Nft } from "../contexts/graph/classes";
@@ -241,11 +241,11 @@ const ModalDialogSection: React.FC<{
         {/* we can do this because checked items will have the right amount when we pass them here */}
         <div className="label">{item.amount}</div>
       </div>
-      <CssTextField
+      <TextField
         required
         label={renderItem()}
-        variant="outlined"
-        inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
+        value=""
+        // inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}

@@ -1,22 +1,15 @@
 import React from "react";
 import { useMint } from "../../hooks/useMint";
+import { Button } from "../common/button";
 
 export const MintNfts: React.FC = () => {
   const { mintNFT } = useMint();
   return (
     <>
-      <button className="menu__item" onClick={() => mintNFT(0)}>
-        Mint 721A
-      </button>
-      <button className="menu__item" onClick={() => mintNFT(1)}>
-        Mint 721B
-      </button>
-      <button className="menu__item" onClick={() => mintNFT(2)}>
-        Mint 1155A
-      </button>
-      <button className="menu__item" onClick={() => mintNFT(3)}>
-        Mint 1155B
-      </button>
+      <Button onClick={() => mintNFT(0)} description="Mint 721A"></Button>
+      <Button onClick={() => mintNFT(1)} description="Mint 721B"></Button>
+      <Button onClick={() => mintNFT(2)} description="Mint 1155"></Button>
+      <Button onClick={() => mintNFT(3)} description="Mint 1155B"></Button>
     </>
   );
 };
