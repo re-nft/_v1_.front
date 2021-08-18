@@ -4,7 +4,7 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 
 import { hasDifference, timeItAsync } from "../utils";
@@ -23,7 +23,7 @@ export type UserLendingContextType = {
 };
 export const UserLendingContext = createContext<UserLendingContextType>({
   userLending: [],
-  isLoading: false
+  isLoading: false,
 });
 
 UserLendingContext.displayName = "UserLendingContext";
@@ -71,7 +71,6 @@ export const UserLendingProvider: React.FC = ({ children }) => {
         if (response && response.users && response.users[0]) {
           return Object.values(response.users[0].lending)
             .filter((v) => v != null)
-            .filter((v) => !v.collateralClaimed)
             .map((lending) => {
               return new Lending(lending);
             });
@@ -110,7 +109,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     <UserLendingContext.Provider
       value={{
         userLending: lending,
-        isLoading
+        isLoading,
       }}
     >
       {children}
