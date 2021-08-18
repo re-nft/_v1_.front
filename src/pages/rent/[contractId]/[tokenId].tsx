@@ -30,12 +30,16 @@ const AvailableToRentPage: React.FC<{
     return (
       <RentSwitchWrapper>
         <Head>
-          <meta
-            property="twitter:image"
-            key="twitter:image"
-            content={imageURL}
-          />
-          <meta property="og:image" key="og:image" content={imageURL} />
+          {imageURL && (
+            <>
+              <meta
+                property="twitter:image"
+                key="twitter:image"
+                content={imageURL}
+              />
+              <meta property="og:image" key="og:image" content={imageURL} />
+            </>
+          )}
           <meta property="og:url" content={href} key="og:url" />
           <meta property="twitter:url" key="twitter:url" content={href} />
         </Head>

@@ -10,7 +10,7 @@ class MyDocument extends Document {
         <Head>
           <meta charSet="utf-8" />
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <meta name="description" content="reNFT - P2P NFT rentals" />
+          <meta name="description" content="reNFT - Peer to Peer NFT Rentals" />
           <meta
             name="ui-version"
             content={`${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA}`}
@@ -90,10 +90,10 @@ class MyDocument extends Document {
           <noscript>You need to enable JavaScript to run this app.</noscript>
           <meta property="og:type" content="website" key="og:type" />
 
-          <meta property="og:title" content="ReNFT" key="og:title" />
+          <meta property="og:title" content="reNFT" key="og:title" />
           <meta
             property="og:description"
-            content="reNFT - P2P NFT rentals"
+            content="reNFT - Peer to Peer NFT Rentals"
             key="og:description"
           />
 
@@ -102,11 +102,11 @@ class MyDocument extends Document {
             key="twitter:card"
             content="summary_large_image"
           />
-          <meta property="twitter:title" key="twitter:title" content="ReNFT" />
+          <meta property="twitter:title" key="twitter:title" content="reNFT" />
           <meta
             property="twitter:description"
             key="twitter:description"
-            content="reNFT - P2P NFT rentals"
+            content="reNFT - Peer to Peer NFT Rentals"
           />
         </Head>
 

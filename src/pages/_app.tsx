@@ -13,6 +13,7 @@ import "../scripts/wdyr";
 
 //@ts-ignore
 import NProgress from "nprogress";
+import { NetworkName } from "../types";
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
@@ -27,12 +28,13 @@ if (typeof window !== "undefined") {
   });
 }
 
+const origin =
+  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.mainnet
+    ? "https://dapp.renft.io"
+    : "https://staging.dapp.renft.io";
+
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-
-  const origin = useMemo(() => {
-    return "http://dapp.renft.io";
-  }, []);
 
   useEffect(() => {
     const handleStart = (url: string) => {
@@ -75,11 +77,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         <meta
           property="twitter:image"
           key="twitter:image"
-          content={`${origin}/favicon.png`}
+          content={`${origin}/seo.jpg`}
         />
         <meta
           property="og:image"
-          content={`${origin}/favicon.png`}
+          content={`${origin}/favicon.jpg`}
           key="og:image"
         />
       </Head>
