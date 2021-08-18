@@ -40,8 +40,12 @@ const AvailableToRentPage: React.FC<{
               <meta property="og:image" key="og:image" content={imageURL} />
             </>
           )}
-          <meta property="og:url" content={href} key="og:url" />
-          <meta property="twitter:url" key="twitter:url" content={href} />
+          {href && (
+            <>
+              <meta property="og:url" content={href} key="og:url" />
+              <meta property="twitter:url" key="twitter:url" content={href} />
+            </>
+          )}
         </Head>
         <div className="center content__message">
           That item isn&apos;t available for renting at the moment.
@@ -51,8 +55,22 @@ const AvailableToRentPage: React.FC<{
   return (
     <>
       <Head>
-        <meta property="twitter:image" key="twitter:image" content={imageURL} />
-        <meta property="og:image" key="og:image" content={imageURL} />
+        {imageURL && (
+          <>
+            <meta
+              property="twitter:image"
+              key="twitter:image"
+              content={imageURL}
+            />
+            <meta property="og:image" key="og:image" content={imageURL} />
+          </>
+        )}
+        {href && (
+          <>
+            <meta property="og:url" content={href} key="og:url" />
+            <meta property="twitter:url" key="twitter:url" content={href} />
+          </>
+        )}
       </Head>
 
       <AvailableToRent isLoading={isLoading} allAvailableToRent={all} />
