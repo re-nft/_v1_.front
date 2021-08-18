@@ -1,19 +1,8 @@
 import { short } from "../../utils";
-import { makeStyles, Popover, Typography } from "@material-ui/core";
 import React, { useState } from "react";
-
-const useStyles = makeStyles((theme) => ({
-  popover: {
-    pointerEvents: "none",
-  },
-  paper: {
-    padding: theme.spacing(1),
-  },
-}));
 
 export const ShortenPopover: React.FC<{ longString: string; dataCy?: string }> =
   ({ longString, dataCy }) => {
-    const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handlePopoverOpen = (event: any) => {
@@ -35,27 +24,26 @@ export const ShortenPopover: React.FC<{ longString: string; dataCy?: string }> =
         >
           {longString.length > 10 ? short(longString) : longString}
         </span>
-        <Popover
+        <div
           id="mouse-over-popover"
-          className={classes.popover}
-          classes={{
-            paper: classes.paper,
-          }}
-          open={open}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-          onClose={handlePopoverClose}
-          disableRestoreFocus
+          // classes={{
+          //   paper: classes.paper,
+          // }}
+          //  open={open}
+          //  anchorEl={anchorEl}
+          // anchorOrigin={{
+          //   vertical: "bottom",
+          //   horizontal: "left",
+          // }}
+          // transformOrigin={{
+          //   vertical: "top",
+          //   horizontal: "left",
+          // }}
+          // onClose={handlePopoverClose}
+          // disableRestoreFocus
         >
-          <Typography data-cy={dataCy}>{longString}</Typography>
-        </Popover>
+          <div data-cy={dataCy}>{longString}</div>
+        </div>
       </>
     );
   };

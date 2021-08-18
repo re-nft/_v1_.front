@@ -7,8 +7,6 @@ import { StateProvider } from "../contexts/StateProvider";
 import AppLayout from "../components/app-layout";
 import Helmet from "react-helmet";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
 import "../scripts/wdyr";
@@ -71,11 +69,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       </Head>
 
       <StateProvider>
-        <ThemeProvider theme={theme}>
-          <AppLayout>
-            <Component {...pageProps} />
-          </AppLayout>
-        </ThemeProvider>
+        <AppLayout>
+          <Component {...pageProps} />
+        </AppLayout>
       </StateProvider>
     </>
   );

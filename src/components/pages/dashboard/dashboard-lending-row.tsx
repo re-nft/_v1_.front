@@ -6,8 +6,8 @@ import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
-import { Tooltip } from "@material-ui/core";
 import { Button } from "../../common/button";
+import { Tooltip } from "../../common/tooltip";
 
 export const LendingRow: React.FC<{
   lend: Lending & { relended: boolean };

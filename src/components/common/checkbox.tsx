@@ -1,7 +1,4 @@
-import { Checkbox as CheckboxMaterial } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
 import React from "react";
-import { CheckedIcon, CheckIcon } from "./checkbox-icon";
 
 type CheckboxProps = {
   onChange: () => void;
@@ -23,7 +20,6 @@ const style = {
     },
   },
 };
-const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
@@ -31,14 +27,13 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   disabled,
 }) => {
   return (
-    <StyledCheckbox
+    <input
+      type="checkbox"
       checked={checked}
-      checkedIcon={<CheckedIcon />}
-      icon={<CheckIcon />}
+      // checkedIcon={<CheckedIcon />}
+      // icon={<CheckIcon />}
       onChange={onChange}
-      disableRipple
       disabled={disabled}
-      size="medium"
     />
   );
 };

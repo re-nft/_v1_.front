@@ -1,11 +1,5 @@
-import { Snackbar } from "@material-ui/core";
 import React, { useContext } from "react";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { SnackAlertContext } from "../../contexts/SnackProvider";
-
-function Alert(props: AlertProps) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 export const SnackAlert: React.FC = () => {
   const {
@@ -21,13 +15,15 @@ export const SnackAlert: React.FC = () => {
     }
     closeAlert();
   };
+  // TODO class based on type
   return (
     <div>
-      <Snackbar open={open}>
-        <Alert onClose={handleClose} severity={type}>
+      {open && (
+        <div>
+          <div onClick={handleClose}>X</div>
           {message}
-        </Alert>
-      </Snackbar>
+        </div>
+      )}
     </div>
   );
 };

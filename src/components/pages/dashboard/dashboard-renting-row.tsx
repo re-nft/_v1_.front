@@ -5,7 +5,7 @@ import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip } from "../../common/tooltip";
 import { Button } from "../../common/button";
 import { ShortenPopover } from "../../common/shorten-popover";
 

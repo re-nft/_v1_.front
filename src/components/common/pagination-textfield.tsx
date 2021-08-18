@@ -1,6 +1,3 @@
-import { TextField } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-
 const fancyStyle = {
   root: {
     width: "120px",
@@ -48,6 +45,10 @@ const fancyStyle = {
   },
 };
 
-const PaginationTextField = withStyles(fancyStyle)(TextField);
+const PaginationTextField: React.FC<
+  React.InputHTMLAttributes<HTMLInputElement>
+> = () => {
+  return <input type="text"></input>;
+};
 
 export default PaginationTextField;

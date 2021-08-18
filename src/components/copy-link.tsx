@@ -1,8 +1,7 @@
 import useClipboard from "react-use-clipboard";
-import LinkIcon from "@material-ui/icons/Link";
-import IconButton from "@material-ui/core/IconButton";
 import React, { useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
+import { CopyIcon } from "./common/icons/copy";
 
 export const CopyLink: React.FC<{
   tokenId: string;
@@ -24,8 +23,8 @@ export const CopyLink: React.FC<{
   }, [isCopied, copyLink, setError]);
 
   return (
-    <IconButton onClick={setCopied} size="small" aria-label="copy">
-      <LinkIcon />
-    </IconButton>
+    <button onClick={setCopied} aria-label="copy">
+      <CopyIcon />
+    </button>
   );
 };

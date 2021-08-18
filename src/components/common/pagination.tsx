@@ -1,4 +1,3 @@
-import { InputAdornment } from "@material-ui/core";
 import React, {
   useCallback,
   useState,
@@ -19,8 +18,9 @@ const Pagination: React.FC<PaginationProps> = ({
   onSetPage,
   totalPages,
 }) => {
-  const [shadowPageNumber, setShadowPageNumber] =
-    useState<number | "">(currentPageNumber);
+  const [shadowPageNumber, setShadowPageNumber] = useState<number | "">(
+    currentPageNumber
+  );
   const [error, setError] = useState("");
   const onSetFirstPage = useCallback(() => onSetPage(1), [onSetPage]);
   const onSetLastPage = useCallback(
@@ -105,18 +105,17 @@ const Pagination: React.FC<PaginationProps> = ({
         <li className="page-count">
           <PaginationTextField
             id="standard-basic"
-            label="Page number"
+            //label="Page number"
             type="string"
-            size="small"
             onChange={onChange}
             value={shadowPageNumber}
-            error={!!error}
-            helperText={error}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">/{totalPages}</InputAdornment>
-              ),
-            }}
+            //error={!!error}
+            //helperText={error}
+            // InputProps={{
+            //   endAdornment: (
+            //     <InputAdornment position="end">/{totalPages}</InputAdornment>
+            //   ),
+            // }}
           />
         </li>
         <li>
