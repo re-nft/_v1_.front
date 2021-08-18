@@ -45,16 +45,16 @@ export const Header: React.FC = () => {
       ) : (
         <div className="header__wallet">
           <div className="header__wallet-network">
-            <p className="font-display text-sm leading-loose text-rn-purple">
-              {network} &nbsp;{" "}
+            <p className="font-display text-sm leading-tight text-rn-purple">
+              {network} &nbsp;
               {networkNotSupported && (
-                <span className="text-2xl leading-tight text-black">
+                <span className="text-sm leading-tight text-black">
                   is not supported
                 </span>
               )}
             </p>
             {networkNotSupported && (
-              <p className="text-2xl leading-tight">
+              <p className="font-display text-sm leading-tight">
                 Please switch to{" "}
                 <span className="font-display text-sm leading-loose text-rn-purple">
                   {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}
