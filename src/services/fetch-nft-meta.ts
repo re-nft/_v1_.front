@@ -7,9 +7,9 @@ import {
   buildURI,
   matchIPFS_URL,
   normalizeTokenUri,
-  snakeCaseToCamelCase
+  snakeCaseToCamelCase,
 } from "./utils";
-import { getUniqueID } from '../utils';
+import { getUniqueID } from "../utils";
 
 export type NftError = { nId: string; error: string };
 
@@ -51,42 +51,42 @@ export interface OpenSeaAssetContract extends OpenSeaFees {
 /**
  * Annotated collection with OpenSea metadata
  */
- export interface OpenSeaCollection extends OpenSeaFees {
+export interface OpenSeaCollection extends OpenSeaFees {
   // Name of the collection
-  name: string
+  name: string;
   // Slug, used in URL
-  slug: string
+  slug: string;
   // Accounts allowed to edit this collection
-  editors: string[]
+  editors: string[];
   // Whether this collection is hidden from the homepage
-  hidden: boolean
+  hidden: boolean;
   // Whether this collection is featured
-  featured: boolean
+  featured: boolean;
   // Date collection was created
-  createdDate: Date,
+  createdDate: Date;
 
   // Description of the collection
-  description: string
+  description: string;
   // Image for the collection
-  imageUrl: string
+  imageUrl: string;
   // Image for the collection, large
-  largeImageUrl: string
+  largeImageUrl: string;
   // Image for the collection when featured
-  featuredImageUrl: string
+  featuredImageUrl: string;
   // Object with stats about the collection
-  stats: object
+  stats: object;
   // Data about displaying cards
-  displayData: object,
+  displayData: object;
   // Tokens allowed for this collection
- // paymentTokens: OpenSeaFungibleToken[]
+  // paymentTokens: OpenSeaFungibleToken[]
   // Address for dev fee payouts
-  payoutAddress?: string,
+  payoutAddress?: string;
   // Array of trait types for the collection
- // traitStats: OpenSeaTraitStats,
+  // traitStats: OpenSeaTraitStats,
   // Link to the collection's main website
-  externalLink?: string
+  externalLink?: string;
   // Link to the collection's wiki, if available
-  wikiLink?: string
+  wikiLink?: string;
 }
 /**
  * Annotated asset spec with OpenSea metadata
@@ -225,10 +225,9 @@ export const fetchNFTsFromOpenSea = async (
           nId: getUniqueID(nft.assetContract.address, nft.tokenId || ""),
         };
       });
-    }).catch((e)=>{
-      //TODO add logging
-      return []
+    })
+    .catch((e) => {
+      console.log(e);
+      return [];
     });
 };
-
-

@@ -84,7 +84,7 @@ export async function getServerSideProps({
   req,
 }: any) {
   const meta = await fetchNFTsFromOpenSea([contractId], [tokenId]);
-  const imageURL = meta[0].image;
+  const imageURL = meta ? meta[0]?.image : "";
   const href = new URL(req.url, `https://${req.headers.host}`).href;
 
   // Pass data to the page via props
