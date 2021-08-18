@@ -81,7 +81,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         />
         <meta
           property="og:image"
-          content={`${origin}/assets/favicon.jpg`}
+          content={`${origin}/assets/seo.jpg`}
           key="og:image"
         />
       </Head>
