@@ -1,6 +1,5 @@
-import { NftToken } from "../contexts/graph/types";
+import { NftToken, NftTokenMeta } from "../contexts/graph/types";
 import { Nft } from "../contexts/graph/classes";
-import { nftId } from "./firebase";
 import fetch from "cross-fetch";
 import {
   arrayToURI,
@@ -10,9 +9,9 @@ import {
   normalizeTokenUri,
   snakeCaseToCamelCase,
 } from "./utils";
+import { getUniqueID } from "../utils";
 
-export type NftMetaWithId = NftToken["meta"] & { id: string };
-export type NftError = { id: string; error: string };
+export type NftError = { nId: string; error: string };
 
 export interface Asset {
   tokenId: string | null;
@@ -50,11 +49,51 @@ export interface OpenSeaAssetContract extends OpenSeaFees {
 }
 
 /**
+ * Annotated collection with OpenSea metadata
+ */
+export interface OpenSeaCollection extends OpenSeaFees {
+  // Name of the collection
+  name: string;
+  // Slug, used in URL
+  slug: string;
+  // Accounts allowed to edit this collection
+  editors: string[];
+  // Whether this collection is hidden from the homepage
+  hidden: boolean;
+  // Whether this collection is featured
+  featured: boolean;
+  // Date collection was created
+  createdDate: Date;
+
+  // Description of the collection
+  description: string;
+  // Image for the collection
+  imageUrl: string;
+  // Image for the collection, large
+  largeImageUrl: string;
+  // Image for the collection when featured
+  featuredImageUrl: string;
+  // Object with stats about the collection
+  stats: object;
+  // Data about displaying cards
+  displayData: object;
+  // Tokens allowed for this collection
+  // paymentTokens: OpenSeaFungibleToken[]
+  // Address for dev fee payouts
+  payoutAddress?: string;
+  // Array of trait types for the collection
+  // traitStats: OpenSeaTraitStats,
+  // Link to the collection's main website
+  externalLink?: string;
+  // Link to the collection's wiki, if available
+  wikiLink?: string;
+}
+/**
  * Annotated asset spec with OpenSea metadata
  */
 export interface OpenSeaAsset extends Asset {
   assetContract: OpenSeaAssetContract;
-  // collection: OpenSeaCollection;
+  collection: OpenSeaCollection;
   name: string;
   description: string;
   // owner: OpenSeaAccount;
@@ -66,7 +105,7 @@ export interface OpenSeaAsset extends Asset {
   imagePreviewUrl: string;
   imageUrlOriginal: string;
   imageUrlThumbnail: string;
-  openseaLink: string;
+  permalink: string;
   externalLink: string;
   // traits: object[];
   numSales: number;
@@ -96,23 +135,23 @@ async function fetchWithTimeout(
 
 export const fetchNFTFromOtherSource = async (
   nft: Nft
-): Promise<NftMetaWithId | NftError> => {
-  const key = nftId(nft.address, nft.tokenId);
-  const tokenURI = normalizeTokenUri(nft);
+): Promise<NftTokenMeta | NftError> => {
+  const key = getUniqueID(nft.address, nft.tokenId);
+  const tokenURI = await normalizeTokenUri(nft);
 
-  if (nft._mediaURI) return { image: nft._mediaURI, id: key };
+  if (nft.mediaURI) return { image: nft.mediaURI, nId: key };
   if (!tokenURI) {
-    return { id: key, error: "No tokenUri" };
+    return { nId: key, error: "No tokenUri" };
   }
 
   // It's still possible that the tokenUri points to opensea...
   const headers: Record<string, string> = {};
   const transformedUri = buildURI(tokenURI);
   if (
-    process.env.REACT_APP_OPENSEA_API &&
+    process.env.NEXT_PUBLIC_OPENSEA_API &&
     transformedUri.indexOf("api.opensea") > -1
   ) {
-    headers["X-API-KEY"] = process.env.REACT_APP_OPENSEA_API;
+    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API;
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
@@ -130,7 +169,7 @@ export const fetchNFTFromOtherSource = async (
             "is not IPFS URL, but we are downloading meta as if it is O_O",
             data
           );
-          return { id: key, error: "non-ipfs url" };
+          return { nId: key, error: "non-ipfs url" };
         }
         const image = imageIsIPFS_URL
           ? buildStaticIPFS_URL(imageIsIPFS_URL)
@@ -140,11 +179,11 @@ export const fetchNFTFromOtherSource = async (
           image: image,
           description: data?.description,
           name: data?.name,
-          id: key,
+          nId: key,
         };
       })
       .catch(() => {
-        return { id: key, error: "unknown error" };
+        return { nId: key, error: "unknown error" };
       })
   );
 };
@@ -152,8 +191,8 @@ export const fetchNFTFromOtherSource = async (
 export const fetchNFTsFromOpenSea = async (
   asset_contract_addresses: Array<string>,
   token_ids: Array<string>
-): Promise<Array<NftMetaWithId>> => {
-  if (!process.env.REACT_APP_OPENSEA_API) {
+): Promise<Array<NftTokenMeta>> => {
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
   return fetch(
@@ -163,7 +202,7 @@ export const fetchNFTsFromOpenSea = async (
     )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
-        "X-API-KEY": process.env.REACT_APP_OPENSEA_API,
+        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API,
       },
     }
   )
@@ -172,16 +211,23 @@ export const fetchNFTsFromOpenSea = async (
       return r.assets.map(snakeCaseToCamelCase).map((nft: OpenSeaAsset) => {
         return {
           ...nft,
+          openseaLink: nft.permalink,
+          collection: {
+            name: nft.collection?.name,
+            description: nft.collection?.description,
+            imageUrl: nft.collection?.imageUrl,
+          },
           image:
             nft.imagePreviewUrl ||
             nft.imageUrlThumbnail ||
             nft.imageUrl ||
             nft.imageUrlOriginal,
-          id: nftId(nft.assetContract.address, nft.tokenId || ""),
+          nId: getUniqueID(nft.assetContract.address, nft.tokenId || ""),
         };
       });
-    }).catch((e)=>{
-      //TODO add logging
-      return []
+    })
+    .catch((e) => {
+      console.log(e);
+      return [];
     });
 };

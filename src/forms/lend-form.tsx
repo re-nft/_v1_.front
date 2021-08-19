@@ -1,5 +1,4 @@
 import ActionButton from "../components/common/action-button";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Nft } from "../contexts/graph/classes";
 import React from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
@@ -18,6 +17,7 @@ type LendFormProps = {
   onClose: () => void
 };
 export type LendInputProps = {
+  amount: string
   lendAmount: number | undefined;
   maxDuration: number | undefined;
   borrowPrice: number | undefined;
@@ -53,8 +53,9 @@ export const LendForm: React.FC<LendFormProps> = ({
     inputs: nfts.map<LendInputProps>((nft) => ({
       tokenId: nft.tokenId,
       nft: nft,
-      key: getUniqueCheckboxId(nft),
-      lendAmount: Number(nft.amount) === 1 || nft.isERC721 ? 1 : undefined,
+      key: nft.id,
+      lendAmount: nft.amount == "1" || nft.isERC721? 1 : undefined,
+      amount: nft.amount,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,
@@ -84,6 +85,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       // @ts-ignore
       onSubmit={onSubmit}
       initialValues={initialValues}
+      enableReinitialize={true}
       validate={validate}
       validateOnMount
       validateOnBlur

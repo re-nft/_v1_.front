@@ -40,16 +40,16 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
         "User denied transaction signature.",
         "User denied transaction signature.",
       ],
+      ["Link copied to the clipboard ", ""]
     ];
     const contains = validMessages
       .filter(([m]) => message.indexOf(m) > -1)
-      .map(([, newMessage]) => newMessage);
+      .map(([, newMessage]) => newMessage || message);
     if (contains.length > 0) {
       setErrorShown(true);
       setErrorMessage(contains[0]);
       setErrorType(type);
     } else {
-      console.log(message)
       setErrorShown(true);
       setErrorMessage("Something went wrong. Please try again!");
       setErrorType("error");

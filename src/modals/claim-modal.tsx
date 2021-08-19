@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Nft, Lending } from "../contexts/graph/classes";
-import { useClaimColleteral } from "../hooks/useClaimColleteral";
+import { useClaimColleteral } from "../hooks/contract/useClaimColleteral";
 import { useObservable } from "../hooks/useObservable";
 import Modal from "./modal";
 
@@ -39,7 +39,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
               <Button
                 description={nfts.length > 1 ? "Claim All" : "Claim"}
                 disabled={t.isLoading}
-                handleClick={handleClaim}
+                onClick={handleClaim}
               />
             </TransactionWrapper>
         </div>

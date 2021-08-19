@@ -7,8 +7,8 @@ import createCancellablePromise from "../contexts/create-cancellable-promise";
 import usePoller from "./usePoller";
 import UserContext from "../contexts/UserProvider";
 import { ContractContext } from "../contexts/ContractsProvider";
-import { diffJson } from "diff";
 import { usePrevious } from "./usePrevious";
+import { hasDifference } from "../utils";
 
 const BigNumZero = BigNumber.from("0");
 
@@ -32,11 +32,11 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const previousAddress = usePrevious(currentAddress);
 
   const fetchAsync = useCallback(async () => {
-    if(network !== process.env.REACT_APP_NETWORK_SUPPORTED){
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (isLoading) setIsLoading(false);
-      if(devNfts && devNfts.length > 0) setDevNfts([])
-    };
-    if (typeof process.env.REACT_APP_FETCH_NFTS_DEV === "undefined") {
+      if (devNfts && devNfts.length > 0) setDevNfts([]);
+    }
+    if (typeof process.env.NEXT_PUBLIC_FETCH_NFTS_DEV === "undefined") {
       if (isLoading) setIsLoading(false);
       return;
     }
@@ -74,7 +74,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(e721.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721.address, tokenId.toString(), "1", true));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -88,7 +88,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           currentAddress,
           String(i)
         );
-        usersNfts.push(new Nft(e721b.address, tokenId, "1", true, signer));
+        usersNfts.push(new Nft(e721b.address, tokenId.toString(), "1", true));
       } catch (e) {
         console.debug(
           "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -107,9 +107,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           new Nft(
             e1155.address,
             E1155IDs[i].toString(),
-            amountBalance[i],
-            false,
-            signer
+            amountBalance[i].toString(),
+            false
           )
         );
       }
@@ -126,36 +125,34 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           new Nft(
             e1155b.address,
             E1155IDs[i].toString(),
-            amountBalance[i],
-            false,
-            signer
+            amountBalance[i].toString(),
+            false
           )
         );
       }
     }
 
-    const normalizedLendings = devNfts.map((nft) => nft.toJSON());
-    const normalizedLendingNew = usersNfts.map((nft) =>
-    nft.toJSON()
-    );
+    const normalizedLendings = devNfts;
+    const normalizedLendingNew = usersNfts;
 
-    const difference = diffJson(
-      normalizedLendings,
-      normalizedLendingNew,
-      { ignoreWhitespace: true }
-    );
+    const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
     if (currentAddress !== previousAddress) {
       setDevNfts(usersNfts);
-    }
-    else if (
-      difference &&
-      difference[1] &&
-      (difference[1].added || difference[1].removed)
-    ) {
+    } else if (hasDiff) {
       setDevNfts(usersNfts);
     }
     setIsLoading(false);
-  }, [E1155, E721, E721B, E1155B, signer, currentAddress, isLoading, devNfts, previousAddress]);
+  }, [
+    E1155,
+    E721,
+    E721B,
+    E1155B,
+    signer,
+    currentAddress,
+    isLoading,
+    devNfts,
+    previousAddress
+  ]);
 
   useEffect(() => {
     const fetchRequest = createCancellablePromise(fetchAsync());

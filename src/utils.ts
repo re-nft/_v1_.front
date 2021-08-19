@@ -1,17 +1,20 @@
 import { ethers, providers } from "ethers";
-import { ERC721 } from "./hardhat/typechain/ERC721";
-import { ERC1155 } from "./hardhat/typechain/ERC1155";
-import { ERC20 } from "./hardhat/typechain/ERC20";
+import { ERC721 } from "./types/typechain/ERC721";
+import { ERC1155 } from "./types/typechain/ERC1155";
+import { ERC20 } from "./types/typechain/ERC20";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
-import { Lending, Renting } from "./contexts/graph/classes";
+import { Lending, Nft, NftType, Renting } from "./contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
+import { JsonRpcProvider } from "@ethersproject/providers";
+import { ERC1155__factory } from "./contracts/ERC1155__factory";
+import { ERC721__factory } from "./contracts/ERC721__factory";
+import { diffJson } from "diff";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
-
-const PRICE_BITSIZE = 32;
 
 export const short = (s: string): string =>
   `${s.substr(0, 7)}...${s.substr(s.length - 3, 3)}`;
@@ -35,36 +38,7 @@ const e20abi = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  "event Transfer(address indexed from, address indexed to, uint amount)",
-];
-
-const e721abi = [
-  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
-  "event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)",
-  "event ApprovalForAll(address indexed owner, address indexed operator, bool approved)",
-  "function balanceOf(address owner) external view returns (uint256 balance)",
-  "function ownerOf(uint256 tokenId) external view returns (address owner)",
-  "function safeTransferFrom(address from, address to, uint256 tokenId) external",
-  "function transferFrom(address from, address to, uint256 tokenId) external",
-  "function approve(address to, uint256 tokenId) external",
-  "function getApproved(uint256 tokenId) external view returns (address operator)",
-  "function setApprovalForAll(address operator, bool _approved) external",
-  "function isApprovedForAll(address owner, address operator) external view returns (bool)",
-  "function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external",
-  "function tokenURI(uint256 tokenId) external view returns (string address)",
-];
-
-const e1155abi = [
-  "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
-  "event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values)",
-  "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
-  "event URI(string value, uint256 indexed id)",
-  "function balanceOf(address account, uint256 id) external view returns (uint256)",
-  "function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids) external view returns (uint256[] memory)",
-  "function setApprovalForAll(address operator, bool approved) external",
-  "function isApprovedForAll(address account, address operator) external view returns (bool)",
-  "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external",
-  "function safeBatchTransferFrom(address from, address to, uint256[] calldata ids, uint256[] calldata amounts, bytes calldata data) external",
+  "event Transfer(address indexed from, address indexed to, uint amount)"
 ];
 
 export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
@@ -76,36 +50,20 @@ export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
   return erc20Contract;
 };
 
-export const getE721 = (address: string, signer?: ethers.Signer): ERC721 => {
-  const erc721Contract = new ethers.Contract(
-    ethers.utils.getAddress(address),
-    e721abi,
-    signer
-  ) as ERC721;
+export const getE721 = (
+  address: string,
+  signer: ethers.Signer | JsonRpcProvider
+): ERC721 => {
+  const erc721Contract = ERC721__factory.connect(address, signer);
   return erc721Contract;
 };
 
-export const getE1155 = (address: string, signer?: ethers.Signer): ERC1155 => {
-  const erc1155Contract = new ethers.Contract(
-    ethers.utils.getAddress(address),
-    e1155abi,
-    signer
-  ) as ERC1155;
-  return erc1155Contract;
-};
-
-export const fetchNftApprovedERC721 = async (
+export const getE1155 = (
   address: string,
-  tokenId: number,
-  signer?: ethers.Signer
-): Promise<string> => {
-  const erc721Contract = new ethers.Contract(
-    address.toLowerCase(),
-    e721abi,
-    signer
-  ) as ERC721;
-  const approved = await erc721Contract.getApproved(tokenId);
-  return approved;
+  signer: ethers.Signer | JsonRpcProvider
+): ERC1155 => {
+  const erc1155Contract = ERC1155__factory.connect(address, signer);
+  return erc1155Contract;
 };
 
 export const sleep = (ms: number): Promise<void> => {
@@ -128,8 +86,6 @@ export const decimalToPaddedHexString = (
       .padStart(byteCount * 2, "0")
   );
 };
-
-
 
 // ! must be the same as in packages/contracts/src/interfaces/IResolver.sol
 export const parsePaymentToken = (tkn: string): PaymentToken => {
@@ -172,21 +128,31 @@ export const timeItAsync = async <T>(
   return res;
 };
 
-export const getContract = async (
+export const getContractWithSigner = async (
   tokenAddress: string,
-  signer: ethers.Signer
-): Promise<{ contract: ERC721 | ERC1155; isERC721: boolean }> => {
-  let contract: ERC721 | ERC1155;
-  let isERC721 = false;
-  // todo: don't think this will actually work
-  // todo: need that schema from github
-  try {
-    contract = getE721(tokenAddress, signer);
-    isERC721 = true;
-  } catch {
-    contract = getE1155(tokenAddress, signer);
+  signer: ethers.Signer,
+  isERC721: boolean
+): Promise<ERC721 | ERC1155> => {
+  if (isERC721) {
+    return getE721(tokenAddress, signer);
+  } else {
+    return getE1155(tokenAddress, signer);
   }
-  return { contract, isERC721 };
+};
+
+export const getContractWithProvider = async (
+  tokenAddress: string,
+  isERC721: boolean
+): Promise<ERC721 | ERC1155> => {
+  const provider = new JsonRpcProvider(
+    process.env.NEXT_PUBLIC_PROVIDER_URL,
+    "homestead"
+  );
+  if (isERC721) {
+    return getE721(tokenAddress, provider);
+  } else {
+    return getE1155(tokenAddress, provider);
+  }
 };
 
 export const toDataURLFromBlob = (
@@ -237,9 +203,7 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   }
 };
 
-export const getDistinctItems = <
-  T extends Record<string | number | symbol, unknown>
->(
+export const getDistinctItems = <T extends Object>(
   nfts: T[],
   property: keyof T
 ): T[] => {
@@ -268,7 +232,7 @@ export const nftReturnIsExpired = (rent: Renting): boolean => {
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,
-  GREATER = 1,
+  GREATER = 1
 }
 export const sortNfts = (
   a: { tokenId: string; isERC721: boolean },
@@ -284,22 +248,25 @@ export const sortNfts = (
   }
 };
 
-
-export const filterClaimed = (showClaimed: boolean) => (l: Lending | Renting) => {
-  if (!showClaimed) {
-    if (l.lending) return !l.lending.collateralClaimed;
-    return false;
-  }
-  return true;
-};
-export const mapAddRelendedField = (ids: Set<string>) => (l: Lending | Renting) => {
-  return {
-    ...l,
-    relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+export const filterClaimed =
+  (showClaimed: boolean) => (l: Lending | Renting) => {
+    if (!showClaimed) {
+      if (l.lending) return !l.lending.collateralClaimed;
+      return false;
+    }
+    return true;
   };
-};
+export const mapAddRelendedField =
+  (ids: Set<string>) => (l: Lending | Renting) => {
+    return {
+      ...l,
+      relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+    };
+  };
 export const mapToIds = (items: Renting[] | Lending[]) => {
-  return new Set(items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`));
+  return new Set(
+    items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`)
+  );
 };
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
@@ -314,7 +281,7 @@ export const isDegenerateNft = async (
   if (!provider) return true;
 
   const abi165 = [
-    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)"
   ];
   const contract = new ethers.Contract(address, abi165, provider);
   let isDegenerate = true;
@@ -330,3 +297,62 @@ export const isDegenerateNft = async (
 
   return isDegenerate;
 };
+
+export const isVideo = (image: string | undefined) =>
+  image?.endsWith("mp4") ||
+  image?.endsWith("mkv") ||
+  image?.endsWith("webm") ||
+  image?.endsWith("mov") ||
+  image?.endsWith("avi") ||
+  image?.endsWith("flv");
+
+export const hasDifference = (a: Record<string, unknown> | unknown[], b: Record<string, unknown> | unknown[]) => {
+  const difference = diffJson(a, b, {
+    ignoreWhitespace: true
+  });
+  //const difference = true;
+  if (
+    difference &&
+    difference[1] &&
+    (difference[1].added || difference[1].removed)
+  ) {
+    return true;
+  }
+  return false;
+};
+export type UniqueID = string;
+
+// typeguard for Lending class
+export const isLending = (x: Nft | Lending | Renting): x is Lending => {
+  return x.type === NftType.Lending;
+};
+
+export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
+  return x.type === NftType.Renting;
+};
+
+export const isNft = (x: Nft | Lending | Renting): x is Nft => {
+  return x.type === NftType.Nft;
+};
+export const getUniqueID = (
+  nftAddress: string,
+  tokenId: string,
+  lendingId?: string
+): UniqueID => {
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
+    lendingId ?? 0
+  }`;
+};
+
+// const getLendingId = (item: Nft): string => {
+//   let lendingID = "0";
+//   if (isLending(item)) lendingID = item.lending.id;
+//   else if (isRenting(item))
+//     lendingID = item.renting.lendingId
+//       .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
+//       .concat("renting");
+//   return lendingID;
+// };
+// export const getUniqueCheckboxId = (item: Nft): string => {
+//   return getUniqueID(item.address, item.tokenId, getLendingId(item));
+// };

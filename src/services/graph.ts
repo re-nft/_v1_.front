@@ -50,10 +50,10 @@ export const fetchUserProd721 = async (
   let subgraphURI = "";
   query = queryMyERC721s(currentAddress, skip);
 
-  if (!process.env.REACT_APP_EIP721_API) {
+  if (!process.env.NEXT_PUBLIC_EIP721_API) {
     throw new Error("EIP721_API is not defined");
   }
-  subgraphURI = process.env.REACT_APP_EIP721_API;
+  subgraphURI = process.env.NEXT_PUBLIC_EIP721_API;
 
   const response: ERC721s = await timeItAsync(
     `Pulled My ${FetchType[FetchType.ERC721]} NFTs`,
@@ -89,10 +89,10 @@ export const fetchUserProd1155 = async (
   let subgraphURI = "";
 
   query = queryMyERC1155s(currentAddress, skip);
-  if (!process.env.REACT_APP_EIP1155_API) {
+  if (!process.env.NEXT_PUBLIC_EIP1155_API) {
     throw new Error("EIP1155_API is not defined");
   }
-  subgraphURI = process.env.REACT_APP_EIP1155_API;
+  subgraphURI = process.env.NEXT_PUBLIC_EIP1155_API;
 
   const response: ERC1155s = await timeItAsync(
     `Pulled My ${FetchType[FetchType.ERC1155]} NFTs`,
@@ -128,10 +128,10 @@ export const fetchUserRenting = async (
 ): Promise<FetchUserRentingReturn> => {
   if (!currentAddress) return;
   const query = queryUserRentingRenft(currentAddress);
-  if (!process.env.REACT_APP_RENFT_API) {
+  if (!process.env.NEXT_PUBLIC_RENFT_API) {
     throw new Error("RENFT_API is not defined");
   }
-  const subgraphURI = process.env.REACT_APP_RENFT_API;
+  const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
   const response: FetchUserRentingReturn = await timeItAsync(
     "Pulled My Renft Renting Nfts",
     async () => await request(subgraphURI, query)

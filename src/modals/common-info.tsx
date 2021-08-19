@@ -2,7 +2,6 @@ import React from "react";
 import { ShortenPopover } from "../components/common/shorten-popover";
 
 import { Nft } from "../contexts/graph/classes";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
 
 export type CommonInfoProps = {
   nft: Nft;
@@ -10,7 +9,7 @@ export type CommonInfoProps = {
 
 const CommonInfo: React.FC<CommonInfoProps> = ({ children, nft }) => {
   return (
-    <div className="modal-dialog-section" key={getUniqueCheckboxId(nft)}>
+    <div className="modal-dialog-section" key={nft.id}>
       <div className="modal-dialog-for">
         <div className="label">{nft.isERC721 ? "721" : "1155"}</div>
       </div>

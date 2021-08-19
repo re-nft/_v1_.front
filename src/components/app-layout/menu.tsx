@@ -1,18 +1,19 @@
-import { NavLink } from "react-router-dom";
 import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const ROUTES = [
   {
     path: "/",
-    name: "Rent"
+    name: "Rent",
   },
   {
     path: "/lend",
-    name: "Lend"
+    name: "Lend",
   },
   {
     path: "/dashboard",
-    name: "My Dashboard"
+    name: "My Dashboard",
   },
   // {
   //   path: "/favourites",
@@ -24,33 +25,31 @@ const ROUTES = [
   // },
   {
     path: "/faq",
-    name: "FAQ"
-  }
+    name: "FAQ",
+  },
 ];
-export const Menu = () => {
+const isPathActive = (linkPath: string, pathname: string) => {
+  if (pathname === linkPath) return true;
+  if (pathname.includes(linkPath) && linkPath !== "/") return true;
+  if (pathname.includes("/rent") && linkPath === "/") return true;
+  if (pathname === "/user-is-renting" && linkPath === "/") return true;
+  if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
+  return false;
+};
+export const Menu: React.FC = () => {
+  const { pathname } = useRouter();
   return (
     <div className="menu">
-      {ROUTES.map((route) => (
-        <NavLink
-          key={route.path}
-          className="menu__item"
-          activeClassName="menu__item-active"
-          to={route.path}
-          isActive={(_, location) => {
-            if (location.pathname === route.path) return true;
-            if (location.pathname === "/user-is-renting" && route.path === "/")
-              return true;
-            if (
-              location.pathname === "/user-is-lending" &&
-              route.path === "/lend"
-            )
-              return true;
-            return false;
-          }}
-        >
-          {route.name}
-        </NavLink>
-      ))}
+      {ROUTES.map((route) => {
+        const isActive = isPathActive(route.path, pathname);
+        return (
+          <Link key={route.path} href={route.path}>
+            <a className={`menu__item ${isActive ? "menu__item-active" : ""}`}>
+              {route.name}
+            </a>
+          </Link>
+        );
+      })}
     </div>
   );
 };

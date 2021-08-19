@@ -3,9 +3,9 @@ import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Nft, Renting } from "../contexts/graph/classes";
 import { useObservable } from "../hooks/useObservable";
-import { useReturnIt } from "../hooks/useReturnIt";
+import { useReturnIt } from "../hooks/contract/useReturnIt";
 import Modal from "./modal";
-import { useNFTApproval } from "../hooks/useNFTApproval";
+import { useNFTApproval } from "../hooks/contract/useNFTApproval";
 
 type ReturnModalProps = {
   nfts: Renting[];
@@ -40,7 +40,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               <Button
                 description="Approve Return"
                 disabled={approvalStatus.isLoading}
-                handleClick={handleApproveAll}
+                onClick={handleApproveAll}
               />
             </TransactionWrapper>
           )}
@@ -54,7 +54,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               <Button
                 description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
                 disabled={approvalStatus.isLoading || !isApproved}
-                handleClick={handleReturnNft}
+                onClick={handleReturnNft}
               />
             </TransactionWrapper>
           )}

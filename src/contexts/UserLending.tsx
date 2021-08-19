@@ -4,14 +4,13 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 
-import { timeItAsync } from "../utils";
+import { hasDifference, timeItAsync } from "../utils";
 import { Lending } from "./graph/classes";
 import { queryUserLendingRenft } from "./graph/queries";
 import { LendingRaw } from "./graph/types";
-import { diffJson } from "diff";
 import UserContext from "./UserProvider";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { usePrevious } from "../hooks/usePrevious";
@@ -24,7 +23,7 @@ export type UserLendingContextType = {
 };
 export const UserLendingContext = createContext<UserLendingContextType>({
   userLending: [],
-  isLoading: false
+  isLoading: false,
 });
 
 UserLendingContext.displayName = "UserLendingContext";
@@ -38,15 +37,15 @@ export const UserLendingProvider: React.FC = ({ children }) => {
 
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
-    if (!process.env.REACT_APP_RENFT_API) {
+    if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (lending && lending.length > 0) setLendings([]);
       return EMPTY;
     }
 
-    const subgraphURI = process.env.REACT_APP_RENFT_API;
+    const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
     setLoading(true);
 
     const fetchRequest = from<
@@ -55,25 +54,25 @@ export const UserLendingProvider: React.FC = ({ children }) => {
       }>
     >(
       timeItAsync("Pulled Users ReNFT Lendings", async () => {
-        return request(subgraphURI, queryUserLendingRenft(currentAddress)).catch(
-          () => {
-            // ! let's warn with unique messages, without console logging the error message
-            // ! that something went wrong. That way, if the app behaves incorrectly, we will
-            // ! know where to look. Right now I am running into an issue of localising the
-            // ! problem why user's lending does not show and there is no console.warn here
-            console.warn("could not pull users ReNFT lendings");
-            return {};
-          }
-        );
+        return request(
+          subgraphURI,
+          queryUserLendingRenft(currentAddress)
+        ).catch((e) => {
+          // ! let's warn with unique messages, without console logging the error message
+          // ! that something went wrong. That way, if the app behaves incorrectly, we will
+          // ! know where to look. Right now I am running into an issue of localising the
+          // ! problem why user's lending does not show and there is no console.warn here
+          console.warn("could not pull users ReNFT lendings");
+          return {};
+        });
       })
     ).pipe(
       map((response) => {
         if (response && response.users && response.users[0]) {
           return Object.values(response.users[0].lending)
             .filter((v) => v != null)
-            .filter((v) => !v.collateralClaimed)
             .map((lending) => {
-              return new Lending(lending, signer);
+              return new Lending(lending);
             });
         }
       }),
@@ -82,21 +81,13 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           setLoading(false);
           return;
         }
-        const normalizedLendings = lending.map((lending) => lending.toJSON());
-        const normalizedLendingNew = lendings.map((lending) =>
-          lending.toJSON()
-        );
+        const normalizedLendings = lending;
+        const normalizedLendingNew = lendings;
 
-        const difference = diffJson(normalizedLendings, normalizedLendingNew, {
-          ignoreWhitespace: true
-        });
+        const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
         if (currentAddress !== previousAddress) {
           setLendings(lendings);
-        } else if (
-          difference &&
-          difference[1] &&
-          (difference[1].added || difference[1].removed)
-        ) {
+        } else if (hasDiff) {
           setLendings(lendings);
         }
         setLoading(false);
@@ -118,7 +109,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     <UserLendingContext.Provider
       value={{
         userLending: lending,
-        isLoading
+        isLoading,
       }}
     >
       {children}

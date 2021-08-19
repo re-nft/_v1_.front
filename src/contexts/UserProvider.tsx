@@ -3,14 +3,14 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback
+  useCallback,
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
-import { THROWS } from "../utils";
+import { hasDifference, THROWS } from "../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import ReactGA from 'react-ga';
+import ReactGA from "react-ga";
 
 const DefaultUser = {
   address: "",
@@ -18,13 +18,12 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: ""
+  network: "",
 };
 
 type UserContextType = {
   address: string;
   connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
-  provider: unknown;
   signer: Signer | undefined;
   web3Provider: ethers.providers.Web3Provider | undefined;
   network: string;
@@ -43,33 +42,38 @@ export const UserProvider: React.FC = ({ children }) => {
   const [permissions, setPermissions] = useState<unknown[]>([]);
 
   const providerOptions = useMemo(() => ({}), []);
+  const hasWindow = useMemo(() => {
+    return typeof window !== "undefined";
+  }, [typeof window]);
   // web3modal is only working in browser\]
   const web3Modal = useMemo(() => {
-    return typeof window !== "undefined"
+    return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions // required
+          providerOptions, // required
         })
       : null;
-  }, [providerOptions]);
+  }, [providerOptions, hasWindow]);
 
-  const initState = useCallback(async (provider) => {
+  const initState = async (provider: any) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
-    setNetworkName(name);
-    const _signer = web3p.getSigner();
-    setSigner(_signer);
-    const address = await _signer
+    const nname = name === "homestead" ? "mainnet" : name;
+    const signer = web3p.getSigner();
+    const address = await signer
       .getAddress()
       .then((t) => t.toLowerCase())
-      .catch(() => {
+      .catch((e) => {
         // do nothing
+        console.log(e);
       });
+    setNetworkName(nname);
+    setSigner(signer);
     setAddress(address || "");
     setProvider(provider);
     setWeb3Provider(web3p);
-  }, []);
+  };
 
   const connect = useCallback(
     (manual: boolean) => {
@@ -83,16 +87,12 @@ export const UserProvider: React.FC = ({ children }) => {
             .connect()
             .then((provider) => {
               resolve(provider);
+              return initState(provider);
             })
             .catch(() => {
               resolve(null);
             })
         )
-      ).pipe(
-        map((provider) => {
-          if (!provider) return EMPTY;
-          return from(initState(provider));
-        })
       );
     },
     [web3Modal, permissions, signer, initState]
@@ -100,14 +100,14 @@ export const UserProvider: React.FC = ({ children }) => {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    if (!window || !window.ethereum) return EMPTY;
+    if (!hasWindow || !window.ethereum) return EMPTY;
     return from<Promise<string[]>>(
       new Promise((resolve) => {
         window.ethereum
           .request({ method: "wallet_getPermissions" })
           .then((w: any) => {
             //TODO they keep changing wallet_getPermissions
-            resolve(w[0].caveats[1].value);
+            resolve(w[0]?.caveats[1]?.value || {});
           })
           .catch((error: unknown) => {
             console.warn("wallet_getPermissions", error);
@@ -115,16 +115,19 @@ export const UserProvider: React.FC = ({ children }) => {
           });
       })
     ).pipe(
-      map((permissions: string[]) => {
-        setPermissions(permissions);
-        if (permissions.length < 1) {
-          if (signer) setSigner(undefined);
-          if (address) setAddress("");
-          if (network) setNetworkName("");
+      map((newPermissions: string[]) => {
+        if (hasDifference(newPermissions, permissions)) {
+          setPermissions(newPermissions);
+          if (newPermissions.length < 1) {
+            if (signer) setSigner(undefined);
+            if (address) setAddress("");
+            if (network) setNetworkName("");
+          }
         }
+        return;
       })
     );
-  }, [address, network, signer]);
+  }, [address, network, signer, hasWindow, permissions]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -148,9 +151,9 @@ export const UserProvider: React.FC = ({ children }) => {
     connect(true);
   }, [connect]);
 
-  useEffect(()=>{
+  useEffect(() => {
     ReactGA.set({ userId: address });
-  }, [address])
+  }, [address]);
 
   const accountsChanged = useCallback(
     (arg) => {
@@ -204,11 +207,10 @@ export const UserProvider: React.FC = ({ children }) => {
     <UserContext.Provider
       value={{
         connect: manuallyConnect,
-        provider,
         signer,
         address,
         web3Provider,
-        network
+        network,
       }}
     >
       {children}

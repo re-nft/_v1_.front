@@ -19,29 +19,33 @@ export const useAllAvailableToLend = (): {
   // TODO: it is not performmant, it requires multicall. Thus the cheat
   // TODO: below with hardcoding
 
+  const filteredERC1155 = useMemo(() => {
+    return ERC1155.filter(
+      (nft) =>
+        nft.address.toLowerCase() !==
+          "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
+        nft.address.toLowerCase() !==
+          "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
+    );
+  }, [ERC1155]);
+  
+  const filteredERC721 = useMemo(() => {
+    return ERC721.filter(
+      (nft) =>
+        nft.address.toLowerCase() !==
+          "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
+        nft.address.toLowerCase() !==
+          "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
+    );
+  }, [ERC721]);
+
   const allAvailableToLend: Nft[] = useMemo(() => {
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return [];
-    return [
-      ...devNfts,
-      ...ERC1155.filter(
-        (nft) =>
-          nft.address.toLowerCase() !==
-            "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-          nft.address.toLowerCase() !==
-            "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
-      ),
-      ...ERC721.filter(
-        (nft) =>
-          nft.address.toLowerCase() !==
-            "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-          nft.address.toLowerCase() !==
-            "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
-      ),
-    ];
-  }, [ERC1155, ERC721, devNfts, network]);
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return [];
+    return [...devNfts, ...filteredERC1155, ...filteredERC721];
+  }, [filteredERC1155, filteredERC721, devNfts, network]);
 
   const isLoading = useMemo(() => {
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) return false;
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return false;
     return erc1155Loading || erc721Loading || devIsLoading;
   }, [erc1155Loading, erc721Loading, devIsLoading, network]);
 

@@ -1,30 +1,27 @@
 import React from "react";
 
 type ButtonProps = {
-  handleClick: () => void;
+  onClick: (e: unknown) => void;
   disabled?: boolean;
   description: string;
-  datacy?: string
+  datacy?: string;
 };
 
-export const Button: React.FC<ButtonProps> = React.forwardRef(({
-  disabled,
-  handleClick,
-  description,
-  datacy,
-}, ref) => {
-  return (
-    <button
-      //@ts-ignore
-      ref={ref}
-      className={`nft__button small ${disabled ? "disabled" : ""}`}
-      disabled={disabled}
-      onClick={handleClick}
-      data-cy={datacy}
-      type="button"
-    >
-      {description}
-    </button>
-  );
-});
-Button.displayName="Button"
+export const Button: React.FC<ButtonProps> = React.forwardRef(
+  ({ disabled, onClick, description, datacy }, ref) => {
+    return (
+      <button
+        //@ts-ignore
+        ref={ref}
+        className={`nft__button ${disabled ? "disabled" : ""}`}
+        disabled={disabled}
+        onClick={onClick}
+        data-cy={datacy}
+        type="button"
+      >
+        {description}
+      </button>
+    );
+  }
+);
+Button.displayName = "Button";

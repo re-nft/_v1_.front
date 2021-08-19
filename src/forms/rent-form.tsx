@@ -1,7 +1,6 @@
 import CssTextField from "../components/common/css-text-field";
 
 import ActionButton from "../components/common/action-button";
-import { getUniqueCheckboxId } from "../controller/batch-controller";
 import { Lending, Nft } from "../contexts/graph/classes";
 import React from "react";
 import CommonInfo from "../modals/common-info";
@@ -13,11 +12,12 @@ import {
   FormikBag,
 } from "formik";
 import { TransactionStateEnum } from "../types";
-import { StartRentNft } from "../hooks/useStartRent";
+import { StartRentNft } from "../hooks/contract/useStartRent";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { PaymentToken } from "@renft/sdk";
 import { TransactionStatus } from "../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
+import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -38,12 +38,12 @@ export const RentForm: React.FC<LendFormProps> = ({
   handleApproveAll,
   handleSubmit,
   approvalStatus,
-  onClose
+  onClose,
 }) => {
   const [nft] = nfts;
   const initialValues: FormProps = {
     inputs: nfts.map<LendingWithKey>((nft) => ({
-      key: getUniqueCheckboxId(nft),
+      key: nft.id,
       duration: undefined,
       ...nft,
     })),
@@ -62,18 +62,17 @@ export const RentForm: React.FC<LendFormProps> = ({
         lendingId: nft.lending.id,
         rentDuration: (nft.duration as number).toString(),
         paymentToken: nft.lending.paymentToken,
-        isERC721: nft.isERC721
+        isERC721: nft.isERC721,
       }))
-    )
-    .subscribe({
-      next: (status)=>{
-        setStatus(status)
+    ).subscribe({
+      next: (status) => {
+        setStatus(status);
       },
-      complete: ()=>{
-        setSubmitting(false)
-        sub.unsubscribe()
-      }
-    })
+      complete: () => {
+        setSubmitting(false);
+        sub.unsubscribe();
+      },
+    });
   };
   const validate = (values: { inputs: LendingWithKey[] }) => {
     const errors: (Record<string, string | undefined> | undefined)[] = Array(
@@ -88,7 +87,7 @@ export const RentForm: React.FC<LendFormProps> = ({
           "the duration cannot be greater then the max rent duration";
       } else if (input.duration != parseInt(input.duration.toString(), 10)) {
         error.duration = "maxDuration must be a whole number";
-      } else if (!(/^\d+(\.\d+)?$/i).test(input.duration.toString())){
+      } else if (!/^\d+(\.\d+)?$/i.test(input.duration.toString())) {
         error.duration = "amount must be a number";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
@@ -120,7 +119,8 @@ export const RentForm: React.FC<LendFormProps> = ({
         submitForm,
         status,
       }) => {
-        const formSubmittedSuccessfully = status.status === TransactionStateEnum.SUCCESS
+        const formSubmittedSuccessfully =
+          status.status === TransactionStateEnum.SUCCESS;
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
@@ -177,7 +177,10 @@ export const RentForm: React.FC<LendFormProps> = ({
                     nft={nft}
                     onClick={submitForm}
                     disabled={
-                      !isValid ||  !isApproved || isSubmitting || formSubmittedSuccessfully
+                      !isValid ||
+                      !isApproved ||
+                      isSubmitting ||
+                      formSubmittedSuccessfully
                     }
                   />
                 </TransactionWrapper>
@@ -215,10 +218,9 @@ const ModalDialogSection: React.FC<{
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
-  const totalRent = 
+  const totalRent =
     (item.lending.nftPrice || 0) * Number(item.amount) +
-      (item.lending.dailyRentPrice || 0) * Number(item.duration)
-
+    (item.lending.dailyRentPrice || 0) * Number(item.duration);
 
   const renderItem = () => {
     const days = item.lending.maxRentDuration;
@@ -232,7 +234,7 @@ const ModalDialogSection: React.FC<{
     );
   };
   return (
-    <CommonInfo nft={item} key={getUniqueCheckboxId(item)}>
+    <CommonInfo nft={item} key={item.id}>
       <div className="modal-dialog-for">
         <div className="label">Rent Amount</div>
         <div className="dot"></div>
@@ -243,7 +245,7 @@ const ModalDialogSection: React.FC<{
         required
         label={renderItem()}
         variant="outlined"
-        inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{0,3}$' }}
+        inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}
@@ -253,33 +255,36 @@ const ModalDialogSection: React.FC<{
         helperText={touched && touched.duration && errors && errors.duration}
         disabled={disabled}
       />
-      <div className="nft__meta_row">
-        <div className="nft__meta_title">Daily rent price</div>
-        <div className="nft__meta_dot"></div>
-        <div className="nft__meta_value">
-          {dailyRentPrice} {paymentToken}
-        </div>
-      </div>
-      <div className="nft__meta_row">
-        <div className="nft__meta_title">Collateral (per item)</div>
-        <div className="nft__meta_dot"></div>
-        <div className="nft__meta_value">
-          {nftPrice} {paymentToken}
-        </div>
-      </div>
-      <div className="nft__meta_row">
-        <div className="nft__meta_title">
-          <b>Rent</b>
-        </div>
-        <div className="nft__meta_dot"></div>
-        <div className="nft__meta_value">
-          {dailyRentPrice}
-          {` x ${item.duration ? item.duration : 0} days + ${Number(
-            nftPrice
-          )} x ${Number(item.amount)} = ${totalRent ? totalRent : "? "}`}
-          {` ${paymentToken}`}
-        </div>
-      </div>
+      <CatalogueItemRow
+        text={`Daily rent price [${paymentToken}]`}
+        value={dailyRentPrice}
+      />
+      <CatalogueItemRow
+        text={`Collateral (per item) [${paymentToken}]`}
+        value={nftPrice}
+      />
+      <CatalogueItemRow
+        text={`Rent [${paymentToken}]`}
+        value={
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              overflow: "visible",
+            }}
+          >
+            <span>
+              &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
+              {item.duration ? item.duration : 0} days
+            </span>
+            <span>
+              + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+            </span>
+            <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
+          </div>
+        }
+      />
     </CommonInfo>
   );
 };

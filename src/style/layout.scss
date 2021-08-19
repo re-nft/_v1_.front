@@ -1,4 +1,3 @@
-
 #root {
     position: relative;
     min-height: 100%;
@@ -24,9 +23,9 @@
     font-size: 28px;
     line-height: 1;
     margin-bottom: 16px;
-    color: #fff;
+    color: $white;
     padding-bottom: 8px;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid $white;
 }
 
 .content-wrapper.footer {
@@ -37,7 +36,7 @@
         flex: 1 1 100%;
         align-items: center;
         text-align: center;
-        color: #f43e77;
+        color: $red;
         font-size: 16px;
 
     }
@@ -54,14 +53,14 @@
 .text-content {
     padding: 32px;
     font-size: 24px;
-    color: #fff;
+    color: $white;
 
     .bolder {
         text-transform: uppercase;
     }
 
     p {
-        margin-bottom: 16px;
+         margin-bottom: 16px;
     }
 }
 
@@ -94,12 +93,12 @@
         padding: 0 80px;
         left: 50%;
         z-index: 9;
-        background: #fff;
+        background: $white;
         height: 60px;
         margin-bottom: 0;
         width: 100%;
         padding-bottom: 12px;
-        box-shadow: 15px 0px #fff;
+        box-shadow: 15px 0px $white;
         transform: translate(-50%, 0);
 
         &:before {
@@ -109,7 +108,7 @@
             left: 0;
             width: 101%;
             height: 100%;
-            box-shadow: 5px 5px #000;
+            box-shadow: 5px 5px $black;
         }
     }
 
@@ -120,10 +119,11 @@
     &.main-content {
         flex-grow: 1;
         display: flex;
-        border: 4px solid #000;
+        border: 4px solid $black;
         box-sizing: border-box;
-        box-shadow: 5px 5px 0 #000;
+        box-shadow: 7px 7px 0 $black;
         background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
+        z-index:10;
     }
 
     &.footer-content {
@@ -176,13 +176,13 @@
       
         &-user {
           background: #fdfff9;
-          color: #9c65cd;
-          border: 4px solid #000;
+          color: $purple;
+          border: 4px solid $black;
           text-align: center;
           font-size: 18px;
           padding: 8px 18px;
           line-height: 1;
-          box-shadow: 6px 6px 0 #000;
+          box-shadow: 6px 6px 0 $black;
         }
     }
 
@@ -194,6 +194,9 @@
       height: 50px;
       width: 300px;
       flex-grow: 1;
+    }
+    .nft__button {
+        margin-right: 3px;
     }
   }
   .dashboard-header {
@@ -222,7 +225,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    color: #fff;
+    color: $white;
     transform: translate(-50%, -50%);
     font-size: 25px;
 }
@@ -231,8 +234,8 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    background: #9a65ca;
-    border-top: 8px solid #000;
+    background: $purple;
+    border-top: 8px solid $black;
     width: 100%;
     padding: 32px;
     z-index: 9;
@@ -253,7 +256,7 @@
         margin: 0 8px;
 
         &.page-count {
-            color: #fff;
+            color: $white;
             font-size: 28px;
         }
     }
@@ -272,13 +275,13 @@
 }
 
 .headline{
-    font-family: 'Press Start 2P';
+    font-family: 'Press Start 2P', cursive;
     font-size: 14px;
     line-height: 27px;
 }
 
 .pink-text{
-    color: #9a65ca;
+    color: $purple;
 }
 .black-text{
     color: black;

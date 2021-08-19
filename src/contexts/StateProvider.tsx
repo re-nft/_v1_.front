@@ -1,17 +1,13 @@
-import { RENFT_ADDRESS } from "@renft/sdk";
-import React, { useContext } from "react";
+import React from "react";
 import { CurrentAddressProvider } from "./CurrentAddressWrapper";
 import { GraphProvider } from "./graph";
-import { AvailableForRentProvider } from "./AvailableForRent";
-import { NFTMetaProvider } from "./NftMetaState";
 import { TransactionStateProvider } from "./TransactionState";
 import { UserLendingProvider } from "./UserLending";
 import { UserRentingProvider } from "./UserRenting";
 import { TimestampProvider } from "./TimestampProvider";
-import { NetworkName } from "../types";
 import { SnackAlertProvider } from "./SnackProvider";
-import UserContext, { UserProvider } from "./UserProvider";
-import { ContractContext, ContractsProvider } from "./ContractsProvider";
+import { UserProvider } from "./UserProvider";
+import { ContractsProvider } from "./ContractsProvider";
 
 export const StateProvider: React.FC = ({ children }) => {
   return (
@@ -21,15 +17,11 @@ export const StateProvider: React.FC = ({ children }) => {
           <ContractsProvider>
             <GraphProvider>
               <TransactionStateProvider>
-                <NFTMetaProvider>
                   <UserLendingProvider>
                     <UserRentingProvider>
-                      <AvailableForRentProvider>
                         <TimestampProvider>{children}</TimestampProvider>
-                      </AvailableForRentProvider>
                     </UserRentingProvider>
                   </UserLendingProvider>
-                </NFTMetaProvider>
               </TransactionStateProvider>
             </GraphProvider>
           </ContractsProvider>
@@ -37,11 +29,4 @@ export const StateProvider: React.FC = ({ children }) => {
       </UserProvider>
     </SnackAlertProvider>
   );
-};
-
-export const useContractAddress = (): string => {
-  const { ReNFT } = useContext(ContractContext);
-  const { network } = useContext(UserContext);
-
-  return network === NetworkName.mainnet ? RENFT_ADDRESS : ReNFT?.address || "";
 };

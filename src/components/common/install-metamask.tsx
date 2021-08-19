@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const InstallMetamask = () => {
+export const InstallMetamask: React.FC = () => {
     return (
       <div id="installMetaMask" className="cjAFRf web3modal-provider-wrapper">
         <a

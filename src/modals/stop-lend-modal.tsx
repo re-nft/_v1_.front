@@ -3,7 +3,7 @@ import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { useObservable } from "../hooks/useObservable";
-import { useStopLend } from "../hooks/useStopLend";
+import { useStopLend } from "../hooks/contract/useStopLend";
 import Modal from "./modal";
 
 type ReturnModalProps = {
@@ -39,7 +39,7 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
             <Button
               description={nfts.length > 1 ? "Stop Lend All" : "Stop Lend"}
               disabled={t.isLoading}
-              handleClick={handleStopLend}
+              onClick={handleStopLend}
             />
           </TransactionWrapper>
         </div>

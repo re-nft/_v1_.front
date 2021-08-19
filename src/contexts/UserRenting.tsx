@@ -10,11 +10,11 @@ import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
 import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { Renting } from "./graph/classes";
 import { parseLending } from "./graph/utils";
-import { diffJson } from "diff";
 import UserContext from "./UserProvider";
 import { usePrevious } from "../hooks/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import { EMPTY, from, timer, map, Observable, switchMap } from "rxjs";
+import { hasDifference } from "../utils";
 
 export type UserRentingContextType = {
   userRenting: Renting[];
@@ -37,7 +37,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
 
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return EMPTY;
-    if (network !== process.env.REACT_APP_NETWORK_SUPPORTED) {
+    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (renting && renting.length > 0) setRentings([]);
       return EMPTY;
     }
@@ -72,27 +72,19 @@ export const UserRentingProvider: React.FC = ({ children }) => {
                   r.lending.nftAddress,
                   r.lending.tokenId,
                   parseLending(r.lending),
-                  r,
-                  signer
+                  r
                 )
             );
-          const normalizedLendings = renting.map((lending) => lending.toJSON());
-          const normalizedLendingNew = _renting.map((lending) =>
-            lending.toJSON()
-          );
+          const normalizedLendings = renting;
+          const normalizedLendingNew = _renting;
 
-          const difference = diffJson(
+          const hasDiff = hasDifference(
             normalizedLendings,
-            normalizedLendingNew,
-            { ignoreWhitespace: true }
+            normalizedLendingNew
           );
           if (currentAddress !== previousAddress) {
             setRentings(_renting);
-          } else if (
-            difference &&
-            difference[1] &&
-            (difference[1].added || difference[1].removed)
-          ) {
+          } else if (hasDiff) {
             setRentings(_renting);
           }
           setLoading(false);
