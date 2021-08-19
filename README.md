@@ -1,3 +1,3 @@
 # Rent NFT
 
-Frontend
+Front end
