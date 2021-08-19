@@ -6,7 +6,7 @@ export const Toggle: React.FC<{
   toggleValue?: boolean;
 }> = ({ title, onSwitch, toggleValue }) => {
   return (
-    <div className="justify-end flex px-8">
+    <div className="justify-end flex">
       <div className="switch">
         <div className="switch__title">{title}</div>
         <div className="switch__control" onClick={onSwitch}>

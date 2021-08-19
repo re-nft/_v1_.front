@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import PaginationTextField from "./pagination-textfield";
 
 type PaginationProps = {
   currentPageNumber: number;
@@ -82,61 +81,62 @@ const Pagination: React.FC<PaginationProps> = ({
 
   // hide pagination if page number less than 2
   if (totalPages < 2) return null;
+  return null;
 
-  return (
-    <>
-      <ul className="pagination">
-        <li>
-          <button
-            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
-            onClick={onSetFirstPage}
-          >
-            {`<<`}
-          </button>
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
-            onClick={onSetPrevPage}
-          >
-            {`<`}
-          </button>
-        </li>
-        <li className="page-count">
-          <PaginationTextField
-            id="standard-basic"
-            //label="Page number"
-            type="string"
-            onChange={onChange}
-            value={shadowPageNumber}
-            //error={!!error}
-            //helperText={error}
-            // InputProps={{
-            //   endAdornment: (
-            //     <InputAdornment position="end">/{totalPages}</InputAdornment>
-            //   ),
-            // }}
-          />
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isLastpage ? "disabled" : ""}`}
-            onClick={onSetNextPage}
-          >
-            {`>`}
-          </button>
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isLastpage ? "disabled" : ""}`}
-            onClick={onSetLastPage}
-          >
-            {`>>`}
-          </button>
-        </li>
-      </ul>
-    </>
-  );
+  // return (
+  //   <>
+  //     <ul className="pagination">
+  //       <li>
+  //         <button
+  //           className={`nft__button ${isFirstPage ? "disabled" : ""}`}
+  //           onClick={onSetFirstPage}
+  //         >
+  //           {`<<`}
+  //         </button>
+  //       </li>
+  //       <li>
+  //         <button
+  //           className={`nft__button ${isFirstPage ? "disabled" : ""}`}
+  //           onClick={onSetPrevPage}
+  //         >
+  //           {`<`}
+  //         </button>
+  //       </li>
+  //       <li className="page-count">
+  //         <PaginationTextField
+  //           id="standard-basic"
+  //           //label="Page number"
+  //           type="string"
+  //           onChange={onChange}
+  //           value={shadowPageNumber}
+  //           //error={!!error}
+  //           //helperText={error}
+  //           // InputProps={{
+  //           //   endAdornment: (
+  //           //     <InputAdornment position="end">/{totalPages}</InputAdornment>
+  //           //   ),
+  //           // }}
+  //         />
+  //       </li>
+  //       <li>
+  //         <button
+  //           className={`nft__button ${isLastpage ? "disabled" : ""}`}
+  //           onClick={onSetNextPage}
+  //         >
+  //           {`>`}
+  //         </button>
+  //       </li>
+  //       <li>
+  //         <button
+  //           className={`nft__button ${isLastpage ? "disabled" : ""}`}
+  //           onClick={onSetLastPage}
+  //         >
+  //           {`>>`}
+  //         </button>
+  //       </li>
+  //     </ul>
+  //   </>
+  // );
 };
 
 export default Pagination;

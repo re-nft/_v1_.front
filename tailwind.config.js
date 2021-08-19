@@ -47,6 +47,7 @@ module.exports = {
           "rn-drop-purple": getShadow(purple),
           "rn-drop-grey": getShadow(grey),
           "rn-inset-orange": `inset 3px 3px 0 ${orange}`,
+          "rn-one": "7px 7px 0 black",
         };
       },
     },

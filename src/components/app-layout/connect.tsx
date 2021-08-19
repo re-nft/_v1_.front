@@ -6,9 +6,8 @@ import { useLookupAddress } from "../../hooks/useLookupAddress";
 import { Button } from "../common/button";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
-import Link from "next/link";
-
-export const Header: React.FC = () => {
+import { Jazzicon } from "@ukstv/jazzicon-react";
+export const Connect: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network, connect } = useContext(UserContext);
   const [username, setUsername] = useState<string>();
@@ -34,8 +33,7 @@ export const Header: React.FC = () => {
   }, [network]);
 
   return (
-    <div className="header">
-      <div className="header__logo"></div>
+    <>
       {!installMetaMask && (!currentAddress || !network) ? (
         <Button
           datacy="metamask-connect-button"
@@ -43,8 +41,8 @@ export const Header: React.FC = () => {
           description="Connect"
         />
       ) : (
-        <div className="header__wallet">
-          <div className="header__wallet-network">
+        <div className="flex justify-center items-center px-3 md:px-0">
+          <div>
             <p className="font-display text-sm leading-tight text-rn-purple">
               {network} &nbsp;
               {networkNotSupported && (
@@ -64,25 +62,25 @@ export const Header: React.FC = () => {
           </div>
 
           {!networkNotSupported && (
-            <div className="header__wallet-user">
+            <div className="shadow-rn-one text-rn-purple text-lg border-4 border-black px-2 py-2">
               {installMetaMask && <InstallMetamask />}
 
               {!installMetaMask && !!currentAddress && (
-                <>
-                  <Link href="/profile">
-                    <a>
-                      <ShortenPopover
-                        longString={username || lookupAddress || currentAddress}
-                        data-cy="metamask-connect-button"
-                      />
-                    </a>
-                  </Link>
-                </>
+                <div className="flex justify-center items-center space-x-2 focus:outline-none focus:ring-4 focus:ring-offset-4 focus:ring-offset-purple-800 focus:ring-purple">
+                  <ShortenPopover
+                    longString={username || lookupAddress || currentAddress}
+                    data-cy="metamask-connect-button"
+                  />
+                  <Jazzicon
+                    address={"0xBAc675C310721717Cd4A37F6cbeA1F081b1C2a07"}
+                    className="h-5 w-5"
+                  />
+                </div>
               )}
             </div>
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };

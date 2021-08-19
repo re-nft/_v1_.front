@@ -4,7 +4,7 @@ import "../styles/globals.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";
-import AppLayout from "../components/app-layout";
+import { AppLayout } from "../components/app-layout";
 import Helmet from "react-helmet";
 import type { AppProps } from "next/app";
 import ReactGA from "react-ga";

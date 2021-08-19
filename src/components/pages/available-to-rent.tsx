@@ -71,7 +71,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
     [onCheckboxChange]
   );
   return (
-    <div>
+    <>
       <BatchRentModal
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
@@ -97,7 +97,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
           onClick={handleBatchRent}
         />
       )}
-    </div>
+    </>
   );
 };
 export const AvailableToRent: React.FC<{

@@ -24,7 +24,7 @@ export const ShortenPopover: React.FC<{ longString: string; dataCy?: string }> =
         >
           {longString.length > 10 ? short(longString) : longString}
         </span>
-        <div
+        {/* <div
           id="mouse-over-popover"
           // classes={{
           //   paper: classes.paper,
@@ -43,7 +43,7 @@ export const ShortenPopover: React.FC<{ longString: string; dataCy?: string }> =
           // disableRestoreFocus
         >
           <div data-cy={dataCy}>{longString}</div>
-        </div>
+        </div> */}
       </>
     );
   };

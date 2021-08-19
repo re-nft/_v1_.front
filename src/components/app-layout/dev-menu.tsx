@@ -5,7 +5,7 @@ import { MintTokens } from "../dev/mint-token";
 export const DevMenu: React.FC = () => {
   const showMint = process.env.NEXT_PUBLIC_SHOW_MINT === "true";
   return showMint ? (
-    <div className="w-full mb-16 mb-l" style={{ flexWrap: "wrap" }}>
+    <div className="flex flex-wrap px-2" style={{ flexWrap: "wrap" }}>
       <MintNfts />
       <MintTokens />
     </div>
