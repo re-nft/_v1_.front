@@ -104,7 +104,7 @@ export const CategorySelect: React.FC<{
 }> = ({ options, setValue, defaultValue, value, instanceId }) => {
   const onChange = useCallback(
     (option) => {
-      const value = option?.value || defaultValue.label;
+      const value = option?.value;
       setValue(value);
     },
     [options, setValue]
