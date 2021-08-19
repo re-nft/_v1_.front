@@ -8,10 +8,6 @@ import { SearchMenu } from "./search-menu";
 import { DevMenu } from "./dev-menu";
 import { Connect } from "./connect";
 
-const user = {
-  name: "Account name",
-  address: "0x442dccee68425828c106a3662014b4f131e3bd9b ",
-};
 const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
@@ -28,6 +24,7 @@ const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
   return false;
 };
+
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
