@@ -40,6 +40,7 @@
     "next": "11.0.1",
     "nprogress": "0.2.0",
     "postcss": "8.3.6",
+    "postcss-focus-visible": "^5.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-error-boundary": "3.1.3",

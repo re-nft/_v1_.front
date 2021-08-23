@@ -18,7 +18,9 @@ const ItemWrapper: React.FC<{
         spring: "wobble",
       }}
     >
-      <div className=" pt-8 grid grid-cols-4 gap-6 px-8">{children}</div>
+      <div className=" pt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8">
+        {children}
+      </div>
     </Flipper>
   );
 };
