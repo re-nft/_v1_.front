@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
-import CommonInfo from "../modals/common-info";
+import ModalFields from "../modals/modal-fields";
 import { FormikErrors, FormikTouched } from "formik";
-import MinimalSelect from "../components/common/select";
+import { TokenSelect } from "../common/token-select";
 import { LendInputProps } from "./lend-form";
-import { TextField } from "../components/common/text-field";
+import { TextField } from "../common/text-field";
 
 const voidFn = () => {
   // do nothing func
@@ -45,7 +45,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
   }, [lendingInput.amount]);
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
-      <CommonInfo nft={lendingInput.nft}>
+      <ModalFields nft={lendingInput.nft}>
         {/* lendAmount for 721 is ignored */}
         <div className="modal-dialog-for">
           <div className="label">Available Amount</div>
@@ -132,13 +132,13 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           helperText={touched && touched.nftPrice && errors && errors.nftPrice}
           disabled={disabled}
         />
-        <MinimalSelect
-          name={`inputs.${index}.pmToken`}
+        <TokenSelect
+          refName={`inputs.${index}.pmToken`}
           handleChange={handleChange}
           selectedValue={lendingInput.pmToken ?? -1}
           disabled={disabled}
         />
-      </CommonInfo>
+      </ModalFields>
     </div>
   );
 };

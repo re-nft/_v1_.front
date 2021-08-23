@@ -1,12 +1,12 @@
-import ActionButton from "../components/common/action-button";
-import { Nft } from "../contexts/graph/classes";
+import ActionButton from "../common/action-button";
+import { Nft } from "../../contexts/graph/classes";
 import React from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
 import { LendInput } from "./lend-input";
-import { TransactionWrapper } from "../components/transaction-wrapper";
-import { TransactionStateEnum } from "../types";
+import { TransactionWrapper } from "../transaction-wrapper";
+import { TransactionStateEnum } from "../../types";
 import { Observable } from "rxjs";
-import { TransactionStatus } from "../hooks/useTransactionWrapper";
+import { TransactionStatus } from "../../hooks/useTransactionWrapper";
 
 type LendFormProps = {
   nfts: Nft[];

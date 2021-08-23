@@ -7,7 +7,7 @@ import {
   useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
-import { LendInputDefined } from "../../forms/lend-form";
+import { LendInputDefined } from "../../components/forms/lend-form";
 import { sortNfts } from "../../utils";
 
 const debug = createDebugger("app:contract");

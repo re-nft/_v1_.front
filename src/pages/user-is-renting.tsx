@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState, useMemo } from "react";
 
 import { Lending, Renting } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
-import ReturnModal from "../modals/return-modal";
+import ReturnModal from "../components/modals/return-modal";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
@@ -42,12 +42,16 @@ const RentingCatalogueItem: React.FC<{
         text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
-      <ActionButton<Nft>
-        title="Return It"
-        disabled={isExpired}
-        nft={nft}
-        onClick={handleReturnNft(nft)}
-      />
+      <div className="py-3 flex flex-auto items-end justify-center">
+        <div className="flex-initial">
+          <ActionButton<Nft>
+            title="Return It"
+            disabled={isExpired}
+            nft={nft}
+            onClick={handleReturnNft(nft)}
+          />
+        </div>
+      </div>
     </CatalogueItem>
   );
 };

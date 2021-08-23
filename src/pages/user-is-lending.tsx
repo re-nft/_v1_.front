@@ -8,7 +8,7 @@ import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
 import { UserLendingContext } from "../contexts/UserLending";
 import UserContext from "../contexts/UserProvider";
-import { StopLendModal } from "../modals/stop-lend-modal";
+import { StopLendModal } from "../components/modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
@@ -31,12 +31,16 @@ const LendingCatalogueItem: React.FC<{
       disabled={hasRenting}
     >
       <LendingFields nft={nft} />
-      <ActionButton<Lending>
-        nft={nft}
-        disabled={hasRenting || isChecked}
-        title="Stop Lending"
-        onClick={handleClickNft}
-      />
+      <div className="py-3 flex flex-auto items-end justify-center">
+        <div className="flex-initial">
+          <ActionButton<Lending>
+            nft={nft}
+            disabled={hasRenting || isChecked}
+            title="Stop Lending"
+            onClick={handleClickNft}
+          />
+        </div>
+      </div>
     </CatalogueItem>
   );
 };

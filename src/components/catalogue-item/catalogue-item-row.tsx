@@ -5,13 +5,14 @@ export type CatalogueItemRowProps = {
   value: React.ReactChild;
 };
 
+//TODO shortenpopover
 export const CatalogueItemRow: React.FC<CatalogueItemRowProps> = ({
   text,
   value,
 }) => (
-  <div className="nft__meta_row">
-    <div className="nft__meta_title">{text}</div>
-    <div className="nft__meta_dot"></div>
-    <div className="nft__meta_value">{value}</div>
+  <div className="w-full flex">
+    <div className="flex-initial">{text}</div>
+    <div className="flex-auto border-b-2 border-dotted border-black font-display"></div>
+    <div className="flex-initial">{value}</div>
   </div>
 );

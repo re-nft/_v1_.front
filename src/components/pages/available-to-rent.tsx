@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Lending, Nft, Renting } from "../../contexts/graph/classes";
 import UserContext from "../../contexts/UserProvider";
 import { useBatchItems } from "../../hooks/useBatchItems";
-import BatchRentModal from "../../modals/batch-rent";
+import BatchRentModal from "../modals/batch-rent";
 import { isLending, UniqueID } from "../../utils";
 import BatchBar from "../batch-bar";
 import { CatalogueItem } from "../catalogue-item";
@@ -27,12 +27,16 @@ const RentCatalogueItem: React.FC<{
       onCheckboxChange={checkBoxChangeWrapped(nft)}
     >
       <LendingFields nft={nft} />
-      <ActionButton<Lending>
-        onClick={handleBatchModalOpen(nft)}
-        nft={nft}
-        title="Rent Now"
-        disabled={isChecked || !signer}
-      />
+      <div className="py-3 flex flex-auto items-end justify-center">
+        <div className="flex-initial">
+          <ActionButton<Lending>
+            onClick={handleBatchModalOpen(nft)}
+            nft={nft}
+            title="Rent Now"
+            disabled={isChecked || !signer}
+          />
+        </div>
+      </div>
     </CatalogueItem>
   );
 };

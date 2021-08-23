@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
-import { Button } from "../components/common/button";
-import { TransactionWrapper } from "../components/transaction-wrapper";
-import { Nft, Renting } from "../contexts/graph/classes";
-import { useObservable } from "../hooks/useObservable";
-import { useReturnIt } from "../hooks/contract/useReturnIt";
+import { Button } from "../common/button";
+import { TransactionWrapper } from "../transaction-wrapper";
+import { Nft, Renting } from "../../contexts/graph/classes";
+import { useObservable } from "../../hooks/useObservable";
+import { useReturnIt } from "../../hooks/contract/useReturnIt";
 import Modal from "./modal";
-import { useNFTApproval } from "../hooks/contract/useNFTApproval";
+import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
 
 type ReturnModalProps = {
   nfts: Renting[];

@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import MultipleBatchBar from "../../multiple-batch-bar";
 import { Lending, Renting } from "../../../contexts/graph/classes";
-import ClaimModal from "../../../modals/claim-modal";
-import ReturnModal from "../../../modals/return-modal";
-import StopLendModal from "../../../modals/stop-lend-modal";
+import ClaimModal from "../../modals/claim-modal";
+import ReturnModal from "../../modals/return-modal";
+import StopLendModal from "../../modals/stop-lend-modal";
 
 export const DashboardBatch: React.FC<{
   isReturnModalOpen: boolean;

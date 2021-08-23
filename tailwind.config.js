@@ -46,8 +46,10 @@ module.exports = {
           "rn-drop-orange": getShadow(orange),
           "rn-drop-purple": getShadow(purple),
           "rn-drop-grey": getShadow(grey),
+          "rn-drop-black": getShadow("black"),
           "rn-inset-orange": `inset 3px 3px 0 ${orange}`,
           "rn-one": "7px 7px 0 black",
+          "rn-one-purple": `7px 7px 0 ${purple}`,
         };
       },
     },
@@ -55,5 +57,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/aspect-ratio")],
 };

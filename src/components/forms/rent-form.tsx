@@ -1,9 +1,9 @@
-import { TextField } from "../components/common/text-field";
+import { TextField } from "../common/text-field";
 
-import ActionButton from "../components/common/action-button";
-import { Lending, Nft } from "../contexts/graph/classes";
+import ActionButton from "../common/action-button";
+import { Lending, Nft } from "../../contexts/graph/classes";
 import React from "react";
-import CommonInfo from "../modals/common-info";
+import ModalFields from "../modals/modal-fields";
 import {
   Formik,
   FormikErrors,
@@ -11,13 +11,13 @@ import {
   FieldArray,
   FormikBag,
 } from "formik";
-import { TransactionStateEnum } from "../types";
-import { StartRentNft } from "../hooks/contract/useStartRent";
-import { TransactionWrapper } from "../components/transaction-wrapper";
+import { TransactionStateEnum } from "../../types";
+import { StartRentNft } from "../../hooks/contract/useStartRent";
+import { TransactionWrapper } from "../transaction-wrapper";
 import { PaymentToken } from "@renft/sdk";
-import { TransactionStatus } from "../hooks/useTransactionWrapper";
+import { TransactionStatus } from "../../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
-import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
+import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -234,7 +234,7 @@ const ModalDialogSection: React.FC<{
     );
   };
   return (
-    <CommonInfo nft={item} key={item.id}>
+    <ModalFields nft={item} key={item.id}>
       <div className="modal-dialog-for">
         <div className="label">Rent Amount</div>
         <div className="dot"></div>
@@ -285,6 +285,6 @@ const ModalDialogSection: React.FC<{
           </div>
         }
       />
-    </CommonInfo>
+    </ModalFields>
   );
 };

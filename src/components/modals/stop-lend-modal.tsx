@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import { Button } from "../components/common/button";
-import { TransactionWrapper } from "../components/transaction-wrapper";
-import { Lending, Nft } from "../contexts/graph/classes";
-import { useObservable } from "../hooks/useObservable";
-import { useStopLend } from "../hooks/contract/useStopLend";
+import { Button } from "../common/button";
+import { TransactionWrapper } from "../transaction-wrapper";
+import { Lending, Nft } from "../../contexts/graph/classes";
+import { useObservable } from "../../hooks/useObservable";
+import { useStopLend } from "../../hooks/contract/useStopLend";
 import Modal from "./modal";
 
 type ReturnModalProps = {

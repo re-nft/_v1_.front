@@ -2,10 +2,10 @@ import React, { useCallback } from "react";
 
 import Modal from "./modal";
 
-import { Nft } from "../contexts/graph/classes";
-import { useNFTApproval } from "../hooks/contract/useNFTApproval";
+import { Nft } from "../../contexts/graph/classes";
+import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
 
-import { useStartLend } from "../hooks/contract/useStartLend";
+import { useStartLend } from "../../hooks/contract/useStartLend";
 import { LendForm, LendInputDefined } from "../forms/lend-form";
 
 type LendModalProps = {

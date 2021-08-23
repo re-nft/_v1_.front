@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import { Lending, Nft, Renting } from "../contexts/graph/classes";
-import BatchLendModal from "../modals/batch-lend";
+import BatchLendModal from "../components/modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
@@ -27,12 +27,16 @@ const LendCatalagoueItem: React.FC<{
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
     >
-      <ActionButton<Nft>
-        nft={nft}
-        title="Lend now"
-        onClick={handleStartLend(nft)}
-        disabled={checked}
-      />
+      <div className="py-3 flex flex-auto items-end justify-center">
+        <div className="flex-initial">
+          <ActionButton<Nft>
+            nft={nft}
+            title="Lend now"
+            onClick={handleStartLend(nft)}
+            disabled={checked}
+          />
+        </div>
+      </div>
     </CatalogueItem>
   );
 };

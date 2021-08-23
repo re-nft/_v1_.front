@@ -19,10 +19,24 @@ const tokens = [
 
 export const TokenSelect: React.FC<{
   selectedValue: PaymentToken;
-  handleChange: () => void;
-}> = ({ selectedValue, handleChange }) => {
+  handleChange: {
+    (e: React.ChangeEvent<unknown>): void;
+    <T = string | React.ChangeEvent<unknown>>(
+      field: T
+    ): T extends React.ChangeEvent<unknown>
+      ? void
+      : (e: string | React.ChangeEvent<unknown>) => void;
+  };
+  disabled?: boolean;
+  refName?: string;
+}> = ({ selectedValue, handleChange, disabled, refName }) => {
   return (
-    <Listbox value={selectedValue} onChange={handleChange}>
+    <Listbox
+      value={selectedValue}
+      onChange={handleChange}
+      disabled={disabled}
+      refName={refName}
+    >
       <Listbox.Label>Select Payment Token *</Listbox.Label>
       <Listbox.Button>{selectedValue}</Listbox.Button>
       <Listbox.Options>

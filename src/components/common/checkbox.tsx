@@ -27,14 +27,18 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   disabled,
 }) => {
   return (
-    <input
-      type="checkbox"
-      checked={checked}
-      // checkedIcon={<CheckedIcon />}
-      // icon={<CheckIcon />}
-      onChange={onChange}
-      disabled={disabled}
-    />
+    <div className="checkbox-container" onClick={onChange}>
+      <input
+        type="checkbox"
+        checked={checked}
+        className="checkbox"
+        // checkedIcon={<CheckedIcon />}
+        // icon={<CheckIcon />}
+        onChange={onChange}
+        disabled={disabled}
+      />
+      <span className="checkmark"></span>
+    </div>
   );
 };
 

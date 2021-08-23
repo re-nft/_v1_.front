@@ -11,6 +11,7 @@ import { useNftMetaState } from "../../hooks/useMetaState";
 import shallow from "zustand/shallow";
 import { Flipped, spring } from "react-flip-toolkit";
 import { CopyLink } from "../copy-link";
+import { ShortenPopover } from "../common/shorten-popover";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -99,9 +100,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       stagger={true}
     >
       <div
-        className={`nft ${checked ? "checked" : ""} ${
-          nft.isERC721 ? "nft__erc721" : "nft__erc1155"
-        }`}
+        className="text-base leading-tight flex flex-col bg-white border-4 border-black"
         key={nft.tokenId}
         data-item-id={nft.tokenId}
       >
@@ -115,9 +114,9 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               delayUntil={nft.id}
             >
               <>
-                <div className="nft__overlay">
+                <div className="flex justify-center space-x-2">
                   <a
-                    className="nft__link"
+                    className="flex-initial"
                     target="_blank"
                     rel="noreferrer"
                     href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`}
@@ -126,7 +125,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                   </a>
                   {openseaLink && (
                     <a
-                      className="nft__link"
+                      className="flex-initial"
                       target="_blank"
                       rel="noreferrer"
                       href={openseaLink}
@@ -140,32 +139,39 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               id={id}
               isAlreadyFavourited={!!isAlreadyFavourited}
             /> */}
-                  <div className="spacer" />
-                  <Checkbox
-                    checked={!!checked}
-                    onChange={onCheckboxChange}
-                    disabled={disabled || !signer}
-                  ></Checkbox>
+                  <div className="flex-1 flex justify-end justify-self-end">
+                    <Checkbox
+                      checked={!!checked}
+                      onChange={onCheckboxChange}
+                      disabled={disabled || !signer}
+                    ></Checkbox>
+                  </div>
                 </div>
-                <div className="nft__image">
+                <div className="border-b border-t border-black overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
                   <CatalogueItemDisplay
                     image={image}
                     description={description}
                   />
                 </div>
-                <div className="nft__name">
-                  {name}
-                  {knownContract && (
-                    <a className="nft__link" target="_blank" rel="noreferrer">
-                      <img
-                        src="/assets/nft-verified.png"
-                        className="nft__icon small"
-                      />
-                    </a>
-                  )}
-                  {isRentPage && (
-                    <CopyLink address={nft.address} tokenId={nft.tokenId} />
-                  )}
+                <div className="font-display text-xs leading-tight text-center py-2 px-4 flex flex-col justify-center items-center">
+                  <p className="flex-initial">{name}</p>
+                  <div className="flex flex-auto flex-row">
+                    {knownContract && (
+                      <a
+                        className="flex-initial p-2"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <img
+                          src="/assets/nft-verified.png"
+                          className="nft__icon small"
+                        />
+                      </a>
+                    )}
+                    {isRentPage && (
+                      <CopyLink address={nft.address} tokenId={nft.tokenId} />
+                    )}
+                  </div>
                 </div>
               </>
             </Flipped>
@@ -174,27 +180,22 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               shouldFlip={shouldFlip}
               delayUntil={nft.id}
             >
-              <>
+              <div className="px-2">
                 <CatalogueItemRow
                   text="Address"
-                  value={
-                    <a
-                      href={`https://etherscan.io/address/${nft.address}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {nft.address}
-                    </a>
-                  }
+                  value={<ShortenPopover longString={nft.address} />}
                 />
-                <CatalogueItemRow text="Token id" value={nft.tokenId} />
+                <CatalogueItemRow
+                  text="Token id"
+                  value={<ShortenPopover longString={nft.tokenId} />}
+                />
                 <CatalogueItemRow
                   text="Standard"
                   value={nft.isERC721 ? "721" : "1155"}
                 />
                 <CatalogueItemRow text="Amount" value={nft.amount} />
                 {children}
-              </>
+              </div>
             </Flipped>
           </>
         )}

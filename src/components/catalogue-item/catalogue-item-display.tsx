@@ -9,5 +9,11 @@ export const CatalogueItemDisplay: React.FC<{
 }> = ({ image, description }) => {
   if (!image) return <div className="no-img">NO IMG</div>;
   if (isVideo(image)) return <Player playsInline autoPlay src={image} muted />;
-  return <img alt={description} src={image} />;
+  return (
+    <img
+      alt={description}
+      src={image}
+      className="w-full h-full object-center object-cover lg:w-full lg:h-full"
+    />
+  );
 };

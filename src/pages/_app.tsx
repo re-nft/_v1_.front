@@ -1,6 +1,9 @@
 import "../style/index.scss";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import "../styles/globals.css";
+import "../styles/loader.css";
+import "../styles/nprogress.css";
+import "../styles/video-react.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";

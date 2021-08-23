@@ -23,7 +23,11 @@ export const CopyLink: React.FC<{
   }, [isCopied, copyLink, setError]);
 
   return (
-    <button onClick={setCopied} aria-label="copy">
+    <button
+      onClick={setCopied}
+      aria-label="copy"
+      className="h-1 w-1 p-2 text-gray-400 fill-current"
+    >
       <CopyIcon />
     </button>
   );

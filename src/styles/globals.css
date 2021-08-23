@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+
 .btn {
   @apply relative outline-none block;
   padding: 4px;
@@ -42,8 +44,8 @@
 
 .menu__item--active > div {
   @apply bg-rn-orange shadow-rn-inset-orange;
-  right:0;
-  bottom:0;
+  right: 0;
+  bottom: 0;
 }
 
 .skeleton {
@@ -86,4 +88,54 @@
   100% {
     background-position: 250px;
   }
+}
+
+.checkbox {
+  display: block;
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  visibility: hidden;
+}
+.checkbox-container {
+  display: block;
+  height: 32px;
+  position: relative;
+}
+
+/* Creating a custom checkbox based on demand */
+.checkmark {
+  position: relative;
+  display: block;
+  top: -32px;
+  left: 0;
+  background-color: black;
+  cursor: pointer;
+  box-sizing: border-box;
+  @apply transition duration-200 ease-in-out;
+  height: 32px;
+  width: 32px;
+
+}
+
+.checkmark::before {
+  content: " ";
+  position: absolute;
+  left: -4px;
+  bottom: 10px;
+  height: 24px;
+  width: 24px;
+  @apply transition duration-200 ease-in-out;
+  @apply bg-rn-green shadow-rn-drop-green;
+}
+
+.checkmark:hover::before {
+  @apply bg-rn-orange shadow-rn-drop-orange;
+}
+
+/* Specify the background color to be shown when checkbox is checked */
+.checkbox:checked  ~ .checkmark::before {
+  @apply bg-rn-orange shadow-rn-drop-orange;
 }

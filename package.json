@@ -21,6 +21,7 @@
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",
     "@renft/sdk": "2.2.2",
+    "@tailwindcss/aspect-ratio": "^0.2.1",
     "@ukstv/jazzicon-react": "1.0.0",
     "@welldone-software/why-did-you-render": "^6.2.0",
     "autoprefixer": "10.3.1",
