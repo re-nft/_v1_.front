@@ -86,10 +86,6 @@ class MyDocument extends Document {
           <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
           <link rel="manifest" href="/manifest.json" />
           <noscript>You need to enable JavaScript to run this app.</noscript>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
-            rel="stylesheet"
-          />
         </Head>
 
         <body className="relative">

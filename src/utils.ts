@@ -190,7 +190,7 @@ const bundleNfts = () => {
 };
 
 /**
- * Helps advance time on test blockhain to test claimColletaral and similar
+ * Helps advance time on test blockhain to test claimcollateral and similar
  * @param seconds
  */
 export const advanceTime = async (seconds: number): Promise<void> => {

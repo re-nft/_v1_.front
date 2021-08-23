@@ -10,9 +10,9 @@ import {
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
-const debug = createDebugger("app:contracts:useClaimColleteral");
+const debug = createDebugger("app:contracts:useClaimcollateral");
 
-export const useClaimColleteral = (): ((
+export const useClaimcollateral = (): ((
   nfts: Lending[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();

@@ -1,7 +1,7 @@
 import useClipboard from "react-use-clipboard";
 import React, { useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
-import { CopyIcon } from "./common/icons/copy";
+import { LinkIcon } from "@heroicons/react/solid";
 
 export const CopyLink: React.FC<{
   tokenId: string;
@@ -28,7 +28,7 @@ export const CopyLink: React.FC<{
       aria-label="copy"
       className="h-1 w-1 p-2 text-gray-400 fill-current"
     >
-      <CopyIcon />
+      <LinkIcon />
     </button>
   );
 };
