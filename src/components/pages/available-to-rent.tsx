@@ -31,7 +31,7 @@ const RentCatalogueItem: React.FC<{
         <ActionButton<Lending>
           onClick={handleBatchModalOpen(nft)}
           nft={nft}
-          title="Rent Now"
+          title="Rent"
           disabled={isChecked || !signer}
         />
       </div>

@@ -30,7 +30,7 @@ const LendCatalagoueItem: React.FC<{
       <div className="py-3 flex flex-auto items-end justify-center">
         <ActionButton<Nft>
           nft={nft}
-          title="Lend now"
+          title="Lend"
           onClick={handleStartLend(nft)}
           disabled={checked}
         />
