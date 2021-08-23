@@ -17,7 +17,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         type="checkbox"
         checked={checked}
         className="checkbox"
-        onChange={onChange}
         disabled={disabled}
       />
       <span className="checkmark"></span>

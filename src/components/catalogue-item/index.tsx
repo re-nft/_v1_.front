@@ -153,7 +153,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                     description={description}
                   />
                 </div>
-                <div className="font-display text-xs leading-tight text-center py-2 px-4 flex flex-col justify-center items-center">
+                <div className="font-display text-xs leading-tight text-center py-3 px-4 flex flex-col justify-center items-center">
                   <p className="flex-initial">{name}</p>
                   <div className="flex flex-auto flex-row">
                     {knownContract && (

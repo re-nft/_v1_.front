@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "./common/button";
 
 type BatchBarProps = {
   title: string;
@@ -13,22 +14,15 @@ const BatchBar: React.FC<BatchBarProps> = ({
   onClick,
   onCancel,
 }) => (
-  <div className="batch">
-    <div className="batch__inner">
-      <div
-        className="column"
-        style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
-      >
+  <div className="fixed bottom-0 left-0 right-0 w-full mx-auto z-10 px-4 bg-rn-purple  border-t-8 border-black">
+    <div className="flex content-between items-center p-6 ">
+      <div className="font-display text-white flex-1 text-lg leading-loose">
         {title}
       </div>
-      <div className="column">
-        <button className="nft__button red" onClick={onCancel}>
-          Cancel
-        </button>
+      <div className="flex-1 justify-end flex flex-row">
+        <Button onClick={onCancel} description="Cancel"></Button>
         <span style={{ width: "24px", display: "inline-flex" }} />
-        <button className="nft__button" onClick={onClick}>
-          {actionTitle}
-        </button>
+        <Button onClick={onClick} description={actionTitle}></Button>
       </div>
     </div>
   </div>
