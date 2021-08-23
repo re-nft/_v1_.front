@@ -180,7 +180,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               shouldFlip={shouldFlip}
               delayUntil={nft.id}
             >
-              <div className="px-2">
+              <div className="px-2 flex flex-auto flex-col">
                 <CatalogueItemRow
                   text="Address"
                   value={<ShortenPopover longString={nft.address} />}

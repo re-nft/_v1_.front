@@ -43,14 +43,12 @@ const RentingCatalogueItem: React.FC<{
         value={days.toString()}
       />
       <div className="py-3 flex flex-auto items-end justify-center">
-        <div className="flex-initial">
-          <ActionButton<Nft>
-            title="Return It"
-            disabled={isExpired}
-            nft={nft}
-            onClick={handleReturnNft(nft)}
-          />
-        </div>
+        <ActionButton<Nft>
+          title="Return It"
+          disabled={isExpired}
+          nft={nft}
+          onClick={handleReturnNft(nft)}
+        />
       </div>
     </CatalogueItem>
   );

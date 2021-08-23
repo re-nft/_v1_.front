@@ -28,7 +28,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
     <Modal open={open} handleClose={() => onClose()}>
       <div className="modal-dialog-section">
         <div className="modal-dialog-title">Do you want to claim?</div>
-        <div className="modal-dialog-button">
+        <div className="py-3 flex flex-auto items-end justify-center">
           <TransactionWrapper
             isLoading={t.isLoading}
             closeWindow={onClose}

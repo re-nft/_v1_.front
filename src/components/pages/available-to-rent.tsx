@@ -27,15 +27,13 @@ const RentCatalogueItem: React.FC<{
       onCheckboxChange={checkBoxChangeWrapped(nft)}
     >
       <LendingFields nft={nft} />
-      <div className="py-3 flex flex-auto items-end justify-center">
-        <div className="flex-initial">
-          <ActionButton<Lending>
-            onClick={handleBatchModalOpen(nft)}
-            nft={nft}
-            title="Rent Now"
-            disabled={isChecked || !signer}
-          />
-        </div>
+      <div className="py-3 flex flex-auto items-end justify-center content-end">
+        <ActionButton<Lending>
+          onClick={handleBatchModalOpen(nft)}
+          nft={nft}
+          title="Rent Now"
+          disabled={isChecked || !signer}
+        />
       </div>
     </CatalogueItem>
   );

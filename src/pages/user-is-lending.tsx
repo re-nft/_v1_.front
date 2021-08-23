@@ -32,14 +32,12 @@ const LendingCatalogueItem: React.FC<{
     >
       <LendingFields nft={nft} />
       <div className="py-3 flex flex-auto items-end justify-center">
-        <div className="flex-initial">
-          <ActionButton<Lending>
-            nft={nft}
-            disabled={hasRenting || isChecked}
-            title="Stop Lending"
-            onClick={handleClickNft}
-          />
-        </div>
+        <ActionButton<Lending>
+          nft={nft}
+          disabled={hasRenting || isChecked}
+          title="Stop Lending"
+          onClick={handleClickNft}
+        />
       </div>
     </CatalogueItem>
   );

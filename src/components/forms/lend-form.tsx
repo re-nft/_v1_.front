@@ -137,7 +137,7 @@ export const LendForm: React.FC<LendFormProps> = ({
               }}
             </FieldArray>
 
-            <div className="modal-dialog-button">
+            <div className="py-3 flex flex-auto items-end justify-center">
               {!isApproved && !isSubmitting && (
                 <TransactionWrapper
                   isLoading={approvalStatus.isLoading}

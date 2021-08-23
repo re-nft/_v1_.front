@@ -150,7 +150,7 @@ export const RentForm: React.FC<LendFormProps> = ({
               }}
             </FieldArray>
 
-            <div className="modal-dialog-button">
+            <div className="py-3 flex flex-auto items-end justify-center">
               {!isApproved && !isSubmitting && (
                 <TransactionWrapper
                   isLoading={approvalStatus.isLoading}
@@ -235,12 +235,7 @@ const ModalDialogSection: React.FC<{
   };
   return (
     <ModalFields nft={item} key={item.id}>
-      <div className="modal-dialog-for">
-        <div className="label">Rent Amount</div>
-        <div className="dot"></div>
-        {/* we can do this because checked items will have the right amount when we pass them here */}
-        <div className="label">{item.amount}</div>
-      </div>
+      <CatalogueItemRow text="Rent Amount" value={item.amount} />
       <TextField
         required
         label={renderItem()}

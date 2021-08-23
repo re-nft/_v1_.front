@@ -28,14 +28,12 @@ const LendCatalagoueItem: React.FC<{
       onCheckboxChange={checkBoxChangeWrapped(nft)}
     >
       <div className="py-3 flex flex-auto items-end justify-center">
-        <div className="flex-initial">
-          <ActionButton<Nft>
-            nft={nft}
-            title="Lend now"
-            onClick={handleStartLend(nft)}
-            disabled={checked}
-          />
-        </div>
+        <ActionButton<Nft>
+          nft={nft}
+          title="Lend now"
+          onClick={handleStartLend(nft)}
+          disabled={checked}
+        />
       </div>
     </CatalogueItem>
   );

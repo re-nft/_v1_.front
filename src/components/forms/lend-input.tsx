@@ -4,6 +4,7 @@ import { FormikErrors, FormikTouched } from "formik";
 import { TokenSelect } from "../common/token-select";
 import { LendInputProps } from "./lend-form";
 import { TextField } from "../common/text-field";
+import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 
 const voidFn = () => {
   // do nothing func
@@ -47,12 +48,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
     <div className="modal-dialog-section" key={lendingInput.key}>
       <ModalFields nft={lendingInput.nft}>
         {/* lendAmount for 721 is ignored */}
-        <div className="modal-dialog-for">
-          <div className="label">Available Amount</div>
-          <div className="dot"></div>
-          {/* we can do this because checked items will have the right amount when we pass them here */}
-          <div className="label">{lendingInput.amount}</div>
-        </div>
+        <CatalogueItemRow text="Available Amount" value={lendingInput.amount} />
         <TextField
           required
           label="Amount"
