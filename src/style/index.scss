@@ -17,3 +17,8 @@
 @import "video-react";
 
 @import "media";
+
+#react-select-filter-input, #react-select-sortby-input{
+    text-transform: uppercase;
+    color: black;
+}

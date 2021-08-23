@@ -9,8 +9,9 @@ const customStyles = {
     color: state.isSelected || state.isFocused ? "white" : "black",
     backgroundColor: state.isSelected || state.isFocused ? "black" : "white",
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided: any, state: any) => ({
     ...provided,
+    display: state.isFocused ? "none" : "block",
     color: "black",
   }),
   control: (provided: any, state: any) => ({
@@ -38,13 +39,7 @@ const customStyles = {
     borderRadius: 0,
     marginTop: "20px",
     border: "3px solid black",
-    boxShadow: `7px 7px black,
-    6px 6px 0 black,
-    5px 5px 0 black,
-    4px 4px 0 black,
-    3px 3px 0 black,
-    2px 2px 0 black,
-    1px 1px 0 black;`,
+    boxShadow: `7px 7px black`,
   }),
   menuList: (provided: any) => ({
     ...provided,
@@ -55,12 +50,13 @@ const customStyles = {
     const opacity = state.isDisabled ? 0.5 : 1;
     const transition = "opacity 300ms";
 
-    return { ...provided, opacity, transition };
+    return { ...provided, opacity, transition, textTransform: "uppercase" };
   },
   input: (provided: any, state: any) => ({
     ...provided,
     color: "black",
     borderColor: state.isFocused ? "purple" : "black",
+    textTransform: "uppercase",
     opacity: 1,
   }),
 };
@@ -108,15 +104,17 @@ export const CategorySelect: React.FC<{
 }> = ({ options, setValue, defaultValue, value, instanceId }) => {
   const onChange = useCallback(
     (option) => {
-      setValue(option?.value || "");
+      const value = option?.value;
+      setValue(value);
     },
     [setValue]
   );
-  if (options.length < 1) return null;
+
   return (
     //@ts-ignore
     <Select
       isClearable
+      isSearchable={false}
       placeholder={defaultValue.label}
       options={options}
       //@ts-ignore

@@ -13,7 +13,7 @@ const App: React.FC = ({ children }) => {
       <div className="content-wrapper mb-l">
         <Header />
       </div>
-      <div className="content-wrapper mb-l">
+      <div className="content-wrapper mb-l menu-wrapper">
         <Menu />
         <SearchMenu />
       </div>

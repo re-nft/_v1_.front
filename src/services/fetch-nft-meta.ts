@@ -227,7 +227,7 @@ export const fetchNFTsFromOpenSea = async (
       });
     })
     .catch((e) => {
-      //TODO add logging
+      console.log(e);
       return [];
     });
 };

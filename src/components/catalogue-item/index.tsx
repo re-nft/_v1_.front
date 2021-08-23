@@ -192,8 +192,10 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                   text="Standard"
                   value={nft.isERC721 ? "721" : "1155"}
                 />
-                <CatalogueItemRow text="Amount" value={nft.amount} />
+
                 {children}
+                {/* <CatalogueItemRow text="priceInUSD" value={nft.priceInUSD} /> */}
+                {/* <CatalogueItemRow text="collateralInUSD" value={nft.collateralInUSD} /> */}
               </>
             </Flipped>
           </>

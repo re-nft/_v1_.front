@@ -76,7 +76,7 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
           onClose={handleClose}
         />
       )}
-      <ItemWrapper>
+      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Nft) => (
           <LendCatalagoueItem
             nft={nft}

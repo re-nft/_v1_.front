@@ -265,11 +265,25 @@ const ModalDialogSection: React.FC<{
       />
       <CatalogueItemRow
         text={`Rent [${paymentToken}]`}
-        value={`${dailyRentPrice} ${` x ${
-          item.duration ? item.duration : 0
-        } days + ${Number(nftPrice)} x ${Number(item.amount)} = ${
-          totalRent ? totalRent : "? "
-        }`}`}
+        value={
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              overflow: "visible",
+            }}
+          >
+            <span>
+              &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
+              {item.duration ? item.duration : 0} days
+            </span>
+            <span>
+              + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+            </span>
+            <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
+          </div>
+        }
       />
     </CommonInfo>
   );

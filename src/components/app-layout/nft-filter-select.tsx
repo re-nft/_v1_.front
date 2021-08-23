@@ -34,9 +34,6 @@ export const NftFilterSelect: React.FC = () => {
   }, [filters, options]);
 
   const router = useRouter();
-  const instanceId = useMemo(() => {
-    return `filter-${router.pathname}`;
-  }, [router.pathname]);
 
   useEffect(() => {
     const handleStop = () => {
@@ -49,10 +46,9 @@ export const NftFilterSelect: React.FC = () => {
     };
   }, [router, setNftFilter]);
 
-  if (options.length < 1) return null;
   return (
     <CategorySelect
-      instanceId={instanceId}
+      instanceId={"filter"}
       value={value}
       options={options}
       setValue={setNftFilter}

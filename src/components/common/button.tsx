@@ -13,7 +13,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(
       <button
         //@ts-ignore
         ref={ref}
-        className={`nft__button small ${disabled ? "disabled" : ""}`}
+        className={`nft__button ${disabled ? "disabled" : ""}`}
         disabled={disabled}
         onClick={onClick}
         data-cy={datacy}

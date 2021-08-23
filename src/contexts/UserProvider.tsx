@@ -55,21 +55,21 @@ export const UserProvider: React.FC = ({ children }) => {
       : null;
   }, [providerOptions, hasWindow]);
 
-  const initState = useCallback(async (provider) => {
+  const initState = useCallback(async (provider: any) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
     const nname = name === "homestead" ? "mainnet" : name;
-    setNetworkName(nname);
-    const _signer = web3p.getSigner();
-    setSigner(_signer);
-    const address = await _signer
+    const signer = web3p.getSigner();
+    const address = await signer
       .getAddress()
       .then((t) => t.toLowerCase())
       .catch((e) => {
         // do nothing
         console.log(e);
       });
+    setNetworkName(nname);
+    setSigner(signer);
     setAddress(address || "");
     setProvider(provider);
     setWeb3Provider(web3p);
@@ -87,16 +87,12 @@ export const UserProvider: React.FC = ({ children }) => {
             .connect()
             .then((provider) => {
               resolve(provider);
+              return initState(provider);
             })
             .catch(() => {
               resolve(null);
             })
         )
-      ).pipe(
-        map((provider) => {
-          if (!provider) return EMPTY;
-          return from(initState(provider));
-        })
       );
     },
     [web3Modal, permissions, signer, initState]

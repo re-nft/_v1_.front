@@ -1,10 +1,11 @@
 .menu {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  align-content: flex-start;
-  width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    align-content: flex-start;
+
+    width: 100%;
 
   &__item {
     background: $purple;
@@ -38,45 +39,7 @@
         5px 5px 0 $orange-dark, 4px 4px 0 $orange-dark, 3px 3px 0 $orange-dark,
         2px 2px 0 $orange-dark, 1px 1px 0 $orange-dark;
     }
-
-    &:before {
-      content: "";
-      display: block;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 3px;
-      left: 3px;
-      z-index: -1;
-      padding: 4px;
-      background: black;
+    &.menu-wrapper {
+        align-items: center;
     }
-
-    &-active {
-      background: $orange;
-      color: $white;
-      box-shadow: inset 3px 3px 0 $orange-dark;
-      top: 6px;
-      left: 6px;
-      &:before {
-        top: -4px;
-        left: -4px;
-      }
-      &:hover {
-        box-shadow: inset 8px 8px 0 $orange-dark;
-      }
-    }
-  }
-
-  &.menu__search {
-    justify-content: flex-end;
-    .menu__item {
-      padding: 0;
-      background-color: white;
-      box-shadow: none;
-      &:before {
-        content: none;
-      }
-    }
-  }
 }

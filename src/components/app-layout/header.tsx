@@ -40,7 +40,7 @@ export const Header: React.FC = () => {
         <Button
           datacy="metamask-connect-button"
           onClick={connect}
-          description="Please connect your wallet!"
+          description="Connect"
         />
       ) : (
         <div className="header__wallet">

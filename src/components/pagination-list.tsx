@@ -70,7 +70,11 @@ export const PaginationList = <T extends Nft>({
     if (pageItems.length === 0 && newState.pageItems.length === 0) return;
     if (pageItems.length === 0 || newState.pageItems.length === 0)
       setState(newState);
-    else if (pageItems[0].id !== newState.pageItems[0].id) setState(newState);
+    else if (
+      pageItems.length !== newState.pageItems.length ||
+      pageItems[0].id !== newState.pageItems[0].id
+    )
+      setState(newState);
   }, [pageItems, newState]);
 
   const onPageControllerInit = useCallback(

@@ -58,9 +58,9 @@
     text-transform: uppercase;
   }
 
-  p {
-    margin-bottom: 16px;
-  }
+    p {
+         margin-bottom: 16px;
+    }
 }
 
 .main {
@@ -115,18 +115,15 @@
     margin-bottom: 32px;
   }
 
-  &.main-content {
-    flex-grow: 1;
-    display: flex;
-    border: 4px solid $black;
-    box-sizing: border-box;
-    box-shadow: 5px 5px 0 $black;
-    background-image: linear-gradient(
-      rgb(244, 62, 119) 0%,
-      rgb(104, 87, 159) 100%
-    );
-    z-index: 10;
-  }
+    &.main-content {
+        flex-grow: 1;
+        display: flex;
+        border: 4px solid $black;
+        box-sizing: border-box;
+        box-shadow: 7px 7px 0 $black;
+        background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
+        z-index:10;
+    }
 
   &.footer-content {
     line-height: 1;
@@ -185,6 +182,9 @@
       padding: 8px 18px;
       line-height: 1;
       box-shadow: 6px 6px 0 $black;
+    }
+    .nft__button {
+        margin-right: 3px;
     }
   }
 
