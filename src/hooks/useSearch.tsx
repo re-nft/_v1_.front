@@ -235,7 +235,7 @@ export const useSortOptions = (): CategoryOptions[] => {
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Colletaral", value: "lc", imageUrl: "" },
+      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };
