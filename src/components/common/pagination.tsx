@@ -19,8 +19,9 @@ const Pagination: React.FC<PaginationProps> = ({
   onSetPage,
   totalPages,
 }) => {
-  const [shadowPageNumber, setShadowPageNumber] =
-    useState<number | "">(currentPageNumber);
+  const [shadowPageNumber, setShadowPageNumber] = useState<number | "">(
+    currentPageNumber
+  );
   const [error, setError] = useState("");
   const onSetFirstPage = useCallback(() => onSetPage(1), [onSetPage]);
   const onSetLastPage = useCallback(

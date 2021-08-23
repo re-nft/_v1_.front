@@ -9,7 +9,7 @@
     "prod": "serve -s build",
     "build": "next build",
     "test": "jest test",
-    "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx' 'src/*.tsx' 'src/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx'",
     "analyze": "cross-env ANALYZE=true yarn build",
     "serve": "serve .next/analyze",
     "prepare": "husky install"
