@@ -86,7 +86,7 @@ export const Dashboard: React.FC = () => {
   if (!signer) {
     return (
       <PageLayout>
-        <div className="center content__message">
+        <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
       </PageLayout>
@@ -103,7 +103,7 @@ export const Dashboard: React.FC = () => {
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
       <PageLayout>
-        <div className="center content__message">
+        <div className="text-center text-lg text-white font-display py-32 leading-tight">
           You aren&apos;t lending or renting yet. To start lending, head to the
           lend tab.
         </div>

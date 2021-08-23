@@ -135,7 +135,7 @@ const UserRentings: React.FC = () => {
   if (!signer) {
     return (
       <RentSwitchWrapper>
-        <div className="center content__message">
+        <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
       </RentSwitchWrapper>

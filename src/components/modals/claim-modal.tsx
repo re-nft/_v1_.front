@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft, Lending } from "../../contexts/graph/classes";
-import { useClaimcollateral } from "../../hooks/contract/useClaimcollateral";
+import { useClaimcollateral } from "../../hooks/contract/useClaimCollateral";
 import { useObservable } from "../../hooks/useObservable";
 import Modal from "./modal";
 

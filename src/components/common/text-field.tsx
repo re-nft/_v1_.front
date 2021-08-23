@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Ref } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/solid";
 
 export const TextField: React.FC<{
@@ -40,8 +40,8 @@ export const TextField: React.FC<{
 
   return (
     <div
-      className="font-body relative border-2 border-black  px-3 py-2 shadow-sm focus-within:ring-1 focus-within:ring-rn-purple-dark focus-within:border-rn-purple-dark"
-      ref={ref}
+      className="font-body relative border-2 border-black  px-3 py-2 shadow-sm focus-within:ring-1 focus-within:ring-rn-purple focus-within:border-rn-purple"
+      ref={ref as Ref<HTMLDivElement>}
     >
       <label
         htmlFor={name}
@@ -50,7 +50,7 @@ export const TextField: React.FC<{
         {label}
       </label>
       <input
-        className="block w-full border-0 p-0 text-black placeholder-black focus:ring-0 sm:text-lg"
+        className="block w-full border-0 px-3 mt-4 py-1 text-black placeholder-black focus:ring-2 focus:outline-none focus:ring-rn-purple sm:text-lg"
         disabled={disabled}
         required={required}
         id={id}
@@ -68,7 +68,11 @@ export const TextField: React.FC<{
         </div>
       )}
 
-      {error && <p className="mt-2 text-sm text-rn-red">{helperText}</p>}
+      {error && (
+        <p className="mt-2 text-sm leading-tight text-rn-red text-right">
+          {helperText}
+        </p>
+      )}
     </div>
   );
 });

@@ -15,8 +15,8 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex flex-col py-4 ">
-      <div className="flex-1">
+    <div className="flex flex-col py-4 w-full">
+      <div className="flex-auto justify-self-end w-full justify-end">
         {title && (
           <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
         )}

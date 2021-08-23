@@ -182,7 +182,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)",
             }}
           >
-            <div className="flex mb-8 ">{children}</div>
+            <div className="flex mb-8 w-full ">{children}</div>
           </div>
         </div>
       </main>

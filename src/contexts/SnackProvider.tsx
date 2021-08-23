@@ -28,33 +28,36 @@ export const SnackAlertProvider: React.FC = ({ children }) => {
     setErrorShown(false);
   }, []);
 
-  const setError = useCallback((message: string, type: ErrorType) => {
-    const validMessages = [
-      // Tuple, first one is old matched message, second string is new message shown to user
-      [
-        "execution reverted: ERC20: transfer amount exceeds balance",
-        "Insufficient fund. Please check your balance.",
-      ],
-      ["Transaction is not successful!", "Transaction is not successful!"],
-      [
-        "User denied transaction signature.",
-        "User denied transaction signature.",
-      ],
-      ["Link copied to the clipboard ", ""],
-    ];
-    const contains = validMessages
-      .filter(([m]) => message.indexOf(m) > -1)
-      .map(([, newMessage]) => newMessage || message);
-    if (contains.length > 0) {
-      setErrorShown(true);
-      setErrorMessage(contains[0]);
-      setErrorType(type);
-    } else {
-      setErrorShown(true);
-      setErrorMessage("Something went wrong. Please try again!");
-      setErrorType("error");
-    }
-  }, []);
+  const setError = useCallback(
+    (message: string, type: ErrorType) => {
+      const validMessages = [
+        // Tuple, first one is old matched message, second string is new message shown to user
+        [
+          "execution reverted: ERC20: transfer amount exceeds balance",
+          "Insufficient fund. Please check your balance.",
+        ],
+        ["Transaction is not successful!", "Transaction is not successful!"],
+        [
+          "User denied transaction signature.",
+          "User denied transaction signature.",
+        ],
+        ["Link copied to the clipboard ", ""],
+      ];
+      const contains = validMessages
+        .filter(([m]) => message.indexOf(m) > -1)
+        .map(([, newMessage]) => newMessage || message);
+      if (contains.length > 0) {
+        setErrorShown(true);
+        setErrorMessage(contains[0]);
+        setErrorType(type);
+      } else {
+        setErrorShown(true);
+        setErrorMessage("Something went wrong. Please try again!");
+        setErrorType("error");
+      }
+    },
+    [setErrorShown, setErrorMessage, setErrorType]
+  );
 
   return (
     <SnackAlertContext.Provider

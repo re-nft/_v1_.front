@@ -50,7 +50,9 @@ const Profile: React.FC = () => {
 
   if (!signer) {
     return (
-      <div className="center content__message">Please connect your wallet!</div>
+      <div className="text-center text-lg text-white font-display py-32 leading-tight">
+        Please connect your wallet!
+      </div>
     );
   }
 
@@ -60,7 +62,7 @@ const Profile: React.FC = () => {
 
   return (
     <div className="flex relative flex-col py-4 min-h-screen w-full">
-      <div className="content__row profile-page">
+      <div className="profile-page">
         <div className="profile-header">
           <div className="avatar"></div>
           <div className="username">{userData?.name || "Unnamed"}</div>
