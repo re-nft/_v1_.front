@@ -10,25 +10,17 @@
   }
 }
 
-@media screen and (max-width: 1000px) {   
-    .menu {
-        justify-content: normal;
-        flex-wrap: wrap;
-        flex-direction: column;
-        align-items: center;
-    }
-    .menu__item {
-        margin: 12px 0;
-        width: 80%;
-    }
-
-    .main {
-        padding: 0 32px;
-    }
-    .leaderboard-leader {
-        margin: 0;
-        flex-direction: column;
-        align-items: center;
+@media screen and (max-width: 1000px) {
+  .menu {
+    justify-content: normal;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+  }
+  .menu__item {
+    margin: 12px 0;
+    width: 80%;
+  }
 
   .main {
     padding: 0 32px;
@@ -38,66 +30,75 @@
     flex-direction: column;
     align-items: center;
 
-    &-item {
-      margin-top: 60px;
+    .main {
+      padding: 0 32px;
+    }
+    .leaderboard-leader {
+      margin: 0;
+      flex-direction: column;
+      align-items: center;
 
-      &.first {
+      &-item {
         margin-top: 60px;
 
-        .result {
-          position: absolute;
-          top: 40px;
-          left: 140px;
+        &.first {
+          margin-top: 60px;
+
+          .result {
+            position: absolute;
+            top: 40px;
+            left: 140px;
+          }
+        }
+
+        &:last-child {
+          margin-bottom: 40px;
         }
       }
-
-      &:last-child {
-        margin-bottom: 40px;
-      }
     }
   }
-}
 
-@media screen and (max-width: 580px) {
-    .menu-wrapper{
-        flex-direction: column;
+  @media screen and (max-width: 580px) {
+    .menu-wrapper {
+      flex-direction: column;
     }
     .menu {
-        align-content: center;
+      align-content: center;
     }
-    .menu.menu__search  .menu__item {
-        display: flex;
-        justify-content: center;
+    .menu.menu__search .menu__item {
+      display: flex;
+      justify-content: center;
     }
     .main {
-        padding: 0 12px;
+      padding: 0 12px;
     }
 
-  .header {
-    flex-direction: column;
-    &__wallet {
-      margin-top: 1rem;
+    .header {
+      flex-direction: column;
+      &__wallet {
+        margin-top: 1rem;
+      }
     }
-  }
 
-  .modal-dialog {
-    min-width: auto;
-  }
-  .batch__inner {
-    flex-direction: column;
-  }
-  .dashboard-list-view {
-    .checkbox__dashboard {
-      margin: 5px;
+    .modal-dialog {
+      min-width: auto;
     }
-    .nft__button {
-      margin: 5px;
+    .batch__inner {
+      flex-direction: column;
     }
-  }
+    .dashboard-list-view {
+      .checkbox__dashboard {
+        margin: 5px;
+      }
+      .nft__button {
+        margin: 5px;
+      }
+    }
 
-  .pagination {
-    li {
-      margin: 0 4px;
+    .pagination {
+      li {
+        margin: 0 4px;
+      }
     }
   }
 }
