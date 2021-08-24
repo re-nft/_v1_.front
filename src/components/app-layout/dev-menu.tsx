@@ -14,13 +14,13 @@ export const DevMenu: React.FC = () => {
   return (
     <div>
       {!open && (
-        <div className="fixed inset-0 overflow-hidden z-30">
+        <div className="absolute inset-0 w-32 left-0 overflow-hidden z-30">
           <button
             onClick={() => {
               setOpen(true);
             }}
             className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm uppercase
-        text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Show mint sidebar
           </button>
