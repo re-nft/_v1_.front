@@ -20,7 +20,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({
         {title && (
           <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
         )}
-        {!title && <div style={{ height: "4em" }} />}
       </div>
       {children}
       <div className="flex-1">

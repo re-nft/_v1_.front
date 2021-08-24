@@ -58,47 +58,47 @@ export const RentingRow: React.FC<{
     : tooltip;
   return (
     <tr onClick={handleRowClicked}>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="pl-6 py-1 whitespace-nowrap">
         <Checkbox
           onChange={checkBoxChangeWrapped(rent)}
           checked={checked}
           disabled={isExpired || rent.relended}
         />
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <ShortenPopover
           longString={renting.lending.nftAddress}
         ></ShortenPopover>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <ShortenPopover longString={rent.tokenId}></ShortenPopover>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {renting.lending.lentAmount}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {formatCollateral(
           renting.lending.nftPrice * Number(renting.lending.lentAmount)
         )}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {renting.lending.dailyRentPrice}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {days} {days > 1 ? "days" : "day"}
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <CountDown endTime={expireDate.toDate().getTime()} />
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
           <Tooltip title={tooltip} aria-label={tooltip}>
             <span>

@@ -33,68 +33,68 @@ export const RentingTable: React.FC<{
       </h3>
       <div className="flex flex-col py-4">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6  lg:px-8">
             <div className="overflow-hidden border-2 border-white">
               <table className="min-w-full divide-y divide-white">
                 <thead>
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-2 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Batch Select
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Address
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       ID
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Amount
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       $
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Collateral
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Daily Price
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Duration
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Rented On
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Due Date
                     </th>

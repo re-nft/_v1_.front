@@ -21,7 +21,7 @@ export const LendingTable: React.FC<{
   checkedItems,
 }) => {
   return lendingItems.length !== 0 ? (
-    <div className="py-4 px-8">
+    <div className=" px-8">
       <h2 className="">
         <span sr-only="Lending"></span>
         <img src="/assets/Lending-headline.svg" className="h-12" />
@@ -39,68 +39,68 @@ export const LendingTable: React.FC<{
                   <tr>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-2 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Batch Select
                     </th>
 
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Address
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       ID
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Amount
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       $
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Collateral
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Daily Price
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       Duration
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider"
+                      className="px-1 py-1 text-left text-sm font-medium uppercase tracking-wider"
                     >
                       Original owner
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 text-left text-sm font-medium  uppercase tracking-wider"
                     >
                       &nbsp;
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-1  text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                     >
                       &nbsp;
                     </th>

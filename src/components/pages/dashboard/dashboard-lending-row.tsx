@@ -72,34 +72,34 @@ export const LendingRow: React.FC<{
     : "Click to stop lending this item.";
   return (
     <tr onClick={onRowClick}>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="pl-6 py-1 whitespace-nowrap">
         <Checkbox
           onChange={checkBoxChangeWrapped(lend)}
           checked={checked}
           disabled={hasRenting && !claimable}
         />
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <ShortenPopover longString={lending.nftAddress}></ShortenPopover>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <ShortenPopover longString={lending.tokenId}></ShortenPopover>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">{lend.amount}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">{lend.amount}</td>
+      <td className="px-1 py-1 whitespace-nowrap">
         {PaymentToken[lending.paymentToken ?? 0]}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {formatCollateral(lending.nftPrice * Number(lend.amount))}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">{lending.dailyRentPrice}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">{lending.dailyRentPrice}</td>
+      <td className="px-1 py-1 whitespace-nowrap">
         {lending.maxRentDuration} days
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         {lend.relended ? "renter" : "owner"}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 whitespace-nowrap">
         <Tooltip title={claimTooltip} aria-label={claimTooltip}>
           <span>
             <Button
@@ -110,7 +110,7 @@ export const LendingRow: React.FC<{
           </span>
         </Tooltip>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-1 py-1 whitespace-nowrap">
         <Tooltip title={lendTooltip} aria-label={lendTooltip}>
           <span>
             <Button

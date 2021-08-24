@@ -218,6 +218,7 @@ const ModalDialogSection: React.FC<{
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
+  const duration = item.lending.duration;
   const totalRent =
     (item.lending.nftPrice || 0) * Number(item.amount) +
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
@@ -239,8 +240,7 @@ const ModalDialogSection: React.FC<{
       <TextField
         required
         label={renderItem()}
-        value=""
-        // inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
+        value={duration}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}
