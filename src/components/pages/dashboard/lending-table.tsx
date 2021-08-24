@@ -1,5 +1,4 @@
 import React from "react";
-import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import { UniqueID } from "../../../utils";
 import { LendingRow } from "./dashboard-lending-row";
@@ -22,52 +21,114 @@ export const LendingTable: React.FC<{
   checkedItems,
 }) => {
   return lendingItems.length !== 0 ? (
-    <div className="dashboard-section">
-      <h2 className="dashboard-header dashboard-header__lending"></h2>
-      <h3 style={{ color: "white", marginBottom: "1em" }}>
-        Here you will find The NFTs That you are lending. These can also be
-        found in The Lending tab after you toggle The view.
+    <div className="py-4 px-8">
+      <h2 className="">
+        <span sr-only="Lending"></span>
+        <img src="/assets/Lending-headline.svg" className="h-12" />
+      </h2>
+      <h3>
+        Here you will find he NFTs that you are lending. These can also be found
+        in the Lending tab after you toggle the view.
       </h3>
-      <Table className="list">
-        <Thead>
-          <Tr>
-            <Th style={{ widTh: "7%" }}>Batch Select</Th>
+      <div className="flex flex-col py-4">
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="overflow-hidden border-2 border-white">
+              <table className="min-w-full divide-y divide-white">
+                <thead className="text-lg leading-loose text-left">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Batch Select
+                    </th>
 
-            <Th style={{ widTh: "15%" }}>Address</Th>
-            <Th style={{ widTh: "7%" }}>ID</Th>
-            <Th style={{ widTh: "5%" }}>Amount</Th>
-            <Th style={{ widTh: "5%" }}>$</Th>
-            <Th style={{ widTh: "11%" }}>Collateral</Th>
-            <Th style={{ widTh: "7%" }}>Daily Price</Th>
-            <Th style={{ widTh: "7%" }}>Duration</Th>
-            <Th style={{ widTh: "7%" }}>Original owner</Th>
-            <Th style={{ widTh: "10%" }} className="action-column">
-              &nbsp;
-            </Th>
-            <Th style={{ widTh: "10%" }} className="action-column">
-              &nbsp;
-            </Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {lendingItems.map((lend) => {
-            const id = lend.id;
-            const hasRenting = !!lend.renting;
-            const checked = !!checkedItems[id];
-            return (
-              <LendingRow
-                key={id}
-                hasRenting={hasRenting}
-                checked={checked}
-                lend={lend}
-                openClaimModal={toggleClaimModal}
-                openLendModal={toggleLendModal}
-                checkBoxChangeWrapped={checkBoxChangeWrapped}
-              ></LendingRow>
-            );
-          })}
-        </Tbody>
-      </Table>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Address
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      ID
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Amount
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      $
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Collateral
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Daily Price
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Duration
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium uppercase tracking-wider"
+                    >
+                      Original owner
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      &nbsp;
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      &nbsp;
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white">
+                  {lendingItems.map((lend) => {
+                    const id = lend.id;
+                    const hasRenting = !!lend.renting;
+                    const checked = !!checkedItems[id];
+                    return (
+                      <LendingRow
+                        key={id}
+                        hasRenting={hasRenting}
+                        checked={checked}
+                        lend={lend}
+                        openClaimModal={toggleClaimModal}
+                        openLendModal={toggleLendModal}
+                        checkBoxChangeWrapped={checkBoxChangeWrapped}
+                      ></LendingRow>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   ) : null;
 };

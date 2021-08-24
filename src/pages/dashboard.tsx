@@ -114,7 +114,7 @@ export const Dashboard: React.FC = () => {
   return (
     <PageLayout>
       {viewType === DashboardViewType.LIST_VIEW && (
-        <div className="dashboard-list-view">
+        <div className="flex flex-col space-y-2 text-white text-base">
           <Toggle
             toggleValue={showClaimed}
             onSwitch={toggleClaimSwitch}

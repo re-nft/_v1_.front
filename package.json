@@ -48,7 +48,6 @@
     "react-ga": "3.3.0",
     "react-helmet": "6.1.0",
     "react-select": "git://github.com/eenagy/react-select.git#33c6e46e84a0207d5a9a8356dee8a564cd550d27",
-    "react-super-responsive-table": "5.2.0",
     "react-use-clipboard": "1.0.7",
     "rxjs": "7.2.0",
     "tailwindcss": "2.2.7",

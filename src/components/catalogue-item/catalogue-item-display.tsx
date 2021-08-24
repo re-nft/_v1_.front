@@ -7,7 +7,10 @@ export const CatalogueItemDisplay: React.FC<{
   image?: string;
   description?: string;
 }> = ({ image, description }) => {
-  if (!image) return <div className="no-img">NO IMG</div>;
+  if (!image)
+    return (
+      <div className="flex items-center justify-center bg-gray-200">NO IMG</div>
+    );
   if (isVideo(image)) return <Player playsInline autoPlay src={image} muted />;
   return (
     <img

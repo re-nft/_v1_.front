@@ -125,7 +125,6 @@ export const AppLayout: React.FC = ({ children }) => {
                 ))}
                 <SearchMenu />
               </nav>
-              <DevMenu />
             </div>
 
             <Disclosure.Panel
@@ -186,6 +185,7 @@ export const AppLayout: React.FC = ({ children }) => {
           </div>
         </div>
       </main>
+      <DevMenu />
       <Footer />
     </div>
   );

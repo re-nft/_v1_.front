@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useMemo } from "react";
 import { Lending, Nft } from "../../../contexts/graph/classes";
 import { TimestampContext } from "../../../contexts/TimestampProvider";
 import { isClaimable } from "../../../hooks/useBatchItems";
-import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
@@ -72,29 +71,35 @@ export const LendingRow: React.FC<{
     ? "The item is rented out. You have to wait until the renter returns the item."
     : "Click to stop lending this item.";
   return (
-    <Tr onClick={onRowClick}>
-      <Td className="action-column">
+    <tr onClick={onRowClick}>
+      <td className="px-6 py-4 whitespace-nowrap">
         <Checkbox
           onChange={checkBoxChangeWrapped(lend)}
           checked={checked}
           disabled={hasRenting && !claimable}
         />
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <ShortenPopover longString={lending.nftAddress}></ShortenPopover>
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <ShortenPopover longString={lending.tokenId}></ShortenPopover>
-      </Td>
-      <Td className="column">{lend.amount}</Td>
-      <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{lend.amount}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {PaymentToken[lending.paymentToken ?? 0]}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         {formatCollateral(lending.nftPrice * Number(lend.amount))}
-      </Td>
-      <Td className="column">{lending.dailyRentPrice}</Td>
-      <Td className="column">{lending.maxRentDuration} days</Td>
-      <Td className="column">{lend.relended ? "renter" : "owner"}</Td>
-      <Td className="action-column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">{lending.dailyRentPrice}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {lending.maxRentDuration} days
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {lend.relended ? "renter" : "owner"}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <Tooltip title={claimTooltip} aria-label={claimTooltip}>
           <span>
             <Button
@@ -104,8 +109,8 @@ export const LendingRow: React.FC<{
             />
           </span>
         </Tooltip>
-      </Td>
-      <Td className="action-column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <Tooltip title={lendTooltip} aria-label={lendTooltip}>
           <span>
             <Button
@@ -115,7 +120,7 @@ export const LendingRow: React.FC<{
             />
           </span>
         </Tooltip>
-      </Td>
-    </Tr>
+      </td>
+    </tr>
   );
 };

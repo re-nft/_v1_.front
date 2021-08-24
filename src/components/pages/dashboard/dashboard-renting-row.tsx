@@ -1,7 +1,6 @@
 import moment from "moment";
 import React, { useCallback } from "react";
 import { Renting } from "../../../contexts/graph/classes";
-import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
@@ -58,44 +57,48 @@ export const RentingRow: React.FC<{
     ? "Please stop lending this item first. Then you can return it!"
     : tooltip;
   return (
-    <Tr onClick={handleRowClicked}>
-      <Td className="action-column">
+    <tr onClick={handleRowClicked}>
+      <td className="px-6 py-4 whitespace-nowrap">
         <Checkbox
           onChange={checkBoxChangeWrapped(rent)}
           checked={checked}
           disabled={isExpired || rent.relended}
         />
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <ShortenPopover
           longString={renting.lending.nftAddress}
         ></ShortenPopover>
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <ShortenPopover longString={rent.tokenId}></ShortenPopover>
-      </Td>
-      <Td className="column">{renting.lending.lentAmount}</Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {renting.lending.lentAmount}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         {formatCollateral(
           renting.lending.nftPrice * Number(renting.lending.lentAmount)
         )}
-      </Td>
-      <Td className="column">{renting.lending.dailyRentPrice}</Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        {renting.lending.dailyRentPrice}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         {days} {days > 1 ? "days" : "day"}
-      </Td>
+      </td>
 
-      <Td className="column">
+      <td className="px-6 py-4 whitespace-nowrap">
         {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
-      </Td>
-      <Td className="column">
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
         <CountDown endTime={expireDate.toDate().getTime()} />
-      </Td>
+      </td>
 
-      <Td className="action-column">
+      <td className="px-6 py-4 whitespace-nowrap">
         {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
           <Tooltip title={tooltip} aria-label={tooltip}>
             <span>
@@ -107,7 +110,7 @@ export const RentingRow: React.FC<{
             </span>
           </Tooltip>
         )}
-      </Td>
-    </Tr>
+      </td>
+    </tr>
   );
 };

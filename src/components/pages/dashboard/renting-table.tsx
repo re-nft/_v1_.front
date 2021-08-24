@@ -1,4 +1,3 @@
-import { Table, Thead, Tbody, Tr, Th } from "react-super-responsive-table";
 import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
 import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
@@ -22,49 +21,109 @@ export const RentingTable: React.FC<{
   currentAddress,
 }) => {
   return rentingItems.length !== 0 ? (
-    <div className="dashboard-section">
-      <h2 className="dashboard-header dashboard-header__renting"></h2>
-      <h3 style={{ color: "white", marginBottom: "1em" }}>
+    <div className="py-4 px-8">
+      <h2 className="">
+        <span sr-only="Renting"></span>
+        <img src="/assets/Renting-headline.svg" className="h-12" />
+      </h2>
+
+      <h3>
         Here you will find The NFTs That you are renting. These can also be
         found in The renting tab, after you toggle The view.
       </h3>
-      <Table className="list">
-        <Thead>
-          <Tr>
-            <Th style={{ widTh: "7%" }}>Batch Select</Th>
-            <Th style={{ widTh: "15%" }}>Address</Th>
-            <Th style={{ widTh: "5%" }}>ID</Th>
-            <Th style={{ widTh: "5%" }}>Amount</Th>
-            <Th style={{ widTh: "7%" }}>$</Th>
-            <Th style={{ widTh: "7%" }}>Collateral</Th>
-            <Th style={{ widTh: "7%" }}>Daily Price</Th>
-            <Th style={{ widTh: "7%" }}>Duration</Th>
-            <Th style={{ widTh: "11%" }}>Rented On</Th>
-            <Th style={{ widTh: "7%" }}>Due Date</Th>
+      <div className="flex flex-col py-4">
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="overflow-hidden border-2 border-white">
+              <table className="min-w-full divide-y divide-white">
+                <thead>
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Batch Select
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Address
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      ID
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Amount
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      $
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Collateral
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Daily Price
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Duration
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Rented On
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-sm font-medium  uppercase tracking-wider"
+                    >
+                      Due Date
+                    </th>
 
-            <Th style={{ widTh: "20%" }} className="action-column">
-              &nbsp;
-            </Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {rentingItems.map((rent: Renting & { relended: boolean }) => {
-            const checked = !!checkedItems[rent.id];
-            const isExpired = nftReturnIsExpired(rent);
-            return (
-              <RentingRow
-                checked={checked}
-                rent={rent}
-                key={rent.id}
-                openModal={toggleReturnModal}
-                currentAddress={currentAddress}
-                checkBoxChangeWrapped={checkBoxChangeWrapped}
-                isExpired={isExpired}
-              ></RentingRow>
-            );
-          })}
-        </Tbody>
-      </Table>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white">
+                  {rentingItems.map((rent: Renting & { relended: boolean }) => {
+                    const checked = !!checkedItems[rent.id];
+                    const isExpired = nftReturnIsExpired(rent);
+                    return (
+                      <RentingRow
+                        checked={checked}
+                        rent={rent}
+                        key={rent.id}
+                        openModal={toggleReturnModal}
+                        currentAddress={currentAddress}
+                        checkBoxChangeWrapped={checkBoxChangeWrapped}
+                        isExpired={isExpired}
+                      ></RentingRow>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   ) : null;
 };

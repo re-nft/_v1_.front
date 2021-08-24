@@ -1,5 +1,3 @@
-import "../style/index.scss";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import "../styles/globals.css";
 import "../styles/loader.css";
 import "../styles/nprogress.css";

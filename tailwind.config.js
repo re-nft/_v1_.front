@@ -50,6 +50,7 @@ module.exports = {
           "rn-inset-orange": `inset 3px 3px 0 ${orange}`,
           "rn-one": "7px 7px 0 black",
           "rn-one-purple": `7px 7px 0 ${purple}`,
+          "rn-one-white": `7px 7px 0 white`,
         };
       },
     },
