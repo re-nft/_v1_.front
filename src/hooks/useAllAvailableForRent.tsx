@@ -11,7 +11,7 @@ import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
-const fetchRentings = () => {
+export const fetchRentings = () => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
     throw new Error("RENFT_API is not defined");
   }

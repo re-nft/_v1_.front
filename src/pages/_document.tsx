@@ -86,6 +86,26 @@ class MyDocument extends Document {
           <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
           <link rel="manifest" href="/manifest.json" />
           <noscript>You need to enable JavaScript to run this app.</noscript>
+          <meta property="og:type" content="website" key="og:type" />
+
+          <meta property="og:title" content="reNFT" key="og:title" />
+          <meta
+            property="og:description"
+            content="reNFT - Peer to Peer NFT Rentals"
+            key="og:description"
+          />
+
+          <meta
+            property="twitter:card"
+            key="twitter:card"
+            content="summary_large_image"
+          />
+          <meta property="twitter:title" key="twitter:title" content="reNFT" />
+          <meta
+            property="twitter:description"
+            key="twitter:description"
+            content="reNFT - Peer to Peer NFT Rentals"
+          />
         </Head>
 
         <body className="relative">

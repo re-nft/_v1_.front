@@ -90,7 +90,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
           nfts={checkedLendingItems}
         />
       )}
-      <ItemWrapper>
+      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
         {currentPage.map((nft: Lending) => (
           <LendingCatalogueItem
             nft={nft}

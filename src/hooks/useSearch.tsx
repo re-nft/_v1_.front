@@ -49,7 +49,7 @@ export const sortByDailyRentPrice =
     b: T & { priceInUSD: number; collateralInUSD: number }
   ) => {
     const result = compare(a.priceInUSD, b.priceInUSD);
-    return dir === "desc" ? result : result * -1;
+    return dir !== "desc" ? result : result * -1;
   };
 
 export const sortByCollateral =
@@ -59,7 +59,7 @@ export const sortByCollateral =
     b: T & { priceInUSD: number; collateralInUSD: number }
   ) => {
     const result = compare(a.collateralInUSD, b.collateralInUSD);
-    return dir === "desc" ? result : result * -1;
+    return dir !== "desc" ? result : result * -1;
   };
 
 export const sortByDuration =
@@ -115,9 +115,10 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     ) => {
       if (!filter) return items;
       const category = categories.get(filter);
-      return items.filter((item) => {
+      const filteredItems = items.filter((item) => {
         return category?.has(item.nId);
       });
+      return filteredItems;
     },
     [categories]
   );
@@ -186,7 +187,7 @@ export interface CategoryOptions {
   imageUrl: string;
 }
 
-export const useSearchOptions = () => {
+export const useSearchOptions = (): CategoryOptions[] => {
   const metas = useNftMetaState(
     useCallback((state) => state.metas, []),
     shallow
@@ -228,13 +229,13 @@ export const useSearchOptions = () => {
   }, [keys, metas, activeNfts]);
 };
 
-export const useSortOptions = () => {
+export const useSortOptions = (): CategoryOptions[] => {
   return useMemo(() => {
     return [
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest collateral", value: "lc", imageUrl: "" },
+      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };

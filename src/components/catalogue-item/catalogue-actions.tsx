@@ -19,11 +19,10 @@ export const CatalogueActions: React.FC<{
   const currentAddress = useContext(CurrentAddressWrapper);
   const { userData, calculatedUsersVote } = useContext(GraphContext);
   const [inFavorites, setInFavorites] = useState<boolean>();
-  const [currentVote, setCurrentVote] =
-    useState<{
-      downvote?: number;
-      upvote?: number;
-    }>();
+  const [currentVote, setCurrentVote] = useState<{
+    downvote?: number;
+    upvote?: number;
+  }>();
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, address, tokenId)
       .then((resp: boolean) => {

@@ -50,12 +50,13 @@ const customStyles = {
     const opacity = state.isDisabled ? 0.5 : 1;
     const transition = "opacity 300ms";
 
-    return { ...provided, opacity, transition };
+    return { ...provided, opacity, transition, textTransform: "uppercase" };
   },
   input: (provided: any, state: any) => ({
     ...provided,
     color: "black",
     borderColor: state.isFocused ? "purple" : "black",
+    textTransform: "uppercase",
     opacity: 1,
   }),
 };
@@ -103,14 +104,17 @@ export const CategorySelect: React.FC<{
 }> = ({ options, setValue, defaultValue, value, instanceId }) => {
   const onChange = useCallback(
     (option) => {
-      setValue(option?.value || "");
+      const value = option?.value;
+      setValue(value);
     },
     [setValue]
   );
+
   return (
     //@ts-ignore
     <Select
       isClearable
+      isSearchable={false}
       placeholder={defaultValue.label}
       options={options}
       //@ts-ignore

@@ -11,7 +11,6 @@ const nextConfig = {
   images: {
     disableStaticImages: true,
   },
-  //webpack5: false
 };
 
 module.exports = withBundleAnalyzer(nextConfig);

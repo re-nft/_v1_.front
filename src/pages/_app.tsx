@@ -6,7 +6,6 @@ import Head from "next/head";
 import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";
 import { AppLayout } from "../components/app-layout";
-import Helmet from "react-helmet";
 import type { AppProps } from "next/app";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
@@ -26,6 +25,11 @@ if (typeof window !== "undefined") {
     testMode: window.location.hostname !== "dapp.renft.io",
   });
 }
+
+const origin =
+  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === NetworkName.mainnet
+    ? "https://dapp.renft.io"
+    : "https://staging.dapp.renft.io";
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
@@ -66,7 +70,18 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>ReNFT</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Helmet title="ReNFT" />
+        <meta property="og:url" content={origin} key="og:url" />
+        <meta property="twitter:url" key="twitter:url" content={origin} />
+        <meta
+          property="twitter:image"
+          key="twitter:image"
+          content={`${origin}/assets/seo.jpg`}
+        />
+        <meta
+          property="og:image"
+          content={`${origin}/assets/seo.jpg`}
+          key="og:image"
+        />
       </Head>
 
       <StateProvider>
