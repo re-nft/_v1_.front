@@ -12,7 +12,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   onSwitch,
   toggleValue,
   title,
-  children
+  children,
 }) => {
   return (
     <div className="content">

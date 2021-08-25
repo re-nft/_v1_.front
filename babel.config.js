@@ -1,4 +1,3 @@
-
 module.exports = function (api) {
   const isServer = api.caller((caller) => caller && caller.isServer);
   const isCallerDevelopment = api.caller((caller) => caller && caller.isDev);
@@ -11,13 +10,13 @@ module.exports = function (api) {
           importSource:
             !isServer && isCallerDevelopment
               ? "@welldone-software/why-did-you-render"
-              : "react"
-        }
-      }
-    ]
+              : "react",
+        },
+      },
+    ],
   ];
 
   return {
-    presets
+    presets,
   };
 };

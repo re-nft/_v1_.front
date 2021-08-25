@@ -22,14 +22,14 @@ export const RentingRow: React.FC<{
   checkBoxChangeWrapped,
   currentAddress,
   isExpired,
-  openModal
+  openModal,
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
     checkBoxChangeWrapped(rent)();
     openModal(true);
   }, [checkBoxChangeWrapped, openModal, rent]);
-  
+
   const handleRowClicked = useCallback(() => {
     if (isExpired || rent.relended) return;
     checkBoxChangeWrapped(rent)();

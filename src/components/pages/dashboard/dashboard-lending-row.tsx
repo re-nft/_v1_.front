@@ -22,7 +22,7 @@ export const LendingRow: React.FC<{
   checked,
   hasRenting,
   openLendModal,
-  openClaimModal
+  openClaimModal,
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);

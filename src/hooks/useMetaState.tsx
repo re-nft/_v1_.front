@@ -23,10 +23,7 @@ type NftMetaState = {
   fetchReadyIPFS: Nft[];
   setFetchReady: (items: Nft[]) => void;
   setIPFSResult: (items: NftTokenMeta) => void;
-  setOpenseaResult: (
-    items: NftTokenMeta[],
-    notFounds: NftTokenMeta[]
-  ) => void;
+  setOpenseaResult: (items: NftTokenMeta[], notFounds: NftTokenMeta[]) => void;
 };
 
 const preloadImages = (metas: MetaLoading[]) => {
@@ -51,7 +48,7 @@ export const useNftMetaState = create<NftMetaState>(
               if (!state.metas[nft.id]) {
                 state.metas[nft.nId] = {
                   nId: nft.nId,
-                  loading: true
+                  loading: true,
                 };
                 state.nfts.push(nft);
                 state.fetchReadyOpenSea.push(nft);
@@ -64,12 +61,12 @@ export const useNftMetaState = create<NftMetaState>(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
             founds.map((meta) => {
-                state.metas[meta.nId].loading = false;
-                state.metas[meta.nId].name = meta.name;
-                state.metas[meta.nId].image = meta.image;
-                state.metas[meta.nId].description = meta.description;
-                state.metas[meta.nId].collection = meta.collection;
-                state.metas[meta.nId].openseaLink = meta.openseaLink;
+              state.metas[meta.nId].loading = false;
+              state.metas[meta.nId].name = meta.name;
+              state.metas[meta.nId].image = meta.image;
+              state.metas[meta.nId].description = meta.description;
+              state.metas[meta.nId].collection = meta.collection;
+              state.metas[meta.nId].openseaLink = meta.openseaLink;
             });
             const foundSet = new Set(founds.map((f) => f.nId));
             state.fetchReadyOpenSea = state.fetchReadyOpenSea.filter(
@@ -91,7 +88,7 @@ export const useNftMetaState = create<NftMetaState>(
             );
             state.keys.push(meta.nId);
           })
-        )
+        ),
     }),
     "meta-store"
   )
@@ -154,7 +151,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyOpenSea]);
+  }, [fetchReadyOpenSea, setOpenseaResult]);
 
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
@@ -175,7 +172,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyIPFS, nfts]);
+  }, [fetchReadyIPFS, nfts, setIPFSResult]);
 
   return useCallback(
     (items: Nft[]) => {
@@ -184,12 +181,12 @@ export const useFetchMeta = () => {
       items.forEach((nft) => {
         if (!metas[nft.nId]) {
           fetching.push({
-            ...nft
+            ...nft,
           });
         }
       });
       if (fetching.length > 0) setFetchReady(fetching);
     },
-    [metas]
+    [metas, setFetchReady]
   );
 };

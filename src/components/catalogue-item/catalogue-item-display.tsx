@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 // @ts-ignore
 import { Player } from "video-react";
 import { isVideo } from "../../utils";

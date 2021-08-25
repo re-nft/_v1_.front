@@ -19,7 +19,7 @@ export const LendingTable: React.FC<{
   toggleClaimModal,
   toggleLendModal,
   checkBoxChangeWrapped,
-  checkedItems
+  checkedItems,
 }) => {
   return lendingItems.length !== 0 ? (
     <div className="dashboard-section">

@@ -4,7 +4,6 @@ import { ReNFT } from "@renft/sdk";
 import UserContext from "../../contexts/UserProvider";
 import { useContractAddress } from "./useContractAddress";
 
-
 export const useSDK = (): ReNFT | undefined => {
   const { signer } = useContext(UserContext);
   const contractAddress = useContractAddress();

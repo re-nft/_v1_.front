@@ -11,9 +11,8 @@ export type NftTokenMeta = {
     name: string;
     description: string;
     imageUrl: string;
-  }
+  };
 };
-
 
 export type NftToken = {
   address: Address;

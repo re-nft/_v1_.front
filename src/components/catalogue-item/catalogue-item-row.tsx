@@ -5,11 +5,13 @@ export type CatalogueItemRowProps = {
   value: React.ReactChild;
 };
 
-export const CatalogueItemRow: React.FC<CatalogueItemRowProps> = ({ text, value }) => (
+export const CatalogueItemRow: React.FC<CatalogueItemRowProps> = ({
+  text,
+  value,
+}) => (
   <div className="nft__meta_row">
     <div className="nft__meta_title">{text}</div>
     <div className="nft__meta_dot"></div>
     <div className="nft__meta_value">{value}</div>
   </div>
 );
-

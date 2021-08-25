@@ -14,18 +14,18 @@ const clientCredentials = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDERID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 if (!firebase.apps.length) {
   firebase.initializeApp(clientCredentials);
   // Check that `window` is in scope for the analytics module!
   //if (typeof window !== "undefined") {
-    // Enable analytics. https://firebase.google.com/docs/analytics/get-started
-    // if ("measurementId" in clientCredentials) {
-    //   firebase.analytics();
-    //   firebase.performance();
-    // }
+  // Enable analytics. https://firebase.google.com/docs/analytics/get-started
+  // if ("measurementId" in clientCredentials) {
+  //   firebase.analytics();
+  //   firebase.performance();
+  // }
   //}
 }
 

@@ -1,3 +1,3 @@
-import AvailableToRent from './rent'
+import AvailableToRent from "./rent";
 
 export default AvailableToRent;

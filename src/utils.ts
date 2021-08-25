@@ -38,7 +38,7 @@ const e20abi = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  "event Transfer(address indexed from, address indexed to, uint amount)"
+  "event Transfer(address indexed from, address indexed to, uint amount)",
 ];
 
 export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
@@ -203,7 +203,7 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   }
 };
 
-export const getDistinctItems = <T extends Object>(
+export const getDistinctItems = <T extends Record<any, unknown>>(
   nfts: T[],
   property: keyof T
 ): T[] => {
@@ -232,7 +232,7 @@ export const nftReturnIsExpired = (rent: Renting): boolean => {
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,
-  GREATER = 1
+  GREATER = 1,
 }
 export const sortNfts = (
   a: { tokenId: string; isERC721: boolean },
@@ -260,7 +260,7 @@ export const mapAddRelendedField =
   (ids: Set<string>) => (l: Lending | Renting) => {
     return {
       ...l,
-      relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+      relended: ids.has(`${l.nftAddress}:${l.tokenId}`),
     };
   };
 export const mapToIds = (items: Renting[] | Lending[]) => {
@@ -281,7 +281,7 @@ export const isDegenerateNft = async (
   if (!provider) return true;
 
   const abi165 = [
-    "supportsInterface(bytes4 interfaceID) external view returns (bool)"
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
   ];
   const contract = new ethers.Contract(address, abi165, provider);
   let isDegenerate = true;
@@ -306,9 +306,12 @@ export const isVideo = (image: string | undefined) =>
   image?.endsWith("avi") ||
   image?.endsWith("flv");
 
-export const hasDifference = (a: Record<string, unknown> | unknown[], b: Record<string, unknown> | unknown[]) => {
+export const hasDifference = (
+  a: Record<string, unknown> | unknown[],
+  b: Record<string, unknown> | unknown[]
+) => {
   const difference = diffJson(a, b, {
-    ignoreWhitespace: true
+    ignoreWhitespace: true,
   });
   //const difference = true;
   if (

@@ -49,7 +49,6 @@ export const buildStaticIPFS_URL = (matched: string[]): string => {
   return `${IPFSGateway}${cid}${path}`;
 };
 
-
 export const normalizeTokenUri = async (nft: Nft): Promise<string> => {
   let tokenURI: string = nft.tokenURI;
   const isWeirdBaseURL = matchWeirdBaseURL(tokenURI);

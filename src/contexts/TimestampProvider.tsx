@@ -3,7 +3,7 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";
@@ -37,7 +37,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
       );
     }
     return EMPTY;
-  }, [provider, timeStamp]);
+  }, [provider]);
 
   useEffect(() => {
     const cancel = getTimestamp().subscribe((timestamp) => {

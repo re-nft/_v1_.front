@@ -6,20 +6,14 @@ import { TransactionHash, TransactionStateEnum } from "../types";
 import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 
 import UserContext from "./UserProvider";
-import {
-  catchError,
-  EMPTY,
-  from,
-  map,
-  Observable,
-  of,
-  zipAll
-} from "rxjs";
+import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
 import { ethers } from "ethers";
 import { ErrorType, SnackAlertContext } from "./SnackProvider";
 
 type TransactionStateType = {
-  setHash: (h: TransactionHash | TransactionHash[]) => Observable<[boolean, boolean]>;
+  setHash: (
+    h: TransactionHash | TransactionHash[]
+  ) => Observable<[boolean, boolean]>;
   getHashStatus: (key: string) => Observable<[boolean, boolean]>;
 };
 
@@ -29,7 +23,7 @@ const TransactionStateDefault: TransactionStateType = {
   },
   getHashStatus: () => {
     throw new Error("must be implemented");
-  }
+  },
 };
 
 export const TransactionStateContext = createContext<TransactionStateType>(
@@ -102,10 +96,10 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         receipts.filter(transactionSucceeded(TransactionStateEnum.PENDING))
           .length > 0;
       // TODO this is where state management will come in to make this easy
-      if(hasFailure) setError("Transaction is not successful!", "warning")
+      if (hasFailure) setError("Transaction is not successful!", "warning");
       return [hasFailure, hasPending];
     },
-    []
+    [setError]
   );
 
   const getHashStatus = useCallback(
@@ -125,18 +119,20 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
               hashes: state[key].hashes,
               receipts,
               hasFailure,
-              hasPending
-            }
+              hasPending,
+            },
           }));
-          if(hasFailure) setError("Transaction is not successful!", "warning")
+          if (hasFailure) setError("Transaction is not successful!", "warning");
           return [hasFailure, hasPending];
         })
       );
     },
-    [getTransactionsStatus, transactions, waitForTransactions, provider]
+    [getTransactionsStatus, transactions, provider, setError]
   );
   const setHash = useCallback(
-    (h: TransactionHash | TransactionHash[]): Observable<[boolean, boolean]> => {
+    (
+      h: TransactionHash | TransactionHash[]
+    ): Observable<[boolean, boolean]> => {
       if (!provider) {
         console.warn("cannot set transaction hash. no provider");
         return of([false, false]);
@@ -148,8 +144,8 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
           hashes,
           receipts: [],
           hasFailure: false,
-          hasPending: true
-        }
+          hasPending: true,
+        },
       }));
       const key = hashes[0];
 
@@ -162,14 +158,14 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
               hashes: state[key].hashes,
               receipts,
               hasFailure,
-              hasPending
-            }
+              hasPending,
+            },
           }));
           return [hasFailure, hasPending];
         })
       );
     },
-    [getTransactionsStatus, provider, waitForTransactions]
+    [getTransactionsStatus, provider, setError]
   );
 
   return (

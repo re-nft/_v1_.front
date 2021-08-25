@@ -4,7 +4,7 @@ import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { LendInputDefined } from "../../forms/lend-form";
@@ -72,11 +72,11 @@ export const useStartLend = (): ((
         dailyRentPrices: ${dailyRentPrices}
         nftPrice: ${nftPrice}
         tokens: ${pmtTokens}
-        `
+        `,
         }
       );
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
   return startLend;
 };

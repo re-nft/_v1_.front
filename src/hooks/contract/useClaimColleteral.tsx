@@ -6,7 +6,7 @@ import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
@@ -28,7 +28,7 @@ export const useClaimColleteral = (): ((
       const params: [string[], BigNumber[], BigNumber[]] = [
         sortedNfts.map((nft) => nft.address),
         sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId))
+        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId)),
       ];
       debug(
         "Claim modal addresses ",
@@ -49,7 +49,7 @@ export const useClaimColleteral = (): ((
         Claim modal lendingIds: ${sortedNfts.map(
           (nft) => nft.renting?.lendingId
         )}
-        `
+        `,
       });
     },
     [sdk, transactionWrapper]

@@ -11,7 +11,7 @@ import { ContractContext } from "../../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "../useObservable";
@@ -99,7 +99,7 @@ export const useStartRent = (): {
     if (approvalStatus.isLoading) return false;
     if (!approvals) return true;
     return approvals?.length < 1;
-  }, [approvals, approvalStatus.isLoading]);
+  }, [approvals, approvalStatus.isLoading, isCheckLoading]);
 
   useEffect(() => {
     if (approvalStatus.status === TransactionStateEnum.SUCCESS) {
@@ -120,7 +120,7 @@ export const useStartRent = (): {
         )
       );
     }
-  }, [approvals, contractAddress]);
+  }, [approvals, contractAddress, setObservable, transactionWrapper]);
 
   const startRent = useCallback(
     (nfts: StartRentNft[]) => {
@@ -151,11 +151,11 @@ export const useStartRent = (): {
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
-          `
+          `,
         }
       );
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
 
   return {
@@ -164,7 +164,7 @@ export const useStartRent = (): {
     handleApproveAll,
     isApproved,
     approvalStatus: {
-      ...approvalStatus
-    }
+      ...approvalStatus,
+    },
   };
 };

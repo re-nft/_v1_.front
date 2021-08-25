@@ -19,7 +19,7 @@ export const RentingTable: React.FC<{
   checkedItems,
   toggleReturnModal,
   checkBoxChangeWrapped,
-  currentAddress
+  currentAddress,
 }) => {
   return rentingItems.length !== 0 ? (
     <div className="dashboard-section">

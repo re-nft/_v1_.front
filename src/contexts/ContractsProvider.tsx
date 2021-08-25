@@ -34,7 +34,6 @@ interface ContractsObject {
 export const ContractContext = createContext<ContractsObject>({});
 
 const loadContract = (contractName: string, signer: Signer | undefined) => {
-  
   const newContract = new Contract(
     require(`../contracts/${contractName}.address.js`),
     require(`../contracts/${contractName}.abi.js`),
@@ -102,13 +101,13 @@ export const ContractsProvider: React.FC = ({ children }) => {
 
   const [contracts, setContracts] = useState<ContractsObject>({});
   useEffect(() => {
-    if(signer) {
-      if(network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-        setContracts({})
-      }else {
-        loadContracts(signer, setContracts)
+    if (signer) {
+      if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
+        setContracts({});
+      } else {
+        loadContracts(signer, setContracts);
       }
-    };
+    }
   }, [signer, network]);
 
   return (

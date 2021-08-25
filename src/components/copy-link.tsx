@@ -5,17 +5,18 @@ import React, { useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 
 export const CopyLink: React.FC<{
-    tokenId: string,
-    address: string
+  tokenId: string;
+  address: string;
 }> = ({ tokenId, address }) => {
   const { setError } = useContext(SnackAlertContext);
+  const hasWindow = useMemo(() => {
+    return typeof window !== "undefined";
+  }, []);
+
   const copyLink = useMemo(() => {
-    const href =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://dapp.renft.io";
+    const href = hasWindow ? window.location.origin : "https://dapp.renft.io";
     return `${href}/rent/${address}/${tokenId}`;
-  }, [typeof window !== "undefined", address, tokenId]);
+  }, [hasWindow, address, tokenId]);
 
   const [isCopied, setCopied] = useClipboard(copyLink);
   useEffect(() => {
@@ -28,4 +29,3 @@ export const CopyLink: React.FC<{
     </IconButton>
   );
 };
-

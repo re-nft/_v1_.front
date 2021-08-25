@@ -14,10 +14,10 @@ type LendFormProps = {
   handleApproveAll: () => void;
   handleSubmit: (arg: LendInputDefined[]) => Observable<TransactionStatus>;
   approvalStatus: TransactionStatus;
-  onClose: () => void
+  onClose: () => void;
 };
 export type LendInputProps = {
-  amount: string
+  amount: string;
   lendAmount: number | undefined;
   maxDuration: number | undefined;
   borrowPrice: number | undefined;
@@ -39,7 +39,6 @@ export type LendInputDefined = {
 };
 type FormProps = { inputs: LendInputProps[] };
 
-
 export const LendForm: React.FC<LendFormProps> = ({
   nfts,
   isApproved,
@@ -54,29 +53,29 @@ export const LendForm: React.FC<LendFormProps> = ({
       tokenId: nft.tokenId,
       nft: nft,
       key: nft.id,
-      lendAmount: nft.amount == "1" || nft.isERC721? 1 : undefined,
+      lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : undefined,
       amount: nft.amount,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,
       pmToken: undefined,
-    }))
+    })),
   };
   const onSubmit = (
     values: FormProps,
     { setSubmitting, setStatus }: FormikBag<FormProps, unknown>
   ) => {
     setSubmitting(true);
-    setStatus([TransactionStateEnum.PENDING])
+    setStatus([TransactionStateEnum.PENDING]);
     const sub = handleSubmit(values.inputs as LendInputDefined[]).subscribe({
-      next: (status)=>{
-        setStatus(status)
+      next: (status) => {
+        setStatus(status);
       },
-      complete: ()=>{
-        setSubmitting(false)
-        sub.unsubscribe()
-      }
-    })
+      complete: () => {
+        setSubmitting(false);
+        sub.unsubscribe();
+      },
+    });
   };
 
   return (
@@ -105,9 +104,10 @@ export const LendForm: React.FC<LendFormProps> = ({
         isValid,
         isSubmitting,
         submitForm,
-        status
+        status,
       }) => {
-        const formSubmittedSuccessfully = status.status === TransactionStateEnum.SUCCESS
+        const formSubmittedSuccessfully =
+          status.status === TransactionStateEnum.SUCCESS;
         return (
           <form onSubmit={handleSubmit}>
             <FieldArray name="inputs">
@@ -139,7 +139,11 @@ export const LendForm: React.FC<LendFormProps> = ({
 
             <div className="modal-dialog-button">
               {!isApproved && !isSubmitting && (
-                <TransactionWrapper isLoading={approvalStatus.isLoading} status={approvalStatus.status} transactionHashes={approvalStatus.transactionHash}>
+                <TransactionWrapper
+                  isLoading={approvalStatus.isLoading}
+                  status={approvalStatus.status}
+                  transactionHashes={approvalStatus.transactionHash}
+                >
                   <ActionButton<Nft>
                     title="Approve all"
                     nft={nft}
@@ -149,12 +153,19 @@ export const LendForm: React.FC<LendFormProps> = ({
                 </TransactionWrapper>
               )}
               {(isApproved || isSubmitting) && (
-                <TransactionWrapper isLoading={isSubmitting} status={status.status} transactionHashes={status.transactionHash} closeWindow={onClose}>
+                <TransactionWrapper
+                  isLoading={isSubmitting}
+                  status={status.status}
+                  transactionHashes={status.transactionHash}
+                  closeWindow={onClose}
+                >
                   <ActionButton<Nft>
                     title={nfts.length > 1 ? "Lend all" : "Lend"}
                     nft={nft}
                     onClick={submitForm}
-                    disabled={!isValid || isSubmitting || formSubmittedSuccessfully}
+                    disabled={
+                      !isValid || isSubmitting || formSubmittedSuccessfully
+                    }
                   />
                 </TransactionWrapper>
               )}
@@ -204,7 +215,7 @@ const validate = (values: FormProps) => {
         "amount must be less than equal then the total amount available";
     } else if (isInteger(field)) {
       error[fieldName] = "amount must be a whole number";
-    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+    } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
       error[fieldName] = "amount must be a number";
     }
 
@@ -218,7 +229,7 @@ const validate = (values: FormProps) => {
       error[fieldName] = "lend duration must be less or equal than 255";
     } else if (isInteger(field)) {
       error[fieldName] = "maxDuration must be a whole number";
-    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+    } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
       error[fieldName] = "amount must be a number";
     }
 
@@ -232,7 +243,7 @@ const validate = (values: FormProps) => {
       error[fieldName] = "borrow price must be less then or equal 9999.9999";
     } else if (!is4Digits(field)) {
       error[fieldName] = "borrow price only accepts up to 4 fractional digits";
-    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+    } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
       error[fieldName] = "amount must be a number";
     }
 
@@ -246,7 +257,7 @@ const validate = (values: FormProps) => {
       error[fieldName] = "collateral must be less then or equal 9999.9999";
     } else if (!is4Digits(field)) {
       error[fieldName] = "collateral only accepts up to 4 fractional digits";
-    } else if (!(/^\d+(\.\d+)?$/i).test(field.toString())){
+    } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
       error[fieldName] = "amount must be a number";
     }
 

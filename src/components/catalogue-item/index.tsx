@@ -1,6 +1,5 @@
 import React, { useContext, useMemo, useCallback } from "react";
 import { Nft } from "../../contexts/graph/classes";
-import { nftId } from "../../services/firebase";
 import { CatalogueItemRow } from "./catalogue-item-row";
 import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";

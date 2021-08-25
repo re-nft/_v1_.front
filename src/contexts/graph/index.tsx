@@ -3,11 +3,11 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 import {
   getUserDataOrCrateNew,
-  getAllUsersVote
+  getAllUsersVote,
 } from "../../services/firebase";
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
@@ -35,7 +35,7 @@ type GraphContextType = {
 };
 
 const defaultUserData = {
-  favorites: {}
+  favorites: {},
 };
 
 const DefaultGraphContext: GraphContextType = {
@@ -45,7 +45,7 @@ const DefaultGraphContext: GraphContextType = {
   isLoading: false,
   refreshUserData: () => {
     // empty
-  }
+  },
 };
 
 const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
@@ -100,7 +100,9 @@ export const GraphProvider: React.FC = ({ children }) => {
         }
       })
     );
-    const fetchRequest2 = from(getAllUsersVote()).pipe(map((d) => setUsersVote(d)));
+    const fetchRequest2 = from(getAllUsersVote()).pipe(
+      map((d) => setUsersVote(d))
+    );
     const s1 = fetchRequest.subscribe();
     const s2 = fetchRequest2.subscribe();
     return () => {
@@ -125,7 +127,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         usersVote,
         calculatedUsersVote,
         isLoading,
-        refreshUserData
+        refreshUserData,
       }}
     >
       {children}

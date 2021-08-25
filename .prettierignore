@@ -1,0 +1,9 @@
+.husky
+.next
+.vercel
+build
+node_modules
+public
+src/contracts
+src/types
+src/hardhat

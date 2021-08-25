@@ -44,7 +44,7 @@ export const UserProvider: React.FC = ({ children }) => {
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
     return typeof window !== "undefined";
-  }, [typeof window]);
+  }, []);
   // web3modal is only working in browser\]
   const web3Modal = useMemo(() => {
     return hasWindow
@@ -55,7 +55,7 @@ export const UserProvider: React.FC = ({ children }) => {
       : null;
   }, [providerOptions, hasWindow]);
 
-  const initState = async (provider: any) => {
+  const initState = useCallback(async (provider: any) => {
     const web3p = new ethers.providers.Web3Provider(provider);
     const network = await web3p?.getNetwork();
     const name = network.chainId === 31337 ? "localhost" : network?.name;
@@ -73,7 +73,7 @@ export const UserProvider: React.FC = ({ children }) => {
     setAddress(address || "");
     setProvider(provider);
     setWeb3Provider(web3p);
-  };
+  }, []);
 
   const connect = useCallback(
     (manual: boolean) => {

@@ -28,7 +28,7 @@ const useExchangePriceStore = create<TOKEN_PRICE>((set, get) => ({
       produce((state) => {
         state.tokenPerUSD[PaymentToken.WETH] = price;
       })
-    )
+    ),
 }));
 
 const getPrice = (): Promise<number> =>
@@ -45,13 +45,16 @@ const getPrice = (): Promise<number> =>
       return data.bundles[0].ethPriceUSD;
     })
     .catch((e) => {
-      console.log(e)
+      console.log(e);
       return 0;
     });
 
 export const useExchangePrice = () => {
   const setWETH = useExchangePriceStore((state) => state.setWETH, shallow);
-  const tokenPerUSD = useExchangePriceStore((state) => state.tokenPerUSD, shallow);
+  const tokenPerUSD = useExchangePriceStore(
+    (state) => state.tokenPerUSD,
+    shallow
+  );
 
   useEffect(() => {
     const subscription = timer(0, 60 * SECOND_IN_MILLISECONDS)
@@ -63,7 +66,7 @@ export const useExchangePrice = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, []);
+  }, [setWETH]);
 
   return tokenPerUSD;
 };

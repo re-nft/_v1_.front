@@ -16,7 +16,7 @@ type BatchRentModalProps = {
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   open,
   handleClose,
-  nft
+  nft,
 }) => {
   const nfts = useMemo(() => {
     return nft.map<StartRentNft>((nft) => ({
@@ -26,7 +26,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
       lendingId: nft.lending.id,
       rentDuration: "",
       paymentToken: nft.lending.paymentToken,
-      isERC721: nft.isERC721
+      isERC721: nft.isERC721,
     }));
   }, [nft]);
 
@@ -35,7 +35,7 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
     isApproved,
     handleApproveAll,
     checkApprovals,
-    approvalStatus
+    approvalStatus,
   } = useStartRent();
 
   useEffect(() => {
@@ -44,9 +44,9 @@ export const BatchRentModal: React.FC<BatchRentModalProps> = ({
 
   const handleSubmit = useCallback(
     (items: StartRentNft[]): Observable<TransactionStatus> => {
-      return startRent(items)
+      return startRent(items);
     },
-    [handleClose, isApproved, startRent]
+    [startRent]
   );
   return (
     <Modal open={open} handleClose={handleClose}>

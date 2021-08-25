@@ -1,7 +1,7 @@
 import "../style/index.scss";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Head from "next/head";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";
 import AppLayout from "../components/app-layout";
 import type { AppProps } from "next/app";

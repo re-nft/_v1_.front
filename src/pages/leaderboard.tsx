@@ -5,53 +5,53 @@ const leaderboardData = [
   {
     address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     renting: 1320,
-    lending: 543
+    lending: 543,
   },
   {
     address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     renting: 324,
-    lending: 199
+    lending: 199,
   },
   {
     address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
     renting: 290,
-    lending: 74
+    lending: 74,
   },
   {
     address: "0x7XG4CdDdB6a900fa2b585dd299e03d12FA4293BC",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
     renting: 1,
-    lending: 1
+    lending: 1,
   },
   {
     address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
     renting: 1,
-    lending: 1
-  }
+    lending: 1,
+  },
 ];
 
 const Leaderboard: React.FC = () => {

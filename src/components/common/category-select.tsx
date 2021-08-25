@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
 //@ts-ignore
 import Select, { components } from "react-select";
@@ -107,7 +107,7 @@ export const CategorySelect: React.FC<{
       const value = option?.value;
       setValue(value);
     },
-    [options, setValue]
+    [setValue]
   );
 
   return (

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 export enum LendSpecificity {
   ALL,
-  LENDING
+  LENDING,
 }
 
 export const LendSwitchWrapper: React.FC = ({ children }) => {
