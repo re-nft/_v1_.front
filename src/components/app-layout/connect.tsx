@@ -69,10 +69,7 @@ export const Connect: React.FC = () => {
                     longString={username || lookupAddress || currentAddress}
                     data-cy="metamask-connect-button"
                   />
-                  <Jazzicon
-                    address={"0xBAc675C310721717Cd4A37F6cbeA1F081b1C2a07"}
-                    className="h-5 w-5"
-                  />
+                  <Jazzicon address={currentAddress} className="h-5 w-5" />
                 </div>
               )}
             </div>

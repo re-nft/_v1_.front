@@ -184,6 +184,7 @@ export const AppLayout: React.FC = ({ children }) => {
         </div>
       </main>
       <DevMenu />
+      <div id="pagination"></div>
       <Footer />
     </div>
   );
