@@ -100,7 +100,9 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       stagger={true}
     >
       <div
-        className="text-base leading-tight flex flex-col bg-white border-4 border-black"
+        className={`text-base leading-tight flex flex-col bg-white border-4 border-black hover:shadow-rn-one ${
+          checked ? "shadow-rn-one" : ""
+        }`}
         key={nft.tokenId}
         data-item-id={nft.tokenId}
       >
@@ -133,12 +135,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       <img src="/assets/opensea.png" className="nft__icon" />
                     </a>
                   )}
-                  {/* <CatalogueActions
-              address={nft.address}
-              tokenId={nft.tokenId}
-              id={id}
-              isAlreadyFavourited={!!isAlreadyFavourited}
-            /> */}
                   <div className="flex-1 flex justify-end justify-self-end">
                     <Checkbox
                       checked={!!checked}

@@ -1,7 +1,8 @@
 import { PaymentToken } from "@renft/sdk";
 import { Listbox, Transition } from "@headlessui/react";
-import { SelectorIcon } from "@heroicons/react/solid";
+import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
 import { Fragment, useCallback } from "react";
+import { classNames } from "../../utils";
 
 const tokens = [
   { value: PaymentToken.WETH, name: "WETH", unavailable: false },
@@ -10,10 +11,6 @@ const tokens = [
   { value: PaymentToken.USDT, name: "USDT", unavailable: false },
   { value: PaymentToken.TUSD, name: "TUSD", unavailable: false },
 ];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export const TokenSelect: React.FC<{
   selectedValue: PaymentToken;
@@ -91,17 +88,6 @@ export const TokenSelect: React.FC<{
                         >
                           {token.name}
                         </span>
-
-                        {/* {selected ? (
-                            <span
-                            className={classNames(
-                            active ? 'text-white' : 'text-rn-green',
-                            'absolute inset-y-0 left-0 flex items-center'
-                            )}
-                            >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                            </span>
-                            ) : null} */}
                       </>
                     )}
                   </Listbox.Option>

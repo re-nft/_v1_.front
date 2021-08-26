@@ -22,91 +22,92 @@ export const LendingTable: React.FC<{
 }) => {
   return lendingItems.length !== 0 ? (
     <div className=" px-8">
-      <h2 className="">
+      <h2>
         <span sr-only="Lending"></span>
         <img src="/assets/Lending-headline.svg" className="h-12" />
       </h2>
-      <h3>
+      <h3 className="text-lg">
         Here you will find he NFTs that you are lending. These can also be found
         in the Lending tab after you toggle the view.
       </h3>
-      <div className="flex flex-col py-4">
+      <div className="flex flex-col py-4 pt-8">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="overflow-hidden border-2 border-white">
-              <table className="min-w-full divide-y divide-white">
-                <thead className="text-lg leading-loose text-left">
+          <div className="align-middle inline-block min-w-full">
+            <div className="overflow-hidden">
+              <table className="min-w-full divide-y divide-white px-4">
+                <thead className="text-lg leading-loose text-left mb-2 border-b-2 border-white">
                   <tr>
                     <th
                       scope="col"
-                      className="px-2 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="pl-8 px-2 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
-                      Batch Select
-                    </th>
-
-                    <th
-                      scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
-                    >
-                      Address
+                      Name
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
-                      ID
+                      NFT Address
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal   tracking-wider"
+                    >
+                      TokenId
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
                       Amount
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal   tracking-wider"
                     >
-                      $
+                      ERC20 Payment
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal   tracking-wider"
+                    >
+                      Duration
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal   tracking-wider"
                     >
                       Collateral
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal   tracking-wider"
                     >
                       Daily Price
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
-                    >
-                      Duration
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
                       Original owner
                     </th>
                     <th
                       scope="col"
-                      className="px-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
-                      &nbsp;
+                      Defaulted
                     </th>
+
                     <th
                       scope="col"
-                      className="px-1  text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-2 pb-2 text-left text-xl leading-3 font-normal  uppercase tracking-wider"
                     >
-                      &nbsp;
+                      Batch Select
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white">
+                <tbody className="divide-y divide-gray-300">
                   {lendingItems.map((lend) => {
                     const id = lend.id;
                     const hasRenting = !!lend.renting;

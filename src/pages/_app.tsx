@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import "../scripts/wdyr";
 //@ts-ignore
 import NProgress from "nprogress";
+import { NetworkName } from "../types";
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {

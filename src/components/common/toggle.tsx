@@ -1,10 +1,7 @@
 import React from "react";
 
 import { Switch } from "@headlessui/react";
-
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import { classNames } from "../../utils";
 
 export const Toggle: React.FC<{
   title: string;

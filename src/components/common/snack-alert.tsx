@@ -2,12 +2,10 @@ import React, { useContext } from "react";
 import { SnackAlertContext } from "../../contexts/SnackProvider";
 import { Fragment } from "react";
 import { Transition } from "@headlessui/react";
-import {
-  CheckCircleIcon,
-  InformationCircleIcon,
-  ExclamationIcon,
-} from "@heroicons/react/outline";
-import { XIcon } from "@heroicons/react/solid";
+import CheckCircleIcon from "@heroicons/react/outline/CheckCircleIcon";
+import InformationCircleIcon from "@heroicons/react/outline/InformationCircleIcon";
+import ExclamationIcon from "@heroicons/react/outline/ExclamationIcon";
+import XIcon from "@heroicons/react/solid/XIcon";
 
 export const SnackAlert: React.FC = () => {
   const {
@@ -20,7 +18,7 @@ export const SnackAlert: React.FC = () => {
   return (
     <div
       aria-live="assertive"
-      className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start"
+      className="fixed inset-0 flex items-end px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-20"
       onClick={closeAlert}
     >
       <div className="w-full flex flex-col items-center space-y-4 sm:items-end">
@@ -35,7 +33,7 @@ export const SnackAlert: React.FC = () => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="max-w-sm w-full bg-white pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden shadow-rn-drop-grey border-2 border-rn-grey z-30 relative">
+          <div className="max-w-sm w-full bg-white pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden shadow-rn-one-purple border-4 border-rn-purple z-30 relative">
             <div className="p-2">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
@@ -59,8 +57,10 @@ export const SnackAlert: React.FC = () => {
                   )}
                 </div>
                 <div className="ml-3 w-0 flex-1 pt-0.5">
-                  <p className="text-sm font-medium text-gray-900">{type}</p>
-                  <p className="mt-1 text-sm text-gray-500">{message}</p>
+                  {/* <p className="text-sm font-medium text-rn-purple-dark">{type}</p> */}
+                  <p className="mt-1 text-base text-rn-purple uppercase">
+                    {message}
+                  </p>
                 </div>
                 <div className="ml-4 flex-shrink-0 flex">
                   <button

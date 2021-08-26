@@ -359,3 +359,7 @@ export const getUniqueID = (
 // export const getUniqueCheckboxId = (item: Nft): string => {
 //   return getUniqueID(item.address, item.tokenId, getLendingId(item));
 // };
+
+export function classNames(...classes: any[]) {
+  return classes.filter(Boolean).join(" ");
+}

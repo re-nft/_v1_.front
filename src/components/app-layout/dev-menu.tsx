@@ -3,7 +3,7 @@ import { MintTokens } from "../dev/mint-token";
 
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
+import XIcon from "@heroicons/react/outline/XIcon";
 
 export const DevMenu: React.FC = () => {
   const [open, setOpen] = useState(false);

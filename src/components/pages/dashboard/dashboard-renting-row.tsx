@@ -4,9 +4,9 @@ import { Renting } from "../../../contexts/graph/classes";
 import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
-import { Tooltip } from "../../common/tooltip";
-import { Button } from "../../common/button";
 import { ShortenPopover } from "../../common/shorten-popover";
+import { useNftMetaState } from "../../../hooks/useMetaState";
+import shallow from "zustand/shallow";
 
 export const RentingRow: React.FC<{
   checked: boolean;
@@ -15,19 +15,17 @@ export const RentingRow: React.FC<{
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   isExpired: boolean;
-}> = ({
-  checked,
-  rent,
-  checkBoxChangeWrapped,
-  currentAddress,
-  isExpired,
-  openModal,
-}) => {
+}> = ({ checked, rent, checkBoxChangeWrapped, isExpired, openModal }) => {
   const renting = rent.renting;
-  const handleClick = useCallback(() => {
-    checkBoxChangeWrapped(rent)();
-    openModal(true);
-  }, [checkBoxChangeWrapped, openModal, rent]);
+  const meta = useNftMetaState(
+    useCallback(
+      (state) => {
+        return state.metas[rent.nId] || {};
+      },
+      [rent.nId]
+    ),
+    shallow
+  );
 
   const handleRowClicked = useCallback(() => {
     if (isExpired || rent.relended) return;
@@ -49,67 +47,58 @@ export const RentingRow: React.FC<{
     renting.rentDuration,
     "day"
   );
-  let tooltip = "Return NFT";
-  tooltip = isExpired
-    ? "The NFT is expired. You cannot return it anymore."
-    : tooltip;
-  tooltip = rent.relended
-    ? "Please stop lending this item first. Then you can return it!"
-    : tooltip;
+
   return (
-    <tr onClick={handleRowClicked}>
-      <td className="pl-6 py-1 whitespace-nowrap">
+    <tr
+      onClick={handleRowClicked}
+      className="transition-opacity duration-500
+      ease-in-out text-2xl leading-3 bg-white bg-opacity-0
+      hover:bg-opacity-20 hover:cursor-pointer"
+    >
+      <td className="pl-8 px-1 whitespace-nowrap font-normal">
+        <ShortenPopover longString={meta?.name || ""}></ShortenPopover>
+      </td>
+
+      <td className="px-1 whitespace-nowrap font-normal">
+        <ShortenPopover
+          longString={renting.lending.nftAddress}
+        ></ShortenPopover>
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        <ShortenPopover longString={rent.tokenId}></ShortenPopover>
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {renting.lending.lentAmount}
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {PaymentToken[renting.lending.paymentToken ?? 0]}
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {days} {days > 1 ? "days" : "day"}
+      </td>
+
+      <td className="px-1 whitespace-nowrap font-normal">
+        {formatCollateral(
+          renting.lending.nftPrice * Number(renting.lending.lentAmount)
+        )}
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {renting.lending.dailyRentPrice}
+      </td>
+
+      <td className="px-1 whitespace-nowrap font-normal">
+        <CountDown endTime={expireDate.toDate().getTime()} />
+      </td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {isExpired ? "yes" : "no"}
+      </td>
+
+      <td className="pr-8 flex justify-end whitespace-nowrap font-normal">
         <Checkbox
           onChange={checkBoxChangeWrapped(rent)}
           checked={checked}
           disabled={isExpired || rent.relended}
         />
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        <ShortenPopover
-          longString={renting.lending.nftAddress}
-        ></ShortenPopover>
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        <ShortenPopover longString={rent.tokenId}></ShortenPopover>
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        {renting.lending.lentAmount}
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        {PaymentToken[renting.lending.paymentToken ?? 0]}
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        {formatCollateral(
-          renting.lending.nftPrice * Number(renting.lending.lentAmount)
-        )}
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        {renting.lending.dailyRentPrice}
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        {days} {days > 1 ? "days" : "day"}
-      </td>
-
-      <td className="px-1 py-1 whitespace-nowrap">
-        {moment(Number(renting.rentedAt) * 1000).format("MM/D/YY hh:mm")}
-      </td>
-      <td className="px-1 py-1 whitespace-nowrap">
-        <CountDown endTime={expireDate.toDate().getTime()} />
-      </td>
-
-      <td className="px-1 py-1 whitespace-nowrap">
-        {renting.lending.lenderAddress !== currentAddress.toLowerCase() && (
-          <Tooltip title={tooltip} aria-label={tooltip}>
-            <span>
-              <Button
-                onClick={handleClick}
-                disabled={checked || isExpired || rent.relended}
-                description="Return it"
-              />
-            </span>
-          </Tooltip>
-        )}
       </td>
     </tr>
   );

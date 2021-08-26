@@ -1,12 +1,14 @@
 import React, { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import MenuIcon from "@heroicons/react/outline/MenuIcon";
+import XIcon from "@heroicons/react/outline/XIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Footer } from "./footer";
 import { SearchMenu } from "./search-menu";
 import { DevMenu } from "./dev-menu";
 import { Connect } from "./connect";
+import { classNames } from "../../utils";
 
 const navigation = [
   { name: "Rent", href: "/" },
@@ -24,10 +26,6 @@ const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
   return false;
 };
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export const AppLayout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
@@ -173,7 +171,7 @@ export const AppLayout: React.FC = ({ children }) => {
       </Disclosure>
 
       <main>
-        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full mt-6">
+        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full mt-6 overflow-y-hidden pb-6">
           <div
             className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-4 shadow-rn-one"
             style={{

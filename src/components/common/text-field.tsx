@@ -1,5 +1,5 @@
 import React, { Ref } from "react";
-import { ExclamationCircleIcon } from "@heroicons/react/solid";
+import ExclamationCircleIcon from "@heroicons/react/solid/ExclamationCircleIcon";
 
 export const TextField: React.FC<{
   required?: boolean;

@@ -3,10 +3,10 @@ import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import GraphContext from "../../contexts/graph";
 import UserContext from "../../contexts/UserProvider";
 import { useLookupAddress } from "../../hooks/useLookupAddress";
-import { Button } from "../common/button";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";
+
 export const Connect: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const { network, connect } = useContext(UserContext);
@@ -35,11 +35,9 @@ export const Connect: React.FC = () => {
   return (
     <>
       {!installMetaMask && (!currentAddress || !network) ? (
-        <Button
-          datacy="metamask-connect-button"
-          onClick={connect}
-          description="Connect"
-        />
+        <div className="btn" onClick={connect}>
+          <div>Connect</div>
+        </div>
       ) : (
         <div className="flex justify-center items-center px-3 md:px-0">
           <div>

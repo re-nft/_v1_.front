@@ -20,61 +20,35 @@ export const MultipleBatchBar: React.FC<BatchBarProps> = ({
 }) => {
   if (rentingNumber < 1 && lendingNumber < 1 && claimsNumber < 1) return null;
   return (
-    <div className="batch">
-      {rentingNumber > 0 && (
-        <div className="batch__inner">
-          <div
-            className="column"
-            style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
-          >
-            {`Selected ${rentingNumber} items to rent`}
+    <div className="fixed bottom-0 left-0 right-0 w-full mx-auto z-10 px-4 bg-rn-purple  border-t-8 border-black">
+      <div className="flex flex-col text-white text-xl space-y-4 py-4">
+        {rentingNumber > 0 && (
+          <div className="flex content-between items-center">
+            <div>{`Selected ${rentingNumber} items to rent`}</div>
+            <div className="flex-1 justify-end flex flex-row">
+              <Button onClick={onStopRent} description="Return all" />
+            </div>
           </div>
-          <div className="column">
-            <span style={{ width: "24px", display: "inline-flex" }} />
-
-            <Button onClick={onStopRent} description="Stop rent" />
+        )}
+        {claimsNumber > 0 && (
+          <div className="flex content-between items-center ">
+            <div>{`Selected ${claimsNumber} items to claim`}</div>
+            <div className="flex-1 justify-end flex flex-row">
+              <Button onClick={onClaim} description="Claim all" />
+            </div>
           </div>
-        </div>
-      )}
-      {claimsNumber > 0 && (
-        <div
-          className="batch__inner"
-          style={{ paddingTop: rentingNumber > 0 ? "20px" : "" }}
-        >
-          <div
-            className="column"
-            style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
-          >
-            {`Selected ${claimsNumber} items to claim`}
+        )}
+        {lendingNumber - claimsNumber > 0 && (
+          <div className="flex content-between items-center ">
+            <div>
+              {`Selected ${lendingNumber - claimsNumber} items to stop lend`}
+            </div>
+            <div className="flex-1 justify-end flex flex-row">
+              <Button onClick={onStopLend} description="Stop lend all"></Button>
+            </div>
           </div>
-          <div className="column">
-            <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button onClick={onClaim} description="Claim all" />
-          </div>
-        </div>
-      )}
-      {lendingNumber - claimsNumber > 0 && (
-        <div
-          className="batch__inner"
-          style={{
-            paddingTop:
-              claimsNumber > 0 || (claimsNumber < 1 && rentingNumber > 0)
-                ? "20px"
-                : "",
-          }}
-        >
-          <div
-            className="column"
-            style={{ flexGrow: 1, fontSize: "20px", color: "#fff" }}
-          >
-            {`Selected ${lendingNumber - claimsNumber} items to stop lending`}
-          </div>
-          <div className="column">
-            <span style={{ width: "24px", display: "inline-flex" }} />
-            <Button onClick={onStopLend} description="Stop lend all"></Button>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

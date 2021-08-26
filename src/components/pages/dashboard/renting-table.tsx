@@ -27,82 +27,88 @@ export const RentingTable: React.FC<{
         <img src="/assets/Renting-headline.svg" className="h-12" />
       </h2>
 
-      <h3>
+      <h3 className="text-lg">
         Here you will find The NFTs That you are renting. These can also be
         found in The renting tab, after you toggle The view.
       </h3>
       <div className="flex flex-col py-4">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6  lg:px-8">
-            <div className="overflow-hidden border-2 border-white">
-              <table className="min-w-full divide-y divide-white">
-                <thead>
+          <div className="py-2 align-middle inline-block min-w-full">
+            <div className="overflow-hidden">
+              <table className="min-w-full divide-y divide-white px-4">
+                <thead className="text-lg leading-loose text-left mb-2 border-b-2 border-white">
                   <tr>
                     <th
                       scope="col"
-                      className="px-2 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="pl-8 px-2 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
-                      Batch Select
+                      Name
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
                     >
-                      Address
+                      NFT Address
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
                     >
-                      ID
+                      Token Id
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
                     >
                       Amount
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
-                      $
+                      ERC20 Payment
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
+                    >
+                      Duration
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
                     >
                       Collateral
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wider"
                     >
                       Daily Price
                     </th>
                     <th
                       scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
-                    >
-                      Duration
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
-                    >
-                      Rented On
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-1 py-1 text-left text-sm font-medium  uppercase tracking-wider"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
                     >
                       Due Date
                     </th>
+                    <th
+                      scope="col"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
+                    >
+                      Defaulted
+                    </th>
 
-                    <th>&nbsp;</th>
+                    <th
+                      scope="col"
+                      className="px-1 pb-2 text-left text-xl leading-3 font-normal  tracking-wide"
+                    >
+                      Batch Select
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white">
+                <tbody className="divide-y divide-gray-300">
                   {rentingItems.map((rent: Renting & { relended: boolean }) => {
                     const checked = !!checkedItems[rent.id];
                     const isExpired = nftReturnIsExpired(rent);

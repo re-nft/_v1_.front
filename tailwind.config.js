@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     fontFamily: {
       display: ['"Press Start 2P"'],
-      body: ["VT323"],
+      body: ['"VT323", monospace'],
       "sans-serif": ["VT323"],
     },
 

@@ -1,7 +1,7 @@
 import useClipboard from "react-use-clipboard";
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { SnackAlertContext } from "../contexts/SnackProvider";
-import { LinkIcon } from "@heroicons/react/solid";
+import LinkIcon from "@heroicons/react/solid/LinkIcon";
 
 export const CopyLink: React.FC<{
   tokenId: string;

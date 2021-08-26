@@ -1,134 +1,95 @@
-import React, { useCallback } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
-//@ts-ignore
-import Select, { components } from "react-select";
-
-const customStyles = {
-  option: (provided: any, state: any) => ({
-    ...provided,
-    color: state.isSelected || state.isFocused ? "white" : "black",
-    backgroundColor: state.isSelected || state.isFocused ? "black" : "white",
-  }),
-  placeholder: (provided: any, state: any) => ({
-    ...provided,
-    display: state.isFocused ? "none" : "block",
-    color: "black",
-  }),
-  control: (provided: any, state: any) => ({
-    // none of react-select's styles are passed to <Control />
-    ...provided,
-    zIndex: 100,
-    color: "black",
-    width: "13rem",
-    fontFamily: "VT323",
-    fontSize: "14px",
-    lineHeight: "19px",
-    textTransform: "uppercase",
-    borderRadius: 0,
-    border: "3px solid black",
-    boxShadow: `7px 7px black`,
-    "&:hover": {
-      borderColor: state.isFocused ? "#6a3a95" : "black",
-    },
-  }),
-  menu: (provided: any) => ({
-    // none of react-select's styles are passed to <Control />
-    ...provided,
-    color: "black",
-    zIndex: 100,
-    borderRadius: 0,
-    marginTop: "20px",
-    border: "3px solid black",
-    boxShadow: `7px 7px black`,
-  }),
-  menuList: (provided: any) => ({
-    ...provided,
-    paddingTop: 0,
-    paddingBottom: 0,
-  }),
-  singleValue: (provided: any, state: any) => {
-    const opacity = state.isDisabled ? 0.5 : 1;
-    const transition = "opacity 300ms";
-
-    return { ...provided, opacity, transition, textTransform: "uppercase" };
-  },
-  input: (provided: any, state: any) => ({
-    ...provided,
-    color: "black",
-    borderColor: state.isFocused ? "purple" : "black",
-    textTransform: "uppercase",
-    opacity: 1,
-  }),
-};
-
-const Control: React.FC<unknown> = ({ children, ...rest }) => {
-  //@ts-ignore
-  const imageUrl = rest.selectProps?.imageUrl;
-  return (
-    // @ts-ignore
-    <components.Control {...rest}>
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          style={{ marginLeft: "10px", height: "20px", width: "20px" }}
-        />
-      )}
-      {children}
-    </components.Control>
-  );
-};
-
-const Option: React.FC<unknown> = ({ children, ...rest }) => {
-  //@ts-ignore
-  const imageUrl = rest.data?.imageUrl;
-  return (
-    // @ts-ignore
-    <components.Option {...rest}>
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          style={{ marginRight: "10px", height: "20px", width: "20px" }}
-        />
-      )}
-      {children}
-    </components.Option>
-  );
-};
+import { Listbox, Transition } from "@headlessui/react";
+import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
+import { Fragment, useCallback } from "react";
+import { classNames } from "../../utils";
 
 export const CategorySelect: React.FC<{
   options: CategoryOptions[];
   setValue: (v: string) => void;
   defaultValue: CategoryOptions;
   value: CategoryOptions | undefined;
-  instanceId: string;
-}> = ({ options, setValue, defaultValue, value, instanceId }) => {
+  disabled?: boolean;
+}> = ({ options, setValue, value, defaultValue, disabled }) => {
   const onChange = useCallback(
-    (option) => {
-      const value = option?.value;
-      setValue(value);
+    (value: CategoryOptions) => {
+      setValue(value.label);
     },
     [setValue]
   );
 
   return (
-    //@ts-ignore
-    <Select
-      isClearable
-      isSearchable={false}
-      placeholder={defaultValue.label}
-      options={options}
-      //@ts-ignore
-      imageUrl={value?.imageUrl}
-      value={value}
-      // NOTE 1: force stupid instanceid to rerender a new component, as state is kept around
-      // NOTE 2: set instanceId for server side as well
-      instanceId={instanceId}
-      styles={customStyles}
+    <Listbox
+      value={value || defaultValue}
       onChange={onChange}
-      components={{
-        Control,
-        Option,
-      }}
-    />
+      disabled={disabled}
+    >
+      {({ open }) => (
+        <>
+          <div className="mt-1 relative w-48">
+            <Listbox.Button className="relative w-full bg-white border-2 border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
+              <span className="block truncate">
+                {value?.label || defaultValue.label}
+              </span>
+              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <SelectorIcon
+                  className="h-5 w-5 text-black"
+                  aria-hidden="true"
+                />
+              </span>
+            </Listbox.Button>
+
+            <Transition
+              show={open}
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options className="absolute z-20 mt-4 border-2 border-black w-full bg-white shadow-rn-one max-h-60 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-md">
+                {options.length < 1 && (
+                  <div className="p-2 cursor-not-allowed">No options</div>
+                )}
+                {options.map((option) => (
+                  <Listbox.Option
+                    key={option.value}
+                    className={({ active }) =>
+                      classNames(
+                        active ? "text-white bg-black" : "text-black",
+                        "cursor-default select-none relative"
+                      )
+                    }
+                    value={option.value}
+                  >
+                    {({ selected, active }) => (
+                      <>
+                        {option.imageUrl && (
+                          <span>
+                            <img
+                              src={option.imageUrl}
+                              className="h-4 w-4"
+                            ></img>
+                          </span>
+                        )}
+                        <span
+                          className={classNames(
+                            selected || active
+                              ? "text-white bg-black"
+                              : "text-black bg-white hover:text-white hover:bg-black",
+                            "block truncate py-2 pl-4 pr-4"
+                          )}
+                        >
+                          {option.label}
+                        </span>
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        </>
+      )}
+    </Listbox>
   );
 };
