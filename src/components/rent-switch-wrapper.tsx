@@ -1,5 +1,5 @@
 import React from "react";
-import PageLayout from "./page-layout";
+import ToggleLayout from "./toggle-layout";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 
@@ -25,12 +25,12 @@ export const RentSwitchWrapper: React.FC = ({ children }) => {
   }, [specificity, router]);
 
   return (
-    <PageLayout
+    <ToggleLayout
       title={specificity.valueOf() === 0 ? "AVAILABLE TO RENT" : "RENTING"}
       toggleValue={specificity === RentSpecificity.RENTING}
       onSwitch={switchSpecificity}
     >
       {children}
-    </PageLayout>
+    </ToggleLayout>
   );
 };

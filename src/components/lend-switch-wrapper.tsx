@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import PageLayout from "./page-layout";
+import ToggleLayout from "./toggle-layout";
 import { useRouter } from "next/router";
 
 export enum LendSpecificity {
@@ -23,7 +23,7 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
   }, [specificity, router]);
 
   return (
-    <PageLayout
+    <ToggleLayout
       title={
         specificity === LendSpecificity.ALL ? "AVAILABLE TO LEND" : "LENDING"
       }
@@ -31,6 +31,6 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
       onSwitch={switchSpecificity}
     >
       {children}
-    </PageLayout>
+    </ToggleLayout>
   );
 };

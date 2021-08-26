@@ -240,7 +240,7 @@ const ModalDialogSection: React.FC<{
       <TextField
         required
         label={renderItem()}
-        value={duration}
+        value={duration || ""}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}

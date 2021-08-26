@@ -8,7 +8,7 @@ type PageLayoutProps = {
   toggleValue?: boolean;
 };
 
-const PageLayout: React.FC<PageLayoutProps> = ({
+const ToggleLayout: React.FC<PageLayoutProps> = ({
   onSwitch,
   toggleValue,
   title,
@@ -17,7 +17,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   return (
     <div className="flex flex-col py-4 w-full">
       <div className="flex-auto justify-self-end w-full justify-end">
-        {title && (
+        {title && onSwitch && (
           <Toggle title={title} toggleValue={toggleValue} onSwitch={onSwitch} />
         )}
       </div>
@@ -29,4 +29,4 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   );
 };
 
-export default PageLayout;
+export default ToggleLayout;

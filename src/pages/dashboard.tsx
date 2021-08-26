@@ -17,7 +17,7 @@ import {
 } from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
 import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
-import PageLayout from "../components/page-layout";
+import ToggleLayout from "../components/toggle-layout";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -85,34 +85,34 @@ export const Dashboard: React.FC = () => {
 
   if (!signer) {
     return (
-      <PageLayout>
+      <ToggleLayout>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
-      </PageLayout>
+      </ToggleLayout>
     );
   }
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return (
-      <PageLayout>
+      <ToggleLayout>
         <CatalogueLoader />
-      </PageLayout>
+      </ToggleLayout>
     );
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <PageLayout>
+      <ToggleLayout>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           You aren&apos;t lending or renting yet. To start lending, head to the
           lend tab.
         </div>
-      </PageLayout>
+      </ToggleLayout>
     );
   }
 
   return (
-    <PageLayout>
+    <ToggleLayout>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="flex flex-col space-y-2 text-white text-base">
           <Toggle
@@ -149,7 +149,7 @@ export const Dashboard: React.FC = () => {
         checkedClaims={checkedClaims}
         toggleClaimModal={toggleClaimModal}
       />
-    </PageLayout>
+    </ToggleLayout>
   );
 };
 

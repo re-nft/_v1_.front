@@ -50,7 +50,6 @@ export const NftSortBySelect: React.FC = () => {
 
   return (
     <CategorySelect
-      instanceId={"sortby"}
       value={value}
       setValue={setSortBy}
       options={options}

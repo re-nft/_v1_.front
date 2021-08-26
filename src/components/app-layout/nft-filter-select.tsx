@@ -48,7 +48,6 @@ export const NftFilterSelect: React.FC = () => {
 
   return (
     <CategorySelect
-      instanceId={"filter"}
       value={value}
       options={options}
       setValue={setNftFilter}

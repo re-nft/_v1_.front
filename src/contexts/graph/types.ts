@@ -65,6 +65,7 @@ export interface ILending {
   collateralClaimed: boolean;
   isERC721: boolean;
   renting?: IRenting;
+  duration?: string;
 }
 
 export type LendingRaw = {
