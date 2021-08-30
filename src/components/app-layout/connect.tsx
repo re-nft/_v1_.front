@@ -50,7 +50,7 @@ export const Connect: React.FC = () => {
               )}
             </p>
             {networkNotSupported && (
-              <p className="font-display text-sm leading-tight">
+              <p className="font-display text-sm leading-tight text-black">
                 Please switch to{" "}
                 <span className="font-display text-sm leading-loose text-rn-purple">
                   {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}

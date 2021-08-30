@@ -28,8 +28,14 @@ export const CategorySelect: React.FC<{
       {({ open }) => (
         <>
           <div className="mt-1 relative w-48 font-body">
-            <Listbox.Button className="relative w-full bg-white border-2 border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
-              <span className="block truncate">
+            <Listbox.Button className="relative w-full bg-white border-2 flex border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
+              {value?.imageUrl && (
+                <span className="flex-1 justify-center items-center pr-2">
+                  <img src={value.imageUrl} className="h-5 w-5"></img>
+                </span>
+              )}
+
+              <span className="block truncate text-left flex-auto">
                 {value?.label || defaultValue.label}
               </span>
               <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -57,7 +63,7 @@ export const CategorySelect: React.FC<{
                     className={({ active }) =>
                       classNames(
                         active ? "text-white bg-black" : "text-black",
-                        "cursor-default select-none relative"
+                        "cursor-default select-none relative flex justify-center items-center"
                       )
                     }
                     value={option.value}
@@ -65,10 +71,10 @@ export const CategorySelect: React.FC<{
                     {({ selected, active }) => (
                       <>
                         {option.imageUrl && (
-                          <span>
+                          <span className="flex-1 justify-center items-center">
                             <img
                               src={option.imageUrl}
-                              className="h-4 w-4"
+                              className="h-4 w-4 ml-2"
                             ></img>
                           </span>
                         )}
@@ -77,7 +83,7 @@ export const CategorySelect: React.FC<{
                             selected || active
                               ? "text-white bg-black"
                               : "text-black bg-white hover:text-white hover:bg-black",
-                            "block truncate py-2 pl-4 pr-4"
+                            "block truncate py-2 pl-4 pr-4 flex-auto text-left"
                           )}
                         >
                           {option.label}

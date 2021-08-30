@@ -7,11 +7,10 @@ type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];
 };
 
-const tabs = [
-  { name: "Renting", href: "/", current: false },
-  { name: "User is renting", href: "/user-is-renting", current: true },
-];
 const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
+  if (!tabs || tabs.length < 1)
+    return <div className="flex flex-col py-4 w-full">{children}</div>;
+
   return (
     <div className="flex flex-col py-4 w-full">
       <div>
