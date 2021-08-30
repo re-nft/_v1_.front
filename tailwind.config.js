@@ -14,6 +14,9 @@ module.exports = {
       width: {
         "7xl": "80rem",
       },
+      lineHeight: {
+        "rn-1": "calc( 1em - 1px )",
+      },
       colors: {
         "rn-orange": "#ff9800",
         "rn-orange-dark": "#ef6c00",

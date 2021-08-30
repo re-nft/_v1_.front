@@ -1,7 +1,7 @@
 import React from "react";
 import ToggleLayout from "./toggle-layout";
 import { useRouter } from "next/router";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 export enum RentSpecificity {
   ALL,
@@ -16,19 +16,20 @@ export const RentSwitchWrapper: React.FC = ({ children }) => {
       : RentSpecificity.ALL;
   }, [router.pathname]);
 
-  const switchSpecificity = useCallback(() => {
-    if (specificity == RentSpecificity.ALL) {
-      router.push("/user-is-renting");
-    } else {
-      router.push("/");
-    }
-  }, [specificity, router]);
-
   return (
     <ToggleLayout
-      title={specificity.valueOf() === 0 ? "AVAILABLE TO RENT" : "RENTING"}
-      toggleValue={specificity === RentSpecificity.RENTING}
-      onSwitch={switchSpecificity}
+      tabs={[
+        {
+          name: "ALL TO RENT",
+          href: "/",
+          current: specificity === RentSpecificity.ALL,
+        },
+        {
+          name: "USER IS RENTING",
+          href: "/user-is-renting",
+          current: specificity !== RentSpecificity.ALL,
+        },
+      ]}
     >
       {children}
     </ToggleLayout>

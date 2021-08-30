@@ -25,7 +25,7 @@ const lookupAddress = async (
 export const useLookupAddress = (): string => {
   const { web3Provider: provider } = useContext(UserContext);
   const address = useContext(CurrentAddressWrapper);
-  const [ensName, setEnsName] = useState(address);
+  const [ensName, setEnsName] = useState("");
 
   const lookup = useCallback(async () => {
     if (provider && !!address) {

@@ -58,13 +58,13 @@ export const TransactionWrapper: React.FC<{
   return (
     <>
       {transactionLoading ? (
-        <div style={{ display: "block" }} data-cy="transaction-loading">
+        <div className="block text-center" data-cy="transaction-loading">
           <img src={imageSource}></img>
           {transactionHashes?.map((hash) => {
             return (
               <a
                 key={hash}
-                style={{ fontSize: "24px", display: "block" }}
+                className="text-xl block"
                 href={`${etherScanUrl}/${hash}`}
                 target="_blank"
                 rel="noreferrer"

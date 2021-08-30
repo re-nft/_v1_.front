@@ -6,6 +6,10 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useLookupAddress } from "../hooks/useLookupAddress";
 import UserContext from "../contexts/UserProvider";
 import { Button } from "../components/common/button";
+import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
+import { TextField } from "../components/common/text-field";
+import { TextArea } from "../components/common/textarea";
+import { ShortenPopover } from "../components/common/shorten-popover";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useContext(GraphContext);
@@ -29,17 +33,18 @@ const Profile: React.FC = () => {
     [username, bio, currentAddress, refreshUserData]
   );
 
-  const handleChangeFormField = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (e.target.name === "username") {
-        setUsername(e.target.value);
-      }
-      if (e.target.name === "bio") {
-        setBio(e.target.value);
-      }
-    },
-    []
-  );
+  const handleChangeFormField = useCallback((e: React.ChangeEvent<unknown>) => {
+    // @ts-ignore
+    if (e.target.name === "username") {
+      // @ts-ignore
+      setUsername(e.target.value);
+    }
+    // @ts-ignore
+    if (e.target.name === "bio") {
+      // @ts-ignore
+      setBio(e.target.value);
+    }
+  }, []);
 
   useEffect(() => {
     if (userData) {
@@ -50,53 +55,67 @@ const Profile: React.FC = () => {
 
   if (!signer) {
     return (
-      <div className="text-center text-lg text-white font-display py-32 leading-tight">
+      <div className="text-center text-base text-white font-display py-32 leading-tight">
         Please connect your wallet!
       </div>
     );
   }
 
   if (isLoading) {
-    return <CatalogueLoader />;
+    return (
+      <div className="mx-auto">
+        <CatalogueLoader />
+      </div>
+    );
   }
 
   return (
     <div className="flex relative flex-col py-4 min-h-screen w-full">
-      <div className="profile-page">
-        <div className="profile-header">
-          <div className="avatar"></div>
-          <div className="username">{userData?.name || "Unnamed"}</div>
-          <div className="address">{currentAddress}</div>
-          <div className="address">{lookupName}</div>
+      <div className="mx-auto py-4 px-6 w-80 text-xl flex flex-col space-y-2">
+        <div className="text-white">
+          <CatalogueItemRow
+            text="Username"
+            value={userData?.name || "Unnamed"}
+          />
+          <CatalogueItemRow
+            text="Address"
+            value={<ShortenPopover longString={currentAddress} />}
+          />
+          <CatalogueItemRow
+            text="Reverse address"
+            value={<ShortenPopover longString={lookupName || "none"} />}
+          />
         </div>
-        <div className="profile-body">
-          <div className="form">
-            <form noValidate autoComplete="off" onSubmit={onSubmit}>
-              <div className="form__field">
-                <label htmlFor="username">Username</label>
-                <input
-                  value={username}
-                  id="username"
-                  name="username"
-                  type="text"
-                  onChange={handleChangeFormField}
-                />
-              </div>
-              <div className="form__field">
-                <label htmlFor="bio">Bio</label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={bio}
-                  onChange={handleChangeFormField}
-                ></textarea>
-              </div>
-              <div className="form__button">
-                <Button onClick={onSubmit} description="Save" />
-              </div>
-            </form>
+
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={onSubmit}
+          className="flex flex-col space-y-2 p-4"
+        >
+          <TextField
+            required
+            label="Username"
+            id="username"
+            name="username"
+            value={userData?.name || ""}
+            onChange={handleChangeFormField}
+            onBlur={handleChangeFormField}
+          />
+          <TextArea
+            required
+            label="Bio"
+            id="bio"
+            name="bio"
+            value={bio}
+            onChange={handleChangeFormField}
+            onBlur={handleChangeFormField}
+            rows={6}
+          />
+          <div className="flex justify-center items-center p-4">
+            <Button onClick={onSubmit} description="Save" />
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

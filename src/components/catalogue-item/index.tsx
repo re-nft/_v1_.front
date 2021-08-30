@@ -178,7 +178,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             >
               <div className="px-2 flex flex-auto flex-col">
                 <CatalogueItemRow
-                  text="Address"
+                  text="NFT Address"
                   value={<ShortenPopover longString={nft.address} />}
                 />
                 <CatalogueItemRow

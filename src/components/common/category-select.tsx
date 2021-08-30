@@ -12,8 +12,8 @@ export const CategorySelect: React.FC<{
   disabled?: boolean;
 }> = ({ options, setValue, value, defaultValue, disabled }) => {
   const onChange = useCallback(
-    (value: CategoryOptions) => {
-      setValue(value.label);
+    (value: string) => {
+      setValue(value);
     },
     [setValue]
   );
@@ -21,12 +21,13 @@ export const CategorySelect: React.FC<{
   return (
     <Listbox
       value={value || defaultValue}
+      //@ts-ignore
       onChange={onChange}
       disabled={disabled}
     >
       {({ open }) => (
         <>
-          <div className="mt-1 relative w-48">
+          <div className="mt-1 relative w-48 font-body">
             <Listbox.Button className="relative w-full bg-white border-2 border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
               <span className="block truncate">
                 {value?.label || defaultValue.label}

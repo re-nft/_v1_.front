@@ -6,7 +6,6 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import UserContext from "../contexts/UserProvider";
-import { Toggle } from "../components/common/toggle";
 import {
   ExtendedLending,
   LendingTable,
@@ -18,6 +17,7 @@ import {
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
 import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
 import ToggleLayout from "../components/toggle-layout";
+import { useRouter } from "next/router";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -30,7 +30,13 @@ export const Dashboard: React.FC = () => {
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);
-  const [showClaimed, toggleClaimed] = useState(true);
+  const {
+    query: { claimed },
+  } = useRouter();
+
+  const showClaimed = useMemo(() => {
+    return claimed === "true";
+  }, [claimed]);
 
   const {
     onCheckboxChange,
@@ -75,17 +81,24 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const toggleClaimSwitch = useCallback(() => {
-    toggleClaimed(!showClaimed);
-  }, [showClaimed]);
-
-  const toggleTitle = useMemo(() => {
-    return showClaimed ? "Hide claimed items" : "Show claimed items";
+  const tabs = useMemo(() => {
+    return [
+      {
+        name: "CURRENT",
+        href: "/dashboard?claimed=false",
+        current: !showClaimed,
+      },
+      {
+        name: "SHOW CLAIMED",
+        href: "/dashboard?claimed=true",
+        current: showClaimed,
+      },
+    ];
   }, [showClaimed]);
 
   if (!signer) {
     return (
-      <ToggleLayout>
+      <ToggleLayout tabs={[]}>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
@@ -95,15 +108,15 @@ export const Dashboard: React.FC = () => {
 
   if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
     return (
-      <ToggleLayout>
+      <ToggleLayout tabs={[]}>
         <CatalogueLoader />
       </ToggleLayout>
     );
 
   if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
     return (
-      <ToggleLayout>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
+      <ToggleLayout tabs={[]}>
+        <div className="text-center text-base text-white font-display py-32 leading-tight">
           You aren&apos;t lending or renting yet. To start lending, head to the
           lend tab.
         </div>
@@ -112,14 +125,9 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <ToggleLayout>
+    <ToggleLayout tabs={tabs}>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="flex flex-col space-y-2 text-white text-base">
-          <Toggle
-            toggleValue={showClaimed}
-            onSwitch={toggleClaimSwitch}
-            title={toggleTitle}
-          />
           <LendingTable
             checkedItems={checkedItems}
             toggleClaimModal={toggleClaimModal}

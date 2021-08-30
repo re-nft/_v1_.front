@@ -115,7 +115,7 @@ export const PaginationList = <T extends Nft>({
 
   if (!isLoading && currentPage.length === 0) {
     return (
-      <div className="text-center text-lg text-white font-display py-32 leading-tight">
+      <div className="text-center text-base text-white font-display py-32 leading-tight">
         {emptyResultMessage}
       </div>
     );

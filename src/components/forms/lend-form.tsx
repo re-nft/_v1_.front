@@ -109,7 +109,7 @@ export const LendForm: React.FC<LendFormProps> = ({
         const formSubmittedSuccessfully =
           status.status === TransactionStateEnum.SUCCESS;
         return (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="flex flex-col space-y-12">
             <FieldArray name="inputs">
               {() => {
                 return values.inputs.map(

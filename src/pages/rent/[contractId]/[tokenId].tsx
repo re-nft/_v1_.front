@@ -29,7 +29,7 @@ const AvailableToRentPage: React.FC<{
   if (!match && !isLoading)
     return (
       <RentSwitchWrapper>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
+        <div className="text-center text-base text-white font-display py-32 leading-tight">
           That item isn&apos;t available for renting at the moment.
         </div>
       </RentSwitchWrapper>

@@ -16,7 +16,10 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Faq", href: "/faq" },
 ];
-const userNavigation = [{ name: "Profile", href: "/profile" }];
+const userNavigation = [
+  { name: "Profile", href: "/profile" },
+  { name: "Sign out", href: "/signout", disabled: true },
+];
 
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
@@ -78,15 +81,19 @@ export const AppLayout: React.FC = ({ children }) => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none">
+                      <Menu.Items className="absolute z-20 mt-4 border-2 border-black w-full bg-white shadow-rn-one max-h-60 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-md">
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <Link href={item.href}>
                                 <a
                                   className={classNames(
-                                    active ? "bg-gray-100" : "",
-                                    "block py-2 px-4 text-sm text-gray-700"
+                                    item.disabled
+                                      ? "text-gray-400 cursor-not-allowed"
+                                      : active
+                                      ? "text-white bg-black"
+                                      : "text-black hover:bg-black hover:text-white",
+                                    "cursor-default select-none relative block p-2"
                                   )}
                                 >
                                   {item.name}
@@ -107,17 +114,21 @@ export const AppLayout: React.FC = ({ children }) => {
                 {navigation.map((item) => (
                   <Link href={item.href} key={item.name}>
                     <a
-                      className={classNames(
-                        isPathActive(item.href, pathname)
-                          ? "menu__item menu__item--active"
-                          : "menu__item",
-                        ""
-                      )}
+                      className="relative outline-none block p-1 bg-black"
                       aria-current={
                         isPathActive(item.href, pathname) ? "page" : undefined
                       }
                     >
-                      <div>{item.name}</div>
+                      <div
+                        className={classNames(
+                          "relative py-3 px-4 text-white leading-none font-display uppercase text-sm whitespace-nowrap ",
+                          isPathActive(item.href, pathname)
+                            ? "bg-rn-orange shadow-rn-inset-orange "
+                            : "bg-rn-purple shadow-rn-drop-purple -top-2 -left-2 hover:bg-rn-orange hover:shadow-rn-drop-orange "
+                        )}
+                      >
+                        {item.name}
+                      </div>
                     </a>
                   </Link>
                 ))}

@@ -122,7 +122,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         const formSubmittedSuccessfully =
           status.status === TransactionStateEnum.SUCCESS;
         return (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="flex flex-col space-y-12">
             <FieldArray name="inputs">
               {() => {
                 return values.inputs.map(
@@ -218,7 +218,6 @@ const ModalDialogSection: React.FC<{
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
   const nftPrice = item.lending.nftPrice;
-  const duration = item.lending.duration;
   const totalRent =
     (item.lending.nftPrice || 0) * Number(item.amount) +
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
@@ -240,7 +239,7 @@ const ModalDialogSection: React.FC<{
       <TextField
         required
         label={renderItem()}
-        value={duration || ""}
+        value={item.duration || ""}
         name={`inputs.${index}.duration`}
         onChange={handleChange}
         onBlur={handleBlur}

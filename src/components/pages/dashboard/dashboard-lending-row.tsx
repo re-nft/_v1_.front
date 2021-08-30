@@ -57,7 +57,7 @@ export const LendingRow: React.FC<{
     <tr
       onClick={onRowClick}
       className="transition-opacity duration-500
-      ease-in-out text-2xl leading-3 bg-white bg-opacity-0
+      ease-in-out text-2xl leading-rn-1 bg-white bg-opacity-0
       hover:bg-opacity-20 hover:cursor-pointer"
     >
       <td className="pl-8 px-1 whitespace-nowrap font-normal">

@@ -250,12 +250,16 @@ export const sortNfts = (
 
 export const filterClaimed =
   (showClaimed: boolean) => (l: Lending | Renting) => {
-    if (!showClaimed) {
-      if (l.lending) return !l.lending.collateralClaimed;
+    console.log(showClaimed, l.lending.collateralClaimed);
+    if (showClaimed) {
+      if (l.lending) return l.lending.collateralClaimed;
       return false;
+    } else {
+      if (l.lending) return !l.lending.collateralClaimed;
+      return true;
     }
-    return true;
   };
+
 export const mapAddRelendedField =
   (ids: Set<string>) => (l: Lending | Renting) => {
     return {
@@ -346,19 +350,6 @@ export const getUniqueID = (
     lendingId ?? 0
   }`;
 };
-
-// const getLendingId = (item: Nft): string => {
-//   let lendingID = "0";
-//   if (isLending(item)) lendingID = item.lending.id;
-//   else if (isRenting(item))
-//     lendingID = item.renting.lendingId
-//       .concat(RENFT_SUBGRAPH_ID_SEPARATOR)
-//       .concat("renting");
-//   return lendingID;
-// };
-// export const getUniqueCheckboxId = (item: Nft): string => {
-//   return getUniqueID(item.address, item.tokenId, getLendingId(item));
-// };
 
 export function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");

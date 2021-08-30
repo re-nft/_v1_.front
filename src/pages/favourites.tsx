@@ -77,7 +77,7 @@ export const MyFavorites: React.FC = () => {
 
   if (!isLoading && nftItems.length === 0) {
     return (
-      <div className="text-center text-lg text-white font-display py-32 leading-tight">
+      <div className="text-center text-base text-white font-display py-32 leading-tight">
         You dont have any added in favorites
       </div>
     );

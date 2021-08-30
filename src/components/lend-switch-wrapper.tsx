@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import ToggleLayout from "./toggle-layout";
 import { useRouter } from "next/router";
 
@@ -14,21 +14,21 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
       ? LendSpecificity.LENDING
       : LendSpecificity.ALL;
   }, [router.pathname]);
-  const switchSpecificity = useCallback(() => {
-    if (specificity == LendSpecificity.ALL) {
-      router.push("/user-is-lending");
-    } else {
-      router.push("/lend");
-    }
-  }, [specificity, router]);
 
   return (
     <ToggleLayout
-      title={
-        specificity === LendSpecificity.ALL ? "AVAILABLE TO LEND" : "LENDING"
-      }
-      toggleValue={specificity === LendSpecificity.LENDING}
-      onSwitch={switchSpecificity}
+      tabs={[
+        {
+          name: "ALL TO LEND",
+          href: "/user-is-lending",
+          current: specificity === LendSpecificity.ALL,
+        },
+        {
+          name: "USER IS LENDING",
+          href: "/lend",
+          current: specificity !== LendSpecificity.ALL,
+        },
+      ]}
     >
       {children}
     </ToggleLayout>

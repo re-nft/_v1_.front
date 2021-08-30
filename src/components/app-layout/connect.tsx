@@ -39,7 +39,7 @@ export const Connect: React.FC = () => {
           <div>Connect</div>
         </div>
       ) : (
-        <div className="flex justify-center items-center px-3 md:px-0">
+        <div className="flex justify-center items-center px-3 md:px-0 font-body">
           <div>
             <p className="font-display text-sm leading-tight text-rn-purple">
               {network} &nbsp;

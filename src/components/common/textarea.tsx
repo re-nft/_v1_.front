@@ -1,7 +1,7 @@
 import React, { Ref } from "react";
 import ExclamationCircleIcon from "@heroicons/react/solid/ExclamationCircleIcon";
 
-export const TextField: React.FC<{
+export const TextArea: React.FC<{
   required?: boolean;
   label: JSX.Element | string;
   value: string | ReadonlyArray<string> | number;
@@ -24,6 +24,7 @@ export const TextField: React.FC<{
   error?: boolean;
   helperText?: string | false | null;
   disabled?: boolean;
+  rows?: number;
 }> = React.forwardRef((props, ref) => {
   const {
     required,
@@ -36,12 +37,13 @@ export const TextField: React.FC<{
     error,
     helperText,
     disabled,
+    rows,
   } = props;
 
   return (
     <div className="flex-1">
       <div
-        className="font-body relative border-2 border-black  px-3 py-2 shadow-sm focus-within:ring-1 focus-within:ring-rn-purple focus-within:border-rn-purple"
+        className="font-body relative border-2 border-black  px-3 py-2 shadow-sm focus-within:ring-1 focus-within:ring-rn-purple focus-within:border-rn-purple flex-1"
         ref={ref as Ref<HTMLDivElement>}
       >
         <label
@@ -50,7 +52,7 @@ export const TextField: React.FC<{
         >
           {label}
         </label>
-        <input
+        <textarea
           className="block w-full border-0 px-3 mt-4 py-1 text-black placeholder-black focus:ring-2 focus:outline-none focus:ring-rn-purple sm:text-lg"
           disabled={disabled}
           required={required}
@@ -59,6 +61,7 @@ export const TextField: React.FC<{
           onChange={onChange}
           onBlur={onBlur}
           name={name}
+          rows={rows}
         />
         {error && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -79,4 +82,4 @@ export const TextField: React.FC<{
   );
 });
 
-TextField.displayName = "TextField";
+TextArea.displayName = "TextArea";

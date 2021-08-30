@@ -27,8 +27,8 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
 
   return (
     <Modal open={open} handleClose={onClose}>
-      <div className="modal-dialog-section">
-        <div className="modal-dialog-title">Do you want to stop lending?</div>
+      <div className="font-body">
+        <div className="text-xl">Do you want to stop lending?</div>
         <div className="py-3 flex flex-auto items-end justify-center">
           <TransactionWrapper
             isLoading={t.isLoading}
