@@ -13,11 +13,11 @@ const ButHow: React.FC = () => {
         <div style={{ marginTop: "1em", textAlign: "center" }}>
           <img src="assets/faq/lend-modal.png" />
         </div>
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-1.png" className="h-8 w-8" />
             <b
-              className="font-display text-sm pt-2 whitespace-nowrap"
+              className="font-display text-xs pt-2 md:text-sm whitespace-nowrap"
               style={{ width: "400px" }}
             >
               NFT standard
@@ -34,10 +34,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-2.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               NFT address
             </b>
           </div>
@@ -46,10 +46,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-3.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Token ID
             </b>
           </div>
@@ -58,10 +58,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-4.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Available amount
             </b>
           </div>
@@ -72,10 +72,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-5.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Lend amount
             </b>
           </div>
@@ -86,10 +86,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-6.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Max lend duration
             </b>
           </div>
@@ -109,10 +109,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-7.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Borrow price
             </b>
           </div>
@@ -132,10 +132,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-8.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Collateral PER COPY
             </b>
           </div>
@@ -147,10 +147,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-9.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Payment token
             </b>
           </div>
@@ -159,10 +159,10 @@ const ButHow: React.FC = () => {
           </div>
         </div>
         <br />
-        <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+        <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
           <div className="col-span-4 flex space-x-4">
             <img src="assets/faq/bullet-10.png" className="h-8 w-8" />
-            <b className="font-display text-sm pt-2  whitespace-nowrap ">
+            <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
               Action button.
             </b>
           </div>
@@ -186,10 +186,10 @@ const ButHow: React.FC = () => {
           <img src="assets/faq/rent-modal.png" />
         </div>
       </div>
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-1.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             NFT standard
           </b>
         </div>
@@ -201,10 +201,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-2.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             NFT address
           </b>
         </div>
@@ -213,10 +213,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-3.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Token ID
           </b>
         </div>
@@ -225,10 +225,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-4.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Rent amount
           </b>
         </div>
@@ -239,10 +239,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-5.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Rent duration
           </b>
         </div>
@@ -253,10 +253,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-6.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Daily rent price
           </b>
         </div>
@@ -265,10 +265,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-7.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Collateral PER COPY
           </b>
         </div>
@@ -282,10 +282,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-8.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Total rent payable
           </b>
         </div>
@@ -296,10 +296,10 @@ const ButHow: React.FC = () => {
         </div>
       </div>
       <br />
-      <div className="grid grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-12 px-2 bg-white bg-opacity-0 hover:bg-opacity-20 hover:cursor-pointer">
         <div className="col-span-4 flex space-x-4">
           <img src="assets/faq/bullet-9.png" className="h-8 w-8" />
-          <b className="font-display text-sm pt-2  whitespace-nowrap ">
+          <b className="font-display text-xs pt-2 md:text-sm  whitespace-nowrap ">
             Action button
           </b>
         </div>
