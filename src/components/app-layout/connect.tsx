@@ -35,8 +35,13 @@ export const Connect: React.FC = () => {
   return (
     <>
       {!installMetaMask && (!currentAddress || !network) ? (
-        <div className="btn" onClick={connect}>
-          <div>Connect</div>
+        <div
+          className="relative outline-none block p-1 bg-black"
+          onClick={connect}
+        >
+          <div className="relative py-3 px-4 bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 hover:bg-rn-orange hover:shadow-rn-drop-orange">
+            Connect
+          </div>
         </div>
       ) : (
         <div className="flex justify-center items-center px-3 md:px-0 font-body">
