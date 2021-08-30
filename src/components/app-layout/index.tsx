@@ -108,13 +108,13 @@ export const AppLayout: React.FC = ({ children }) => {
                 </div>
               </div>
               <nav
-                className="hidden lg:py-2 lg:flex lg:space-x-4 menu"
+                className="hidden lg:py-2 lg:flex lg:space-x-4 menu items-start"
                 aria-label="Global"
               >
                 {navigation.map((item) => (
                   <Link href={item.href} key={item.name}>
                     <a
-                      className="relative outline-none block p-1 bg-black"
+                      className="relative outline-none block p-1 bg-black mt-3"
                       aria-current={
                         isPathActive(item.href, pathname) ? "page" : undefined
                       }

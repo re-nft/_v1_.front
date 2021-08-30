@@ -27,7 +27,7 @@ export const CategorySelect: React.FC<{
     >
       {({ open }) => (
         <>
-          <div className="mt-1 relative w-48 font-body">
+          <div className="relative w-48 font-body">
             <Listbox.Button className="relative w-full bg-white border-2 flex border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
               {value?.imageUrl && (
                 <span className="flex-1 justify-center items-center pr-2">
