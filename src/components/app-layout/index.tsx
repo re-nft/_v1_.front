@@ -161,7 +161,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 ))}
               </div>
               <div className="border-t-2 border-gray-700 pt-4 pb-3 flex justify-end flex-col">
-                <div className="flex items-center">
+                <div className="flex justify-center md:justify-none items-center">
                   <div className="flex-shrink-0">
                     <Connect />
                   </div>
