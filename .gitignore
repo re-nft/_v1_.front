@@ -28,6 +28,7 @@ yarn-error.log*
 
 #ignore symfoni
 src/hardhat/SymfoniContext.tsx
+src/hardhat/**
 src/hardhat/typechain/factories/**/*.tsx
 src/hardhat/typechain/factories/**/*.ts
 
