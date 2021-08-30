@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import { classNames } from "../utils";
 import { SnackAlert } from "./common/snack-alert";
@@ -8,6 +9,7 @@ type PageLayoutProps = {
 };
 
 const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
+  const router = useRouter();
   if (!tabs || tabs.length < 1)
     return <div className="flex flex-col py-4 w-full">{children}</div>;
 
@@ -23,9 +25,14 @@ const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
             name="tabs"
             className="block w-full pl-3 pr-10 py-2 text-base justify-end focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
             defaultValue={tabs.find((tab) => tab.current)?.name}
+            onChange={(event) => {
+              router.push(event?.target.value);
+            }}
           >
             {tabs.map((tab) => (
-              <option key={tab.name}>{tab.name}</option>
+              <option key={tab.name} value={tab.href}>
+                {tab.name}
+              </option>
             ))}
           </select>
         </div>

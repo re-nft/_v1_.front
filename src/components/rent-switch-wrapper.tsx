@@ -16,22 +16,19 @@ export const RentSwitchWrapper: React.FC = ({ children }) => {
       : RentSpecificity.ALL;
   }, [router.pathname]);
 
-  return (
-    <ToggleLayout
-      tabs={[
-        {
-          name: "ALL TO RENT",
-          href: "/",
-          current: specificity === RentSpecificity.ALL,
-        },
-        {
-          name: "USER IS RENTING",
-          href: "/user-is-renting",
-          current: specificity !== RentSpecificity.ALL,
-        },
-      ]}
-    >
-      {children}
-    </ToggleLayout>
-  );
+  const tabs = useMemo(() => {
+    return [
+      {
+        name: "ALL TO RENT",
+        href: "/",
+        current: specificity === RentSpecificity.ALL,
+      },
+      {
+        name: "USER IS RENTING",
+        href: "/user-is-renting",
+        current: specificity !== RentSpecificity.ALL,
+      },
+    ];
+  }, [specificity]);
+  return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };

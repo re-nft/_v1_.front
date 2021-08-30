@@ -108,7 +108,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 </div>
               </div>
               <nav
-                className="hidden lg:py-2 lg:flex lg:space-x-4 menu items-start"
+                className="hidden lg:py-2 lg:flex lg:space-x-4 menu items-end"
                 aria-label="Global"
               >
                 {navigation.map((item) => (

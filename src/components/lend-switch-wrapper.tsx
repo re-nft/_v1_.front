@@ -15,22 +15,19 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
       : LendSpecificity.ALL;
   }, [router.pathname]);
 
-  return (
-    <ToggleLayout
-      tabs={[
-        {
-          name: "ALL TO LEND",
-          href: "/user-is-lending",
-          current: specificity === LendSpecificity.ALL,
-        },
-        {
-          name: "USER IS LENDING",
-          href: "/lend",
-          current: specificity !== LendSpecificity.ALL,
-        },
-      ]}
-    >
-      {children}
-    </ToggleLayout>
-  );
+  const tabs = useMemo(() => {
+    return [
+      {
+        name: "ALL TO LEND",
+        href: "/user-is-lending",
+        current: specificity === LendSpecificity.ALL,
+      },
+      {
+        name: "USER IS LENDING",
+        href: "/lend",
+        current: specificity !== LendSpecificity.ALL,
+      },
+    ];
+  }, [specificity]);
+  return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };
