@@ -66,28 +66,30 @@ export const TokenSelect: React.FC<{
                   {tokens.map((token) => (
                     <Listbox.Option
                       key={token.name}
-                      className={({ active }) =>
+                      className={({ active, selected }) =>
                         classNames(
-                          active ? "text-white bg-black" : "text-black",
+                          active || selected
+                            ? "text-white bg-black"
+                            : "text-black",
                           "cursor-default select-none relative"
                         )
                       }
                       value={token.value}
                     >
-                      {({ selected, active }) => (
-                        <>
-                          <span
-                            className={classNames(
-                              selected
-                                ? "text-white bg-black"
-                                : "text-black bg-white hover:text-white hover:bg-black",
-                              "block truncate py-2 pl-4 pr-4"
-                            )}
-                          >
-                            {token.name}
-                          </span>
-                        </>
-                      )}
+                      {({ selected, active }) => {
+                        console.log(selected, active);
+                        return (
+                          <>
+                            <span
+                              className={classNames(
+                                "block truncate py-2 pl-4 pr-4"
+                              )}
+                            >
+                              {token.name}
+                            </span>
+                          </>
+                        );
+                      }}
                     </Listbox.Option>
                   ))}
                 </Listbox.Options>

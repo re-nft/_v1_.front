@@ -16,7 +16,7 @@ const BatchBar: React.FC<BatchBarProps> = ({
 }) => (
   <div className="fixed bottom-0 left-0 right-0 w-full mx-auto z-10 px-4 bg-rn-purple  border-t-8 border-black">
     <div className="flex content-between items-center p-6 ">
-      <div className="font-display text-white flex-1 text-lg leading-loose">
+      <div className="font-display text-white flex-1 text-sm leading-loose">
         {title}
       </div>
       <div className="flex-1 justify-end flex flex-row">

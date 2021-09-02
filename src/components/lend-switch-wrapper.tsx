@@ -19,12 +19,12 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
     return [
       {
         name: "ALL TO LEND",
-        href: "/user-is-lending",
+        href: "/lend",
         current: specificity === LendSpecificity.ALL,
       },
       {
         name: "USER IS LENDING",
-        href: "/lend",
+        href: "/user-is-lending",
         current: specificity !== LendSpecificity.ALL,
       },
     ];

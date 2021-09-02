@@ -2,7 +2,7 @@ import { TextField } from "../common/text-field";
 
 import ActionButton from "../common/action-button";
 import { Lending, Nft } from "../../contexts/graph/classes";
-import React from "react";
+import React, { useCallback } from "react";
 import ModalFields from "../modals/modal-fields";
 import {
   Formik,
@@ -18,6 +18,10 @@ import { PaymentToken } from "@renft/sdk";
 import { TransactionStatus } from "../../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
+import { CatalogueItemDisplay } from "../catalogue-item/catalogue-item-display";
+import { useNftMetaState } from "../../hooks/useMetaState";
+import shallow from "zustand/shallow";
+import XIcon from "@heroicons/react/outline/XIcon";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -97,99 +101,120 @@ export const RentForm: React.FC<LendFormProps> = ({
     return { inputs: errors };
   };
   return (
-    <Formik
-      // @ts-ignore
-      onSubmit={onSubmit}
-      initialValues={initialValues}
-      validate={validate}
-      validateOnMount
-      validateOnBlur
-      validateOnChange
-      initialStatus={[false, undefined]}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleSubmit,
-        handleChange,
-        handleBlur,
-        isValid,
-        isSubmitting,
-        submitForm,
-        status,
-      }) => {
-        const formSubmittedSuccessfully =
-          status.status === TransactionStateEnum.SUCCESS;
-        return (
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-12">
-            <FieldArray name="inputs">
-              {() => {
-                return values.inputs.map(
-                  (item: LendingWithKey, index: number) => {
-                    return (
-                      <ModalDialogSection
-                        key={item.key}
-                        item={item}
-                        index={index}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        touched={touched.inputs ? touched.inputs[index] : null}
-                        errors={
-                          errors.inputs
-                            ? (errors.inputs[
-                                index
-                              ] as FormikErrors<LendingWithKey>)
-                            : null
+    <div>
+      <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">
+        NFTs to rent
+      </h1>
+      <Formik
+        // @ts-ignore
+        onSubmit={onSubmit}
+        initialValues={initialValues}
+        validate={validate}
+        validateOnMount
+        validateOnBlur
+        validateOnChange
+        initialStatus={[false, undefined]}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleSubmit,
+          handleChange,
+          handleBlur,
+          isValid,
+          isSubmitting,
+          submitForm,
+          status,
+        }) => {
+          const formSubmittedSuccessfully =
+            status.status === TransactionStateEnum.SUCCESS;
+          return (
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col space-y-12 mt-4"
+            >
+              <section aria-labelledby="cart-heading">
+                <h2 id="cart-heading" className="sr-only">
+                  NFTs in your renting cart
+                </h2>
+                <ul
+                  role="list"
+                  className="flex flex-col space-y-8 transition duration-700 ease-in-out "
+                >
+                  <FieldArray name="inputs">
+                    {({ remove }) => {
+                      return values.inputs.map(
+                        (item: LendingWithKey, index: number) => {
+                          return (
+                            <ModalDialogSection
+                              key={item.key}
+                              item={item}
+                              removeFromCart={remove}
+                              index={index}
+                              handleBlur={handleBlur}
+                              handleChange={handleChange}
+                              touched={
+                                touched.inputs ? touched.inputs[index] : null
+                              }
+                              errors={
+                                errors.inputs
+                                  ? (errors.inputs[
+                                      index
+                                    ] as FormikErrors<LendingWithKey>)
+                                  : null
+                              }
+                              disabled={formSubmittedSuccessfully}
+                            ></ModalDialogSection>
+                          );
                         }
-                        disabled={formSubmittedSuccessfully}
-                      ></ModalDialogSection>
-                    );
-                  }
-                );
-              }}
-            </FieldArray>
+                      );
+                    }}
+                  </FieldArray>
 
-            <div className="py-3 flex flex-auto items-end justify-center">
-              {!isApproved && !isSubmitting && (
-                <TransactionWrapper
-                  isLoading={approvalStatus.isLoading}
-                  transactionHashes={approvalStatus.transactionHash}
-                  status={TransactionStateEnum.PENDING}
-                >
-                  <ActionButton<Nft>
-                    title="Approve Payment tokens"
-                    nft={nft}
-                    onClick={handleApproveAll}
-                    disabled={approvalStatus.isLoading || isSubmitting}
-                  />
-                </TransactionWrapper>
-              )}
-              {(isApproved || isSubmitting) && (
-                <TransactionWrapper
-                  isLoading={isSubmitting}
-                  status={status.status}
-                  closeWindow={onClose}
-                  transactionHashes={status.transactionHash}
-                >
-                  <ActionButton<Nft>
-                    title={nfts.length > 1 ? "Rent all" : "Rent"}
-                    nft={nft}
-                    onClick={submitForm}
-                    disabled={
-                      !isValid ||
-                      !isApproved ||
-                      isSubmitting ||
-                      formSubmittedSuccessfully
-                    }
-                  />
-                </TransactionWrapper>
-              )}
-            </div>
-          </form>
-        );
-      }}
-    </Formik>
+                  <div className="py-3 flex flex-auto items-end justify-center">
+                    {!isApproved && !isSubmitting && (
+                      <TransactionWrapper
+                        isLoading={approvalStatus.isLoading}
+                        transactionHashes={approvalStatus.transactionHash}
+                        status={TransactionStateEnum.PENDING}
+                      >
+                        <ActionButton<Nft>
+                          title="Approve Payment tokens"
+                          nft={nft}
+                          onClick={handleApproveAll}
+                          disabled={approvalStatus.isLoading || isSubmitting}
+                        />
+                      </TransactionWrapper>
+                    )}
+                    {(isApproved || isSubmitting) && (
+                      <TransactionWrapper
+                        isLoading={isSubmitting}
+                        status={status.status}
+                        closeWindow={onClose}
+                        transactionHashes={status.transactionHash}
+                      >
+                        <ActionButton<Nft>
+                          title={nfts.length > 1 ? "Rent all" : "Rent"}
+                          nft={nft}
+                          onClick={submitForm}
+                          disabled={
+                            !isValid ||
+                            !isApproved ||
+                            isSubmitting ||
+                            formSubmittedSuccessfully
+                          }
+                        />
+                      </TransactionWrapper>
+                    )}
+                  </div>
+                </ul>
+              </section>
+            </form>
+          );
+        }}
+      </Formik>
+    </div>
   );
 };
 
@@ -209,11 +234,21 @@ const ModalDialogSection: React.FC<{
       ? void
       : (e: string | React.ChangeEvent<unknown>) => void;
   };
+  removeFromCart: (id: number) => void;
   index: number;
   touched: FormikTouched<LendingWithKey> | null;
   errors: FormikErrors<LendingWithKey> | null;
   disabled: boolean;
-}> = ({ item, index, handleChange, handleBlur, errors, touched, disabled }) => {
+}> = ({
+  item,
+  index,
+  handleChange,
+  handleBlur,
+  errors,
+  touched,
+  disabled,
+  removeFromCart,
+}) => {
   const token = item.lending.paymentToken;
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
@@ -221,6 +256,19 @@ const ModalDialogSection: React.FC<{
   const totalRent =
     (item.lending.nftPrice || 0) * Number(item.amount) +
     (item.lending.dailyRentPrice || 0) * Number(item.duration);
+
+  const meta = useNftMetaState(
+    useCallback(
+      (state) => {
+        return state.metas[item.nId] || {};
+      },
+      [item.nId]
+    ),
+    shallow
+  );
+  const removeItem = useCallback(() => {
+    removeFromCart(index);
+  }, [index, removeFromCart]);
 
   const renderItem = () => {
     const days = item.lending.maxRentDuration;
@@ -234,51 +282,79 @@ const ModalDialogSection: React.FC<{
     );
   };
   return (
-    <ModalFields nft={item} key={item.id}>
-      <CatalogueItemRow text="Rent Amount" value={item.amount} />
-      <TextField
-        required
-        label={renderItem()}
-        value={item.duration || ""}
-        name={`inputs.${index}.duration`}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={
-          !!touched && touched.duration && Boolean(errors && errors.duration)
-        }
-        helperText={touched && touched.duration && errors && errors.duration}
-        disabled={disabled}
-      />
-      <CatalogueItemRow
-        text={`Daily rent price [${paymentToken}]`}
-        value={dailyRentPrice}
-      />
-      <CatalogueItemRow
-        text={`Collateral (per item) [${paymentToken}]`}
-        value={nftPrice}
-      />
-      <CatalogueItemRow
-        text={`Rent [${paymentToken}]`}
-        value={
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              overflow: "visible",
-            }}
+    <li
+      key={item.id}
+      className="flex flex-col py-2 relative border border-black "
+    >
+      <div className="w-40 h-40 px-2">
+        <CatalogueItemDisplay
+          image={meta.image}
+          description={meta.description}
+        />
+      </div>
+      <div className="absolute -top-2 -right-2 bg-white p-4">
+        <div className="ml-4">
+          <button
+            type="button"
+            className="text-sm font-medium text-black"
+            onClick={removeItem}
           >
-            <span>
-              &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
-              {item.duration ? item.duration : 0} days
-            </span>
-            <span>
-              + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
-            </span>
-            <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
-          </div>
-        }
-      />
-    </ModalFields>
+            <XIcon className="h-8 w-8 text-black" />
+          </button>
+        </div>
+      </div>
+      <div className="flex-1">
+        <ModalFields nft={item} key={item.id}>
+          <CatalogueItemRow text="Rent Amount" value={item.amount} />
+          <TextField
+            required
+            label={renderItem()}
+            value={item.duration || ""}
+            name={`inputs.${index}.duration`}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={
+              !!touched &&
+              touched.duration &&
+              Boolean(errors && errors.duration)
+            }
+            helperText={
+              touched && touched.duration && errors && errors.duration
+            }
+            disabled={disabled}
+          />
+          <CatalogueItemRow
+            text={`Daily rent price [${paymentToken}]`}
+            value={dailyRentPrice}
+          />
+          <CatalogueItemRow
+            text={`Collateral (per item) [${paymentToken}]`}
+            value={nftPrice}
+          />
+          <CatalogueItemRow
+            text={`Rent [${paymentToken}]`}
+            value={
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  overflow: "visible",
+                }}
+              >
+                <span>
+                  &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
+                  {item.duration ? item.duration : 0} days
+                </span>
+                <span>
+                  + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+                </span>
+                <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
+              </div>
+            }
+          />
+        </ModalFields>
+      </div>
+    </li>
   );
 };

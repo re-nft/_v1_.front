@@ -57,6 +57,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   disabled,
 }) => {
   const { signer } = useContext(UserContext);
+  const { pathname } = useRouter();
+
   const meta = useNftMetaState(
     useCallback(
       (state) => {
@@ -67,7 +69,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     shallow
   );
 
-  const { pathname } = useRouter();
   const imageIsReady = useMemo(() => {
     return meta && !meta.loading;
   }, [meta]);
@@ -143,12 +144,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                     ></Checkbox>
                   </div>
                 </div>
-                <div className="border-b border-t border-black overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
-                  <CatalogueItemDisplay
-                    image={image}
-                    description={description}
-                  />
-                </div>
+                <CatalogueItemDisplay image={image} description={description} />
                 <div className="font-display text-xs leading-tight text-center py-3 px-4 flex flex-col justify-center items-center">
                   <p className="flex-initial">{name}</p>
                   <div className="flex flex-auto flex-row">

@@ -16,6 +16,7 @@ type LendFormProps = {
   approvalStatus: TransactionStatus;
   onClose: () => void;
 };
+
 export type LendInputProps = {
   amount: string;
   lendAmount: number | undefined;
@@ -79,101 +80,123 @@ export const LendForm: React.FC<LendFormProps> = ({
   };
 
   return (
-    <Formik
-      // TODO remove this
-      // @ts-ignore
-      onSubmit={onSubmit}
-      initialValues={initialValues}
-      enableReinitialize={true}
-      validate={validate}
-      validateOnMount
-      validateOnBlur
-      validateOnChange
-      initialStatus={{
-        isLoading: false,
-        status: TransactionStateEnum.PENDING,
-      }}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleSubmit,
-        handleChange,
-        handleBlur,
-        isValid,
-        isSubmitting,
-        submitForm,
-        status,
-      }) => {
-        const formSubmittedSuccessfully =
-          status.status === TransactionStateEnum.SUCCESS;
-        return (
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-12">
-            <FieldArray name="inputs">
-              {() => {
-                return values.inputs.map(
-                  (lendingInput: LendInputProps, index: number) => {
-                    return (
-                      <LendInput
-                        key={lendingInput.key}
-                        lendingInput={lendingInput}
-                        index={index}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        disabled={isSubmitting || formSubmittedSuccessfully}
-                        touched={touched.inputs ? touched.inputs[index] : null}
-                        errors={
-                          errors.inputs
-                            ? (errors.inputs[
-                                index
-                              ] as FormikErrors<LendInputProps>)
-                            : null
+    <div>
+      <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">
+        NFTs to lend
+      </h1>
+      <Formik
+        // TODO remove this
+        // @ts-ignore
+        onSubmit={onSubmit}
+        initialValues={initialValues}
+        enableReinitialize={true}
+        validate={validate}
+        validateOnMount
+        validateOnBlur
+        validateOnChange
+        initialStatus={{
+          isLoading: false,
+          status: TransactionStateEnum.PENDING,
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleSubmit,
+          handleChange,
+          handleBlur,
+          isValid,
+          isSubmitting,
+          submitForm,
+          status,
+        }) => {
+          const formSubmittedSuccessfully =
+            status.status === TransactionStateEnum.SUCCESS;
+          return (
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col space-y-12 mt-4"
+            >
+              <section aria-labelledby="cart-heading">
+                <h2 id="cart-heading" className="sr-only">
+                  NFTs in your lending cart
+                </h2>
+                <ul
+                  role="list"
+                  className="flex flex-col space-y-8 transition duration-700 ease-in-out "
+                >
+                  <FieldArray name="inputs">
+                    {({ remove }) => {
+                      return values.inputs.map(
+                        (lendingInput: LendInputProps, index: number) => {
+                          return (
+                            <LendInput
+                              key={lendingInput.key}
+                              lendingInput={lendingInput}
+                              index={index}
+                              handleBlur={handleBlur}
+                              handleChange={handleChange}
+                              disabled={
+                                isSubmitting || formSubmittedSuccessfully
+                              }
+                              touched={
+                                touched.inputs ? touched.inputs[index] : null
+                              }
+                              errors={
+                                errors.inputs
+                                  ? (errors.inputs[
+                                      index
+                                    ] as FormikErrors<LendInputProps>)
+                                  : null
+                              }
+                              removeFromCart={remove}
+                            ></LendInput>
+                          );
                         }
-                      ></LendInput>
-                    );
-                  }
-                );
-              }}
-            </FieldArray>
-
-            <div className="py-3 flex flex-auto items-end justify-center">
-              {!isApproved && !isSubmitting && (
-                <TransactionWrapper
-                  isLoading={approvalStatus.isLoading}
-                  status={approvalStatus.status}
-                  transactionHashes={approvalStatus.transactionHash}
-                >
-                  <ActionButton<Nft>
-                    title="Approve all"
-                    nft={nft}
-                    onClick={handleApproveAll}
-                    disabled={approvalStatus.isLoading}
-                  />
-                </TransactionWrapper>
-              )}
-              {(isApproved || isSubmitting) && (
-                <TransactionWrapper
-                  isLoading={isSubmitting}
-                  status={status.status}
-                  transactionHashes={status.transactionHash}
-                  closeWindow={onClose}
-                >
-                  <ActionButton<Nft>
-                    title={nfts.length > 1 ? "Lend all" : "Lend"}
-                    nft={nft}
-                    onClick={submitForm}
-                    disabled={
-                      !isValid || isSubmitting || formSubmittedSuccessfully
-                    }
-                  />
-                </TransactionWrapper>
-              )}
-            </div>
-          </form>
-        );
-      }}
-    </Formik>
+                      );
+                    }}
+                  </FieldArray>
+                </ul>
+                <div className="py-3 flex flex-auto items-end justify-center">
+                  {!isApproved && !isSubmitting && (
+                    <TransactionWrapper
+                      isLoading={approvalStatus.isLoading}
+                      status={approvalStatus.status}
+                      transactionHashes={approvalStatus.transactionHash}
+                    >
+                      <ActionButton<Nft>
+                        title="Approve all"
+                        nft={nft}
+                        onClick={handleApproveAll}
+                        disabled={approvalStatus.isLoading}
+                      />
+                    </TransactionWrapper>
+                  )}
+                  {(isApproved || isSubmitting) && (
+                    <TransactionWrapper
+                      isLoading={isSubmitting}
+                      status={status.status}
+                      transactionHashes={status.transactionHash}
+                      closeWindow={onClose}
+                    >
+                      <ActionButton<Nft>
+                        title={nfts.length > 1 ? "Lend all" : "Lend"}
+                        nft={nft}
+                        onClick={submitForm}
+                        disabled={
+                          !isValid || isSubmitting || formSubmittedSuccessfully
+                        }
+                      />
+                    </TransactionWrapper>
+                  )}
+                </div>
+              </section>
+            </form>
+          );
+        }}
+      </Formik>
+    </div>
   );
 };
 
