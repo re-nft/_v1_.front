@@ -1,13 +1,13 @@
 import { useCallback, useContext, useEffect } from "react";
-import { fetchUserProd721 } from "../services/graph";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import UserContext from "../contexts/UserProvider";
-import { Nft } from "../contexts/graph/classes";
-import { NftToken } from "../contexts/graph/types";
+import { fetchUserProd721 } from "../../services/graph";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import UserContext from "../../contexts/UserProvider";
+import { Nft } from "../../contexts/graph/classes";
+import { NftToken } from "../../contexts/graph/types";
 import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
 
 interface UserERC721State {
   users: Record<

@@ -4,9 +4,9 @@ import TransactionStateContext from "../contexts/TransactionState";
 import { from, Observable, of } from "rxjs";
 import { map, mergeAll } from "rxjs/operators";
 import { TransactionStateEnum } from "../types";
-import { SnackAlertContext } from "../contexts/SnackProvider";
 import ReactGA from "react-ga";
 import { nanoid } from "nanoid";
+import { useSnackProvider } from "./useSnackProvider";
 
 export interface TransactionStatus {
   hasFailure?: boolean;
@@ -110,7 +110,7 @@ export const useTransactionWrapper = (): ((
   }
 ) => Observable<TransactionStatus>) => {
   const { setHash } = useContext(TransactionStateContext);
-  const { setError } = useContext(SnackAlertContext);
+  const { setError } = useSnackProvider();
 
   return useCallback(
     (promise: Promise<ContractTransaction[] | ContractTransaction>, ga) => {

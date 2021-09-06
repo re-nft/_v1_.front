@@ -19,7 +19,7 @@ import { TransactionStatus } from "../../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 import { CatalogueItemDisplay } from "../catalogue-item/catalogue-item-display";
-import { useNftMetaState } from "../../hooks/useMetaState";
+import { useNftMetaState } from "../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 import XIcon from "@heroicons/react/outline/XIcon";
 import { Transition } from "@headlessui/react";

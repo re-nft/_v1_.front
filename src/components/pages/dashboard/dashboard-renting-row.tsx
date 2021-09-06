@@ -5,7 +5,7 @@ import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
 import { ShortenPopover } from "../../common/shorten-popover";
-import { useNftMetaState } from "../../../hooks/useMetaState";
+import { useNftMetaState } from "../../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 
 export const RentingRow: React.FC<{

@@ -3,7 +3,7 @@ import GraphContext from "../contexts/graph";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { useLookupAddress } from "../hooks/useLookupAddress";
+import { useLookupAddress } from "../hooks/queries/useLookupAddress";
 import UserContext from "../contexts/UserProvider";
 import { Button } from "../components/common/button";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";

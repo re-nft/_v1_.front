@@ -7,7 +7,6 @@ import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { Nft } from "../contexts/graph/classes";
-import { UserRentingContext } from "../contexts/UserRenting";
 import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
@@ -16,6 +15,7 @@ import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-ro
 import { PaginationList } from "../components/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
+import { useUserRenting } from "../hooks/queries/useUserRenting";
 
 const RentingCatalogueItem: React.FC<{
   nft: Renting;
@@ -125,7 +125,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
 };
 const UserRentings: React.FC = () => {
   const { signer } = useContext(UserContext);
-  const { userRenting, isLoading } = useContext(UserRentingContext);
+  const { renting: userRenting, isLoading } = useUserRenting();
 
   const rentingItems = useMemo(() => {
     return userRenting.filter(isRenting);

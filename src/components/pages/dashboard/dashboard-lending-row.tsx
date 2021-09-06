@@ -5,7 +5,7 @@ import { isClaimable } from "../../../hooks/useBatchItems";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
-import { useNftMetaState } from "../../../hooks/useMetaState";
+import { useNftMetaState } from "../../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 
 export const LendingRow: React.FC<{

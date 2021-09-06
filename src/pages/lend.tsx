@@ -5,7 +5,7 @@ import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
+import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
 import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";

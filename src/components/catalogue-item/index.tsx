@@ -7,7 +7,7 @@ import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
 import { useRouter } from "next/router";
-import { useNftMetaState } from "../../hooks/useMetaState";
+import { useNftMetaState } from "../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 import { Flipped, spring } from "react-flip-toolkit";
 import { CopyLink } from "../copy-link";

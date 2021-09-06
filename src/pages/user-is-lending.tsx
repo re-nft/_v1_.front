@@ -6,7 +6,6 @@ import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
-import { UserLendingContext } from "../contexts/UserLending";
 import UserContext from "../contexts/UserProvider";
 import { StopLendModal } from "../components/modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
@@ -14,6 +13,7 @@ import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
+import { useUserIsLending } from "../hooks/queries/userIsLending";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -114,7 +114,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
 };
 const UserCurrentlyLending: React.FC = () => {
   const { signer } = useContext(UserContext);
-  const { userLending, isLoading } = useContext(UserLendingContext);
+  const { userLending, isLoading } = useUserIsLending();
 
   const lendingItems = useMemo(() => {
     return userLending.filter(isLending);

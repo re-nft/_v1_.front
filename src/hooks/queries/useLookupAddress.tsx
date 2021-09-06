@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext, useCallback } from "react";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import UserContext from "../contexts/UserProvider";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
+import UserContext from "../../contexts/UserProvider";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 
 const lookupAddress = async (
   provider: ethers.providers.Web3Provider,

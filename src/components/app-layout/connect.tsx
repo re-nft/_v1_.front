@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import GraphContext from "../../contexts/graph";
 import UserContext from "../../contexts/UserProvider";
-import { useLookupAddress } from "../../hooks/useLookupAddress";
+import { useLookupAddress } from "../../hooks/queries/useLookupAddress";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";

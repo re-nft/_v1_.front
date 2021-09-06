@@ -3,8 +3,6 @@ import React, { useState, useCallback, useContext, useMemo } from "react";
 import { useBatchItems } from "../hooks/useBatchItems";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { UserLendingContext } from "../contexts/UserLending";
-import { UserRentingContext } from "../contexts/UserRenting";
 import UserContext from "../contexts/UserProvider";
 import {
   ExtendedLending,
@@ -18,6 +16,8 @@ import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
 import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
 import ToggleLayout from "../components/toggle-layout";
 import { useRouter } from "next/router";
+import { useUserIsLending } from "../hooks/queries/userIsLending";
+import { useUserRenting } from "../hooks/queries/useUserRenting";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -47,10 +47,10 @@ export const Dashboard: React.FC = () => {
     checkedRentingItems,
     checkedClaims,
   } = useBatchItems();
-  const { userRenting: rentingItems, isLoading: userRentingLoading } =
-    useContext(UserRentingContext);
+  const { renting: rentingItems, isLoading: userRentingLoading } =
+    useUserRenting();
   const { userLending: lendingItems, isLoading: userLendingLoading } =
-    useContext(UserLendingContext);
+    useUserIsLending();
   const [viewType, _] = useState<DashboardViewType>(
     DashboardViewType.LIST_VIEW
   );

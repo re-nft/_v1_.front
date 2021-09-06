@@ -5,7 +5,7 @@ import { TokenSelect } from "../common/token-select";
 import { LendInputProps } from "./lend-form";
 import { TextField } from "../common/text-field";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
-import { useNftMetaState } from "../../hooks/useMetaState";
+import { useNftMetaState } from "../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 import { CatalogueItemDisplay } from "../catalogue-item/catalogue-item-display";
 import XIcon from "@heroicons/react/outline/XIcon";

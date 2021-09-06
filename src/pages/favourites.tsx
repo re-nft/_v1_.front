@@ -5,28 +5,11 @@ import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { Button } from "../components/common/button";
-import { useAllAvailableForRent } from "../hooks/useAllAvailableForRent";
+import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
 import ToggleLayout from "../components/toggle-layout";
 import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { getUniqueID } from "../utils";
-
-type RemoveButtonProps = {
-  nft: Nft;
-  onRemoveFromFavorites: (nft: Nft) => void;
-};
-
-const RemoveButton: React.FC<RemoveButtonProps> = ({
-  nft,
-  onRemoveFromFavorites,
-}) => {
-  const handleRemoveFromFavorites = useCallback(() => {
-    onRemoveFromFavorites(nft);
-  }, [onRemoveFromFavorites, nft]);
-
-  return <Button onClick={handleRemoveFromFavorites} description="Remove" />;
-};
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =

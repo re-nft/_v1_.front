@@ -2,9 +2,9 @@ import { useCallback, useEffect } from "react";
 import {
   fetchNFTFromOtherSource,
   fetchNFTsFromOpenSea,
-} from "../services/fetch-nft-meta";
-import { Nft } from "../contexts/graph/classes";
-import { NftTokenMeta } from "../contexts/graph/types";
+} from "../../services/fetch-nft-meta";
+import { Nft } from "../../contexts/graph/classes";
+import { NftTokenMeta } from "../../contexts/graph/types";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";

@@ -1,13 +1,13 @@
 import request from "graphql-request";
 import { useContext, useEffect, useMemo } from "react";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import { Lending, Nft } from "../contexts/graph/classes";
-import { queryAllLendingRenft } from "../contexts/graph/queries";
-import { timeItAsync } from "../utils";
-import UserContext from "../contexts/UserProvider";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import { Lending, Nft } from "../../contexts/graph/classes";
+import { queryAllLendingRenft } from "../../contexts/graph/queries";
+import { timeItAsync } from "../../utils";
+import UserContext from "../../contexts/UserProvider";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
-import { LendingRaw } from "../contexts/graph/types";
+import { LendingRaw } from "../../contexts/graph/types";
 import shallow from "zustand/shallow";
 import create from "zustand";
 

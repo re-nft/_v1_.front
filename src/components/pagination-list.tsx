@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Nft } from "../contexts/graph/classes";
 import CatalogueLoader from "./catalogue-loader";
 import Pagination from "./common/pagination";
-import { useFetchMeta } from "../hooks/useMetaState";
+import { useFetchMeta } from "../hooks/queries/useMetaState";
 
 const defaultSate = {
   pageItems: [],

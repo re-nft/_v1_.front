@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
-import { SnackAlertContext } from "../../contexts/SnackProvider";
+import React from "react";
 import { Fragment } from "react";
 import { Transition } from "@headlessui/react";
 import CheckCircleIcon from "@heroicons/react/outline/CheckCircleIcon";
 import InformationCircleIcon from "@heroicons/react/outline/InformationCircleIcon";
 import ExclamationIcon from "@heroicons/react/outline/ExclamationIcon";
 import XIcon from "@heroicons/react/solid/XIcon";
+import { useSnackProvider } from "../../hooks/useSnackProvider";
 
 export const SnackAlert: React.FC = () => {
   const {
@@ -13,7 +13,7 @@ export const SnackAlert: React.FC = () => {
     errorIsShown: open,
     message,
     type,
-  } = useContext(SnackAlertContext);
+  } = useSnackProvider();
 
   return (
     <div

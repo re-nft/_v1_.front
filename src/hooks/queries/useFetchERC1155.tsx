@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect } from "react";
-import { fetchUserProd1155 } from "../services/graph";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import UserContext from "../contexts/UserProvider";
-import { Nft } from "../contexts/graph/classes";
-import { NftToken } from "../contexts/graph/types";
+import { fetchUserProd1155 } from "../../services/graph";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import UserContext from "../../contexts/UserProvider";
+import { Nft } from "../../contexts/graph/classes";
+import { NftToken } from "../../contexts/graph/types";
 import {
   debounceTime,
   EMPTY,
@@ -16,8 +16,8 @@ import {
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";
-import { SECOND_IN_MILLISECONDS } from "../consts";
-import { getContractWithProvider } from "../utils";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { getContractWithProvider } from "../../utils";
 
 interface UserERC1155State {
   users: Record<

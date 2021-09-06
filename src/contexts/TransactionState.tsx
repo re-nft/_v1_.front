@@ -8,7 +8,7 @@ import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 import UserContext from "./UserProvider";
 import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
 import { ethers } from "ethers";
-import { ErrorType, SnackAlertContext } from "./SnackProvider";
+import { ErrorType, useSnackProvider } from "../hooks/useSnackProvider";
 
 type TransactionStateType = {
   setHash: (
@@ -74,7 +74,7 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
       }
     >
   >({});
-  const { setError } = useContext(SnackAlertContext);
+  const { setError } = useSnackProvider();
 
   const getTransactionsStatus = useCallback(
     (receipts: (TransactionReceipt | null)[] | undefined) => {

@@ -1,13 +1,13 @@
 import useClipboard from "react-use-clipboard";
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import { SnackAlertContext } from "../contexts/SnackProvider";
+import React, { useCallback, useEffect, useMemo } from "react";
 import LinkIcon from "@heroicons/react/solid/LinkIcon";
+import { useSnackProvider } from "../hooks/useSnackProvider";
 
 export const CopyLink: React.FC<{
   tokenId: string;
   address: string;
 }> = ({ tokenId, address }) => {
-  const { setError } = useContext(SnackAlertContext);
+  const { setError } = useSnackProvider();
   const hasWindow = useMemo(() => {
     return typeof window !== "undefined";
   }, []);

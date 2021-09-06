@@ -1,6 +1,6 @@
 import { useContext, useMemo } from "react";
-import { Nft } from "../contexts/graph/classes";
-import UserContext from "../contexts/UserProvider";
+import { Nft } from "../../contexts/graph/classes";
+import UserContext from "../../contexts/UserProvider";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";

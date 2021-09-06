@@ -1,6 +1,6 @@
 import React from "react";
 import { AvailableToRent } from "../../components/pages/available-to-rent";
-import { useAllAvailableForRent } from "../../hooks/useAllAvailableForRent";
+import { useAllAvailableForRent } from "../../hooks/queries/useAllAvailableForRent";
 import { useSearch } from "../../hooks/useSearch";
 
 const AvailableToRentPage: React.FC = () => {

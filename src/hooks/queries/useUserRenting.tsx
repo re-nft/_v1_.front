@@ -1,39 +1,51 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useCallback,
-  useEffect,
-} from "react";
+import { useContext, useCallback, useEffect } from "react";
+import produce from "immer";
+import shallow from "zustand/shallow";
+import create from "zustand";
 
-import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
-import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
-import { Renting } from "./graph/classes";
-import { parseLending } from "./graph/utils";
-import UserContext from "./UserProvider";
-import { usePrevious } from "../hooks/usePrevious";
-import { SECOND_IN_MILLISECONDS } from "../consts";
-import { EMPTY, from, timer, map, Observable, switchMap } from "rxjs";
-import { hasDifference } from "../utils";
+import { EMPTY, from, timer, map, switchMap } from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import { Renting } from "../../contexts/graph/classes";
+import { parseLending } from "../../contexts/graph/utils";
+import UserContext from "../../contexts/UserProvider";
+import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
+import { hasDifference } from "../../utils";
+import { usePrevious } from "../usePrevious";
 
-export type UserRentingContextType = {
+export type UserRentingState = {
   userRenting: Renting[];
   isLoading: boolean;
-  refetchRenting: () => Observable<any> | undefined;
+  setRenting: (r: Renting[]) => void;
+  setLoading: (r: boolean) => void;
 };
-export const UserRentingContext = createContext<UserRentingContextType>({
+
+const useUserRentingState = create<UserRentingState>((set, get) => ({
   userRenting: [],
   isLoading: false,
-  refetchRenting: () => EMPTY,
-});
+  setLoading: (isLoading: boolean) =>
+    set(
+      produce((state) => {
+        state.isLoading = isLoading;
+      })
+    ),
+  setRenting: (r: Renting[]) =>
+    set(
+      produce((state) => {
+        state.userRenting = r;
+      })
+    ),
+}));
 
-export const UserRentingProvider: React.FC = ({ children }) => {
-  const [renting, setRentings] = useState<Renting[]>([]);
+export const useUserRenting = () => {
   const { signer, network } = useContext(UserContext);
   const currAddress = useContext(CurrentAddressWrapper);
-  const [isLoading, setLoading] = useState(false);
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);
+  const renting = useUserRentingState((state) => state.userRenting, shallow);
+  const setRentings = useUserRentingState((state) => state.setRenting, shallow);
+  const setLoading = useUserRentingState((state) => state.setLoading, shallow);
+  const isLoading = useUserRentingState((state) => state.isLoading, shallow);
 
   const fetchRenting = useCallback(() => {
     if (!currAddress || !signer) return EMPTY;
@@ -92,7 +104,16 @@ export const UserRentingProvider: React.FC = ({ children }) => {
       })
     );
     return fetchRequest;
-  }, [currAddress, currentAddress, previousAddress, renting, signer, network]);
+  }, [
+    currAddress,
+    currentAddress,
+    previousAddress,
+    renting,
+    signer,
+    network,
+    setLoading,
+    setRentings,
+  ]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -103,15 +124,5 @@ export const UserRentingProvider: React.FC = ({ children }) => {
     };
   }, [fetchRenting, currentAddress]);
 
-  return (
-    <UserRentingContext.Provider
-      value={{
-        userRenting: renting,
-        isLoading,
-        refetchRenting: fetchRenting,
-      }}
-    >
-      {children}
-    </UserRentingContext.Provider>
-  );
+  return { renting, isLoading };
 };

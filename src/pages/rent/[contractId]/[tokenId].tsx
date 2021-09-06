@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { AvailableToRent } from "../../../components/pages/available-to-rent";
 import { RentSwitchWrapper } from "../../../components/rent-switch-wrapper";
-import { useAllAvailableForRent } from "../../../hooks/useAllAvailableForRent";
+import { useAllAvailableForRent } from "../../../hooks/queries/useAllAvailableForRent";
 import Head from "next/head";
 import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
 

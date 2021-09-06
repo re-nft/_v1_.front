@@ -1,47 +1,64 @@
+import produce from "immer";
+import shallow from "zustand/shallow";
+import create from "zustand";
+
+import { Lending } from "../../contexts/graph/classes";
+import { useCallback, useContext, useEffect } from "react";
+import { usePrevious } from "../usePrevious";
+import UserContext from "../../contexts/UserProvider";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { EMPTY, from, map, switchMap, timer } from "rxjs";
+import { hasDifference, timeItAsync } from "../../utils";
+import { LendingRaw } from "../../contexts/graph/types";
 import request from "graphql-request";
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useCallback,
-  useEffect,
-} from "react";
+import { queryUserLendingRenft } from "../../contexts/graph/queries";
 
-import { hasDifference, timeItAsync } from "../utils";
-import { Lending } from "./graph/classes";
-import { queryUserLendingRenft } from "./graph/queries";
-import { LendingRaw } from "./graph/types";
-import UserContext from "./UserProvider";
-import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
-import { usePrevious } from "../hooks/usePrevious";
-import { SECOND_IN_MILLISECONDS } from "../consts";
-import { EMPTY, from, timer, map, switchMap } from "rxjs";
-
-export type UserLendingContextType = {
+interface UserLending {
   userLending: Lending[];
-  isLoading: boolean;
-};
-export const UserLendingContext = createContext<UserLendingContextType>({
+  isLoading: false;
+  setUserLending: (arr: Lending[]) => void;
+  setLoading: (b: boolean) => void;
+}
+
+const useUserLendingState = create<UserLending>((set, get) => ({
   userLending: [],
   isLoading: false,
-});
+  setLoading: (isLoading: boolean) =>
+    set(
+      produce((state) => {
+        state.isLoading = isLoading;
+      })
+    ),
+  setUserLending: (lending: Lending[]) =>
+    set(
+      produce((state) => {
+        state.userLending = lending;
+      })
+    ),
+}));
 
-UserLendingContext.displayName = "UserLendingContext";
-
-export const UserLendingProvider: React.FC = ({ children }) => {
-  const { signer, network } = useContext(UserContext);
-  const [lending, setLendings] = useState<Lending[]>([]);
-  const [isLoading, setLoading] = useState(false);
+export const useUserIsLending = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);
-
+  const { signer, network } = useContext(UserContext);
+  const setLoading = useUserLendingState((state) => state.setLoading, shallow);
+  const setUserLending = useUserLendingState(
+    (state) => state.setUserLending,
+    shallow
+  );
+  const userLending = useUserLendingState(
+    (state) => state.userLending,
+    shallow
+  );
+  const isLoading = useUserLendingState((state) => state.isLoading, shallow);
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
     if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      if (lending && lending.length > 0) setLendings([]);
+      if (userLending && userLending.length > 0) setUserLending([]);
       return EMPTY;
     }
 
@@ -81,20 +98,28 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           setLoading(false);
           return;
         }
-        const normalizedLendings = lending;
+        const normalizedLendings = userLending;
         const normalizedLendingNew = lendings;
 
         const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
         if (currentAddress !== previousAddress) {
-          setLendings(lendings);
+          setUserLending(lendings);
         } else if (hasDiff) {
-          setLendings(lendings);
+          setUserLending(lendings);
         }
         setLoading(false);
       })
     );
     return fetchRequest;
-  }, [currentAddress, lending, previousAddress, signer, network]);
+  }, [
+    currentAddress,
+    userLending,
+    previousAddress,
+    signer,
+    network,
+    setLoading,
+    setUserLending,
+  ]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -105,14 +130,5 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     };
   }, [fetchLending, currentAddress]);
 
-  return (
-    <UserLendingContext.Provider
-      value={{
-        userLending: lending,
-        isLoading,
-      }}
-    >
-      {children}
-    </UserLendingContext.Provider>
-  );
+  return { userLending, isLoading };
 };

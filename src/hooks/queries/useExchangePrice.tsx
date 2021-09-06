@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import request from "graphql-request";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { timer, from, switchMap, map } from "rxjs";
 import produce from "immer";
 import shallow from "zustand/shallow";
