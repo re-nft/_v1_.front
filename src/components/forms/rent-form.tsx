@@ -1,7 +1,7 @@
 import { TextField } from "../common/text-field";
 
 import ActionButton from "../common/action-button";
-import { Lending, Nft } from "../../contexts/graph/classes";
+import { Lending, Nft } from "../../types/classes";
 import React, { useCallback, Fragment, Ref } from "react";
 import ModalFields from "../modals/modal-fields";
 import {

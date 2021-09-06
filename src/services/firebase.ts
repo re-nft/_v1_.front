@@ -1,5 +1,5 @@
 import { Address } from "../types";
-import { UserData, UsersVote } from "../contexts/graph/types";
+import { UserData, UsersVote } from "../contexts/types";
 import firebase from "../firebase/clientApp";
 import { getUniqueID } from "../utils";
 

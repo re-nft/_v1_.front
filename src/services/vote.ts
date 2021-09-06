@@ -1,4 +1,4 @@
-import { CalculatedUserVote, UsersVote } from "../contexts/graph/types";
+import { CalculatedUserVote, UsersVote } from "../contexts/types";
 
 export const calculateVoteByUsers = (
   usersVote: UsersVote

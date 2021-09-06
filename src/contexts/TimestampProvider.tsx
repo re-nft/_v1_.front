@@ -1,15 +1,9 @@
-import React, {
-  createContext,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";
-import UserContext from "./UserProvider";
 import { EMPTY, from, map, mergeMap, timer } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import { useWallet } from "../hooks/useWallet";
 
 const debug = createDebugger("app:contracts:blocks");
 
@@ -20,7 +14,7 @@ TimestampContext.displayName = "TimestampContext";
 const day = 24 * 60 * 60 * 1000;
 
 export const TimestampProvider: React.FC = ({ children }) => {
-  const { web3Provider: provider } = useContext(UserContext);
+  const { web3Provider: provider } = useWallet();
   const [timeStamp, setTimestamp] = useState(Date.now() - day);
 
   const getTimestamp = useCallback(() => {

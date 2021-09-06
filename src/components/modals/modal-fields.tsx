@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Nft } from "../../contexts/graph/classes";
+import { Nft } from "../../types/classes";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 import { ShortenPopover } from "../common/shorten-popover";
 

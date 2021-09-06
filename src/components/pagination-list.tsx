@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Nft } from "../contexts/graph/classes";
+import { Nft } from "../types/classes";
 import CatalogueLoader from "./catalogue-loader";
 import Pagination from "./common/pagination";
 import { useFetchMeta } from "../hooks/queries/useMetaState";

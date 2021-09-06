@@ -1,6 +1,5 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { Lending, Nft, Renting } from "../../contexts/graph/classes";
-import UserContext from "../../contexts/UserProvider";
+import React, { useCallback, useMemo, useState } from "react";
+import { Lending, Nft, Renting } from "../../types/classes";
 import { useBatchItems } from "../../hooks/useBatchItems";
 import BatchRentModal from "../modals/batch-rent";
 import { isLending, UniqueID } from "../../utils";
@@ -11,6 +10,7 @@ import LendingFields from "../lending-fields";
 import { PaginationList } from "../pagination-list";
 import { RentSwitchWrapper } from "../rent-switch-wrapper";
 import ItemWrapper from "../common/items-wrapper";
+import { useWallet } from "../../hooks/useWallet";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
@@ -19,7 +19,7 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen: (nft: Lending) => () => void;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleBatchModalOpen }) => {
   const isChecked = !!checkedItems[nft.id];
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   return (
     <CatalogueItem
       nft={nft}

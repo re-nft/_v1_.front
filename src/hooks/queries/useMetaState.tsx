@@ -3,8 +3,8 @@ import {
   fetchNFTFromOtherSource,
   fetchNFTsFromOpenSea,
 } from "../../services/fetch-nft-meta";
-import { Nft } from "../../contexts/graph/classes";
-import { NftTokenMeta } from "../../contexts/graph/types";
+import { Nft } from "../../types/classes";
+import { NftTokenMeta } from "../../types";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";

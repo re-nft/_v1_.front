@@ -6,8 +6,6 @@ import { MAX_UINT256 } from "../../consts";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../../types/typechain/ERC20";
-import UserContext from "../../contexts/UserProvider";
-import { ContractContext } from "../../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
@@ -18,6 +16,8 @@ import { useObservable } from "../useObservable";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
+import { useSmartContracts } from "./useSmartContracts";
+import { useWallet } from "../useWallet";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -37,8 +37,8 @@ export const useStartRent = (): {
   checkApprovals: (nfts: StartRentNft[]) => void;
   approvalStatus: TransactionStatus;
 } => {
-  const { signer } = useContext(UserContext);
-  const { Resolver } = useContext(ContractContext);
+  const { signer } = useWallet();
+  const { Resolver } = useSmartContracts();
   const currentAddress = useContext(CurrentAddressWrapper);
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isCheckLoading, setCheckLoading] = useState<boolean>(true);

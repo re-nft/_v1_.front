@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
-import { Lending, Nft } from "../../contexts/graph/classes";
+import { Lending, Nft } from "../../types/classes";
 import { useObservable } from "../../hooks/useObservable";
 import { useStopLend } from "../../hooks/contract/useStopLend";
 import Modal from "./modal";

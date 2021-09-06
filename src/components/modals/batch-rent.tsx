@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import Modal from "./modal";
 import { StartRentNft, useStartRent } from "../../hooks/contract/useStartRent";
 import { RentForm } from "../forms/rent-form";
-import { Lending } from "../../contexts/graph/classes";
+import { Lending } from "../../types/classes";
 import { TransactionStatus } from "../../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
 

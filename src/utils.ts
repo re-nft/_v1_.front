@@ -5,13 +5,16 @@ import { ERC20 } from "./types/typechain/ERC20";
 import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
-import { Lending, Nft, NftType, Renting } from "./contexts/graph/classes";
+import { Lending, Nft, NftType, Renting } from "./types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
+
+import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
+import { unpackPrice } from "@renft/sdk";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -354,3 +357,37 @@ export const getUniqueID = (
 export function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+export const parseLending = (
+  lending: LendingRaw,
+  parsedRenting?: IRenting
+): ILending => {
+  return {
+    id: lending.id,
+    nftAddress: ethers.utils.getAddress(lending.nftAddress),
+    tokenId: lending.tokenId,
+    lentAmount: lending.lentAmount,
+    lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
+    maxRentDuration: Number(lending.maxRentDuration),
+    dailyRentPrice: unpackPrice(lending.dailyRentPrice),
+    nftPrice: unpackPrice(lending.nftPrice),
+    paymentToken: parsePaymentToken(lending.paymentToken),
+    collateralClaimed: Boolean(lending.collateralClaimed),
+    isERC721: lending.isERC721,
+    renting: parsedRenting,
+  };
+};
+
+export const parseRenting = (
+  renting: RentingRaw,
+  parsedLending: ILending
+): IRenting => {
+  return {
+    id: renting.id,
+    renterAddress: ethers.utils.getAddress(renting.renterAddress),
+    rentDuration: Number(renting.rentDuration),
+    rentedAt: Number(renting.rentedAt),
+    lendingId: parsedLending.id,
+    lending: parsedLending,
+  };
+};

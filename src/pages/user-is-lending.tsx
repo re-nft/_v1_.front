@@ -1,19 +1,19 @@
-import React, { useContext, useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 
-import { Lending, Renting, Nft } from "../contexts/graph/classes";
+import { Lending, Renting, Nft } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
-import UserContext from "../contexts/UserProvider";
 import { StopLendModal } from "../components/modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
-import { useUserIsLending } from "../hooks/queries/userIsLending";
+import { useUserIsLending } from "../hooks/queries/useUserIsLending";
+import { useWallet } from "../hooks/useWallet";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -113,7 +113,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
   );
 };
 const UserCurrentlyLending: React.FC = () => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const { userLending, isLoading } = useUserIsLending();
 
   const lendingItems = useMemo(() => {

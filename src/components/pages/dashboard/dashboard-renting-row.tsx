@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useCallback } from "react";
-import { Renting } from "../../../contexts/graph/classes";
+import { Renting } from "../../../types/classes";
 import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";

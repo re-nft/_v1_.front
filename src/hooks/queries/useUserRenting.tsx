@@ -6,12 +6,11 @@ import create from "zustand";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import { Renting } from "../../contexts/graph/classes";
-import { parseLending } from "../../contexts/graph/utils";
-import UserContext from "../../contexts/UserProvider";
+import { Renting } from "../../types/classes";
 import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
-import { hasDifference } from "../../utils";
+import { hasDifference, parseLending } from "../../utils";
 import { usePrevious } from "../usePrevious";
+import { useWallet } from "../useWallet";
 
 export type UserRentingState = {
   userRenting: Renting[];
@@ -38,7 +37,7 @@ const useUserRentingState = create<UserRentingState>((set, get) => ({
 }));
 
 export const useUserRenting = () => {
-  const { signer, network } = useContext(UserContext);
+  const { signer, network } = useWallet();
   const currAddress = useContext(CurrentAddressWrapper);
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);

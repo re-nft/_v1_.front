@@ -1,14 +1,14 @@
-import React, { createContext, useState, useCallback, useContext } from "react";
+import React, { createContext, useState, useCallback } from "react";
 // TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 import { TransactionHash, TransactionStateEnum } from "../types";
 import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 
-import UserContext from "./UserProvider";
 import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
 import { ethers } from "ethers";
 import { ErrorType, useSnackProvider } from "../hooks/useSnackProvider";
+import { useWallet } from "../hooks/useWallet";
 
 type TransactionStateType = {
   setHash: (
@@ -62,7 +62,7 @@ const waitForTransactions = (
 };
 // save transaction hashes for each address and hashes
 export const TransactionStateProvider: React.FC = ({ children }) => {
-  const { web3Provider: provider } = useContext(UserContext);
+  const { web3Provider: provider } = useWallet();
   const [transactions, setStransactions] = useState<
     Record<
       string,

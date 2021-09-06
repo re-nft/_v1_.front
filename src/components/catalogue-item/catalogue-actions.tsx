@@ -4,12 +4,12 @@ import {
   upvoteOrDownvote,
 } from "../../services/firebase";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import GraphContext from "../../contexts/graph";
 import { getUniqueID } from "../../utils";
 import ArrowUp from "@heroicons/react/solid/ArrowUpIcon";
 import ArrowDown from "@heroicons/react/solid/ArrowDownIcon";
 import Sparkles from "@heroicons/react/solid/SparklesIcon";
 import SparklesOutline from "@heroicons/react/outline/SparklesIcon";
+import { useUserData } from "../../hooks/queries/useUserData";
 
 export const CatalogueActions: React.FC<{
   address: string;
@@ -26,7 +26,7 @@ export const CatalogueActions: React.FC<{
     usersVote = {},
     refreshUserData,
     refreshVotes,
-  } = useContext(GraphContext);
+  } = useUserData();
 
   const isFavorited = useMemo(() => {
     return !!favorites[id];

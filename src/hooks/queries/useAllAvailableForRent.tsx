@@ -1,15 +1,15 @@
 import request from "graphql-request";
 import { useContext, useEffect, useMemo } from "react";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import { Lending, Nft } from "../../contexts/graph/classes";
-import { queryAllLendingRenft } from "../../contexts/graph/queries";
+import { Lending, Nft } from "../../types/classes";
+import { queryAllLendingRenft } from "../../services/queries";
 import { timeItAsync } from "../../utils";
-import UserContext from "../../contexts/UserProvider";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
-import { LendingRaw } from "../../contexts/graph/types";
+import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
 import create from "zustand";
+import { useWallet } from "../useWallet";
 
 export const fetchRentings = () => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -76,7 +76,7 @@ const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
 }));
 
 export const useAllAvailableForRent = () => {
-  const { network } = useContext(UserContext);
+  const { network } = useWallet();
   const currentAddress = useContext(CurrentAddressWrapper);
   const nfts = useAllAvailableStore((state) => state.nfts, shallow);
   const isLoading = useAllAvailableStore((state) => state.isLoading, shallow);

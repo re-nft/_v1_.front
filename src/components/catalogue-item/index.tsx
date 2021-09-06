@@ -1,8 +1,7 @@
-import React, { useContext, useMemo, useCallback } from "react";
-import { Nft } from "../../contexts/graph/classes";
+import React, { useMemo, useCallback } from "react";
+import { Nft } from "../../types/classes";
 import { CatalogueItemRow } from "./catalogue-item-row";
 import { Checkbox } from "../common/checkbox";
-import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
@@ -13,6 +12,7 @@ import { Flipped, spring } from "react-flip-toolkit";
 import { CopyLink } from "../copy-link";
 import { ShortenPopover } from "../common/shorten-popover";
 import { CatalogueActions } from "./catalogue-actions";
+import { useWallet } from "../../hooks/useWallet";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -57,7 +57,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
   disabled,
 }) => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const { pathname } = useRouter();
 
   const meta = useNftMetaState(

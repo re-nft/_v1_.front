@@ -1,17 +1,17 @@
-import React, { useState, useCallback, useContext } from "react";
-import { Lending, Nft, Renting } from "../contexts/graph/classes";
+import React, { useState, useCallback } from "react";
+import { Lending, Nft, Renting } from "../types/classes";
 import BatchLendModal from "../components/modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
-import UserContext from "../contexts/UserProvider";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
+import { useWallet } from "../hooks/useWallet";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
@@ -102,7 +102,7 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
 };
 
 const Lendings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
   const items = useSearch(allAvailableToLend);
 

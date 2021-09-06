@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import MultipleBatchBar from "../../multiple-batch-bar";
-import { Lending, Renting } from "../../../contexts/graph/classes";
+import { Lending, Renting } from "../../../types/classes";
 import ClaimModal from "../../modals/claim-modal";
 import ReturnModal from "../../modals/return-modal";
 import StopLendModal from "../../modals/stop-lend-modal";

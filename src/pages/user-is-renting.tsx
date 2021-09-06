@@ -1,14 +1,12 @@
-import React, { useCallback, useContext, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 
-import { Lending, Renting } from "../contexts/graph/classes";
+import { Lending, Renting, Nft } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../components/modals/return-modal";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { Nft } from "../contexts/graph/classes";
 import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
-import UserContext from "../contexts/UserProvider";
 import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
@@ -16,6 +14,7 @@ import { PaginationList } from "../components/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
+import { useWallet } from "../hooks/useWallet";
 
 const RentingCatalogueItem: React.FC<{
   nft: Renting;
@@ -124,7 +123,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
   );
 };
 const UserRentings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const { renting: userRenting, isLoading } = useUserRenting();
 
   const rentingItems = useMemo(() => {

@@ -1,12 +1,12 @@
-import { useCallback, useContext } from "react";
-import { ContractContext } from "../contexts/ContractsProvider";
+import { useCallback } from "react";
 import createDebugger from "debug";
+import { useSmartContracts } from "./contract/useSmartContracts";
 
 const debug = createDebugger("app:contracts:test");
 
 export const useMint = () => {
   const { E721, E721B, E1155, E1155B, WETH, DAI, USDC, USDT, TUSD } =
-    useContext(ContractContext);
+    useSmartContracts();
   const mintE20 = useCallback(
     async (e20: number) => {
       switch (e20) {

@@ -1,8 +1,7 @@
-import React, { useContext, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
-import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
-import { Nft } from "../contexts/graph/classes";
+import { Nft } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
@@ -10,11 +9,12 @@ import ToggleLayout from "../components/toggle-layout";
 import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { getUniqueID } from "../utils";
+import { useUserData } from "../hooks/queries/useUserData";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =
     useAllAvailableForRent();
-  const { userData, isLoading: userDataIsLoading } = useContext(GraphContext);
+  const { userData, isLoading: userDataIsLoading } = useUserData();
   const { onCheckboxChange } = useBatchItems();
 
   const favorites = useMemo(() => {

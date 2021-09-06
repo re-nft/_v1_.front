@@ -2,17 +2,17 @@ import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
-import { Lending } from "../../contexts/graph/classes";
+import { Lending } from "../../types/classes";
 import { useCallback, useContext, useEffect } from "react";
 import { usePrevious } from "../usePrevious";
-import UserContext from "../../contexts/UserProvider";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
 import { hasDifference, timeItAsync } from "../../utils";
-import { LendingRaw } from "../../contexts/graph/types";
+import { LendingRaw } from "../../types";
 import request from "graphql-request";
-import { queryUserLendingRenft } from "../../contexts/graph/queries";
+import { queryUserLendingRenft } from "../../services/queries";
+import { useWallet } from "../useWallet";
 
 interface UserLending {
   userLending: Lending[];
@@ -41,7 +41,7 @@ const useUserLendingState = create<UserLending>((set, get) => ({
 export const useUserIsLending = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
   const previousAddress = usePrevious(currentAddress);
-  const { signer, network } = useContext(UserContext);
+  const { signer, network } = useWallet();
   const setLoading = useUserLendingState((state) => state.setLoading, shallow);
   const setUserLending = useUserLendingState(
     (state) => state.setUserLending,

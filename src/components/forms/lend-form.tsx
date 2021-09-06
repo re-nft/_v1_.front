@@ -1,5 +1,5 @@
 import ActionButton from "../common/action-button";
-import { Nft } from "../../contexts/graph/classes";
+import { Nft } from "../../types/classes";
 import React, { Fragment } from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
 import { LendItem } from "./lend-item";

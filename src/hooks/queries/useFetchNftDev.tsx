@@ -1,15 +1,53 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
-import { Nft } from "../../contexts/graph/classes";
+import { Nft } from "../../types/classes";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import createCancellablePromise from "../../contexts/create-cancellable-promise";
 import usePoller from "../usePoller";
-import UserContext from "../../contexts/UserProvider";
-import { ContractContext } from "../../contexts/ContractsProvider";
 import { usePrevious } from "../usePrevious";
 import { hasDifference } from "../../utils";
+import { useSmartContracts } from "../contract/useSmartContracts";
+import { useWallet } from "../useWallet";
 
+export type CancellablePromise<T> = {
+  promise: Promise<T>;
+  cancel: () => void;
+};
+
+export default function createCancellablePromise<T>(
+  promise: Promise<T>
+): CancellablePromise<T> {
+  let cancel = () => {
+    console.warn("nothing to cancel");
+  };
+
+  const cancellablePromise: Promise<T> = new Promise(
+    (
+      resolve: (value: T | PromiseLike<T>) => void,
+      reject: (reason?: any) => void
+    ) => {
+      cancel = () => {
+        resolve = () => null;
+        reject = () => null;
+      };
+
+      promise
+        .then(
+          (value) => {
+            if (resolve) resolve(value);
+          },
+          (error) => {
+            if (reject) reject(error);
+          }
+        )
+        .catch(() => {
+          console.warn("cancellable function error");
+        });
+    }
+  );
+
+  return { promise: cancellablePromise, cancel };
+}
 const BigNumZero = BigNumber.from("0");
 
 function range(start: number, stop: number, step: number) {
@@ -23,10 +61,9 @@ function range(start: number, stop: number, step: number) {
 //TODO:eniko refactor to rxjs
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { network } = useContext(UserContext);
-  const { E721, E721B, E1155, E1155B } = useContext(ContractContext);
+  const { network, signer } = useWallet();
+  const { E721, E721B, E1155, E1155B } = useSmartContracts();
 
-  const { signer } = useContext(UserContext);
   const [devNfts, setDevNfts] = useState<Nft[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const previousAddress = usePrevious(currentAddress);

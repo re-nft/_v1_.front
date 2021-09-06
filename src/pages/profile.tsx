@@ -1,23 +1,23 @@
 import React, { useContext, useCallback, useState, useEffect } from "react";
-import GraphContext from "../contexts/graph";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useLookupAddress } from "../hooks/queries/useLookupAddress";
-import UserContext from "../contexts/UserProvider";
 import { Button } from "../components/common/button";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
 import { TextField } from "../components/common/text-field";
 import { TextArea } from "../components/common/textarea";
 import { ShortenPopover } from "../components/common/shorten-popover";
+import { useUserData } from "../hooks/queries/useUserData";
+import { useWallet } from "../hooks/useWallet";
 
 const Profile: React.FC = () => {
-  const { userData, isLoading, refreshUserData } = useContext(GraphContext);
+  const { userData, isLoading, refreshUserData } = useUserData();
   const currentAddress = useContext(CurrentAddressWrapper);
   const lookupName = useLookupAddress();
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
 
   const onSubmit = useCallback(
     (e) => {

@@ -3,7 +3,6 @@ import React, { useState, useCallback, useContext, useMemo } from "react";
 import { useBatchItems } from "../hooks/useBatchItems";
 import CatalogueLoader from "../components/catalogue-loader";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
-import UserContext from "../contexts/UserProvider";
 import {
   ExtendedLending,
   LendingTable,
@@ -16,8 +15,9 @@ import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
 import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
 import ToggleLayout from "../components/toggle-layout";
 import { useRouter } from "next/router";
-import { useUserIsLending } from "../hooks/queries/userIsLending";
+import { useUserIsLending } from "../hooks/queries/useUserIsLending";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
+import { useWallet } from "../hooks/useWallet";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -26,7 +26,7 @@ enum DashboardViewType {
 
 export const Dashboard: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);

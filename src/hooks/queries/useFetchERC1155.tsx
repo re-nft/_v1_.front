@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect } from "react";
 import { fetchUserProd1155 } from "../../services/graph";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import UserContext from "../../contexts/UserProvider";
-import { Nft } from "../../contexts/graph/classes";
-import { NftToken } from "../../contexts/graph/types";
+import { Nft } from "../../types/classes";
+import { NftToken } from "../../types";
 import {
   debounceTime,
   EMPTY,
@@ -18,6 +17,7 @@ import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { getContractWithProvider } from "../../utils";
+import { useWallet } from "../useWallet";
 
 interface UserERC1155State {
   users: Record<
@@ -134,7 +134,7 @@ export const useERC1155 = create<UserERC1155State>(
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
 
   const isLoading = useERC1155(
     useCallback(

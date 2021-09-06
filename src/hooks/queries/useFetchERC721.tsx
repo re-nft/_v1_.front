@@ -1,13 +1,13 @@
 import { useCallback, useContext, useEffect } from "react";
 import { fetchUserProd721 } from "../../services/graph";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import UserContext from "../../contexts/UserProvider";
-import { Nft } from "../../contexts/graph/classes";
-import { NftToken } from "../../contexts/graph/types";
+import { Nft } from "../../types/classes";
+import { NftToken } from "../../types";
 import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { useWallet } from "../useWallet";
 
 interface UserERC721State {
   users: Record<
@@ -105,7 +105,7 @@ const fetchERC721 = (currentAddress: string) => {
 };
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const isLoading = useERC721(
     useCallback(
       (state) => {

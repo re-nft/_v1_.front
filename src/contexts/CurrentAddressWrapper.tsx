@@ -1,13 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { usePrevious } from "../hooks/usePrevious";
-import UserContext from "./UserProvider";
+import { useWallet } from "../hooks/useWallet";
 
 export const CurrentAddressWrapper = createContext<string>("");
 
 CurrentAddressWrapper.displayName = "CurrentAddressWrapper";
 
 export const CurrentAddressProvider: React.FC = ({ children }) => {
-  const { address } = useContext(UserContext);
+  const { address } = useWallet();
   const [newAddress, setNewAddress] = useState(address);
   const previousAddress = usePrevious(newAddress);
   useEffect(() => {

@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
 import { hasDifference, THROWS } from "../utils";
@@ -12,34 +6,95 @@ import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import ReactGA from "react-ga";
 
-const DefaultUser = {
+import produce from "immer";
+import create from "zustand";
+import shallow from "zustand/shallow";
+
+type WalletContextType = {
+  address: string;
+  permissions: unknown[];
+  connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
+  signer: Signer | undefined;
+  web3Provider: ethers.providers.Web3Provider | undefined;
+  network: string;
+  provider: any;
+  setProvider: (p: any) => void;
+  setNetworkName: (str: string) => void;
+  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) => void;
+  setAddress: (address: string) => void;
+  setSigner: (s: Signer | undefined) => void;
+  setPermissions: (str: unknown[]) => void;
+};
+
+const useWalletState = create<WalletContextType>((set) => ({
   address: "",
   signer: undefined,
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
   network: "",
-};
+  permissions: [],
+  setProvider: (provider: any) =>
+    set(
+      produce((state) => {
+        state.provider = provider;
+      })
+    ),
+  setNetworkName: (n: string) =>
+    set(
+      produce((state) => {
+        state.network = n;
+      })
+    ),
+  setAddress: (n: string) =>
+    set(
+      produce((state) => {
+        state.address = n;
+      })
+    ),
+  setSigner: (n: Signer | undefined) =>
+    set(
+      produce((state) => {
+        state.signer = n;
+      })
+    ),
+  setPermissions: (n: unknown) =>
+    set(
+      produce((state) => {
+        state.permissions = n;
+      })
+    ),
+  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) =>
+    set(
+      produce((state) => {
+        state.web3Provider = p;
+      })
+    ),
+}));
 
-type UserContextType = {
-  address: string;
-  connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
-  signer: Signer | undefined;
-  web3Provider: ethers.providers.Web3Provider | undefined;
-  network: string;
-};
-
-const UserContext = createContext<UserContextType>(DefaultUser);
-
-export const UserProvider: React.FC = ({ children }) => {
+export const useWallet = () => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
-  const [provider, setProvider] = useState<any>();
-  const [network, setNetworkName] = useState<string>("");
-  const [web3Provider, setWeb3Provider] =
-    useState<ethers.providers.Web3Provider>();
-  const [signer, setSigner] = useState<Signer>();
-  const [address, setAddress] = useState<string>("");
-  const [permissions, setPermissions] = useState<unknown[]>([]);
+  const provider = useWalletState((state) => state.provider, shallow);
+  const network = useWalletState((state) => state.network, shallow);
+  const web3Provider = useWalletState((state) => state.web3Provider, shallow);
+  const address = useWalletState((state) => state.address, shallow);
+  const permissions = useWalletState((state) => state.permissions, shallow);
+  const signer = useWalletState((state) => state.signer, shallow);
+  const setProvider = useWalletState((state) => state.setProvider, shallow);
+  const setWeb3Provider = useWalletState(
+    (state) => state.setWeb3Provider,
+    shallow
+  );
+  const setNetworkName = useWalletState(
+    (state) => state.setNetworkName,
+    shallow
+  );
+  const setSigner = useWalletState((state) => state.setSigner, shallow);
+  const setAddress = useWalletState((state) => state.setAddress, shallow);
+  const setPermissions = useWalletState(
+    (state) => state.setPermissions,
+    shallow
+  );
 
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
@@ -55,25 +110,28 @@ export const UserProvider: React.FC = ({ children }) => {
       : null;
   }, [providerOptions, hasWindow]);
 
-  const initState = useCallback(async (provider: any) => {
-    const web3p = new ethers.providers.Web3Provider(provider);
-    const network = await web3p?.getNetwork();
-    const name = network.chainId === 31337 ? "localhost" : network?.name;
-    const nname = name === "homestead" ? "mainnet" : name;
-    const signer = web3p.getSigner();
-    const address = await signer
-      .getAddress()
-      .then((t) => t.toLowerCase())
-      .catch((e) => {
-        // do nothing
-        console.log(e);
-      });
-    setNetworkName(nname);
-    setSigner(signer);
-    setAddress(address || "");
-    setProvider(provider);
-    setWeb3Provider(web3p);
-  }, []);
+  const initState = useCallback(
+    async (provider: any) => {
+      const web3p = new ethers.providers.Web3Provider(provider);
+      const network = await web3p?.getNetwork();
+      const name = network.chainId === 31337 ? "localhost" : network?.name;
+      const nname = name === "homestead" ? "mainnet" : name;
+      const signer = web3p.getSigner();
+      const address = await signer
+        .getAddress()
+        .then((t) => t.toLowerCase())
+        .catch((e) => {
+          // do nothing
+          console.log(e);
+        });
+      setNetworkName(nname);
+      setSigner(signer);
+      setAddress(address || "");
+      setProvider(provider);
+      setWeb3Provider(web3p);
+    },
+    [setNetworkName, setSigner, setAddress, setProvider, setWeb3Provider]
+  );
 
   const connect = useCallback(
     (manual: boolean) => {
@@ -127,7 +185,17 @@ export const UserProvider: React.FC = ({ children }) => {
         return;
       })
     );
-  }, [address, network, signer, hasWindow, permissions]);
+  }, [
+    address,
+    network,
+    signer,
+    hasWindow,
+    permissions,
+    setPermissions,
+    setAddress,
+    setSigner,
+    setNetworkName,
+  ]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -170,7 +238,17 @@ export const UserProvider: React.FC = ({ children }) => {
         if (network) setNetworkName("");
       }
     },
-    [address, connect, network, permissions.length, signer]
+    [
+      address,
+      connect,
+      network,
+      permissions.length,
+      signer,
+      setPermissions,
+      setAddress,
+      setSigner,
+      setNetworkName,
+    ]
   );
   const chainChanged = useCallback(
     (arg) => {
@@ -203,19 +281,11 @@ export const UserProvider: React.FC = ({ children }) => {
     };
   }, [accountsChanged, chainChanged, provider]);
 
-  return (
-    <UserContext.Provider
-      value={{
-        connect: manuallyConnect,
-        signer,
-        address,
-        web3Provider,
-        network,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+  return {
+    connect: manuallyConnect,
+    signer,
+    address,
+    web3Provider,
+    network,
+  };
 };
-
-export default UserContext;

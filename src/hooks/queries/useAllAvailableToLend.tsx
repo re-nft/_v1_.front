@@ -1,6 +1,6 @@
-import { useContext, useMemo } from "react";
-import { Nft } from "../../contexts/graph/classes";
-import UserContext from "../../contexts/UserProvider";
+import { useMemo } from "react";
+import { Nft } from "../../types/classes";
+import { useWallet } from "../useWallet";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";
@@ -12,7 +12,7 @@ export const useAllAvailableToLend = (): {
   const { devNfts, isLoading: devIsLoading } = useFetchNftDev();
   const { ERC721, isLoading: erc721Loading } = useFetchERC721();
   const { ERC1155, isLoading: erc1155Loading } = useFetchERC1155();
-  const { network } = useContext(UserContext);
+  const { network } = useWallet();
 
   // TODO: general solution is in utils.ts: isDegenerateNft. It checks
   // TODO: if the contract supports both 721 and 1155 at the same time

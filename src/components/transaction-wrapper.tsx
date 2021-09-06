@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import UserContext from "../contexts/UserProvider";
 import { useDebounce } from "../hooks/useDebounce";
+import { useWallet } from "../hooks/useWallet";
 import { NetworkName, TransactionHash, TransactionStateEnum } from "../types";
 
 const IMAGE_PENDING = "/assets/loading-pending.gif";
@@ -14,7 +14,7 @@ export const TransactionWrapper: React.FC<{
   status: TransactionStateEnum;
   closeWindow?: () => void | undefined;
 }> = ({ isLoading, children, transactionHashes, status, closeWindow }) => {
-  const { network } = useContext(UserContext);
+  const { network } = useWallet();
   const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS);
   const [showMessage, setShowMessage] = useState(false);
   const imageSource = useMemo(() => {

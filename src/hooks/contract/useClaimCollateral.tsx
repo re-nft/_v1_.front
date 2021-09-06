@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { Lending } from "../../contexts/graph/classes";
+import { Lending } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";

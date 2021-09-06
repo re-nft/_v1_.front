@@ -1,16 +1,11 @@
 import request from "graphql-request";
-import { Lending, Renting } from "../contexts/graph/classes";
+import { Lending, Renting } from "../types/classes";
 import {
   queryMyERC1155s,
   queryMyERC721s,
   queryUserRentingRenft,
-} from "../contexts/graph/queries";
-import {
-  ERC1155s,
-  ERC721s,
-  NftToken,
-  RentingRaw,
-} from "../contexts/graph/types";
+} from "./queries";
+import { ERC1155s, ERC721s, NftToken, RentingRaw } from "../types";
 import { timeItAsync } from "../utils";
 import createDebugger from "debug";
 

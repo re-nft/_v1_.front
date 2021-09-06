@@ -1,4 +1,4 @@
-import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../../../types/classes";
 import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
 import { nftReturnIsExpired, UniqueID } from "../../../utils";

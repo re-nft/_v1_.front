@@ -1,20 +1,23 @@
 import { Contract } from "@ethersproject/contracts";
-import React, { createContext, useEffect, useState, useContext } from "react";
+import { useEffect } from "react";
 import { Signer } from "@ethersproject/abstract-signer";
-import { ReNFT } from "../types/typechain/ReNFT";
-import { Resolver } from "../types/typechain/Resolver";
-import { E721 } from "../types/typechain/E721";
-import { E721B } from "../types/typechain/E721B";
-import { E1155 } from "../types/typechain/E1155";
-import { E1155B } from "../types/typechain/E1155B";
-import { WETH } from "../types/typechain/WETH";
-import { DAI } from "../types/typechain/DAI";
-import { USDC } from "../types/typechain/USDC";
-import { USDT } from "../types/typechain/USDT";
-import { TUSD } from "../types/typechain/TUSD";
-import { Utils } from "../types/typechain/Utils";
-import UserContext from "./UserProvider";
-import * as contractList from "../contracts/contracts.js";
+import { ReNFT } from "../../types/typechain/ReNFT";
+import { Resolver } from "../../types/typechain/Resolver";
+import { E721 } from "../../types/typechain/E721";
+import { E721B } from "../../types/typechain/E721B";
+import { E1155 } from "../../types/typechain/E1155";
+import { E1155B } from "../../types/typechain/E1155B";
+import { WETH } from "../../types/typechain/WETH";
+import { DAI } from "../../types/typechain/DAI";
+import { USDC } from "../../types/typechain/USDC";
+import { USDT } from "../../types/typechain/USDT";
+import { TUSD } from "../../types/typechain/TUSD";
+import { Utils } from "../../types/typechain/Utils";
+import * as contractList from "../../contracts/contracts.js";
+import create from "zustand";
+import shallow from "zustand/shallow";
+import produce from "immer";
+import { useWallet } from "../useWallet";
 
 interface ContractsObject {
   ReNFT?: ReNFT;
@@ -31,17 +34,15 @@ interface ContractsObject {
   Utils?: Utils;
 }
 
-export const ContractContext = createContext<ContractsObject>({});
-
 const loadContract = (contractName: string, signer: Signer | undefined) => {
   const newContract = new Contract(
-    require(`../contracts/${contractName}.address.js`),
-    require(`../contracts/${contractName}.abi.js`),
+    require(`../../contracts/${contractName}.address.js`),
+    require(`../../contracts/${contractName}.abi.js`),
     signer
   );
   try {
     // @ts-ignore
-    newContract.bytecode = require(`../contracts/${contractName}.bytecode.js`);
+    newContract.bytecode = require(`../../contracts/${contractName}.bytecode.js`);
   } catch (e) {
     console.log(e);
   }
@@ -95,11 +96,26 @@ async function loadContracts(
     console.log("ERROR LOADING CONTRACTS!!", e);
   }
 }
+const useContractsState = create<{
+  contracts: ContractsObject;
+  setContracts: (c: ContractsObject) => void;
+}>((set, get) => ({
+  contracts: {},
 
-export const ContractsProvider: React.FC = ({ children }) => {
-  const { signer, network } = useContext(UserContext);
-
-  const [contracts, setContracts] = useState<ContractsObject>({});
+  setContracts: (contracts) =>
+    set(
+      produce((state) => {
+        state.contracts = contracts;
+      })
+    ),
+}));
+export const useSmartContracts = () => {
+  const { signer, network } = useWallet();
+  const contracts = useContractsState((state) => state.contracts, shallow);
+  const setContracts = useContractsState(
+    (state) => state.setContracts,
+    shallow
+  );
   useEffect(() => {
     if (signer) {
       if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
@@ -108,11 +124,7 @@ export const ContractsProvider: React.FC = ({ children }) => {
         loadContracts(signer, setContracts);
       }
     }
-  }, [signer, network]);
+  }, [signer, network, setContracts]);
 
-  return (
-    <ContractContext.Provider value={contracts}>
-      {children}
-    </ContractContext.Provider>
-  );
+  return contracts;
 };

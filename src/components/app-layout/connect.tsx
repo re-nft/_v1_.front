@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import GraphContext from "../../contexts/graph";
-import UserContext from "../../contexts/UserProvider";
 import { useLookupAddress } from "../../hooks/queries/useLookupAddress";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";
+import { useUserData } from "../../hooks/queries/useUserData";
+import { useWallet } from "../../hooks/useWallet";
 
 export const Connect: React.FC = () => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { network, connect } = useContext(UserContext);
+  const { network, connect } = useWallet();
   const [username, setUsername] = useState<string>();
-  const { userData } = useContext(GraphContext);
+  const { userData } = useUserData();
   const lookupAddress = useLookupAddress();
 
   const hasWindow = useMemo(() => {

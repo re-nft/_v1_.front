@@ -3,14 +3,14 @@ import {
   useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, from, map, Observable } from "rxjs";
-import { Nft } from "../../contexts/graph/classes";
+import { Nft } from "../../types/classes";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { getContractWithSigner, getDistinctItems } from "../../utils";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
-import UserContext from "../../contexts/UserProvider";
 import { useObservable } from "../useObservable";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
+import { useWallet } from "../useWallet";
 
 export function useNFTApproval(nfts: Nft[]): {
   setApprovalForAll: (
@@ -31,7 +31,7 @@ export function useNFTApproval(nfts: Nft[]): {
   const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
   const contractAddress = useContractAddress();
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { web3Provider: provider, signer } = useContext(UserContext);
+  const { web3Provider: provider, signer } = useWallet();
   const [approvalStatus, setObservable] = useObservable();
 
   // handle approve

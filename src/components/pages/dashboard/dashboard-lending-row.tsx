@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { Lending, Nft } from "../../../contexts/graph/classes";
+import { Lending, Nft } from "../../../types/classes";
 import { TimestampContext } from "../../../contexts/TimestampProvider";
 import { isClaimable } from "../../../hooks/useBatchItems";
 import Checkbox from "../../common/checkbox";

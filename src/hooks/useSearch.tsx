@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
-import { Lending, Nft } from "../contexts/graph/classes";
+import { Lending, Nft } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "./queries/useExchangePrice";
 import { isLending } from "../utils";

@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback, useContext } from "react";
 
-import { Nft, Lending, Renting } from "../contexts/graph/classes";
+import { Nft, Lending, Renting } from "../types/classes";
 import { isLending, isNft, isRenting, THROWS, UniqueID } from "../utils";
 import moment from "moment";
-import { IRenting } from "../contexts/graph/types";
+import { IRenting } from "../types";
 import { TimestampContext } from "../contexts/TimestampProvider";
 
 export type BatchContextType = {

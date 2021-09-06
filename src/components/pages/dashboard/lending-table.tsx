@@ -1,5 +1,5 @@
 import React from "react";
-import { Lending, Nft, Renting } from "../../../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../../../types/classes";
 import { UniqueID } from "../../../utils";
 import { LendingRow } from "./dashboard-lending-row";
 

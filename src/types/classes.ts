@@ -1,7 +1,5 @@
-import { Address } from "../../types";
-import { getUniqueID } from "../../utils";
-import { LendingRaw, RentingRaw, ILending, IRenting, NftToken } from "./types";
-import { parseLending, parseRenting } from "./utils";
+import { getUniqueID, parseLending, parseRenting } from "../utils";
+import { LendingRaw, RentingRaw, ILending, IRenting, NftToken, Address } from ".";
 
 export enum NftType {
   Nft,

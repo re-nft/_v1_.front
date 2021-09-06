@@ -1,5 +1,5 @@
 import React from "react";
-import { Lending } from "../contexts/graph/classes";
+import { Lending } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { CatalogueItemRow } from "./catalogue-item/catalogue-item-row";
 

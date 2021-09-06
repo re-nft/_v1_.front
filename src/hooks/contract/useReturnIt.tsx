@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { EMPTY, Observable } from "rxjs";
-import { Renting } from "../../contexts/graph/classes";
+import { Renting } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
 import {
