@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useContext, useCallback, useMemo } from "react";
 
 import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { myFavorites } from "../services/calculate-my-favorites";
 import { Button } from "../components/common/button";
 import { useAllAvailableForRent } from "../hooks/useAllAvailableForRent";
 import ToggleLayout from "../components/toggle-layout";
 import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/pagination-list";
+import { getUniqueID } from "../utils";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -32,13 +32,15 @@ export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =
     useAllAvailableForRent();
   const { userData, isLoading: userDataIsLoading } = useContext(GraphContext);
-  const [nftItems, setNftItems] = useState<Nft[]>([]);
   const { onCheckboxChange } = useBatchItems();
 
-  useEffect(() => {
-    if (!allAvailableToRent || !userData) return;
-    const items = myFavorites(userData, allAvailableToRent);
-    setNftItems(items);
+  const favorites = useMemo(() => {
+    if (!allAvailableToRent || !userData || !userData.favorites) return [];
+    const m = new Set(Object.keys(userData?.favorites));
+    if (m.size < 1) return [];
+    return allAvailableToRent.filter((item) => {
+      return m.has(getUniqueID(item.address, item.tokenId));
+    });
   }, [allAvailableToRent, userData]);
 
   const checkBoxChangeWrapped = useCallback(
@@ -60,18 +62,17 @@ export const MyFavorites: React.FC = () => {
     );
   }
 
-  if (!isLoading && nftItems.length === 0) {
+  if (!isLoading && favorites.length === 0) {
     return (
       <div className="mx-auto text-center text-base text-white font-display py-32 leading-tight">
-        You dont have any added in favorites
+        You dont have any NFTs added to favourites yet
       </div>
     );
   }
-  // TODO pagination control
   return (
     <ToggleLayout tabs={[]}>
       <PaginationList
-        nfts={nftItems}
+        nfts={favorites}
         ItemsRenderer={({ currentPage }) => {
           return (
             <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>

@@ -86,7 +86,7 @@ export const CatalogueActions: React.FC<{
         ) : (
           <ArrowUp className="h-5 w-5 text-rn-green" />
         )}
-        <span className="icon-plus" />+{nftVote?.upvote || "?"}
+        <span className="text-rn-green">+{nftVote?.upvote || "?"}</span>
       </button>
       <button className="flex" onClick={handleDownVote}>
         {downvoted ? (
@@ -94,7 +94,7 @@ export const CatalogueActions: React.FC<{
         ) : (
           <ArrowDown className="h-5 w-5 text-rn-red" />
         )}
-        -{nftVote?.downvote || "?"}
+        <span className="text-rn-red"> -{nftVote?.downvote || "?"}</span>
       </button>
     </div>
   );
