@@ -2,7 +2,7 @@ import { TextField } from "../common/text-field";
 
 import ActionButton from "../common/action-button";
 import { Lending, Nft } from "../../contexts/graph/classes";
-import React, { useCallback } from "react";
+import React, { useCallback, Fragment, Ref } from "react";
 import ModalFields from "../modals/modal-fields";
 import {
   Formik,
@@ -22,6 +22,7 @@ import { CatalogueItemDisplay } from "../catalogue-item/catalogue-item-display";
 import { useNftMetaState } from "../../hooks/useMetaState";
 import shallow from "zustand/shallow";
 import XIcon from "@heroicons/react/outline/XIcon";
+import { Transition } from "@headlessui/react";
 
 type LendFormProps = {
   nfts: Lending[];
@@ -138,34 +139,48 @@ export const RentForm: React.FC<LendFormProps> = ({
                 <h2 id="cart-heading" className="sr-only">
                   NFTs in your renting cart
                 </h2>
-                <ul
-                  role="list"
-                  className="flex flex-col space-y-8 transition duration-700 ease-in-out "
-                >
+                <ul role="list" className="flex flex-col space-y-8  ">
                   <FieldArray name="inputs">
                     {({ remove }) => {
-                      return values.inputs.map(
-                        (item: LendingWithKey, index: number) => {
+                      return initialValues.inputs.map(
+                        (item: LendingWithKey) => {
+                          // render the initial values so transition can be shown
+                          const index = values.inputs.findIndex(
+                            (v: LendingWithKey) => v.nId === item.nId
+                          );
+                          const show = index >= 0;
                           return (
-                            <ModalDialogSection
-                              key={item.key}
-                              item={item}
-                              removeFromCart={remove}
-                              index={index}
-                              handleBlur={handleBlur}
-                              handleChange={handleChange}
-                              touched={
-                                touched.inputs ? touched.inputs[index] : null
-                              }
-                              errors={
-                                errors.inputs
-                                  ? (errors.inputs[
-                                      index
-                                    ] as FormikErrors<LendingWithKey>)
-                                  : null
-                              }
-                              disabled={formSubmittedSuccessfully}
-                            ></ModalDialogSection>
+                            <Transition
+                              show={show}
+                              as={Fragment}
+                              enter="transition-opacity ease-linear duration-300"
+                              enterFrom="opacity-0"
+                              enterTo="opacity-100"
+                              leave="transition-opacity ease-linear duration-300"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                              key={item.id}
+                            >
+                              <RentItem
+                                key={item.key}
+                                item={item}
+                                removeFromCart={remove}
+                                index={index}
+                                handleBlur={handleBlur}
+                                handleChange={handleChange}
+                                touched={
+                                  touched.inputs ? touched.inputs[index] : null
+                                }
+                                errors={
+                                  errors.inputs
+                                    ? (errors.inputs[
+                                        index
+                                      ] as FormikErrors<LendingWithKey>)
+                                    : null
+                                }
+                                disabled={formSubmittedSuccessfully}
+                              ></RentItem>
+                            </Transition>
                           );
                         }
                       );
@@ -218,7 +233,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   );
 };
 
-const ModalDialogSection: React.FC<{
+const RentItem: React.FC<{
   item: LendingWithKey;
   handleBlur: {
     (e: React.FocusEvent<unknown>): void;
@@ -239,122 +254,130 @@ const ModalDialogSection: React.FC<{
   touched: FormikTouched<LendingWithKey> | null;
   errors: FormikErrors<LendingWithKey> | null;
   disabled: boolean;
-}> = ({
-  item,
-  index,
-  handleChange,
-  handleBlur,
-  errors,
-  touched,
-  disabled,
-  removeFromCart,
-}) => {
-  const token = item.lending.paymentToken;
-  const paymentToken = PaymentToken[token];
-  const dailyRentPrice = item.lending.dailyRentPrice;
-  const nftPrice = item.lending.nftPrice;
-  const totalRent =
-    (item.lending.nftPrice || 0) * Number(item.amount) +
-    (item.lending.dailyRentPrice || 0) * Number(item.duration);
+}> = React.forwardRef(
+  (
+    {
+      item,
+      index,
+      handleChange,
+      handleBlur,
+      errors,
+      touched,
+      disabled,
+      removeFromCart,
+    },
+    ref
+  ) => {
+    const token = item.lending.paymentToken;
+    const paymentToken = PaymentToken[token];
+    const dailyRentPrice = item.lending.dailyRentPrice;
+    const nftPrice = item.lending.nftPrice;
+    const totalRent =
+      (item.lending.nftPrice || 0) * Number(item.amount) +
+      (item.lending.dailyRentPrice || 0) * Number(item.duration);
 
-  const meta = useNftMetaState(
-    useCallback(
-      (state) => {
-        return state.metas[item.nId] || {};
-      },
-      [item.nId]
-    ),
-    shallow
-  );
-  const removeItem = useCallback(() => {
-    removeFromCart(index);
-  }, [index, removeFromCart]);
-
-  const renderItem = () => {
-    const days = item.lending.maxRentDuration;
-    return (
-      <span>
-        <span>Rent duration </span>
-        <span>
-          (max {days} {days > 1 ? "days" : "day"})
-        </span>
-      </span>
+    const meta = useNftMetaState(
+      useCallback(
+        (state) => {
+          return state.metas[item.nId] || {};
+        },
+        [item.nId]
+      ),
+      shallow
     );
-  };
-  return (
-    <li
-      key={item.id}
-      className="flex flex-col py-2 relative border border-black "
-    >
-      <div className="w-40 h-40 px-2">
-        <CatalogueItemDisplay
-          image={meta.image}
-          description={meta.description}
-        />
-      </div>
-      <div className="absolute -top-2 -right-2 bg-white p-4">
-        <div className="ml-4">
-          <button
-            type="button"
-            className="text-sm font-medium text-black"
-            onClick={removeItem}
-          >
-            <XIcon className="h-8 w-8 text-black" />
-          </button>
+    const removeItem = useCallback(() => {
+      removeFromCart(index);
+    }, [index, removeFromCart]);
+
+    const renderItem = () => {
+      const days = item.lending.maxRentDuration;
+      return (
+        <span>
+          <span>Rent duration </span>
+          <span>
+            (max {days} {days > 1 ? "days" : "day"})
+          </span>
+        </span>
+      );
+    };
+    return (
+      <li
+        ref={ref as Ref<HTMLLIElement>}
+        key={item.id}
+        className="flex flex-col py-2 relative border border-black "
+      >
+        <div className="w-40 h-40 px-2">
+          <CatalogueItemDisplay
+            image={meta.image}
+            description={meta.description}
+          />
         </div>
-      </div>
-      <div className="flex-1">
-        <ModalFields nft={item} key={item.id}>
-          <CatalogueItemRow text="Rent Amount" value={item.amount} />
-          <TextField
-            required
-            label={renderItem()}
-            value={item.duration || ""}
-            name={`inputs.${index}.duration`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={
-              !!touched &&
-              touched.duration &&
-              Boolean(errors && errors.duration)
-            }
-            helperText={
-              touched && touched.duration && errors && errors.duration
-            }
-            disabled={disabled}
-          />
-          <CatalogueItemRow
-            text={`Daily rent price [${paymentToken}]`}
-            value={dailyRentPrice}
-          />
-          <CatalogueItemRow
-            text={`Collateral (per item) [${paymentToken}]`}
-            value={nftPrice}
-          />
-          <CatalogueItemRow
-            text={`Rent [${paymentToken}]`}
-            value={
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  overflow: "visible",
-                }}
-              >
-                <span>
-                  &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
-                  {item.duration ? item.duration : 0} days
-                </span>
-                <span>
-                  + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
-                </span>
-                <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
-              </div>
-            }
-          />
-        </ModalFields>
-      </div>
-    </li>
-  );
-};
+        <div className="absolute -top-2 -right-2 bg-white p-4">
+          <div className="ml-4">
+            <button
+              type="button"
+              className="text-sm font-medium text-black"
+              onClick={removeItem}
+            >
+              <XIcon className="h-8 w-8 text-black" />
+            </button>
+          </div>
+        </div>
+        <div className="flex-1">
+          <ModalFields nft={item} key={item.id}>
+            <CatalogueItemRow text="Rent Amount" value={item.amount} />
+            <TextField
+              required
+              label={renderItem()}
+              value={item.duration || ""}
+              name={`inputs.${index}.duration`}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={
+                !!touched &&
+                touched.duration &&
+                Boolean(errors && errors.duration)
+              }
+              helperText={
+                touched && touched.duration && errors && errors.duration
+              }
+              disabled={disabled}
+            />
+            <CatalogueItemRow
+              text={`Daily rent price [${paymentToken}]`}
+              value={dailyRentPrice}
+            />
+            <CatalogueItemRow
+              text={`Collateral (per item) [${paymentToken}]`}
+              value={nftPrice}
+            />
+            <CatalogueItemRow
+              text={`Rent [${paymentToken}]`}
+              value={
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    overflow: "visible",
+                  }}
+                >
+                  <span>
+                    &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
+                    {item.duration ? item.duration : 0} days
+                  </span>
+                  <span>
+                    + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+                  </span>
+                  <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
+                </div>
+              }
+            />
+          </ModalFields>
+        </div>
+      </li>
+    );
+  }
+);
+
+RentItem.displayName = "RentItem";

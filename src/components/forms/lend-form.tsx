@@ -1,12 +1,13 @@
 import ActionButton from "../common/action-button";
 import { Nft } from "../../contexts/graph/classes";
-import React from "react";
+import React, { Fragment } from "react";
 import { Formik, FormikErrors, FieldArray, FormikBag } from "formik";
-import { LendInput } from "./lend-input";
+import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { TransactionStateEnum } from "../../types";
 import { Observable } from "rxjs";
 import { TransactionStatus } from "../../hooks/useTransactionWrapper";
+import { Transition } from "@headlessui/react";
 
 type LendFormProps = {
   nfts: Nft[];
@@ -122,36 +123,51 @@ export const LendForm: React.FC<LendFormProps> = ({
                 <h2 id="cart-heading" className="sr-only">
                   NFTs in your lending cart
                 </h2>
-                <ul
-                  role="list"
-                  className="flex flex-col space-y-8 transition duration-700 ease-in-out "
-                >
+                <ul role="list" className="flex flex-col space-y-8 ">
                   <FieldArray name="inputs">
                     {({ remove }) => {
-                      return values.inputs.map(
-                        (lendingInput: LendInputProps, index: number) => {
+                      return initialValues.inputs.map(
+                        (lendingInput: LendInputProps) => {
+                          // render the initial values so transition can be shown
+                          const index = values.inputs.findIndex(
+                            (v: LendInputProps) =>
+                              v.nft.nId === lendingInput.nft.nId
+                          );
+                          const show = index >= 0;
                           return (
-                            <LendInput
-                              key={lendingInput.key}
-                              lendingInput={lendingInput}
-                              index={index}
-                              handleBlur={handleBlur}
-                              handleChange={handleChange}
-                              disabled={
-                                isSubmitting || formSubmittedSuccessfully
-                              }
-                              touched={
-                                touched.inputs ? touched.inputs[index] : null
-                              }
-                              errors={
-                                errors.inputs
-                                  ? (errors.inputs[
-                                      index
-                                    ] as FormikErrors<LendInputProps>)
-                                  : null
-                              }
-                              removeFromCart={remove}
-                            ></LendInput>
+                            <Transition
+                              show={show}
+                              as={Fragment}
+                              enter="transition-opacity ease-linear duration-300"
+                              enterFrom="opacity-0"
+                              enterTo="opacity-100"
+                              leave="transition-opacity ease-linear duration-300"
+                              leaveFrom="opacity-100"
+                              leaveTo="opacity-0"
+                              key={lendingInput.nft.nId}
+                            >
+                              <LendItem
+                                key={lendingInput.key}
+                                lendingInput={lendingInput}
+                                index={index}
+                                handleBlur={handleBlur}
+                                handleChange={handleChange}
+                                disabled={
+                                  isSubmitting || formSubmittedSuccessfully
+                                }
+                                touched={
+                                  touched.inputs ? touched.inputs[index] : null
+                                }
+                                errors={
+                                  errors.inputs
+                                    ? (errors.inputs[
+                                        index
+                                      ] as FormikErrors<LendInputProps>)
+                                    : null
+                                }
+                                removeFromCart={remove}
+                              ></LendItem>
+                            </Transition>
                           );
                         }
                       );
