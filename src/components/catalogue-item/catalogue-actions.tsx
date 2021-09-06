@@ -1,86 +1,101 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import {
   addOrRemoveUserFavorite,
-  nftId,
   upvoteOrDownvote,
-  getNftVote,
 } from "../../services/firebase";
-import { CalculatedUserVote, UsersVote } from "../../contexts/graph/types";
-import { calculateVoteByUser } from "../../services/vote";
 import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import GraphContext from "../../contexts/graph";
+import { getUniqueID } from "../../utils";
+import ArrowUp from "@heroicons/react/solid/ArrowUpIcon";
+import ArrowDown from "@heroicons/react/solid/ArrowDownIcon";
+import Sparkles from "@heroicons/react/solid/SparklesIcon";
+import SparklesOutline from "@heroicons/react/outline/SparklesIcon";
 
 export const CatalogueActions: React.FC<{
   address: string;
   tokenId: string;
-  id: string;
-  isAlreadyFavourited: boolean;
-}> = ({ address, tokenId, id, isAlreadyFavourited }) => {
+}> = ({ address, tokenId }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { userData, calculatedUsersVote } = useContext(GraphContext);
-  const [inFavorites, setInFavorites] = useState<boolean>();
-  const [currentVote, setCurrentVote] = useState<{
-    downvote?: number;
-    upvote?: number;
-  }>();
+  const id = useMemo(() => {
+    return getUniqueID(address, tokenId);
+  }, [address, tokenId]);
+
+  const {
+    userData: { favorites = {} },
+    calculatedUsersVote = {},
+    usersVote = {},
+    refreshUserData,
+    refreshVotes,
+  } = useContext(GraphContext);
+
+  const isFavorited = useMemo(() => {
+    return !!favorites[id];
+  }, [id, favorites]);
+
+  const nftVote = useMemo(() => {
+    return calculatedUsersVote
+      ? calculatedUsersVote[id]
+      : { upvote: null, downvote: null };
+  }, [calculatedUsersVote, id]);
+
+  const upvoted = useMemo(() => {
+    const votesOnNFT = usersVote ? usersVote[id] : {};
+    return votesOnNFT && votesOnNFT[currentAddress].upvote;
+  }, [usersVote, id, currentAddress]);
+
+  const downvoted = useMemo(() => {
+    const votesOnNFT = usersVote ? usersVote[id] : {};
+    return votesOnNFT && votesOnNFT[currentAddress].downvote;
+  }, [usersVote, id, currentAddress]);
+
   const addOrRemoveFavorite = useCallback(() => {
     addOrRemoveUserFavorite(currentAddress, address, tokenId)
-      .then((resp: boolean) => {
-        setInFavorites(resp);
-      })
+      .then(refreshUserData)
       .catch(() => {
         console.warn("could not change userFavorite");
       });
-  }, [address, tokenId, currentAddress]);
+  }, [address, tokenId, currentAddress, refreshUserData]);
 
   const handleVote = useCallback(
     (vote: number) => {
       upvoteOrDownvote(currentAddress, address, tokenId, vote)
-        .then(() => {
-          getNftVote(address, tokenId)
-            .then((resp: UsersVote) => {
-              const id = nftId(address, tokenId);
-              const voteData: CalculatedUserVote = calculateVoteByUser(
-                resp,
-                id
-              );
-              const currentAddressVote = voteData?.[id] ?? {};
-              setCurrentVote(currentAddressVote);
-            })
-            .catch(() => {
-              console.warn("could not getNftVote");
-            });
-        })
+        .then(refreshVotes)
         .catch(() => {
           console.warn("could not handle vote");
         });
     },
-    [address, tokenId, currentAddress]
+    [address, tokenId, currentAddress, refreshVotes]
   );
 
   const handleUpVote = useCallback(() => handleVote(1), [handleVote]);
   const handleDownVote = useCallback(() => handleVote(-1), [handleVote]);
 
-  const addedToFavorites =
-    inFavorites !== undefined ? inFavorites : userData?.favorites?.[id];
-  const nftVote =
-    currentVote == undefined ? calculatedUsersVote[id] : currentVote;
   return (
-    <>
-      {!isAlreadyFavourited && (
-        <div
-          className={`nft__favourites ${
-            addedToFavorites ? "nft__favourites-on" : ""
-          }`}
-          onClick={addOrRemoveFavorite}
-        />
-      )}
-      <div className="nft__vote nft__vote-plus" onClick={handleUpVote}>
+    <div className="flex justify-centers items-center space-x-1">
+      <button className="flex" onClick={addOrRemoveFavorite}>
+        {isFavorited ? (
+          <Sparkles className="h-5 w-5 text-rn-purple"></Sparkles>
+        ) : (
+          <SparklesOutline className="h-5 w-5 text-rn-purple"></SparklesOutline>
+        )}
+      </button>
+
+      <button className="flex" onClick={handleUpVote}>
+        {upvoted ? (
+          <ArrowUp className="h-5 w-5 text-rn-green-dark stroke-2" />
+        ) : (
+          <ArrowUp className="h-5 w-5 text-rn-green" />
+        )}
         <span className="icon-plus" />+{nftVote?.upvote || "?"}
-      </div>
-      <div className="nft__vote nft__vote-minus" onClick={handleDownVote}>
-        <span className="icon-minus" />-{nftVote?.downvote || "?"}
-      </div>
-    </>
+      </button>
+      <button className="flex" onClick={handleDownVote}>
+        {downvoted ? (
+          <ArrowDown className="h-5 w-5 text-rn-red-dark stroke-2" />
+        ) : (
+          <ArrowDown className="h-5 w-5 text-rn-red" />
+        )}
+        -{nftVote?.downvote || "?"}
+      </button>
+    </div>
   );
 };

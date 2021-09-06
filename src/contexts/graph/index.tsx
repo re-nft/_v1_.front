@@ -12,7 +12,6 @@ import {
 import { calculateVoteByUsers } from "../../services/vote";
 import { UserData, CalculatedUserVote, UsersVote } from "./types";
 import { CurrentAddressWrapper } from "../CurrentAddressWrapper";
-import { LendingId, RentingId } from "../../services/graph";
 import { from, map } from "rxjs";
 
 /**
@@ -32,6 +31,7 @@ type GraphContextType = {
   calculatedUsersVote: CalculatedUserVote;
   isLoading: boolean;
   refreshUserData: () => void;
+  refreshVotes: () => void;
 };
 
 const defaultUserData = {
@@ -46,14 +46,16 @@ const DefaultGraphContext: GraphContextType = {
   refreshUserData: () => {
     // empty
   },
+  refreshVotes: () => {
+    // empty
+  },
 };
 
-const GraphContext = createContext<GraphContextType>(DefaultGraphContext);
+export const GraphContext =
+  createContext<GraphContextType>(DefaultGraphContext);
 
 export const GraphProvider: React.FC = ({ children }) => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const [_usersLending, _setUsersLending] = useState<LendingId[]>([]);
-  const [_usersRenting, _setUsersRenting] = useState<RentingId[]>([]);
   const [userData, setUserData] = useState<UserData>(defaultUserData);
   const [calculatedUsersVote, setCalculatedUsersVote] =
     useState<CalculatedUserVote>({});
@@ -63,62 +65,41 @@ export const GraphProvider: React.FC = ({ children }) => {
   const refreshUserData = useCallback(() => {
     if (currentAddress) {
       setLoading(true);
-      getUserDataOrCrateNew(currentAddress)
-        .then((userData: UserData | undefined) => {
-          setLoading(false);
-          if (userData) {
-            setUserData(userData);
-          }
-        })
-        .catch(() => {
-          setLoading(false);
+      return from(
+        getUserDataOrCrateNew(currentAddress)
+          .then((userData: UserData | undefined) => {
+            setLoading(false);
+            if (userData) {
+              setUserData(userData);
+            }
+          })
+          .catch(() => {
+            setLoading(false);
 
-          console.warn("could not update global user data");
-        });
+            console.warn("could not update global user data");
+          })
+      );
     }
+    return from(Promise.resolve());
   }, [currentAddress]);
+
+  const refreshVotes = useCallback(() => {
+    return from(getAllUsersVote()).pipe(
+      map((d) => {
+        setUsersVote(d);
+        setCalculatedUsersVote(calculateVoteByUsers(d));
+      })
+    );
+  }, []);
+
   useEffect(() => {
-    const getUserData = () => {
-      if (currentAddress) {
-        return getUserDataOrCrateNew(currentAddress);
-      }
-      return Promise.resolve(undefined);
-    };
-
-    setLoading(true);
-    const fetchRequest = from(
-      getUserData().catch(() => {
-        setLoading(false);
-
-        console.warn("could not update global user data");
-      })
-    ).pipe(
-      map((userData: UserData | undefined | void) => {
-        setLoading(false);
-        if (userData) {
-          setUserData(userData);
-        }
-      })
-    );
-    const fetchRequest2 = from(getAllUsersVote()).pipe(
-      map((d) => setUsersVote(d))
-    );
-    const s1 = fetchRequest.subscribe();
-    const s2 = fetchRequest2.subscribe();
+    const s1 = refreshUserData().subscribe();
+    const s2 = refreshVotes().subscribe();
     return () => {
       s1.unsubscribe();
       s2.unsubscribe();
     };
-  }, [currentAddress]);
-
-  useEffect(() => {
-    if (usersVote && Object.keys(usersVote).length !== 0) {
-      const calculatedUsersVote: CalculatedUserVote =
-        calculateVoteByUsers(usersVote);
-
-      setCalculatedUsersVote(calculatedUsersVote);
-    }
-  }, [usersVote]);
+  }, [currentAddress, refreshUserData, refreshVotes]);
 
   return (
     <GraphContext.Provider
@@ -128,6 +109,7 @@ export const GraphProvider: React.FC = ({ children }) => {
         calculatedUsersVote,
         isLoading,
         refreshUserData,
+        refreshVotes,
       }}
     >
       {children}

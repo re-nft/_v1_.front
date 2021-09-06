@@ -12,6 +12,7 @@ import shallow from "zustand/shallow";
 import { Flipped, spring } from "react-flip-toolkit";
 import { CopyLink } from "../copy-link";
 import { ShortenPopover } from "../common/shorten-popover";
+import { CatalogueActions } from "./catalogue-actions";
 
 export type CatalogueItemProps = {
   nft: Nft;
@@ -101,7 +102,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       stagger={true}
     >
       <div
-        className={`text-base leading-tight flex flex-col bg-white border-4 border-black hover:shadow-rn-one ${
+        className={`text-base leading-tight flex flex-col bg-white border-4 border-black hover:shadow-rn-one pb-1 ${
           checked ? "shadow-rn-one" : ""
         }`}
         key={nft.tokenId}
@@ -136,6 +137,10 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       <img src="/assets/opensea.png" className="nft__icon" />
                     </a>
                   )}
+                  <CatalogueActions
+                    address={nft.address}
+                    tokenId={nft.tokenId}
+                  />
                   <div className="flex-1 flex justify-end justify-self-end">
                     <Checkbox
                       checked={!!checked}

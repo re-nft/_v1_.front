@@ -14,6 +14,7 @@ const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
+  { name: "Favourites", href: "/favourites" },
   { name: "Faq", href: "/faq" },
 ];
 const userNavigation = [

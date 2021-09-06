@@ -3,13 +3,14 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import GraphContext from "../contexts/graph";
 import CatalogueLoader from "../components/catalogue-loader";
 import { Nft } from "../contexts/graph/classes";
-import { addOrRemoveUserFavorite } from "../services/firebase";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { myFavorites } from "../services/calculate-my-favorites";
-import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
 import { Button } from "../components/common/button";
+import { useAllAvailableForRent } from "../hooks/useAllAvailableForRent";
+import ToggleLayout from "../components/toggle-layout";
+import ItemWrapper from "../components/common/items-wrapper";
+import { PaginationList } from "../components/pagination-list";
 
 type RemoveButtonProps = {
   nft: Nft;
@@ -28,37 +29,17 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
 };
 
 export const MyFavorites: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressWrapper);
-  const { allAvailableToLend, isLoading: allAvailableIsLoading } =
-    useAllAvailableToLend();
-  const {
-    userData,
-    isLoading: userDataIsLoading,
-    refreshUserData,
-  } = useContext(GraphContext);
+  const { allAvailableToRent, isLoading: allAvailableIsLoading } =
+    useAllAvailableForRent();
+  const { userData, isLoading: userDataIsLoading } = useContext(GraphContext);
   const [nftItems, setNftItems] = useState<Nft[]>([]);
   const { onCheckboxChange } = useBatchItems();
-  const onRemoveFromFavorites = useCallback(
-    (nft: Nft) => {
-      // todo: we need to stop doing this. you can just pass a single nft, and it will
-      // todo: contain information for both the address and tokenID, and whatever else
-      // todo: the function may need in the future
-      addOrRemoveUserFavorite(currentAddress, nft.address, nft.tokenId)
-        .then(() => {
-          refreshUserData();
-        })
-        .catch(() => {
-          console.warn("could not add or remove user favourite");
-        });
-    },
-    [currentAddress, refreshUserData]
-  );
 
   useEffect(() => {
-    if (!allAvailableToLend || !userData) return;
-    const items = myFavorites(userData, allAvailableToLend);
+    if (!allAvailableToRent || !userData) return;
+    const items = myFavorites(userData, allAvailableToRent);
     setNftItems(items);
-  }, [allAvailableToLend, userData]);
+  }, [allAvailableToRent, userData]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -72,37 +53,43 @@ export const MyFavorites: React.FC = () => {
   const isLoading = userDataIsLoading || allAvailableIsLoading;
 
   if (isLoading) {
-    return <CatalogueLoader />;
+    return (
+      <div className="mx-auto">
+        <CatalogueLoader />
+      </div>
+    );
   }
 
   if (!isLoading && nftItems.length === 0) {
     return (
-      <div className="text-center text-base text-white font-display py-32 leading-tight">
+      <div className="mx-auto text-center text-base text-white font-display py-32 leading-tight">
         You dont have any added in favorites
       </div>
     );
   }
   // TODO pagination control
   return (
-    <div className="flex relative flex-col py-4 min-h-screen w-full">
-      <div className="flex flex-wrap pt-8 justify-center">
-        {nftItems.map((nft) => (
-          <CatalogueItem
-            key={nft.id}
-            nft={nft}
-            isAlreadyFavourited
-            onCheckboxChange={checkBoxChangeWrapped(nft)}
-          >
-            <div className="nft__control">
-              <RemoveButton
-                nft={nft}
-                onRemoveFromFavorites={onRemoveFromFavorites}
-              />
-            </div>
-          </CatalogueItem>
-        ))}
-      </div>
-    </div>
+    <ToggleLayout tabs={[]}>
+      <PaginationList
+        nfts={nftItems}
+        ItemsRenderer={({ currentPage }) => {
+          return (
+            <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
+              {currentPage.map((nft: Nft) => (
+                <CatalogueItem
+                  key={nft.id}
+                  nft={nft}
+                  isAlreadyFavourited
+                  onCheckboxChange={checkBoxChangeWrapped(nft)}
+                ></CatalogueItem>
+              ))}
+            </ItemWrapper>
+          );
+        }}
+        isLoading={isLoading}
+        emptyResultMessage="You are not renting anything yet"
+      />
+    </ToggleLayout>
   );
 };
 
