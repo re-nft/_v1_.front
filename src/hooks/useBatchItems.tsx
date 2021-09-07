@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useContext } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 import { Nft, Lending, Renting } from "../types/classes";
 import { isLending, isNft, isRenting, THROWS, UniqueID } from "../utils";
 import moment from "moment";
 import { IRenting } from "../types";
-import { TimestampContext } from "../contexts/TimestampProvider";
+import { useTimestamp } from "./useTimestamp";
 
 export type BatchContextType = {
   // needs to be a hashmap because we need to check the presence in O(1) time
@@ -65,7 +65,7 @@ const filter = (
 
 export const useBatchItems: () => BatchContextType = () => {
   //TODO:eniko the memory usage bug
-  const blockTimeStamp = useContext(TimestampContext);
+  const blockTimeStamp = useTimestamp();
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]
   >(defaultBatchContext.checkedItems);

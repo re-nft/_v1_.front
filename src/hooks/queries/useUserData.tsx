@@ -1,4 +1,4 @@
-import { useContext, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import {
   getUserDataOrCrateNew,
   getAllUsersVote,
@@ -6,10 +6,10 @@ import {
 import { calculateVoteByUsers } from "../../services/vote";
 import { from, map } from "rxjs";
 import { CalculatedUserVote, UserData, UsersVote } from "../../types";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 type UserDataState = {
   userData: UserData;
@@ -22,7 +22,7 @@ type UserDataState = {
   setUsersVote: (v: UsersVote) => void;
 };
 
-const useUserLendingState = create<UserDataState>((set, get) => ({
+const useUserLendingState = create<UserDataState>((set) => ({
   userData: { favorites: {} },
   usersVote: {},
   calculatedUsersVote: {},
@@ -53,7 +53,7 @@ const useUserLendingState = create<UserDataState>((set, get) => ({
     ),
 }));
 export const useUserData = () => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const userData = useUserLendingState((state) => state.userData, shallow);
   const setUserData = useUserLendingState(
     (state) => state.setUserData,

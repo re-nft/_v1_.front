@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from "react";
+import { useCallback } from "react";
 // TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
@@ -7,29 +7,12 @@ import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
 
 import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
 import { ethers } from "ethers";
-import { ErrorType, useSnackProvider } from "../hooks/useSnackProvider";
-import { useWallet } from "../hooks/useWallet";
+import { ErrorType, useSnackProvider } from "./useSnackProvider";
+import { useWallet } from "./useWallet";
 
-type TransactionStateType = {
-  setHash: (
-    h: TransactionHash | TransactionHash[]
-  ) => Observable<[boolean, boolean]>;
-  getHashStatus: (key: string) => Observable<[boolean, boolean]>;
-};
-
-const TransactionStateDefault: TransactionStateType = {
-  setHash: () => {
-    throw new Error("must be implemented");
-  },
-  getHashStatus: () => {
-    throw new Error("must be implemented");
-  },
-};
-
-export const TransactionStateContext = createContext<TransactionStateType>(
-  TransactionStateDefault
-);
-TransactionStateContext.displayName = "TransactionStateContext";
+import produce from "immer";
+import create from "zustand";
+import shallow from "zustand/shallow";
 
 const NUMBER_OF_CONFIRMATIONS = IS_PROD ? 3 : 1; //let's make it 5, so graph has time to sync
 const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
@@ -60,20 +43,41 @@ const waitForTransactions = (
     zipAll()
   );
 };
+
+type TransactionState = {
+  hashes: TransactionHash[];
+  receipts: (TransactionReceipt | null)[] | undefined;
+  hasFailure: boolean;
+  hasPending: boolean;
+};
+const useTransactionState = create<{
+  transactions: Record<string, TransactionState>;
+  setTransactions: (key: string, t: TransactionState) => void;
+}>((set) => ({
+  transactions: {},
+  setTransactions: (key: string, transactions: TransactionState) =>
+    set(
+      produce((state) => {
+        state.transactions[key] = transactions;
+      })
+    ),
+}));
 // save transaction hashes for each address and hashes
-export const TransactionStateProvider: React.FC = ({ children }) => {
+export const useTransactions = (): {
+  setHash: (
+    h: TransactionHash | TransactionHash[]
+  ) => Observable<[boolean, boolean]>;
+  getHashStatus: (key: string) => Observable<[boolean, boolean]>;
+} => {
   const { web3Provider: provider } = useWallet();
-  const [transactions, setStransactions] = useState<
-    Record<
-      string,
-      {
-        hashes: TransactionHash[];
-        receipts: (TransactionReceipt | null)[] | undefined;
-        hasFailure: boolean;
-        hasPending: boolean;
-      }
-    >
-  >({});
+  const transactions = useTransactionState(
+    (state) => state.transactions,
+    shallow
+  );
+  const setTransactions = useTransactionState(
+    (state) => state.setTransactions,
+    shallow
+  );
   const { setError } = useSnackProvider();
 
   const getTransactionsStatus = useCallback(
@@ -113,21 +117,18 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
       return waitForTransactions(transaction.hashes, provider, setError).pipe(
         map((receipts) => {
           const [hasFailure, hasPending] = getTransactionsStatus(receipts);
-          setStransactions((state) => ({
-            ...state,
-            [`${key}`]: {
-              hashes: state[key].hashes,
-              receipts,
-              hasFailure,
-              hasPending,
-            },
-          }));
+          setTransactions(key, {
+            hashes: transactions[key].hashes,
+            receipts,
+            hasFailure,
+            hasPending,
+          });
           if (hasFailure) setError("Transaction is not successful!", "warning");
           return [hasFailure, hasPending];
         })
       );
     },
-    [getTransactionsStatus, transactions, provider, setError]
+    [getTransactionsStatus, provider, setError, transactions, setTransactions]
   );
   const setHash = useCallback(
     (
@@ -138,41 +139,28 @@ export const TransactionStateProvider: React.FC = ({ children }) => {
         return of([false, false]);
       }
       const hashes = Array.isArray(h) ? h : [h];
-      setStransactions((state) => ({
-        ...state,
-        [`${hashes[0]}`]: {
-          hashes,
-          receipts: [],
-          hasFailure: false,
-          hasPending: true,
-        },
-      }));
+      setTransactions(hashes[0], {
+        hashes,
+        receipts: [],
+        hasFailure: false,
+        hasPending: true,
+      });
       const key = hashes[0];
 
       return waitForTransactions(hashes, provider, setError).pipe(
         map((receipts) => {
           const [hasFailure, hasPending] = getTransactionsStatus(receipts);
-          setStransactions((state) => ({
-            ...state,
-            [`${key}`]: {
-              hashes: state[key].hashes,
-              receipts,
-              hasFailure,
-              hasPending,
-            },
-          }));
+          setTransactions(key, {
+            hashes: transactions[key].hashes,
+            receipts,
+            hasFailure,
+            hasPending,
+          });
           return [hasFailure, hasPending];
         })
       );
     },
-    [getTransactionsStatus, provider, setError]
+    [getTransactionsStatus, provider, setError, transactions, setTransactions]
   );
-
-  return (
-    <TransactionStateContext.Provider value={{ setHash, getHashStatus }}>
-      {children}
-    </TransactionStateContext.Provider>
-  );
+  return { setHash, getHashStatus };
 };
-
-export default TransactionStateContext;

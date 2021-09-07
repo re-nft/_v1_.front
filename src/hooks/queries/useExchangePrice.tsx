@@ -13,7 +13,7 @@ interface TOKEN_PRICE {
   setWETH: (price: number) => void;
 }
 
-const useExchangePriceStore = create<TOKEN_PRICE>((set, get) => ({
+const useExchangePriceStore = create<TOKEN_PRICE>((set) => ({
   tokenPerUSD: {
     [PaymentToken.WETH]: 1,
     [PaymentToken.DAI]: 1,

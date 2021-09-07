@@ -4,7 +4,6 @@ import "../styles/nprogress.css";
 import "../styles/video-react.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { StateProvider } from "../contexts/StateProvider";
 import { AppLayout } from "../components/app-layout";
 import type { AppProps } from "next/app";
 import ReactGA from "react-ga";
@@ -36,7 +35,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const handleStart = (url: string) => {
+    const handleStart = () => {
       NProgress.start();
     };
     const handleStop = () => {
@@ -85,11 +84,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
 
-      <StateProvider>
-        <AppLayout>
-          <Component {...pageProps} />
-        </AppLayout>
-      </StateProvider>
+      <AppLayout>
+        <Component {...pageProps} />
+      </AppLayout>
     </>
   );
 };

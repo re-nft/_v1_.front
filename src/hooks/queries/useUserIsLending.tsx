@@ -3,9 +3,8 @@ import shallow from "zustand/shallow";
 import create from "zustand";
 
 import { Lending } from "../../types/classes";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { usePrevious } from "../usePrevious";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
 import { hasDifference, timeItAsync } from "../../utils";
@@ -13,6 +12,7 @@ import { LendingRaw } from "../../types";
 import request from "graphql-request";
 import { queryUserLendingRenft } from "../../services/queries";
 import { useWallet } from "../useWallet";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 interface UserLending {
   userLending: Lending[];
@@ -21,7 +21,7 @@ interface UserLending {
   setLoading: (b: boolean) => void;
 }
 
-const useUserLendingState = create<UserLending>((set, get) => ({
+const useUserLendingState = create<UserLending>((set) => ({
   userLending: [],
   isLoading: false,
   setLoading: (isLoading: boolean) =>
@@ -39,7 +39,7 @@ const useUserLendingState = create<UserLending>((set, get) => ({
 }));
 
 export const useUserIsLending = () => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
   const { signer, network } = useWallet();
   const setLoading = useUserLendingState((state) => state.setLoading, shallow);

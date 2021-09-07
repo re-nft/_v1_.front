@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import { useWallet } from "../useWallet";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 const lookupAddress = async (
   provider: ethers.providers.Web3Provider,
@@ -24,7 +24,7 @@ const lookupAddress = async (
 
 export const useLookupAddress = (): string => {
   const { web3Provider: provider } = useWallet();
-  const address = useContext(CurrentAddressWrapper);
+  const address = useCurrentAddress();
   const [ensName, setEnsName] = useState("");
 
   const lookup = useCallback(async () => {

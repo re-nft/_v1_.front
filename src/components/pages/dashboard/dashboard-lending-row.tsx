@@ -1,12 +1,12 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Lending, Nft } from "../../../types/classes";
-import { TimestampContext } from "../../../contexts/TimestampProvider";
 import { isClaimable } from "../../../hooks/useBatchItems";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
 import { useNftMetaState } from "../../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
+import { useTimestamp } from "../../../hooks/useTimestamp";
 
 export const LendingRow: React.FC<{
   lend: Lending & { relended: boolean };
@@ -17,7 +17,7 @@ export const LendingRow: React.FC<{
   openLendModal: (t: boolean) => void;
 }> = ({ lend, checkBoxChangeWrapped, checked, hasRenting }) => {
   const lending = lend.lending;
-  const blockTimeStamp = useContext(TimestampContext);
+  const blockTimeStamp = useTimestamp();
   const meta = useNftMetaState(
     useCallback(
       (state) => {

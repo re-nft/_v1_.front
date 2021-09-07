@@ -1,16 +1,16 @@
-import { useContext, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import { Renting } from "../../types/classes";
 import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
 import { hasDifference, parseLending } from "../../utils";
 import { usePrevious } from "../usePrevious";
 import { useWallet } from "../useWallet";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 export type UserRentingState = {
   userRenting: Renting[];
@@ -19,7 +19,7 @@ export type UserRentingState = {
   setLoading: (r: boolean) => void;
 };
 
-const useUserRentingState = create<UserRentingState>((set, get) => ({
+const useUserRentingState = create<UserRentingState>((set) => ({
   userRenting: [],
   isLoading: false,
   setLoading: (isLoading: boolean) =>
@@ -38,8 +38,7 @@ const useUserRentingState = create<UserRentingState>((set, get) => ({
 
 export const useUserRenting = () => {
   const { signer, network } = useWallet();
-  const currAddress = useContext(CurrentAddressWrapper);
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
   const renting = useUserRentingState((state) => state.userRenting, shallow);
   const setRentings = useUserRentingState((state) => state.setRenting, shallow);
@@ -47,14 +46,14 @@ export const useUserRenting = () => {
   const isLoading = useUserRentingState((state) => state.isLoading, shallow);
 
   const fetchRenting = useCallback(() => {
-    if (!currAddress || !signer) return EMPTY;
+    if (!currentAddress || !signer) return EMPTY;
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
       if (renting && renting.length > 0) setRentings([]);
       return EMPTY;
     }
     setLoading(true);
     const fetchRequest = from<Promise<FetchUserRentingReturn | undefined>>(
-      fetchUserRenting(currAddress)
+      fetchUserRenting(currentAddress)
     ).pipe(
       map((usersRenting) => {
         if (usersRenting) {
@@ -104,7 +103,6 @@ export const useUserRenting = () => {
     );
     return fetchRequest;
   }, [
-    currAddress,
     currentAddress,
     previousAddress,
     renting,

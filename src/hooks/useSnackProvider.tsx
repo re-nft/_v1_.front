@@ -14,7 +14,7 @@ export type SnackAlertType = {
   setMessage: (message: string) => void;
 };
 
-const useSnackProviderState = create<SnackAlertType>((set, get) => ({
+const useSnackProviderState = create<SnackAlertType>((set) => ({
   type: "info",
   message: "",
   errorIsShown: false,

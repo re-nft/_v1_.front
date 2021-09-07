@@ -1,8 +1,7 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 
 import { useBatchItems } from "../hooks/useBatchItems";
 import CatalogueLoader from "../components/catalogue-loader";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import {
   ExtendedLending,
   LendingTable,
@@ -18,6 +17,7 @@ import { useRouter } from "next/router";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
 import { useWallet } from "../hooks/useWallet";
+import { useCurrentAddress } from "../hooks/useCurrentAddress";
 
 enum DashboardViewType {
   LIST_VIEW,
@@ -25,7 +25,7 @@ enum DashboardViewType {
 }
 
 export const Dashboard: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const { signer } = useWallet();
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);

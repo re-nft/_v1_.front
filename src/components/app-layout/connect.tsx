@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLookupAddress } from "../../hooks/queries/useLookupAddress";
 import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";
 import { useUserData } from "../../hooks/queries/useUserData";
 import { useWallet } from "../../hooks/useWallet";
+import { useCurrentAddress } from "../../hooks/useCurrentAddress";
 
 export const Connect: React.FC = () => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const { network, connect } = useWallet();
   const [username, setUsername] = useState<string>();
   const { userData } = useUserData();

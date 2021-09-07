@@ -1,22 +1,37 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { Block } from "@ethersproject/abstract-provider";
 import createDebugger from "debug";
 import { EMPTY, from, map, mergeMap, timer } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { useWallet } from "../hooks/useWallet";
+import { useWallet } from "./useWallet";
+import produce from "immer";
+import create from "zustand";
+import shallow from "zustand/shallow";
 
 const debug = createDebugger("app:contracts:blocks");
 
-export const TimestampContext = createContext<number>(0);
-
-TimestampContext.displayName = "TimestampContext";
-
 const day = 24 * 60 * 60 * 1000;
 
-export const TimestampProvider: React.FC = ({ children }) => {
-  const { web3Provider: provider } = useWallet();
-  const [timeStamp, setTimestamp] = useState(Date.now() - day);
+const useTimestampState = create<{
+  timestamp: number;
+  setTimestamp: (r: number) => void;
+}>((set) => ({
+  timestamp: Date.now() - day,
+  setTimestamp: (r: number) =>
+    set(
+      produce((state) => {
+        state.timestamp = r;
+      })
+    ),
+}));
 
+export const useTimestamp = () => {
+  const { web3Provider: provider } = useWallet();
+  const timeStamp = useTimestampState((state) => state.timestamp, shallow);
+  const setTimestamp = useTimestampState(
+    (state) => state.setTimestamp,
+    shallow
+  );
   const getTimestamp = useCallback(() => {
     if (provider) {
       return from(
@@ -40,7 +55,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
     () => {
       if (cancel) cancel.unsubscribe();
     };
-  }, [getTimestamp, timeStamp]);
+  }, [getTimestamp, timeStamp, setTimestamp]);
 
   useEffect(() => {
     const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
@@ -51,11 +66,7 @@ export const TimestampProvider: React.FC = ({ children }) => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [getTimestamp]);
+  }, [getTimestamp, setTimestamp]);
 
-  return (
-    <TimestampContext.Provider value={timeStamp}>
-      {children}
-    </TimestampContext.Provider>
-  );
+  return timeStamp;
 };

@@ -35,7 +35,7 @@ const preloadImages = (metas: MetaLoading[]) => {
 
 export const useNftMetaState = create<NftMetaState>(
   devtools(
-    (set, get) => ({
+    (set) => ({
       metas: {},
       keys: [],
       fetchReadyOpenSea: [],

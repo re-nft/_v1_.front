@@ -99,7 +99,7 @@ async function loadContracts(
 const useContractsState = create<{
   contracts: ContractsObject;
   setContracts: (c: ContractsObject) => void;
-}>((set, get) => ({
+}>((set) => ({
   contracts: {},
 
   setContracts: (contracts) =>

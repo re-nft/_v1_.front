@@ -1,13 +1,13 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { Nft } from "../../types/classes";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import usePoller from "../usePoller";
 import { usePrevious } from "../usePrevious";
 import { hasDifference } from "../../utils";
 import { useSmartContracts } from "../contract/useSmartContracts";
 import { useWallet } from "../useWallet";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 export type CancellablePromise<T> = {
   promise: Promise<T>;
@@ -60,7 +60,7 @@ function range(start: number, stop: number, step: number) {
 }
 //TODO:eniko refactor to rxjs
 export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const { network, signer } = useWallet();
   const { E721, E721B, E1155, E1155B } = useSmartContracts();
 

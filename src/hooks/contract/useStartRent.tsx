@@ -1,9 +1,8 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import createDebugger from "debug";
 import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
@@ -18,6 +17,7 @@ import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
 import { useWallet } from "../useWallet";
+import { useCurrentAddress } from "../useCurrentAddress";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -39,7 +39,7 @@ export const useStartRent = (): {
 } => {
   const { signer } = useWallet();
   const { Resolver } = useSmartContracts();
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const [approvals, setApprovals] = useState<ERC20[]>();
   const [isCheckLoading, setCheckLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();

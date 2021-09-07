@@ -1,6 +1,6 @@
 import { ContractTransaction } from "ethers";
-import { useCallback, useContext } from "react";
-import TransactionStateContext from "../contexts/TransactionState";
+import { useCallback } from "react";
+import { useTransactions } from "./useTransactions";
 import { from, Observable, of } from "rxjs";
 import { map, mergeAll } from "rxjs/operators";
 import { TransactionStateEnum } from "../types";
@@ -109,7 +109,7 @@ export const useTransactionWrapper = (): ((
     label: string;
   }
 ) => Observable<TransactionStatus>) => {
-  const { setHash } = useContext(TransactionStateContext);
+  const { setHash } = useTransactions();
   const { setError } = useSnackProvider();
 
   return useCallback(

@@ -1,21 +1,21 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   addOrRemoveUserFavorite,
   upvoteOrDownvote,
 } from "../../services/firebase";
-import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 import { getUniqueID } from "../../utils";
 import ArrowUp from "@heroicons/react/solid/ArrowUpIcon";
 import ArrowDown from "@heroicons/react/solid/ArrowDownIcon";
 import Sparkles from "@heroicons/react/solid/SparklesIcon";
 import SparklesOutline from "@heroicons/react/outline/SparklesIcon";
 import { useUserData } from "../../hooks/queries/useUserData";
+import { useCurrentAddress } from "../../hooks/useCurrentAddress";
 
 export const CatalogueActions: React.FC<{
   address: string;
   tokenId: string;
 }> = ({ address, tokenId }) => {
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const id = useMemo(() => {
     return getUniqueID(address, tokenId);
   }, [address, tokenId]);

@@ -1,7 +1,6 @@
-import React, { useContext, useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { updateUserData } from "../services/firebase";
 import CatalogueLoader from "../components/catalogue-loader";
-import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { useLookupAddress } from "../hooks/queries/useLookupAddress";
 import { Button } from "../components/common/button";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
@@ -10,10 +9,11 @@ import { TextArea } from "../components/common/textarea";
 import { ShortenPopover } from "../components/common/shorten-popover";
 import { useUserData } from "../hooks/queries/useUserData";
 import { useWallet } from "../hooks/useWallet";
+import { useCurrentAddress } from "../hooks/useCurrentAddress";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useUserData();
-  const currentAddress = useContext(CurrentAddressWrapper);
+  const currentAddress = useCurrentAddress();
   const lookupName = useLookupAddress();
   const [username, setUsername] = useState<string>("");
   const [bio, setBio] = useState<string>("");
