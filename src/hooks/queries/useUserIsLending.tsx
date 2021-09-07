@@ -42,16 +42,16 @@ export const useUserIsLending = () => {
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
   const { signer, network } = useWallet();
-  const setLoading = useUserLendingState((state) => state.setLoading, shallow);
-  const setUserLending = useUserLendingState(
-    (state) => state.setUserLending,
+  const isLoading = useUserLendingState(
+    useCallback((state) => state.isLoading, []),
     shallow
   );
   const userLending = useUserLendingState(
-    (state) => state.userLending,
+    useCallback((state) => state.userLending, []),
     shallow
   );
-  const isLoading = useUserLendingState((state) => state.isLoading, shallow);
+  const setUserLending = useUserLendingState((state) => state.setUserLending);
+  const setLoading = useUserLendingState((state) => state.setLoading);
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
     if (!process.env.NEXT_PUBLIC_RENFT_API) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { CategorySelect } from "../common/category-select";
 
 import create from "zustand";
@@ -26,8 +26,11 @@ export const useNFTFilterBy = create<NftFilterState>(
 );
 
 export const NftFilterSelect: React.FC = () => {
-  const setNftFilter = useNFTFilterBy((state) => state.setFilters, shallow);
-  const filters = useNFTFilterBy((state) => state.filters, shallow);
+  const setNftFilter = useNFTFilterBy((state) => state.setFilters);
+  const filters = useNFTFilterBy(
+    useCallback((state) => state.filters, []),
+    shallow
+  );
   const options: CategoryOptions[] = useSearchOptions();
   const value = useMemo(() => {
     return options.find((f) => f.value === filters);

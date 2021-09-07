@@ -126,8 +126,8 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     ),
     shallow
   );
-  const setUserNft = useERC721((state) => state.setUserNft, shallow);
-  const setLoading = useERC721((state) => state.setLoading, shallow);
+  const setUserNft = useERC721((state) => state.setUserNft);
+  const setLoading = useERC721((state) => state.setLoading);
 
   useEffect(() => {
     const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)

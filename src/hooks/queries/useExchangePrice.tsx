@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import request from "graphql-request";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { timer, from, switchMap, map } from "rxjs";
@@ -50,9 +50,9 @@ const getPrice = (): Promise<number> =>
     });
 
 export const useExchangePrice = () => {
-  const setWETH = useExchangePriceStore((state) => state.setWETH, shallow);
+  const setWETH = useExchangePriceStore((state) => state.setWETH);
   const tokenPerUSD = useExchangePriceStore(
-    (state) => state.tokenPerUSD,
+    useCallback((state) => state.tokenPerUSD, []),
     shallow
   );
 

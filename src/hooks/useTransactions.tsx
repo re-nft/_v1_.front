@@ -71,13 +71,10 @@ export const useTransactions = (): {
 } => {
   const { web3Provider: provider } = useWallet();
   const transactions = useTransactionState(
-    (state) => state.transactions,
+    useCallback((state) => state.transactions, []),
     shallow
   );
-  const setTransactions = useTransactionState(
-    (state) => state.setTransactions,
-    shallow
-  );
+  const setTransactions = useTransactionState((state) => state.setTransactions);
   const { setError } = useSnackProvider();
 
   const getTransactionsStatus = useCallback(

@@ -40,10 +40,16 @@ export const useUserRenting = () => {
   const { signer, network } = useWallet();
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
-  const renting = useUserRentingState((state) => state.userRenting, shallow);
-  const setRentings = useUserRentingState((state) => state.setRenting, shallow);
-  const setLoading = useUserRentingState((state) => state.setLoading, shallow);
-  const isLoading = useUserRentingState((state) => state.isLoading, shallow);
+  const renting = useUserRentingState(
+    useCallback((state) => state.userRenting, []),
+    shallow
+  );
+  const isLoading = useUserRentingState(
+    useCallback((state) => state.isLoading, []),
+    shallow
+  );
+  const setRentings = useUserRentingState((state) => state.setRenting);
+  const setLoading = useUserRentingState((state) => state.setLoading);
 
   const fetchRenting = useCallback(() => {
     if (!currentAddress || !signer) return EMPTY;

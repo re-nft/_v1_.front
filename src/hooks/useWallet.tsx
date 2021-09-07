@@ -74,27 +74,36 @@ const useWalletState = create<WalletContextType>((set) => ({
 
 export const useWallet = () => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
-  const provider = useWalletState((state) => state.provider, shallow);
-  const network = useWalletState((state) => state.network, shallow);
-  const web3Provider = useWalletState((state) => state.web3Provider, shallow);
-  const address = useWalletState((state) => state.address, shallow);
-  const permissions = useWalletState((state) => state.permissions, shallow);
-  const signer = useWalletState((state) => state.signer, shallow);
-  const setProvider = useWalletState((state) => state.setProvider, shallow);
-  const setWeb3Provider = useWalletState(
-    (state) => state.setWeb3Provider,
+  const provider = useWalletState(
+    useCallback((state) => state.provider, []),
     shallow
   );
-  const setNetworkName = useWalletState(
-    (state) => state.setNetworkName,
+  const network = useWalletState(
+    useCallback((state) => state.network, []),
     shallow
   );
-  const setSigner = useWalletState((state) => state.setSigner, shallow);
-  const setAddress = useWalletState((state) => state.setAddress, shallow);
-  const setPermissions = useWalletState(
-    (state) => state.setPermissions,
+  const web3Provider = useWalletState(
+    useCallback((state) => state.web3Provider, []),
     shallow
   );
+  const address = useWalletState(
+    useCallback((state) => state.address, []),
+    shallow
+  );
+  const permissions = useWalletState(
+    useCallback((state) => state.permissions, []),
+    shallow
+  );
+  const signer = useWalletState(
+    useCallback((state) => state.signer, []),
+    shallow
+  );
+  const setProvider = useWalletState((state) => state.setProvider);
+  const setWeb3Provider = useWalletState((state) => state.setWeb3Provider);
+  const setNetworkName = useWalletState((state) => state.setNetworkName);
+  const setSigner = useWalletState((state) => state.setSigner);
+  const setAddress = useWalletState((state) => state.setAddress);
+  const setPermissions = useWalletState((state) => state.setPermissions);
 
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {

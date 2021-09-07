@@ -54,25 +54,26 @@ const useUserLendingState = create<UserDataState>((set) => ({
 }));
 export const useUserData = () => {
   const currentAddress = useCurrentAddress();
-  const userData = useUserLendingState((state) => state.userData, shallow);
-  const setUserData = useUserLendingState(
-    (state) => state.setUserData,
+  const userData = useUserLendingState(
+    useCallback((state) => state.userData, []),
     shallow
   );
-  const isLoading = useUserLendingState((state) => state.isLoading, shallow);
-  const setLoading = useUserLendingState((state) => state.setLoading, shallow);
-  const usersVote = useUserLendingState((state) => state.usersVote, shallow);
-  const setUsersVote = useUserLendingState(
-    (state) => state.setUsersVote,
+  const isLoading = useUserLendingState(
+    useCallback((state) => state.isLoading, []),
     shallow
   );
+  const usersVote = useUserLendingState(
+    useCallback((state) => state.usersVote, []),
+    shallow
+  );
+  const setLoading = useUserLendingState((state) => state.setLoading);
+  const setUserData = useUserLendingState((state) => state.setUserData);
+  const setUsersVote = useUserLendingState((state) => state.setUsersVote);
   const calculatedUsersVote = useUserLendingState(
-    (state) => state.calculatedUsersVote,
-    shallow
+    (state) => state.calculatedUsersVote
   );
   const setCalculatedUsersVote = useUserLendingState(
-    (state) => state.setCalculatedUsersVote,
-    shallow
+    (state) => state.setCalculatedUsersVote
   );
 
   const refreshUserData = useCallback(() => {

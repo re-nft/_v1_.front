@@ -1,5 +1,5 @@
 import { Contract } from "@ethersproject/contracts";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ReNFT } from "../../types/typechain/ReNFT";
 import { Resolver } from "../../types/typechain/Resolver";
@@ -111,11 +111,11 @@ const useContractsState = create<{
 }));
 export const useSmartContracts = () => {
   const { signer, network } = useWallet();
-  const contracts = useContractsState((state) => state.contracts, shallow);
-  const setContracts = useContractsState(
-    (state) => state.setContracts,
+  const contracts = useContractsState(
+    useCallback((state) => state.contracts, []),
     shallow
   );
+  const setContracts = useContractsState((state) => state.setContracts);
   useEffect(() => {
     if (signer) {
       if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {

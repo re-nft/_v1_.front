@@ -27,11 +27,11 @@ const useTimestampState = create<{
 
 export const useTimestamp = () => {
   const { web3Provider: provider } = useWallet();
-  const timeStamp = useTimestampState((state) => state.timestamp, shallow);
-  const setTimestamp = useTimestampState(
-    (state) => state.setTimestamp,
+  const timeStamp = useTimestampState(
+    useCallback((state) => state.timestamp, []),
     shallow
   );
+  const setTimestamp = useTimestampState((state) => state.setTimestamp);
   const getTimestamp = useCallback(() => {
     if (provider) {
       return from(

@@ -47,23 +47,20 @@ const useSnackProviderState = create<SnackAlertType>((set) => ({
 
 export const useSnackProvider = () => {
   const errorIsShown = useSnackProviderState(
-    (state) => state.errorIsShown,
+    useCallback((state) => state.errorIsShown, []),
     shallow
   );
-  const type = useSnackProviderState((state) => state.type, shallow);
-  const message = useSnackProviderState((state) => state.message, shallow);
-  const setErrorType = useSnackProviderState(
-    (state) => state.setErrorType,
+  const type = useSnackProviderState(
+    useCallback((state) => state.type, []),
     shallow
   );
-  const setErrorShown = useSnackProviderState(
-    (state) => state.setErrorShown,
+  const message = useSnackProviderState(
+    useCallback((state) => state.message, []),
     shallow
   );
-  const setErrorMessage = useSnackProviderState(
-    (state) => state.setMessage,
-    shallow
-  );
+  const setErrorType = useSnackProviderState((state) => state.setErrorType);
+  const setErrorShown = useSnackProviderState((state) => state.setErrorShown);
+  const setErrorMessage = useSnackProviderState((state) => state.setMessage);
   const hideError = useCallback(() => {
     setErrorShown(false);
   }, [setErrorShown]);

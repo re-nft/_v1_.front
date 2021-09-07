@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import create from "zustand";
 import shallow from "zustand/shallow";
@@ -25,8 +25,11 @@ export const useNFTSortBy = create<NftSortbyState>(
   }))
 );
 export const NftSortBySelect: React.FC = () => {
-  const setSortBy = useNFTSortBy((state) => state.setSortby, shallow);
-  const sortBy = useNFTSortBy((state) => state.sortBy, shallow);
+  const setSortBy = useNFTSortBy((state) => state.setSortby);
+  const sortBy = useNFTSortBy(
+    useCallback((state) => state.sortBy, []),
+    shallow
+  );
   const options = useSortOptions();
   const value = useMemo(() => {
     return options.find((f) => f.value === sortBy);

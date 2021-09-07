@@ -1,5 +1,5 @@
 import produce from "immer";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { usePrevious } from "./usePrevious";
@@ -20,11 +20,11 @@ const useCurrentAddressState = create<{
 
 export const useCurrentAddress = () => {
   const { address } = useWallet();
-  const newAddress = useCurrentAddressState((state) => state.address, shallow);
-  const setNewAddress = useCurrentAddressState(
-    (state) => state.setAddress,
+  const newAddress = useCurrentAddressState(
+    useCallback((state) => state.address, []),
     shallow
   );
+  const setNewAddress = useCurrentAddressState((state) => state.setAddress);
   const previousAddress = usePrevious(newAddress);
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_ADDRESS) {

@@ -1,5 +1,5 @@
 import request from "graphql-request";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Lending, Nft } from "../../types/classes";
 import { queryAllLendingRenft } from "../../services/queries";
 import { timeItAsync } from "../../utils";
@@ -78,10 +78,16 @@ const useAllAvailableStore = create<allAvailableForRent>((set) => ({
 export const useAllAvailableForRent = () => {
   const { network } = useWallet();
   const currentAddress = useCurrentAddress();
-  const nfts = useAllAvailableStore((state) => state.nfts, shallow);
-  const isLoading = useAllAvailableStore((state) => state.isLoading, shallow);
-  const setNfts = useAllAvailableStore((state) => state.setNfts, shallow);
-  const setLoading = useAllAvailableStore((state) => state.setLoading, shallow);
+  const nfts = useAllAvailableStore(
+    useCallback((state) => state.nfts, []),
+    shallow
+  );
+  const isLoading = useAllAvailableStore(
+    useCallback((state) => state.isLoading, []),
+    shallow
+  );
+  const setNfts = useAllAvailableStore((state) => state.setNfts);
+  const setLoading = useAllAvailableStore((state) => state.setLoading);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)

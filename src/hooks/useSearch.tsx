@@ -88,7 +88,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
   const tokenPerUSD = useExchangePrice();
   const metas = useNftMetaState(useCallback((state) => state.metas, []));
   const keys = useNftMetaState(useCallback((state) => state.keys, []));
-  const setSearchNfts = useSearchNfts((state) => state.setSearchNfts, shallow);
+  const setSearchNfts = useSearchNfts((state) => state.setSearchNfts);
   const router = useRouter();
 
   const categories = useMemo(() => {

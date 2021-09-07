@@ -156,9 +156,9 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     ),
     shallow
   );
-  const setUserNft = useERC1155((state) => state.setUserNft, shallow);
-  const setLoading = useERC1155((state) => state.setLoading, shallow);
-  const setAmount = useERC1155((state) => state.setAmount, shallow);
+  const setUserNft = useERC1155((state) => state.setUserNft);
+  const setLoading = useERC1155((state) => state.setLoading);
+  const setAmount = useERC1155((state) => state.setAmount);
 
   useEffect(() => {
     const getAvailableTokenAmountForUser = async (nft: Nft) => {
