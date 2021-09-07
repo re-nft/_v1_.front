@@ -137,7 +137,6 @@ export const Dashboard: React.FC = () => {
           />
           <RentingTable
             checkedItems={checkedItems}
-            toggleReturnModal={toggleReturnModal}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             rentingItems={relendedRentingItems}
             currentAddress={currentAddress}

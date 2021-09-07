@@ -2,9 +2,10 @@ import { useState, useMemo, useCallback } from "react";
 
 import { Nft, Lending, Renting } from "../types/classes";
 import { isLending, isNft, isRenting, THROWS, UniqueID } from "../utils";
-import moment from "moment";
 import { IRenting } from "../types";
 import { useTimestamp } from "./useTimestamp";
+import add from "date-fns/add";
+import isAfter from "date-fns/isAfter";
 
 export type BatchContextType = {
   // needs to be a hashmap because we need to check the presence in O(1) time
@@ -151,10 +152,12 @@ export const isClaimable = (
   blockTimeStamp: number
 ): boolean => {
   const returnBy = (rentedAt: number, rentDuration: number) => {
-    return moment.unix(rentedAt).add(rentDuration, "days");
+    return add(new Date(rentedAt * 1000), {
+      days: rentDuration,
+    });
   };
   const _returnBy = (renting: IRenting) =>
     returnBy(renting.rentedAt, renting.rentDuration);
-  const _now = moment(blockTimeStamp);
-  return _now.isAfter(_returnBy(renting));
+  const _now = new Date(blockTimeStamp);
+  return isAfter(_now, _returnBy(renting));
 };

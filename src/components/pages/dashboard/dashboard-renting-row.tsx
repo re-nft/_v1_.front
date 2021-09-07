@@ -1,4 +1,3 @@
-import moment from "moment";
 import React, { useCallback } from "react";
 import { Renting } from "../../../types/classes";
 import Checkbox from "../../common/checkbox";
@@ -7,15 +6,15 @@ import { CountDown } from "../../common/countdown";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { useNftMetaState } from "../../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
+import add from "date-fns/add";
 
 export const RentingRow: React.FC<{
   checked: boolean;
   rent: Renting & { relended: boolean };
-  openModal: (t: boolean) => void;
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   isExpired: boolean;
-}> = ({ checked, rent, checkBoxChangeWrapped, isExpired, openModal }) => {
+}> = ({ checked, rent, checkBoxChangeWrapped, isExpired }) => {
   const renting = rent.renting;
   const meta = useNftMetaState(
     useCallback(
@@ -43,10 +42,9 @@ export const RentingRow: React.FC<{
     return `${wholePart}.${decimalPart.substring(0, 4)}`;
   };
 
-  const expireDate = moment(Number(renting.rentedAt) * 1000).add(
-    renting.rentDuration,
-    "day"
-  );
+  const expireDate = add(new Date(renting.rentedAt * 1000), {
+    days: renting.rentDuration,
+  });
 
   return (
     <tr
@@ -87,7 +85,7 @@ export const RentingRow: React.FC<{
       </td>
 
       <td className="px-1 whitespace-nowrap font-normal">
-        <CountDown endTime={expireDate.toDate().getTime()} />
+        <CountDown endTime={expireDate.getTime()} />
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
         {isExpired ? "yes" : "no"}

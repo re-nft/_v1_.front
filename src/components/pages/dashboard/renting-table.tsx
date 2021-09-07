@@ -10,13 +10,11 @@ export interface ExtendedRenting extends Renting {
 export const RentingTable: React.FC<{
   rentingItems: ExtendedRenting[];
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
-  toggleReturnModal: (b: boolean) => void;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   currentAddress: string;
 }> = ({
   rentingItems,
   checkedItems,
-  toggleReturnModal,
   checkBoxChangeWrapped,
   currentAddress,
 }) => {
@@ -117,7 +115,6 @@ export const RentingTable: React.FC<{
                         checked={checked}
                         rent={rent}
                         key={rent.id}
-                        openModal={toggleReturnModal}
                         currentAddress={currentAddress}
                         checkBoxChangeWrapped={checkBoxChangeWrapped}
                         isExpired={isExpired}

@@ -36,9 +36,6 @@ export const NftSortBySelect: React.FC = () => {
   }, [options, sortBy]);
 
   const router = useRouter();
-  const instanceId = useMemo(() => {
-    return `sort-${router.pathname}`;
-  }, [router.pathname]);
 
   useEffect(() => {
     const handleStop = () => {

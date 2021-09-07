@@ -2,9 +2,7 @@ import { ethers, providers } from "ethers";
 import { ERC721 } from "./types/typechain/ERC721";
 import { ERC1155 } from "./types/typechain/ERC1155";
 import { ERC20 } from "./types/typechain/ERC20";
-import fetch from "cross-fetch";
 import createDebugger from "debug";
-import moment from "moment";
 import { Lending, Nft, NftType, Renting } from "./types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
@@ -12,6 +10,7 @@ import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
+import add from "date-fns/add";
 
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
 import { unpackPrice } from "@renft/sdk";
@@ -224,11 +223,9 @@ export const getDistinctItems = <T extends Record<any, unknown>>(
 
 export const nftReturnIsExpired = (rent: Renting): boolean => {
   const isExpired =
-    moment(rent.renting.rentedAt * 1000)
-      .add(rent.renting.rentDuration, "days")
-      .unix() *
-      1000 <
-    moment.now();
+    add(new Date(rent.renting.rentedAt * 1000), {
+      days: rent.renting.rentDuration,
+    }).valueOf() < Date.now();
   return isExpired;
 };
 

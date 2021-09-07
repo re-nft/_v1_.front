@@ -1,6 +1,5 @@
 import { NftTokenMeta } from "../types";
 import { Nft } from "../types/classes";
-import fetch from "cross-fetch";
 import {
   arrayToURI,
   buildStaticIPFS_URL,

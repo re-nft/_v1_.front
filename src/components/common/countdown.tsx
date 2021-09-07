@@ -1,4 +1,3 @@
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 
 const MILISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -16,7 +15,7 @@ export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const time = endTime - moment().toDate().getTime();
+      const time = endTime - Date.now();
       const days = time / MILISECONDS_IN_DAY;
       const hours = (time % MILISECONDS_IN_DAY) / MILISECONDS_IN_HOUR;
       const minutes = (time % MILISECONDS_IN_HOUR) / MILISECONDS_IN_MINUTE;
