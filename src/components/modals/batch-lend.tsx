@@ -6,7 +6,8 @@ import { Nft } from "../../types/classes";
 import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
 
 import { useStartLend } from "../../hooks/contract/useStartLend";
-import { LendForm, LendInputDefined } from "../forms/lend-form";
+import { LendForm } from "../forms/lend/lend-form";
+import { LendInputDefined } from "../forms/lend/lend-types";
 
 type LendModalProps = {
   nfts: Nft[];
