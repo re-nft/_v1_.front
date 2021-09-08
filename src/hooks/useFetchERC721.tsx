@@ -8,6 +8,7 @@ import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import { NetworkName } from "../types";
 
 interface UserERC721State {
   users: Record<
@@ -44,9 +45,9 @@ const useERC721 = create<UserERC721State>((set, get) => ({
           ...state.users,
           [`${user}`]: {
             ...state.users[user],
-            nfts
-          }
-        }
+            nfts,
+          },
+        },
       };
     }),
   setLoading: (user: string, isLoading: boolean) =>
@@ -57,12 +58,11 @@ const useERC721 = create<UserERC721State>((set, get) => ({
           ...state.users,
           [`${user}`]: {
             ...state.users[user],
-            isLoading
-          }
-        }
-       
+            isLoading,
+          },
+        },
       };
-    })
+    }),
 }));
 
 const fetchERC721 = (currentAddress: string) => {
@@ -73,7 +73,7 @@ const fetchERC721 = (currentAddress: string) => {
       fetchUserProd721(currentAddress, 1),
       fetchUserProd721(currentAddress, 2),
       fetchUserProd721(currentAddress, 3),
-      fetchUserProd721(currentAddress, 4)
+      fetchUserProd721(currentAddress, 4),
     ]).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
@@ -91,7 +91,7 @@ const fetchERC721 = (currentAddress: string) => {
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
             meta: nft.meta,
-            tokenURI: nft.tokenURI
+            tokenURI: nft.tokenURI,
           });
         })
         .forEach((nft) => {
@@ -106,7 +106,7 @@ const fetchERC721 = (currentAddress: string) => {
 };
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
   const isLoading = useERC721(
     useCallback(
       (state) => {
@@ -136,6 +136,12 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         switchMap(() => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
+          // we only support mainnet and ropsten for graph E721 and E1555, other networks we need to roll out our own solution
+          if (
+            network !== NetworkName.mainnet &&
+            network !== NetworkName.ropsten
+          )
+            return EMPTY;
           setLoading(currentAddress, true);
           return fetchERC721(currentAddress);
         }),
@@ -151,7 +157,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, signer]);
+  }, [signer, currentAddress, signer, network]);
 
   return { ERC721: nfts, isLoading };
 };
