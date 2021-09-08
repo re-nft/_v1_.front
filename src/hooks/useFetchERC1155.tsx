@@ -190,12 +190,8 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         switchMap(() => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
-          // we only support mainnet and ropsten for graph E721 and E1555, other networks we need to roll out our own solution
-          if (
-            network !== NetworkName.mainnet &&
-            network !== NetworkName.ropsten
-          )
-            return EMPTY;
+          // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
+          if (network !== NetworkName.mainnet) return EMPTY;
           setLoading(currentAddress, true);
           return fetchERC1155(currentAddress);
         }),
