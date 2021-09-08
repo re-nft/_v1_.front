@@ -11,9 +11,8 @@ export type NftTokenMeta = {
     name: string;
     description: string;
     imageUrl: string;
-  }
+  };
 };
-
 
 export type NftToken = {
   address: Address;
@@ -61,7 +60,6 @@ export interface ILending {
   lenderAddress: Address;
   maxRentDuration: number;
   dailyRentPrice: number;
-  nftPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
   isERC721: boolean;
@@ -76,7 +74,6 @@ export type LendingRaw = {
   lenderAddress: string;
   maxRentDuration: string;
   dailyRentPrice: string;
-  nftPrice: string;
   paymentToken: string;
   collateralClaimed: boolean;
   isERC721: boolean;

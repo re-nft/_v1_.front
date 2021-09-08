@@ -15,10 +15,6 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
         text={`Max duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
-      <CatalogueItemRow
-        text={`Collateral [${PaymentToken[nft.lending.paymentToken]}]`}
-        value={nft.lending.nftPrice.toString()}
-      />
     </>
   );
 };

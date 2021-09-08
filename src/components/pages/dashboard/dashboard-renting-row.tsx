@@ -22,14 +22,14 @@ export const RentingRow: React.FC<{
   checkBoxChangeWrapped,
   currentAddress,
   isExpired,
-  openModal
+  openModal,
 }) => {
   const renting = rent.renting;
   const handleClick = useCallback(() => {
     checkBoxChangeWrapped(rent)();
     openModal(true);
   }, [checkBoxChangeWrapped, openModal, rent]);
-  
+
   const handleRowClicked = useCallback(() => {
     if (isExpired || rent.relended) return;
     checkBoxChangeWrapped(rent)();
@@ -77,11 +77,6 @@ export const RentingRow: React.FC<{
       <Td className="column">{renting.lending.lentAmount}</Td>
       <Td className="column">
         {PaymentToken[renting.lending.paymentToken ?? 0]}
-      </Td>
-      <Td className="column">
-        {formatCollateral(
-          renting.lending.nftPrice * Number(renting.lending.lentAmount)
-        )}
       </Td>
       <Td className="column">{renting.lending.dailyRentPrice}</Td>
       <Td className="column">

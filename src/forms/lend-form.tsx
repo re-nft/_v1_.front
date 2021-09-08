@@ -21,7 +21,6 @@ export type LendInputProps = {
   lendAmount: number | undefined;
   maxDuration: number | undefined;
   borrowPrice: number | undefined;
-  nftPrice: number | undefined;
   tokenId: string;
   pmToken: number | undefined;
   key: string;
@@ -31,7 +30,6 @@ export type LendInputDefined = {
   lendAmount: number;
   maxDuration: number;
   borrowPrice: number;
-  nftPrice: number;
   tokenId: string;
   pmToken: number;
   key: string;
@@ -57,7 +55,6 @@ export const LendForm: React.FC<LendFormProps> = ({
       amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount,
       maxDuration: undefined,
       borrowPrice: undefined,
-      nftPrice: undefined,
       pmToken: undefined,
     })),
   };
@@ -243,20 +240,6 @@ const validate = (values: FormProps) => {
       error[fieldName] = "borrow price must be less then or equal 9999.9999";
     } else if (!is4Digits(field)) {
       error[fieldName] = "borrow price only accepts up to 4 fractional digits";
-    } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
-      error[fieldName] = "amount must be a number";
-    }
-
-    fieldName = "nftPrice";
-    field = input[fieldName];
-    if (typeof field === "undefined") {
-      error[fieldName] = "please specify collateral";
-    } else if (field < 0.0001) {
-      error[fieldName] = "collateral must be greater than or equal to 0.0001";
-    } else if (field > 9999.9999) {
-      error[fieldName] = "collateral must be less then or equal 9999.9999";
-    } else if (!is4Digits(field)) {
-      error[fieldName] = "collateral only accepts up to 4 fractional digits";
     } else if (!/^\d+(\.\d+)?$/i.test(field.toString())) {
       error[fieldName] = "amount must be a number";
     }

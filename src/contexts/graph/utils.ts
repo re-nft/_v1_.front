@@ -15,7 +15,6 @@ export const parseLending = (
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice),
-    nftPrice: unpackPrice(lending.nftPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,

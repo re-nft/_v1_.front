@@ -38,11 +38,11 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
     handleBlur,
     errors,
     touched,
-    disabled
+    disabled,
   } = input;
   const only1Item = useMemo(() => {
-    return lendingInput.amount === "1"
-  }, [lendingInput.amount])
+    return lendingInput.amount === "1";
+  }, [lendingInput.amount]);
   return (
     <div className="modal-dialog-section" key={lendingInput.key}>
       <CommonInfo nft={lendingInput.nft}>
@@ -58,7 +58,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Amount"
           variant="outlined"
           value={lendingInput.lendAmount ?? ""}
-          inputProps={{ inputMode: 'numeric', pattern: '^[1-9][0-9]*$' }}
+          inputProps={{ inputMode: "numeric", pattern: "^[1-9][0-9]*$" }}
           onChange={only1Item ? voidFn : handleChange}
           onBlur={only1Item ? voidFn : handleBlur}
           id={`inputs.${index}.lendAmount`}
@@ -79,7 +79,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Max lend duration"
           variant="outlined"
           value={lendingInput?.maxDuration ?? ""}
-          inputProps={{ inputMode: 'numeric', pattern: '^[0-9]{0,3}$' }}
+          inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.maxDuration`}
@@ -99,7 +99,10 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           label="Borrow Price"
           variant="outlined"
           value={lendingInput.borrowPrice ?? ""}
-          inputProps={{ inputMode: 'numeric', pattern: '^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$' }}
+          inputProps={{
+            inputMode: "numeric",
+            pattern: "^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$",
+          }}
           onChange={handleChange}
           onBlur={handleBlur}
           id={`inputs.${index}.borrowPrice`}
@@ -112,23 +115,6 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
           helperText={
             touched && touched.borrowPrice && errors && errors.borrowPrice
           }
-          disabled={disabled}
-        />
-        <CssTextField
-          required
-          label="Collateral"
-          variant="outlined"
-          value={lendingInput.nftPrice ?? ""}
-          inputProps={{ inputMode: 'numeric', pattern: '^([1-9][0-9]{0,3})|([0-9]{1,4}(\\.[0-9]{0,3}[1-9]))$' }}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          
-          id={`inputs.${index}.nftPrice`}
-          name={`inputs.${index}.nftPrice`}
-          error={
-            !!touched && touched.nftPrice && Boolean(errors && errors.nftPrice)
-          }
-          helperText={touched && touched.nftPrice && errors && errors.nftPrice}
           disabled={disabled}
         />
         <MinimalSelect

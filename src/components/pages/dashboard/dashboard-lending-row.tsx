@@ -22,7 +22,7 @@ export const LendingRow: React.FC<{
   checked,
   hasRenting,
   openLendModal,
-  openClaimModal
+  openClaimModal,
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);
@@ -88,9 +88,6 @@ export const LendingRow: React.FC<{
       </Td>
       <Td className="column">{lend.amount}</Td>
       <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
-      <Td className="column">
-        {formatCollateral(lending.nftPrice * Number(lend.amount))}
-      </Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
       <Td className="column">{lend.relended ? "renter" : "owner"}</Td>

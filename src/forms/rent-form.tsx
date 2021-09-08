@@ -217,10 +217,7 @@ const ModalDialogSection: React.FC<{
   const token = item.lending.paymentToken;
   const paymentToken = PaymentToken[token];
   const dailyRentPrice = item.lending.dailyRentPrice;
-  const nftPrice = item.lending.nftPrice;
-  const totalRent =
-    (item.lending.nftPrice || 0) * Number(item.amount) +
-    (item.lending.dailyRentPrice || 0) * Number(item.duration);
+  const totalRent = (item.lending.dailyRentPrice || 0) * Number(item.duration);
 
   const renderItem = () => {
     const days = item.lending.maxRentDuration;
@@ -260,10 +257,6 @@ const ModalDialogSection: React.FC<{
         value={dailyRentPrice}
       />
       <CatalogueItemRow
-        text={`Collateral (per item) [${paymentToken}]`}
-        value={nftPrice}
-      />
-      <CatalogueItemRow
         text={`Rent [${paymentToken}]`}
         value={
           <div
@@ -277,9 +270,6 @@ const ModalDialogSection: React.FC<{
             <span>
               &nbsp;&nbsp;&nbsp;{dailyRentPrice} x{" "}
               {item.duration ? item.duration : 0} days
-            </span>
-            <span>
-              + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
             </span>
             <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
           </div>

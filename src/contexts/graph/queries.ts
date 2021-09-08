@@ -51,7 +51,6 @@ export const queryAllLendingRenft = `
       lenderAddress
       maxRentDuration
       dailyRentPrice
-      nftPrice
       paymentToken
       collateralClaimed
       isERC721
@@ -80,7 +79,6 @@ export const queryAllRentingRenft = `
         lenderAddress
         maxRentDuration
         dailyRentPrice
-        nftPrice
         paymentToken
         collateralClaimed
         isERC721
@@ -101,7 +99,6 @@ export const queryAllRenft = (): string => {
         lenderAddress
         maxRentDuration
         dailyRentPrice
-        nftPrice
         paymentToken
         collateralClaimed
         isERC721
@@ -123,7 +120,6 @@ export const queryAllRenft = (): string => {
           lenderAddress
           maxRentDuration
           dailyRentPrice
-          nftPrice
           paymentToken
           collateralClaimed
           isERC721
@@ -176,7 +172,6 @@ export const queryUserLendingRenft = (user: string): string => {
         tokenId
         lentAmount
         dailyRentPrice
-        nftPrice
         paymentToken
         lenderAddress
         maxRentDuration
@@ -207,7 +202,6 @@ export const queryUserRentingRenft = (user: string): string => {
           tokenId
           lentAmount
           dailyRentPrice
-          nftPrice
           paymentToken
           lenderAddress
           maxRentDuration

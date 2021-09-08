@@ -171,9 +171,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       priceInUSD: isLending(r)
         ? toUSD(r.lending.paymentToken, r.lending.dailyRentPrice, tokenPerUSD)
         : 1,
-      collateralInUSD: isLending(r)
-        ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
-        : 1,
+      collateralInUSD: 0,
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -234,8 +232,6 @@ export const useSortOptions = (): CategoryOptions[] => {
     return [
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
-      { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };

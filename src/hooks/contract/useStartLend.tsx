@@ -4,11 +4,12 @@ import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { LendInputDefined } from "../../forms/lend-form";
 import { sortNfts } from "../../utils";
+import { NFTStandard } from "@renft/sdk";
 
 const debug = createDebugger("app:contract");
 
@@ -25,19 +26,19 @@ export const useStartLend = (): ((
       const amounts: number[] = [];
       const maxRentDurations: number[] = [];
       const dailyRentPrices: number[] = [];
-      const nftPrice: number[] = [];
       const addresses: string[] = [];
       const tokenIds: BigNumber[] = [];
       const pmtTokens: number[] = [];
+      const standards: NFTStandard[] = [];
 
       const sortedNfts = Object.values(lendingInputs)
         .map((a) => ({ ...a.nft, ...a }))
         .sort(sortNfts);
       sortedNfts.forEach((item) => {
+        standards.push(item.isERC721 ? NFTStandard.E721 : NFTStandard.E1155);
         amounts.push(item.lendAmount);
         maxRentDurations.push(item.maxDuration);
         dailyRentPrices.push(item.borrowPrice);
-        nftPrice.push(item.nftPrice);
         pmtTokens.push(item.pmToken);
       });
       sortedNfts.forEach(({ address, tokenId }) => {
@@ -49,17 +50,16 @@ export const useStartLend = (): ((
       debug("amounts", amounts);
       debug("maxRentDurations", maxRentDurations);
       debug("dailyRentPrices", dailyRentPrices);
-      debug("nftPrice", nftPrice);
       debug("tokens", pmtTokens);
 
       return transactionWrapper(
         sdk.lend(
+          standards,
           addresses,
           tokenIds,
           amounts,
           maxRentDurations,
           dailyRentPrices,
-          nftPrice,
           pmtTokens
         ),
         {
@@ -70,9 +70,8 @@ export const useStartLend = (): ((
         amounts: ${amounts}
         maxRentDurations: ${maxRentDurations}
         dailyRentPrices: ${dailyRentPrices}
-        nftPrice: ${nftPrice}
         tokens: ${pmtTokens}
-        `
+        `,
         }
       );
     },
