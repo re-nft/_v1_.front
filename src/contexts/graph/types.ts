@@ -62,21 +62,21 @@ export interface ILending {
   dailyRentPrice: number;
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
-  isERC721: boolean;
+  is721: boolean;
   renting?: IRenting;
 }
 
 export type LendingRaw = {
   id: string;
   nftAddress: string;
-  tokenId: string;
-  lentAmount: string;
+  tokenID: string;
+  lendAmount: string;
   lenderAddress: string;
   maxRentDuration: string;
   dailyRentPrice: string;
   paymentToken: string;
   collateralClaimed: boolean;
-  isERC721: boolean;
+  is721: boolean;
   renting: RentingRaw;
 };
 

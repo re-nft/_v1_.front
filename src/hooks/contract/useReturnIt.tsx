@@ -4,9 +4,14 @@ import { EMPTY, Observable } from "rxjs";
 import { Renting } from "../../contexts/graph/classes";
 import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
-import { TransactionStatus, useTransactionWrapper } from "../useTransactionWrapper";
+import {
+  TransactionStatus,
+  useTransactionWrapper,
+} from "../useTransactionWrapper";
 
-export const useReturnIt = (): ((nfts: Renting[]) => Observable<TransactionStatus>) => {
+export const useReturnIt = (): ((
+  nfts: Renting[]
+) => Observable<TransactionStatus>) => {
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
 
@@ -16,16 +21,22 @@ export const useReturnIt = (): ((nfts: Renting[]) => Observable<TransactionStatu
       if (nfts.length < 1) return EMPTY;
       const sortedNfts = nfts.sort(sortNfts);
       return transactionWrapper(
+        // @ts-ignore
         sdk.returnIt(
           sortedNfts.map((nft) => nft.address),
           sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
           sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
         ),
-        {action: 'Return nft', label: `
+        {
+          action: "Return nft",
+          label: `
           addresses: ${sortedNfts.map((nft) => nft.address)}
           tokenIds: ${sortedNfts.map((nft) => BigNumber.from(nft.tokenId))}
-          lendingIds: ${sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))}
-        `}
+          lendingIds: ${sortedNfts.map((nft) =>
+            BigNumber.from(nft.renting.lendingId)
+          )}
+        `,
+        }
       );
     },
     [sdk]

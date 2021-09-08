@@ -46,14 +46,14 @@ export const queryAllLendingRenft = `
     lendings {
       id
       nftAddress
-      tokenId
-      lentAmount
+      tokenID
+      lendAmount
       lenderAddress
       maxRentDuration
       dailyRentPrice
       paymentToken
       collateralClaimed
-      isERC721
+      is721
       renting {
         id
         renterAddress
@@ -70,14 +70,13 @@ export const queryUserLendingRenft = (user: string): string => {
       lending {
         id
         nftAddress
-        tokenId
-        lentAmount
+        tokenID
+        lendAmount
         dailyRentPrice
         paymentToken
         lenderAddress
         maxRentDuration
-        isERC721
-        collateralClaimed
+        is721
         renting {
           id
           renterAddress
@@ -100,14 +99,13 @@ export const queryUserRentingRenft = (user: string): string => {
         lending {
           id
           nftAddress
-          tokenId
-          lentAmount
+          tokenID
+          lendAmount
           dailyRentPrice
           paymentToken
           lenderAddress
           maxRentDuration
-          isERC721
-          collateralClaimed
+          is721
         }
       }
     }

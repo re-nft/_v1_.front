@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { PaymentToken } from "@renft/sdk";
+import { NFTStandard, PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
@@ -11,7 +11,7 @@ import { ContractContext } from "../../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "../useObservable";
@@ -128,9 +128,15 @@ export const useStartRent = (): {
 
       const sortedNfts = nfts.sort(sortNfts);
       const addresses = sortedNfts.map((nft) => nft.address);
+      const standards = sortedNfts.map((nft) =>
+        nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155
+      );
       const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
       const rentDurations = sortedNfts.map((nft) => Number(nft.rentDuration));
+      //TODO:collateral
+      //@ts-ignore
+      const rentAmount = sortedNfts.map((nft) => Number(nft.rentAmount));
 
       debug("addresses", addresses);
       debug(
@@ -143,7 +149,14 @@ export const useStartRent = (): {
       );
       debug("rentDurations", rentDurations);
       return transactionWrapper(
-        sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
+        sdk.rent(
+          standards,
+          addresses,
+          tokenIds,
+          lendingIds,
+          rentDurations,
+          rentAmount
+        ),
         {
           action: "rent",
           label: `
@@ -151,7 +164,7 @@ export const useStartRent = (): {
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
-          `
+          `,
         }
       );
     },
@@ -164,7 +177,7 @@ export const useStartRent = (): {
     handleApproveAll,
     isApproved,
     approvalStatus: {
-      ...approvalStatus
-    }
+      ...approvalStatus,
+    },
   };
 };

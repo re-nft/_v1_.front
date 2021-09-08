@@ -6,7 +6,7 @@ import { parseLending, parseRenting } from "./utils";
 export enum NftType {
   Nft,
   Lending,
-  Renting
+  Renting,
 }
 
 type NftOptions = {
@@ -53,8 +53,8 @@ class Nft {
       this.tokenURI = options.tokenURI;
     }
     //TODO:eniko check if we still need to do this
-    this.id = getUniqueID(nftAddress, tokenId, "0")
-    this.nId = getUniqueID(nftAddress, tokenId)
+    this.id = getUniqueID(nftAddress, tokenId, "0");
+    this.nId = getUniqueID(nftAddress, tokenId);
   }
 }
 
@@ -67,9 +67,9 @@ class Lending extends Nft {
   constructor(lendingRaw: LendingRaw, options?: NftOptions) {
     super(
       lendingRaw.nftAddress,
-      lendingRaw.tokenId,
-      lendingRaw.lentAmount,
-      lendingRaw.isERC721,
+      lendingRaw.tokenID,
+      lendingRaw.lendAmount,
+      lendingRaw.is721,
       options
     );
 
@@ -95,14 +95,12 @@ class Renting extends Nft {
     rentingRaw: RentingRaw,
     options?: NftOptions
   ) {
-    super(nftAddress, tokenId, lending.lentAmount, lending.isERC721, options);
+    super(nftAddress, tokenId, lending.lentAmount, lending.is721, options);
 
     this.lending = lending;
     this.renting = parseRenting(rentingRaw, lending);
     this.id = rentingRaw.id;
   }
 }
-
-
 
 export { Nft, Lending, Renting };

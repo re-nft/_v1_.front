@@ -10,14 +10,14 @@ export const parseLending = (
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
-    tokenId: lending.tokenId,
-    lentAmount: lending.lentAmount,
+    tokenId: lending.tokenID,
+    lentAmount: lending.lendAmount,
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
-    isERC721: lending.isERC721,
+    is721: lending.is721,
     renting: parsedRenting,
   };
 };

@@ -3,15 +3,17 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
+import { NFTStandard } from "@renft/sdk";
 
 export const useStopLend = (): ((
   nfts: {
     address: string;
     tokenId: string;
     lendingId: string;
+    isERC721: boolean;
   }[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
@@ -21,24 +23,28 @@ export const useStopLend = (): ((
   return useCallback(
     (
       nfts: {
+        isERC721: boolean;
         address: string;
         tokenId: string;
         lendingId: string;
       }[]
     ) => {
       if (!sdk) return EMPTY;
-      const arr: [string[], BigNumber[], BigNumber[]] = [
+      const arr: [NFTStandard[], string[], BigNumber[], BigNumber[]] = [
+        nfts.map((nft) =>
+          nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155
+        ),
         nfts.map((nft) => nft.address),
         nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => BigNumber.from(nft.lendingId))
+        nfts.map((nft) => BigNumber.from(nft.lendingId)),
       ];
-      return transactionWrapper(sdk.stopLending(...arr), {
+      return transactionWrapper(sdk.stopLend(...arr), {
         action: "return nft",
         label: `
           addresses: ${nfts.map((nft) => nft.address)}
           tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
           lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
-        `
+        `,
       });
     },
     [sdk]
