@@ -4,7 +4,7 @@ import Layout from "./layout";
 import { Header } from "./header";
 import { Footer } from "./footer";
 import { Menu } from "./menu";
-import { SearchMenu } from "./search-menu";
+// import { SearchMenu } from "./search-menu";
 import { DevMenu } from "./dev-menu";
 
 const App: React.FC = ({ children }) => {
@@ -15,7 +15,7 @@ const App: React.FC = ({ children }) => {
       </div>
       <div className="content-wrapper mb-l menu-wrapper">
         <Menu />
-        <SearchMenu />
+        {/* <SearchMenu /> */}
       </div>
       <DevMenu />
       {/* CONTENT */}
