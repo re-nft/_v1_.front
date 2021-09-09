@@ -77,7 +77,7 @@ export type LendingRaw = {
   paymentToken: string;
   collateralClaimed: boolean;
   is721: boolean;
-  renting: RentingRaw;
+  renting: RentingRaw[];
 };
 
 export interface IRenting {

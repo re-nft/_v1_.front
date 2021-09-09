@@ -37,7 +37,6 @@ export const LendingTable: React.FC<{
             <Th style={{ widTh: "7%" }}>ID</Th>
             <Th style={{ widTh: "5%" }}>Amount</Th>
             <Th style={{ widTh: "5%" }}>$</Th>
-            <Th style={{ widTh: "11%" }}>Collateral</Th>
             <Th style={{ widTh: "7%" }}>Daily Price</Th>
             <Th style={{ widTh: "7%" }}>Duration</Th>
             <Th style={{ widTh: "7%" }}>Original owner</Th>

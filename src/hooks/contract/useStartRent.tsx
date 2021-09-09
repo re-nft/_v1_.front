@@ -26,6 +26,7 @@ export type StartRentNft = {
   tokenId: string;
   lendingId: string;
   rentDuration: string;
+  rentAmount: number;
   paymentToken: PaymentToken;
   isERC721: boolean;
 };
@@ -134,10 +135,9 @@ export const useStartRent = (): {
       const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
       const rentDurations = sortedNfts.map((nft) => Number(nft.rentDuration));
-      //TODO:collateral
-      //@ts-ignore
       const rentAmount = sortedNfts.map((nft) => Number(nft.rentAmount));
 
+      debug("standards", standards);
       debug("addresses", addresses);
       debug(
         "tokenIds",
@@ -148,6 +148,8 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
+      debug("rentAmount", rentAmount);
+
       return transactionWrapper(
         sdk.rent(
           standards,

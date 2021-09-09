@@ -18,8 +18,8 @@ export const fetchRentings = () => {
   const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
   return from<Promise<{ lendings: LendingRaw[] }>>(
     timeItAsync("Pulled All ReNFT Lendings", async () =>
-      request(subgraphURI, queryAllLendingRenft).catch(() => {
-        console.warn("could not pull all ReNFT lendings");
+      request(subgraphURI, queryAllLendingRenft).catch((e) => {
+        console.warn("could not pull all ReNFT lendings", e);
         return {};
       })
     )
@@ -27,7 +27,7 @@ export const fetchRentings = () => {
     map((response) => Object.values(response?.lendings || [])),
     map((lendings) => {
       return lendings
-        .filter((v) => !v.renting)
+        .filter((v) => !v.renting || v.renting.length === 0)
         .filter((v) => v != null)
         .map((lending) => {
           return new Lending(lending);

@@ -2961,9 +2961,9 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@renft/sdk@git://github.com/re-nft/sdk.git#f717896078bff3a0fb1efc8cf6fe0e2d9c32043e":
+"@renft/sdk@git://github.com/re-nft/sdk.git#e21977d28098bc505148e5670c1afc7848b8b20e":
   version "2.2.4"
-  resolved "git://github.com/re-nft/sdk.git#f717896078bff3a0fb1efc8cf6fe0e2d9c32043e"
+  resolved "git://github.com/re-nft/sdk.git#e21977d28098bc505148e5670c1afc7848b8b20e"
   dependencies:
     ethers "5.4.0"
     typescript "^4.2.4"

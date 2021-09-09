@@ -30,6 +30,7 @@ type LendFormProps = {
 interface LendingWithKey extends Lending {
   key: string;
   duration: number | undefined;
+  rentAmount: number | undefined;
 }
 type FormProps = { inputs: LendingWithKey[] };
 export const RentForm: React.FC<LendFormProps> = ({
@@ -45,6 +46,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     inputs: nfts.map<LendingWithKey>((nft) => ({
       key: nft.id,
       duration: undefined,
+      rentAmount: nft.isERC721? 1 : undefined,
       ...nft,
     })),
   };
@@ -61,6 +63,7 @@ export const RentForm: React.FC<LendFormProps> = ({
         amount: nft.lending.lentAmount,
         lendingId: nft.lending.id,
         rentDuration: (nft.duration as number).toString(),
+        rentAmount: nft.isERC721 ? 1: nft.rentAmount as number,
         paymentToken: nft.lending.paymentToken,
         isERC721: nft.isERC721,
       }))
@@ -89,6 +92,17 @@ export const RentForm: React.FC<LendFormProps> = ({
         error.duration = "maxDuration must be a whole number";
       } else if (!/^\d+(\.\d+)?$/i.test(input.duration.toString())) {
         error.duration = "amount must be a number";
+      }
+
+      if (typeof input.rentAmount === "undefined") {
+        error.rentAmount = "please specify rentAmount";
+      } else if (input.rentAmount > Number(input.lending.lentAmount)) {
+        error.rentAmount =
+          "the rentAmount cannot be greater then the maximum lended amount";
+      } else if (input.rentAmount != parseInt(input.rentAmount.toString(), 10)) {
+        error.rentAmount = "rentAmount must be a whole number";
+      } else if (!/^\d+(\.\d+)?$/i.test(input.rentAmount.toString())) {
+        error.rentAmount = "amount must be a number";
       }
       errors[index] = Object.keys(error).length > 0 ? error : undefined;
     });
@@ -238,6 +252,21 @@ const ModalDialogSection: React.FC<{
         {/* we can do this because checked items will have the right amount when we pass them here */}
         <div className="label">{item.amount}</div>
       </div>
+      <CssTextField
+        required
+        label="Rent amount"
+        variant="outlined"
+        value={item.rentAmount}
+        inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}
+        name={`inputs.${index}.rentAmount`}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={
+          !!touched && touched.rentAmount && Boolean(errors && errors.rentAmount)
+        }
+        helperText={touched && touched.rentAmount && errors && errors.rentAmount}
+        disabled={disabled || item.isERC721}
+      />
       <CssTextField
         required
         label={renderItem()}

@@ -76,8 +76,8 @@ class Lending extends Nft {
     this.lending = parseLending(lendingRaw);
     this.id = lendingRaw.id;
 
-    if (lendingRaw.renting) {
-      this.renting = parseRenting(lendingRaw.renting, this.lending);
+    if (lendingRaw.renting && lendingRaw.renting.length > 0) {
+      this.renting = parseRenting(lendingRaw.renting[0], this.lending);
     }
   }
 }

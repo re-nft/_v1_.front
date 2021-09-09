@@ -52,7 +52,6 @@ export const queryAllLendingRenft = `
       maxRentDuration
       dailyRentPrice
       paymentToken
-      collateralClaimed
       is721
       renting {
         id

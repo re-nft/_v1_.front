@@ -17,7 +17,7 @@
     "@material-ui/core": "4.11.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.58",
-    "@renft/sdk": "git://github.com/re-nft/sdk.git#f717896078bff3a0fb1efc8cf6fe0e2d9c32043e",
+    "@renft/sdk": "git://github.com/re-nft/sdk.git#e21977d28098bc505148e5670c1afc7848b8b20e",
     "@welldone-software/why-did-you-render": "^6.2.0",
     "bl": "5.0.0",
     "cross-fetch": "3.1.4",
