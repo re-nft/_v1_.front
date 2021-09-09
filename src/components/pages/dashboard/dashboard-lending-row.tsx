@@ -22,7 +22,7 @@ export const LendingRow: React.FC<{
   checked,
   hasRenting,
   openLendModal,
-  openClaimModal,
+  openClaimModal
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);
@@ -33,6 +33,10 @@ export const LendingRow: React.FC<{
         isClaimable(lend.renting, blockTimeStamp) &&
         !lend.lending.rentClaimed
       ),
+    [lend, blockTimeStamp]
+  );
+  const claimed = useMemo(
+    () => lend.renting && lend.lending.rentClaimed,
     [lend, blockTimeStamp]
   );
 
@@ -71,6 +75,7 @@ export const LendingRow: React.FC<{
   const lendTooltip = hasRenting
     ? "The item is rented out. You have to wait until the renter returns the item."
     : "Click to stop lending this item.";
+  if (claimed) return null;
   return (
     <Tr onClick={onRowClick}>
       <Td className="action-column">
@@ -90,7 +95,6 @@ export const LendingRow: React.FC<{
       <Td className="column">{PaymentToken[lending.paymentToken ?? 0]}</Td>
       <Td className="column">{lending.dailyRentPrice}</Td>
       <Td className="column">{lending.maxRentDuration} days</Td>
-      <Td className="column">{lend.relended ? "renter" : "owner"}</Td>
       <Td className="action-column">
         <Tooltip title={claimTooltip} aria-label={claimTooltip}>
           <span>
