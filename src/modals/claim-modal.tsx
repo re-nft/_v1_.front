@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Button } from "../components/common/button";
 import { TransactionWrapper } from "../components/transaction-wrapper";
 import { Nft, Lending } from "../contexts/graph/classes";
-import { useClaimColleteral } from "../hooks/contract/useClaim";
+import { useClaim } from "../hooks/contract/useClaim";
 import { useObservable } from "../hooks/useObservable";
 import Modal from "./modal";
 
@@ -18,7 +18,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   onClose,
   nfts
 }) => {
-  const claim = useClaimColleteral();
+  const claim = useClaim();
   const [t, setObservable] = useObservable()
   
   const handleClaim = useCallback(() => {

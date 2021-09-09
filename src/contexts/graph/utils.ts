@@ -16,7 +16,7 @@ export const parseLending = (
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
-    collateralClaimed: Boolean(lending.collateralClaimed),
+    rentClaimed: Boolean(lending.rentClaimed),
     is721: lending.is721,
     renting: parsedRenting,
   };

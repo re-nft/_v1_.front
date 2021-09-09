@@ -31,7 +31,7 @@ export const LendingRow: React.FC<{
       !!(
         lend.renting &&
         isClaimable(lend.renting, blockTimeStamp) &&
-        !lend.lending.collateralClaimed
+        !lend.lending.rentClaimed
       ),
     [lend, blockTimeStamp]
   );
@@ -64,7 +64,7 @@ export const LendingRow: React.FC<{
   const claimTooltip = claimable
     ? "The NFT renting period is over. Click to claim your collateral."
     : hasRenting
-    ? lend.lending.collateralClaimed
+    ? lend.lending.rentClaimed
       ? "The item is already claimed"
       : "The item rental is not expired yet."
     : "No one rented the item as so far.";

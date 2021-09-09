@@ -251,7 +251,7 @@ export const sortNfts = (
 export const filterClaimed =
   (showClaimed: boolean) => (l: Lending | Renting) => {
     if (!showClaimed) {
-      if (l.lending) return !l.lending.collateralClaimed;
+      if (l.lending) return !l.lending.rentClaimed;
       return false;
     }
     return true;

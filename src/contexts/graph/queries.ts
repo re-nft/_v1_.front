@@ -53,6 +53,7 @@ export const queryAllLendingRenft = `
       dailyRentPrice
       paymentToken
       is721
+      rentClaimed
       renting {
         id
         renterAddress
@@ -76,6 +77,7 @@ export const queryUserLendingRenft = (user: string): string => {
         lenderAddress
         maxRentDuration
         is721
+        rentClaimed
         renting {
           id
           renterAddress
@@ -105,6 +107,7 @@ export const queryUserRentingRenft = (user: string): string => {
           lenderAddress
           maxRentDuration
           is721
+          rentClaimed
         }
       }
     }

@@ -61,7 +61,7 @@ export interface ILending {
   maxRentDuration: number;
   dailyRentPrice: number;
   paymentToken: PaymentToken;
-  collateralClaimed: boolean;
+  rentClaimed: boolean;
   is721: boolean;
   renting?: IRenting;
 }
@@ -75,7 +75,7 @@ export type LendingRaw = {
   maxRentDuration: string;
   dailyRentPrice: string;
   paymentToken: string;
-  collateralClaimed: boolean;
+  rentClaimed: boolean;
   is721: boolean;
   renting: RentingRaw[];
 };

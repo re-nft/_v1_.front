@@ -13,7 +13,7 @@ import { NFTStandard } from "@renft/sdk";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
 
-export const useClaimColleteral = (): ((
+export const useClaim = (): ((
   nfts: Lending[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
