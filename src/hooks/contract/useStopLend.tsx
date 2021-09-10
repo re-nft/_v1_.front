@@ -6,6 +6,7 @@ import {
   useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
+//@ts-ignore
 import { NFTStandard } from "@renft/sdk";
 
 export const useStopLend = (): ((

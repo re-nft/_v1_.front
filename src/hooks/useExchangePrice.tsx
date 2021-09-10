@@ -6,6 +6,7 @@ import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 
 interface TOKEN_PRICE {

@@ -3,6 +3,8 @@ import React, { useCallback } from "react";
 import { Renting } from "../../../contexts/graph/classes";
 import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
+//@ts-ignore
+
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
 import { Tooltip } from "@material-ui/core";

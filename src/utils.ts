@@ -6,6 +6,7 @@ import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
 import { Lending, Nft, NftType, Renting } from "./contexts/graph/classes";
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";

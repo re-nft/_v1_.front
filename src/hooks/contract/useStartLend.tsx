@@ -9,6 +9,7 @@ import {
 import { EMPTY, Observable } from "rxjs";
 import { LendInputDefined } from "../../forms/lend-form";
 import { sortNfts } from "../../utils";
+//@ts-ignore
 import { NFTStandard } from "@renft/sdk";
 
 const debug = createDebugger("app:contract");

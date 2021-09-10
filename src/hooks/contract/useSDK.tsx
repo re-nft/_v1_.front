@@ -1,4 +1,5 @@
 import { useContext, useMemo } from "react";
+//@ts-ignore
 import { ReNFT } from "@renft/sdk";
 
 import UserContext from "../../contexts/UserProvider";

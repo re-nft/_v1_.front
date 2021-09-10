@@ -1,3 +1,5 @@
+//@ts-ignore
+
 import { PaymentToken } from "@renft/sdk";
 import { Address, TokenId } from "../../types";
 

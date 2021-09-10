@@ -10,6 +10,7 @@ import { Nft } from "../contexts/graph/classes";
 import { UserRentingContext } from "../contexts/UserRenting";
 import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
 import UserContext from "../contexts/UserProvider";
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 import { RentSwitchWrapper } from "../components/rent-switch-wrapper";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";

@@ -4,6 +4,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540

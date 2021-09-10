@@ -5,6 +5,7 @@ import { isClaimable } from "../../../hooks/useBatchItems";
 import { Tr, Td } from "react-super-responsive-table";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 import { Tooltip } from "@material-ui/core";
 import { Button } from "../../common/button";

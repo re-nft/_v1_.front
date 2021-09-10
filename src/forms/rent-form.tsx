@@ -14,6 +14,7 @@ import {
 import { TransactionStateEnum } from "../types";
 import { StartRentNft } from "../hooks/contract/useStartRent";
 import { TransactionWrapper } from "../components/transaction-wrapper";
+//@ts-ignore
 import { PaymentToken } from "@renft/sdk";
 import { TransactionStatus } from "../hooks/useTransactionWrapper";
 import { Observable } from "rxjs";
