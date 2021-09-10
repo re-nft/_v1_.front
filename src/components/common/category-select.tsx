@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
 //@ts-ignore
-import Select, { components } from "react-select";
+import Select, { components } from "@eenagy/react-select";
 
 const customStyles = {
   option: (provided: any, state: any) => ({
@@ -15,7 +15,7 @@ const customStyles = {
     color: "black",
   }),
   control: (provided: any, state: any) => ({
-    // none of react-select's styles are passed to <Control />
+    // none of @eenagy/react-select's styles are passed to <Control />
     ...provided,
     zIndex: 100,
     color: "black",
@@ -32,7 +32,7 @@ const customStyles = {
     },
   }),
   menu: (provided: any) => ({
-    // none of react-select's styles are passed to <Control />
+    // none of @eenagy/react-select's styles are passed to <Control />
     ...provided,
     color: "black",
     zIndex: 100,
