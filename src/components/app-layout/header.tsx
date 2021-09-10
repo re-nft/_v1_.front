@@ -45,11 +45,11 @@ export const Header: React.FC = () => {
             <p className="headline pink-text">
               {network} &nbsp;{" "}
               {networkNotSupported && (
-                <span className="copy-text black-text">is not supported</span>
+                <span className="copy-text white-text">is not supported</span>
               )}
             </p>
             {networkNotSupported && (
-              <p className="copy-text">
+              <p className="copy-text white-text">
                 Please switch to{" "}
                 <span className="headline pink-text">
                   {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}
