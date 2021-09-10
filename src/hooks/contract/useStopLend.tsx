@@ -7,7 +7,7 @@ import {
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 //@ts-ignore
-import { NFTStandard } from "@renft/sdk";
+import { NFTStandard } from "@eenagy/sdk";
 
 export const useStopLend = (): ((
   nfts: {
