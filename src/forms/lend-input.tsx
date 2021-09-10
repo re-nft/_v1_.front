@@ -76,7 +76,7 @@ export const LendInput: React.FC<ILendInput> = (input: ILendInput) => {
 
         <CssTextField
           required
-          label="Max lend duration"
+          label="Max lend duration (days)"
           variant="outlined"
           value={lendingInput?.maxDuration ?? ""}
           inputProps={{ inputMode: "numeric", pattern: "^[0-9]{0,3}$" }}

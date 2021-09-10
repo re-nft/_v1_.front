@@ -8,6 +8,7 @@ import {
   TransactionStatus,
   useTransactionWrapper,
 } from "../useTransactionWrapper";
+import { NFTStandard } from "@eenagy/sdk";
 
 export const useReturnIt = (): ((
   nfts: Renting[]
@@ -21,8 +22,8 @@ export const useReturnIt = (): ((
       if (nfts.length < 1) return EMPTY;
       const sortedNfts = nfts.sort(sortNfts);
       return transactionWrapper(
-        // @ts-ignore
-        sdk.returnIt(
+        sdk.stopLend(
+          sortedNfts.map((nft) =>nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155),
           sortedNfts.map((nft) => nft.address),
           sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
           sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
