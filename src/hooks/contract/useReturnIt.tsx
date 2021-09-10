@@ -22,11 +22,12 @@ export const useReturnIt = (): ((
       if (nfts.length < 1) return EMPTY;
       const sortedNfts = nfts.sort(sortNfts);
       return transactionWrapper(
-        sdk.stopLend(
+        sdk.stopRent(
           sortedNfts.map((nft) =>nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155),
           sortedNfts.map((nft) => nft.address),
           sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-          sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
+          sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId)),
+          sortedNfts.map((nft) => BigNumber.from(nft.renting.id))
         ),
         {
           action: "Return nft",
