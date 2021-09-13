@@ -53,8 +53,8 @@ export const LendForm: React.FC<LendFormProps> = ({
       tokenId: nft.tokenId,
       nft: nft,
       key: nft.id,
-      lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : undefined,
-      amount: nft.amount,
+      lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : Number(nft.amount),
+      amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount,
       maxDuration: undefined,
       borrowPrice: undefined,
       nftPrice: undefined,
@@ -210,7 +210,7 @@ const validate = (values: FormProps) => {
       error[fieldName] = "please specify amount";
     } else if (field < 1) {
       error[fieldName] = "amount must be greater than 1";
-    } else if (field > Number(input.nft.amount)) {
+    } else if (field > Number(input.nft.amount) && !input.nft.isERC721) {
       error[fieldName] =
         "amount must be less than equal then the total amount available";
     } else if (isInteger(field)) {

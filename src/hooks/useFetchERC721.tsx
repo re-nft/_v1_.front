@@ -8,6 +8,7 @@ import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../consts";
+import { NetworkName } from "../types";
 
 interface UserERC721State {
   users: Record<
@@ -105,7 +106,7 @@ const fetchERC721 = (currentAddress: string) => {
 };
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useContext(CurrentAddressWrapper);
-  const { signer } = useContext(UserContext);
+  const { signer, network } = useContext(UserContext);
   const isLoading = useERC721(
     useCallback(
       (state) => {
@@ -135,6 +136,8 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         switchMap(() => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
+          // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
+          if (network !== NetworkName.mainnet) return EMPTY;
           setLoading(currentAddress, true);
           return fetchERC721(currentAddress);
         }),
