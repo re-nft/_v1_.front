@@ -116,7 +116,7 @@
             left: 0;
             width: 101%;
             height: 100%;
-            box-shadow: 5px 5px rgb(239, 184, 249);
+            box-shadow: 5px 5px $animetas;
         }
     }
 
@@ -127,9 +127,9 @@
     &.main-content {
         flex-grow: 1;
         display: flex;
-        border: 4px solid rgb(239, 184, 249);
+        border: 4px solid $animetas;
         box-sizing: border-box;
-        box-shadow: 7px 7px 0 rgb(239, 184, 249);
+        box-shadow: 7px 7px 0 $animetas;
         background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
         z-index:10;
     }
@@ -185,12 +185,12 @@
         &-user {
           background:black;
           color: white !important;
-          border: 4px solid rgb(239, 184, 249);
+          border: 4px solid $animetas;
           text-align: center;
           font-size: 18px;
           padding: 8px 18px;
           line-height: 1;
-          box-shadow: 6px 6px 0 rgb(239, 184, 249);
+          box-shadow: 6px 6px 0 $animetas;
           & > a{
               color: white;
           }

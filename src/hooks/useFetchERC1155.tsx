@@ -11,7 +11,7 @@ import {
   map,
   mergeMap,
   switchMap,
-  timer,
+  timer
 } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
@@ -36,15 +36,13 @@ interface UserERC1155State {
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
   return from<Promise<NftToken[]>>(
-    Promise.allSettled([
-      fetchUserProd1155(currentAddress, 0),
-      fetchUserProd1155(currentAddress, 1),
-      fetchUserProd1155(currentAddress, 2),
-      fetchUserProd1155(currentAddress, 3),
-      fetchUserProd1155(currentAddress, 4),
-    ]).then((r) => {
+    Promise.allSettled(
+      new Array(15).fill(1).map((_el, index) =>
+        fetchUserProd1155(currentAddress, index)
+      )
+    ).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
-        if (v.status === "fulfilled") {
+        if (v.status === "fulfilled" && v.value) {
           acc = [...acc, ...v.value];
         }
         return acc;
@@ -59,7 +57,7 @@ const fetchERC1155 = (currentAddress: string) => {
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
             meta: nft.meta,
-            tokenURI: nft.tokenURI,
+            tokenURI: nft.tokenURI
           });
         })
         .forEach((nft) => {
@@ -96,9 +94,9 @@ export const useERC1155 = create<UserERC1155State>(
             ...state.users,
             [`${user}`]: {
               ...state.users[user],
-              nfts,
-            },
-          },
+              nfts
+            }
+          }
         };
       }),
     setLoading: (user: string, isLoading: boolean) =>
@@ -109,9 +107,9 @@ export const useERC1155 = create<UserERC1155State>(
             ...state.users,
             [`${user}`]: {
               ...state.users[user],
-              isLoading,
-            },
-          },
+              isLoading
+            }
+          }
         };
       }),
     setAmount: (user: string, id: string, amount: string) =>
@@ -125,11 +123,11 @@ export const useERC1155 = create<UserERC1155State>(
               nfts: state.users[user]?.nfts.map((nft) => {
                 if (nft.id === id) nft.amount = amount;
                 return nft;
-              }),
-            },
-          },
+              })
+            }
+          }
         };
-      }),
+      })
   }))
 );
 

@@ -132,7 +132,6 @@ export const useTransactionWrapper = (): ((
               action: `Error action:${action}`,
               label: `uniqueId:${id} ${err.message}`,
             });
-            console.log(err)
             setError(err.message, "warning");
             return null;
           })

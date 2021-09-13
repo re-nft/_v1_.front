@@ -43,3 +43,6 @@ cypress/videos
 # local env files
 # vercel
 .vercel
+
+#disable yarn on this branch
+.yarn.lock

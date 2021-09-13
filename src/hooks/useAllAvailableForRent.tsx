@@ -113,7 +113,7 @@ export const useAllAvailableForRent = () => {
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
-    return nfts.filter((l: Lending) => {
+    const items= nfts.filter((l: Lending) => {
       // empty address show all renting
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
       // ! therefore, this check is !==
@@ -125,6 +125,7 @@ export const useAllAvailableForRent = () => {
           : true;
       return userNotLender && userNotRenter;
     });
+    return items;
   }, [currentAddress, nfts]);
 
   return { allAvailableToRent, isLoading };
