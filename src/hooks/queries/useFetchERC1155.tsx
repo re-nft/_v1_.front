@@ -19,7 +19,7 @@ import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
 import produce from "immer";
 import { usePrevious } from "../usePrevious";
-import { NetworkName } from "../../types";
+import { NetworkName, NftToken } from "../../types";
 
 interface UserERC1155State {
   users: Record<
@@ -36,7 +36,7 @@ interface UserERC1155State {
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
-  return from<Promise<Nft[]>>(
+  return from<Promise<NftToken[]>>(
     Promise.allSettled([
       fetchUserProd1155(currentAddress, 0),
       fetchUserProd1155(currentAddress, 1),
@@ -44,7 +44,7 @@ const fetchERC1155 = (currentAddress: string) => {
       fetchUserProd1155(currentAddress, 3),
       fetchUserProd1155(currentAddress, 4),
     ]).then((r) => {
-      return r.reduce<Nft[]>((acc, v) => {
+      return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
           acc = [...acc, ...v.value];
         }
@@ -59,7 +59,7 @@ const fetchERC1155 = (currentAddress: string) => {
       result
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
-            meta: nft._meta,
+            meta: nft.meta,
             tokenURI: nft.tokenURI,
           });
         })

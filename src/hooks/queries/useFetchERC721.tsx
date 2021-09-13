@@ -7,7 +7,7 @@ import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
-import { NetworkName } from "../../types";
+import { NetworkName, NftToken } from "../../types";
 
 interface UserERC721State {
   users: Record<
@@ -74,7 +74,7 @@ const fetchERC721 = (currentAddress: string) => {
       fetchUserProd721(currentAddress, 3),
       fetchUserProd721(currentAddress, 4),
     ]).then((r) => {
-      return r.reduce<Nft[]>((acc, v) => {
+      return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
           acc = [...acc, ...v.value];
         }
