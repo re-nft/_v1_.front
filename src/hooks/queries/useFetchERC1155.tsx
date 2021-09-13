@@ -1,7 +1,6 @@
-import { useCallback, useEffect } from "react";
 import { fetchUserProd1155 } from "../../services/graph";
 import { Nft } from "../../types/classes";
-import { NftToken } from "../../types";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   debounceTime,
   EMPTY,
@@ -18,6 +17,9 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { getContractWithProvider } from "../../utils";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import produce from "immer";
+import { usePrevious } from "../usePrevious";
+import { NetworkName } from "../../types";
 
 interface UserERC1155State {
   users: Record<
@@ -34,7 +36,7 @@ interface UserERC1155State {
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
-  return from<Promise<NftToken[]>>(
+  return from<Promise<Nft[]>>(
     Promise.allSettled([
       fetchUserProd1155(currentAddress, 0),
       fetchUserProd1155(currentAddress, 1),
@@ -42,7 +44,7 @@ const fetchERC1155 = (currentAddress: string) => {
       fetchUserProd1155(currentAddress, 3),
       fetchUserProd1155(currentAddress, 4),
     ]).then((r) => {
-      return r.reduce<NftToken[]>((acc, v) => {
+      return r.reduce<Nft[]>((acc, v) => {
         if (v.status === "fulfilled") {
           acc = [...acc, ...v.value];
         }
@@ -57,7 +59,7 @@ const fetchERC1155 = (currentAddress: string) => {
       result
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
-            meta: nft.meta,
+            meta: nft._meta,
             tokenURI: nft.tokenURI,
           });
         })
@@ -75,71 +77,64 @@ export const useERC1155 = create<UserERC1155State>(
   devtools((set) => ({
     users: {},
     setUserNft: (user: string, items: Nft[]) =>
-      set((state) => {
-        const previousNfts = state.users[user]?.nfts || [];
-        const map = items.reduce((acc, item) => {
-          acc.set(item.id, item);
-          return acc;
-        }, new Map<string, Nft>());
-        let nfts = [];
-        if (previousNfts.length === 0 || items.length === 0) {
-          nfts = items;
-        } else {
-          nfts = previousNfts.filter((item) => {
-            return map.has(item.id);
-          });
-        }
-        return {
-          ...state,
-          users: {
-            ...state.users,
-            [`${user}`]: {
-              ...state.users[user],
-              nfts,
-            },
-          },
-        };
-      }),
+      set(
+        produce((state) => {
+          if (!state.users[user]) state.users[user] = {};
+          const previousNfts = state.users[user]?.nfts || [];
+          const map = items.reduce((acc, item) => {
+            acc.set(item.id, item);
+            return acc;
+          }, new Map<string, Nft>());
+          let nfts = [];
+          if (previousNfts.length === 0 || items.length === 0) {
+            nfts = items;
+          } else {
+            nfts = previousNfts.filter((item: Nft) => {
+              return map.has(item.id);
+            });
+          }
+          state.users[user].nfts = nfts;
+        })
+      ),
     setLoading: (user: string, isLoading: boolean) =>
-      set((state) => {
-        return {
-          ...state,
-          users: {
-            ...state.users,
-            [`${user}`]: {
-              ...state.users[user],
-              isLoading,
-            },
-          },
-        };
-      }),
+      set(
+        produce((state) => {
+          if (!state.users[user]) state.users[user] = {};
+          state.users[user].isLoading = isLoading;
+        })
+      ),
     setAmount: (user: string, id: string, amount: string) =>
-      set((state) => {
-        return {
-          ...state,
-          users: {
-            ...state.users,
-            [`${user}`]: {
-              ...state.users[user],
-              nfts: state.users[user]?.nfts.map((nft) => {
-                if (nft.id === id) nft.amount = amount;
-                return nft;
-              }),
-            },
-          },
-        };
-      }),
+      set(
+        produce((state) => {
+          if (!state.users[user]) state.users[user] = {};
+          const nfts = [...state.users[user].nfts];
+          const index = nfts.findIndex((i: Nft) => i.id === id);
+          nfts[index].amount = amount;
+          state.users[user].nfts = nfts;
+        })
+      )
   }))
 );
 
 export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
-  const { signer } = useWallet();
+  const { signer, network } = useWallet();
 
   const isLoading = useERC1155(
     useCallback(
       (state) => {
         return state.users[currentAddress]?.isLoading;
+      },
+      [currentAddress]
+    ),
+    shallow
+  );
+  const amounts = useERC1155(
+    useCallback(
+      (state) => {
+        const selector = state.users[currentAddress];
+        if (!selector || !selector.nfts) return [];
+        return selector.nfts.map((n) => n.amount).toString();
       },
       [currentAddress]
     ),
@@ -152,13 +147,21 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         if (!selector || !selector.nfts) return [];
         return selector.nfts;
       },
-      [currentAddress]
+      [currentAddress, amounts]
     ),
     shallow
   );
-  const setUserNft = useERC1155((state) => state.setUserNft);
-  const setLoading = useERC1155((state) => state.setLoading);
-  const setAmount = useERC1155((state) => state.setAmount);
+  // All this is necessary because amount doesn't detected by zustand
+  // which is a bug, most likely
+  const previousAmounts = usePrevious(amounts);
+  const ERC1155 = useMemo(()=>{
+    if(previousAmounts !== amounts) return [...nfts]
+    return nfts;
+  }, [nfts, amounts, previousAmounts])
+
+  const setUserNft = useERC1155((state) => state.setUserNft, shallow);
+  const setLoading = useERC1155((state) => state.setLoading, shallow);
+  const setAmount = useERC1155((state) => state.setAmount, shallow);
 
   useEffect(() => {
     const getAvailableTokenAmountForUser = async (nft: Nft) => {
@@ -189,6 +192,8 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         switchMap(() => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
+          // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
+          if (network !== NetworkName.mainnet) return EMPTY;
           setLoading(currentAddress, true);
           return fetchERC1155(currentAddress);
         }),
@@ -206,5 +211,5 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     };
   }, [signer, currentAddress, setUserNft, setLoading]);
 
-  return { ERC1155: nfts, isLoading };
+  return { ERC1155, isLoading };
 };

@@ -1,13 +1,13 @@
 import { useCallback, useEffect } from "react";
 import { fetchUserProd721 } from "../../services/graph";
 import { Nft } from "../../types/classes";
-import { NftToken } from "../../types";
 import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import { NetworkName } from "../../types";
 
 interface UserERC721State {
   users: Record<
@@ -74,7 +74,7 @@ const fetchERC721 = (currentAddress: string) => {
       fetchUserProd721(currentAddress, 3),
       fetchUserProd721(currentAddress, 4),
     ]).then((r) => {
-      return r.reduce<NftToken[]>((acc, v) => {
+      return r.reduce<Nft[]>((acc, v) => {
         if (v.status === "fulfilled") {
           acc = [...acc, ...v.value];
         }
@@ -105,7 +105,7 @@ const fetchERC721 = (currentAddress: string) => {
 };
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
-  const { signer } = useWallet();
+  const { signer, network } = useWallet();
   const isLoading = useERC721(
     useCallback(
       (state) => {
@@ -135,6 +135,8 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         switchMap(() => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
+          // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
+          if (network !== NetworkName.mainnet) return EMPTY;
           setLoading(currentAddress, true);
           return fetchERC721(currentAddress);
         }),
