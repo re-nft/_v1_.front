@@ -22,11 +22,6 @@ export const LendForm: React.FC<LendFormProps> = ({
   approvalStatus,
   onClose
 }) => {
-  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
-  const [transactionHash, setTransactionhash] = useState<
-    string[] | undefined
-  >();
-
   const defaultValues = useMemo(
     () => ({
       inputs: nfts.map<LendInputProps>((nft) => ({
@@ -39,6 +34,10 @@ export const LendForm: React.FC<LendFormProps> = ({
     }),
     [nfts]
   );
+  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
+  const [transactionHash, setTransactionhash] = useState<
+    string[] | undefined
+  >();
   const {
     register,
     handleSubmit,
@@ -82,7 +81,6 @@ export const LendForm: React.FC<LendFormProps> = ({
     () => status === TransactionStateEnum.SUCCESS,
     [status]
   );
-  console.log(isValid, isSubmitting, formSubmittedSuccessfully)
   return (
     <div>
       <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">

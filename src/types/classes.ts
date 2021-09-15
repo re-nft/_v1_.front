@@ -75,7 +75,7 @@ class Lending extends Nft {
     this.id = lendingRaw.id;
 
     if (lendingRaw.renting) {
-      this.renting = parseRenting(lendingRaw.renting, this.lending);
+      this.renting = parseRenting(lendingRaw.renting, {...this.lending, renting: undefined});
     }
   }
 }
@@ -96,7 +96,7 @@ class Renting extends Nft {
     super(nftAddress, tokenId, lending.lentAmount, lending.isERC721, options);
 
     this.lending = lending;
-    this.renting = parseRenting(rentingRaw, lending);
+    this.renting = parseRenting(rentingRaw, {...this.lending, renting: undefined});
     this.id = rentingRaw.id;
   }
 }

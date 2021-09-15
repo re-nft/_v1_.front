@@ -13,7 +13,7 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 import add from "date-fns/add";
 
 import { unpackPrice } from "@renft/sdk";
-import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
+import { ILending, ILendingWithoutCircularDeps, IRenting, LendingRaw, RentingRaw } from "./types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -376,7 +376,7 @@ export const parseLending = (
 
 export const parseRenting = (
   renting: RentingRaw,
-  parsedLending: ILending
+  parsedLending: ILendingWithoutCircularDeps
 ): IRenting => {
   return {
     id: renting.id,

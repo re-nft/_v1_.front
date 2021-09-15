@@ -3,6 +3,7 @@ import { PaymentToken } from "@renft/sdk";
 import React, { Ref, useCallback } from "react";
 import shallow from "zustand/shallow";
 import { useNftMetaState } from "../../../hooks/queries/useMetaState";
+import { useRegisterFields } from "../../../hooks/useRegisterFields";
 import { CatalogueItemDisplay } from "../../catalogue-item/catalogue-item-display";
 import { CatalogueItemRow } from "../../catalogue-item/catalogue-item-row";
 import { TextField } from "../../common/text-field";
@@ -11,23 +12,17 @@ import { RentItemProps } from "./rent-types";
 
 export const RentItem: React.FC<RentItemProps> = React.forwardRef(
   (props, ref) => {
-    const {
-      item,
-      index,
-      handleChange,
-      handleBlur,
-      errors,
-      touched,
-      disabled,
-      removeFromCart,
-    } = props;
+    const { item, index, disabled, removeFromCart, register, formState } = props;
+
     const token = item.lending.paymentToken;
     const paymentToken = PaymentToken[token];
     const dailyRentPrice = item.lending.dailyRentPrice;
     const nftPrice = item.lending.nftPrice;
-    const totalRent =
+    const totalRent = 
       (item.lending.nftPrice || 0) * Number(item.amount) +
       (item.lending.dailyRentPrice || 0) * Number(item.duration);
+
+    const registerFields = useRegisterFields(register, formState, index);
 
     const meta = useNftMetaState(
       useCallback(
@@ -83,18 +78,8 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
               required
               label={renderItem()}
               value={item.duration || ""}
-              name={`inputs.${index}.duration`}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={
-                !!touched &&
-                touched.duration &&
-                Boolean(errors && errors.duration)
-              }
-              helperText={
-                touched && touched.duration && errors && errors.duration
-              }
               disabled={disabled}
+              {...registerFields("duration")}
             />
             <CatalogueItemRow
               text={`Daily rent price [${paymentToken}]`}
@@ -112,7 +97,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-end",
-                    overflow: "visible",
+                    overflow: "visible"
                   }}
                 >
                   <span>

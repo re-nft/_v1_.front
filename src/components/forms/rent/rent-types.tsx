@@ -1,4 +1,4 @@
-import { FormikErrors, FormikTouched } from "formik/dist/types";
+import { FormState, UseFormRegister } from "react-hook-form/dist/types";
 import { Observable } from "rxjs";
 import { StartRentNft } from "../../../hooks/contract/useStartRent";
 import { TransactionStatus } from "../../../hooks/useTransactionWrapper";
@@ -12,31 +12,16 @@ export type LendFormProps = {
   approvalStatus: TransactionStatus;
   onClose: () => void;
 };
-export interface LendingWithKey extends Lending {
-  key: string;
-  duration: number | undefined;
+export interface LendingWithDuration extends Lending {
+  duration?: number;
 }
-export type FormProps = { inputs: LendingWithKey[] };
+export type FormProps = { inputs: LendingWithDuration[] };
 
 export interface RentItemProps {
-  item: LendingWithKey;
-  handleBlur: {
-    (e: React.FocusEvent<unknown>): void;
-    <T = unknown>(fieldOrEvent: T): T extends string
-      ? (e: unknown) => void
-      : void;
-  };
-  handleChange: {
-    (e: React.ChangeEvent<unknown>): void;
-    <T = string | React.ChangeEvent<unknown>>(
-      field: T
-    ): T extends React.ChangeEvent<unknown>
-      ? void
-      : (e: string | React.ChangeEvent<unknown>) => void;
-  };
+  item: LendingWithDuration;
   removeFromCart: (id: number) => void;
   index: number;
-  touched: FormikTouched<LendingWithKey> | null;
-  errors: FormikErrors<LendingWithKey> | null;
   disabled: boolean;
+  register: UseFormRegister<FormProps>;
+  formState: FormState<FormProps>;
 }

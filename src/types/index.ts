@@ -95,6 +95,9 @@ export interface ILending {
   renting?: IRenting;
   duration?: string;
 }
+export interface ILendingWithoutCircularDeps extends ILending {
+  renting: undefined;
+}
 
 export type LendingRaw = {
   id: string;
@@ -117,7 +120,7 @@ export interface IRenting {
   rentDuration: number;
   rentedAt: number;
   lendingId: string;
-  lending: ILending;
+  lending: ILendingWithoutCircularDeps;
 }
 
 export type RentingRaw = {
