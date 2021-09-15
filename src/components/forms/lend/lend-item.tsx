@@ -40,7 +40,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
     return (
       <li
         ref={ref as Ref<HTMLLIElement>}
-        key={lendingInput.key}
+        key={lendingInput.nft.id}
         className="flex flex-col py-2 relative border border-black "
       >
         <div className="w-40 h-40 px-2">

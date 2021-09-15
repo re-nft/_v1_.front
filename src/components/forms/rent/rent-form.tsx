@@ -2,8 +2,7 @@ import React, {
   Fragment,
   useEffect,
   useMemo,
-  useState,
-  useCallback
+  useState
 } from "react";
 import { TransactionStateEnum } from "../../../types";
 import {
@@ -18,12 +17,10 @@ import { validationSchema } from "./rent-validate";
 import { Button } from "../../common/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Observable } from "rxjs";
-import { TransactionStatus } from "../../../hooks/useTransactionWrapper";
 
 export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
   const {
-    startRent,
+    startRent: handleSave,
     isApproved,
     handleApproveAll,
     checkApprovals,
@@ -32,24 +29,10 @@ export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
 
   useEffect(() => {
     checkApprovals(
-      nfts.map((nft) => ({
-        address: nft.address,
-        tokenId: nft.tokenId,
-        amount: nft.lending.lentAmount,
-        lendingId: nft.lending.id,
-        rentDuration: "",
-        paymentToken: nft.lending.paymentToken,
-        isERC721: nft.isERC721
-      }))
+      nfts
     );
   }, [checkApprovals, nfts]);
 
-  const handleSave = useCallback(
-    (items: StartRentNft[]): Observable<TransactionStatus> => {
-      return startRent(items);
-    },
-    [startRent]
-  );
   const defaultValues: FormProps = {
     inputs: nfts
   };

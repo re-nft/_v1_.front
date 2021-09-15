@@ -14,7 +14,6 @@ export type LendInputProps = {
   nftPrice?: number;
   tokenId: string;
   pmToken?: number;
-  key: string;
   nft: Nft;
 };
 export type LendInputDefined = {
@@ -24,7 +23,6 @@ export type LendInputDefined = {
   nftPrice: number;
   tokenId: string;
   pmToken: number;
-  key: string;
   nft: Nft;
 };
 export type FormProps = { inputs: LendInputProps[] };

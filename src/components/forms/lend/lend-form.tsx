@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";
@@ -17,22 +17,14 @@ import { useStartLend } from "../../../hooks/contract/useStartLend";
 import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
 
 export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
-  const startLend = useStartLend();
+  const handleSave = useStartLend();
   const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
 
-  const handleSave = useCallback(
-    (lendingInputs: LendInputDefined[]) => {
-      return startLend(lendingInputs);
-    },
-
-    [startLend]
-  );
   const defaultValues = useMemo(
     () => ({
       inputs: nfts.map<LendInputProps>((nft) => ({
         tokenId: nft.tokenId,
         nft: nft,
-        key: nft.id,
         lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : Number(nft.amount),
         amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount
       }))
@@ -100,10 +92,10 @@ export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
             NFTs in your lending cart
           </h2>
           <ul role="list" className="flex flex-col space-y-8 ">
-            {defaultValues.inputs.map((lendingInput: LendInputProps) => {
+            {defaultValues.inputs.map((item: LendInputProps) => {
               // render the initial values so transition can be shown
               const index = controlledFields.findIndex(
-                (v: LendInputProps) => v.nft.nId === lendingInput.nft.nId
+                (v: LendInputProps) => v.nft.nId === item.nft.nId
               );
               const show = index >= 0;
               return (
@@ -116,10 +108,10 @@ export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
                   leave="transition-opacity ease-linear duration-300"
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
-                  key={controlledFields[index].nft.nId}
+                  key={item.nft.nId}
                 >
                   <LendItem
-                    key={controlledFields[index].key}
+                    key={controlledFields[index].id}
                     lendingInput={controlledFields[index]}
                     index={index}
                     register={register}

@@ -18,6 +18,7 @@ import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import { Lending } from "../../types/classes";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -34,7 +35,7 @@ export const useStartRent = (): {
   isApproved: boolean;
   startRent: (nfts: StartRentNft[]) => Observable<TransactionStatus>;
   handleApproveAll: () => void;
-  checkApprovals: (nfts: StartRentNft[]) => void;
+  checkApprovals: (nfts: Lending[]) => void;
   approvalStatus: TransactionStatus;
 } => {
   const { signer } = useWallet();
@@ -49,7 +50,7 @@ export const useStartRent = (): {
   const [approvalStatus, setObservable] = useObservable();
 
   const checkApprovals = useCallback(
-    (nfts: StartRentNft[]) => {
+    (items: Lending[]) => {
       if (!Resolver) return;
       if (!currentAddress) return;
       if (!contractAddress) return;
@@ -57,6 +58,15 @@ export const useStartRent = (): {
 
       setCheckLoading(true);
       const resolver = Resolver.attach(resolverAddress).connect(signer);
+      const nfts = items.map((nft) => ({
+        address: nft.address,
+        tokenId: nft.tokenId,
+        amount: nft.lending.lentAmount,
+        lendingId: nft.lending.id,
+        rentDuration: "",
+        paymentToken: nft.lending.paymentToken,
+        isERC721: nft.isERC721
+      }));
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
         .map((token) => resolver.getPaymentToken(token));
