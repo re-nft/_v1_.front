@@ -1,28 +1,17 @@
 import React, { Ref } from "react";
 import ExclamationCircleIcon from "@heroicons/react/solid/ExclamationCircleIcon";
+import { ReactEventOnBlurType, ReactEventOnChangeType } from "../../types";
 
 export const TextField: React.FC<{
   required?: boolean;
   label: JSX.Element | string;
   value: string | ReadonlyArray<string> | number;
-  onBlur: {
-    (e: React.FocusEvent<unknown>): void;
-    <T = unknown>(fieldOrEvent: T): T extends string
-      ? (e: unknown) => void
-      : void;
-  };
-  onChange: {
-    (e: React.ChangeEvent<unknown>): void;
-    <T = string | React.ChangeEvent<unknown>>(
-      field: T
-    ): T extends React.ChangeEvent<unknown>
-      ? void
-      : (e: string | React.ChangeEvent<unknown>) => void;
-  };
+  onBlur: ReactEventOnBlurType;
+  onChange: ReactEventOnChangeType;
   id?: string;
   name?: string;
   error?: boolean;
-  helperText?: string | false | null;
+  helperText?: string | boolean | null;
   disabled?: boolean;
 }> = React.forwardRef((props, ref) => {
   const {
@@ -35,7 +24,7 @@ export const TextField: React.FC<{
     name,
     error,
     helperText,
-    disabled,
+    disabled
   } = props;
 
   return (

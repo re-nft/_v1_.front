@@ -1,57 +1,29 @@
 import React, { Ref, useCallback, useMemo } from "react";
 import ModalFields from "../../modals/modal-fields";
-import { FormikErrors, FormikTouched } from "formik";
-import { TokenSelect } from "../../common/token-select";
 import { TextField } from "../../common/text-field";
 import { CatalogueItemRow } from "../../catalogue-item/catalogue-item-row";
 import { useNftMetaState } from "../../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
 import { CatalogueItemDisplay } from "../../catalogue-item/catalogue-item-display";
 import XIcon from "@heroicons/react/outline/XIcon";
-import { LendInputProps } from "./lend-types";
-
-const voidFn = () => {
-  // do nothing func
-};
-
-interface ILendInput {
-  lendingInput: LendInputProps;
-  handleBlur: {
-    (e: React.FocusEvent<unknown>): void;
-    <T = unknown>(fieldOrEvent: T): T extends string
-      ? (e: unknown) => void
-      : void;
-  };
-  handleChange: {
-    (e: React.ChangeEvent<unknown>): void;
-    <T = string | React.ChangeEvent<unknown>>(
-      field: T
-    ): T extends React.ChangeEvent<unknown>
-      ? void
-      : (e: string | React.ChangeEvent<unknown>) => void;
-  };
-  index: number;
-  touched: FormikTouched<LendInputProps> | null;
-  errors: FormikErrors<LendInputProps> | null;
-  disabled: boolean;
-  removeFromCart: (index: number) => void;
-}
+import { ILendInput } from "./lend-types";
+import { TokenSelect } from "../../common/token-select";
+import { useRegisterFields } from "../../../hooks/useRegisterFields";
 
 export const LendItem: React.FC<ILendInput> = React.forwardRef(
   (input: ILendInput, ref) => {
     const {
       lendingInput,
       index,
-      handleChange,
-      handleBlur,
       removeFromCart,
-      errors,
-      touched,
       disabled,
+      register,
+      formState
     } = input;
     const only1Item = useMemo(() => {
       return lendingInput.amount === "1";
     }, [lendingInput.amount]);
+    const registerFields = useRegisterFields(register, formState, index);
 
     const meta = useNftMetaState(
       useCallback(
@@ -65,7 +37,6 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
     const removeItem = useCallback(() => {
       removeFromCart(index);
     }, [index, removeFromCart]);
-
     return (
       <li
         ref={ref as Ref<HTMLLIElement>}
@@ -99,81 +70,38 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
             <TextField
               required
               label="Amount"
-              value={lendingInput.lendAmount ?? ""}
-              onChange={only1Item ? voidFn : handleChange}
-              onBlur={only1Item ? voidFn : handleBlur}
-              id={`inputs.${index}.lendAmount`}
-              name={`inputs.${index}.lendAmount`}
               disabled={only1Item || disabled}
-              error={
-                !!touched &&
-                touched.lendAmount &&
-                Boolean(errors && errors.lendAmount)
-              }
-              helperText={
-                touched && touched.lendAmount && errors && errors.lendAmount
-              }
+              value={only1Item ? "1" : lendingInput.lendAmount ?? ""}
+              {...registerFields("lendAmount")}
             />
 
             <TextField
               required
               label="Max lend duration"
-              value={lendingInput?.maxDuration ?? ""}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              id={`inputs.${index}.maxDuration`}
-              name={`inputs.${index}.maxDuration`}
-              error={
-                !!touched &&
-                touched.maxDuration &&
-                Boolean(errors && errors.maxDuration)
-              }
-              helperText={
-                touched && touched.maxDuration && errors && errors.maxDuration
-              }
               disabled={disabled}
+              value={lendingInput?.maxDuration ?? ""}
+              {...registerFields("maxDuration")}
             />
             <TextField
               required
               label="Borrow Price"
-              value={lendingInput.borrowPrice ?? ""}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              id={`inputs.${index}.borrowPrice`}
-              name={`inputs.${index}.borrowPrice`}
-              error={
-                !!touched &&
-                touched.borrowPrice &&
-                Boolean(errors && errors.borrowPrice)
-              }
-              helperText={
-                touched && touched.borrowPrice && errors && errors.borrowPrice
-              }
               disabled={disabled}
+              value={lendingInput.borrowPrice ?? ""}
+              {...registerFields("borrowPrice")}
             />
+
             <TextField
               required
               label="Collateral"
-              value={lendingInput.nftPrice ?? ""}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              id={`inputs.${index}.nftPrice`}
-              name={`inputs.${index}.nftPrice`}
-              error={
-                !!touched &&
-                touched.nftPrice &&
-                Boolean(errors && errors.nftPrice)
-              }
-              helperText={
-                touched && touched.nftPrice && errors && errors.nftPrice
-              }
               disabled={disabled}
+              value={lendingInput.nftPrice ?? ""}
+              {...registerFields("nftPrice")}
             />
+
             <TokenSelect
-              refName={`inputs.${index}.pmToken`}
-              handleChange={handleChange}
               selectedValue={lendingInput.pmToken ?? -1}
               disabled={disabled}
+              {...registerFields("pmToken")}
             />
           </ModalFields>
         </div>

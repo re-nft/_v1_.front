@@ -1,15 +1,17 @@
 import React from "react";
+import { ReactEventOnClickType } from "../../types";
 import { classNames } from "../../utils";
 
 type ButtonProps = {
-  onClick: (e: unknown) => void;
+  onClick: ReactEventOnClickType;
   disabled?: boolean;
   description: string;
   datacy?: string;
+  type?: 'submit' | 'button'
 };
 
 export const Button: React.FC<ButtonProps> = React.forwardRef(
-  ({ disabled, onClick, description, datacy }, ref) => {
+  ({ disabled, onClick, description, datacy, type="button" }, ref) => {
     return (
       <button
         //@ts-ignore
@@ -20,7 +22,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(
         disabled={disabled}
         onClick={onClick}
         data-cy={datacy}
-        type="button"
+        type={type}
       >
         <div
           className={classNames(

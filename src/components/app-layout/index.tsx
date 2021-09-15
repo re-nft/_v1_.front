@@ -15,11 +15,11 @@ const navigation = [
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
   { name: "Favourites", href: "/favourites" },
-  { name: "Faq", href: "/faq" },
+  { name: "Faq", href: "/faq" }
 ];
 const userNavigation = [
   { name: "Profile", href: "/profile" },
-  { name: "Sign out", href: "/signout", disabled: true },
+  { name: "Sign out", href: "/signout", disabled: true }
 ];
 
 const isPathActive = (linkPath: string, pathname: string) => {
@@ -67,12 +67,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <div>
-                      <Menu.Button className="flex text-sm text-white ">
-                        <span className="sr-only">Open user menu</span>
-                        <Connect />
-                      </Menu.Button>
-                    </div>
+                    <Connect />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -188,7 +183,7 @@ export const AppLayout: React.FC = ({ children }) => {
             className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-4 shadow-rn-one"
             style={{
               backgroundImage:
-                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)",
+                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
             }}
           >
             <div className="flex mb-8 w-full ">{children}</div>

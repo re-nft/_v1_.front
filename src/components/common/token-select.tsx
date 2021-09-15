@@ -1,44 +1,45 @@
 import { PaymentToken } from "@renft/sdk";
 import { Listbox, Transition } from "@headlessui/react";
 import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, forwardRef, Ref } from "react";
 import { classNames } from "../../utils";
+import { ReactEventOnChangeType } from "../../types";
 
 const tokens = [
   { value: PaymentToken.WETH, name: "WETH", unavailable: false },
   { value: PaymentToken.DAI, name: "DAI", unavailable: false },
   { value: PaymentToken.USDC, name: "USDC", unavailable: false },
   { value: PaymentToken.USDT, name: "USDT", unavailable: false },
-  { value: PaymentToken.TUSD, name: "TUSD", unavailable: false },
+  { value: PaymentToken.TUSD, name: "TUSD", unavailable: false }
 ];
 
 export const TokenSelect: React.FC<{
   selectedValue: PaymentToken;
-  handleChange: {
-    (e: React.ChangeEvent<unknown>): void;
-    <T = string | React.ChangeEvent<unknown>>(
-      field: T
-    ): T extends React.ChangeEvent<unknown>
-      ? void
-      : (e: string | React.ChangeEvent<unknown>) => void;
-  };
+  onChange: ReactEventOnChangeType;
   disabled?: boolean;
-  refName?: string;
-}> = ({ selectedValue, handleChange, disabled, refName }) => {
+  name: string;
+}> = forwardRef(({ selectedValue, onChange: handleChange, disabled, name }, ref) => {
   const onChange = useCallback(
     (value) => {
+      console.log(value);
       handleChange({
         target: {
           value,
-          name: refName,
-        },
+          name
+        }
       });
     },
-    [handleChange, refName]
+    [handleChange]
   );
   return (
     <div className="pb-4">
-      <Listbox value={selectedValue} onChange={onChange} disabled={disabled}>
+      <Listbox
+        as="div"
+        value={selectedValue}
+        onChange={onChange}
+        disabled={disabled}
+        ref={ref as Ref<HTMLDivElement>}
+      >
         {({ open }) => (
           <>
             <div className="mt-1 relative">
@@ -77,7 +78,6 @@ export const TokenSelect: React.FC<{
                       value={token.value}
                     >
                       {({ selected, active }) => {
-                        console.log(selected, active);
                         return (
                           <>
                             <span
@@ -100,4 +100,4 @@ export const TokenSelect: React.FC<{
       </Listbox>
     </div>
   );
-};
+});

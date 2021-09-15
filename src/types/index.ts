@@ -160,3 +160,28 @@ export type CalculatedUserVote = {
     downvote: number;
   };
 };
+
+export type ReactEventOnBlurType  = {
+  (e: React.FocusEvent<unknown>): void | Promise<void | boolean>;
+  <T = unknown>(fieldOrEvent: T): T extends string
+    ? (e: unknown) => void | Promise<void | boolean>
+    : void | Promise<void | boolean>;
+};
+
+export type ReactEventOnChangeType  = {
+  (e: React.ChangeEvent<unknown>): void | Promise<void | boolean>;
+  <T = string | React.ChangeEvent<unknown>>(
+    field: T
+  ): T extends React.ChangeEvent<unknown>
+    ? void | Promise<void | boolean>
+    : (e: string | React.ChangeEvent<unknown>) => void | Promise<void | boolean>;
+};
+
+export type ReactEventOnClickType  = {
+  (e: React.MouseEvent<unknown>): void | Promise<void | boolean>;
+  <T = string | React.MouseEvent<unknown>>(
+    field: T
+  ): T extends React.MouseEvent<unknown>
+    ? void | Promise<void | boolean>
+    : (e: string | React.MouseEvent<unknown>) => void | Promise<void | boolean>;
+};

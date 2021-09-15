@@ -6,6 +6,7 @@ type ActionButtonProps<T> = {
   title: string;
   onClick: (nft: T) => void;
   disabled?: boolean;
+  type?: 'submit'
 };
 
 /* eslint-disable-next-line */
@@ -17,6 +18,7 @@ const ActionButton = <T extends {}>(props: ActionButtonProps<T>) => {
       onClick={onClickHandler}
       disabled={props.disabled}
       description={props.title}
+      type={props.type}
     />
   );
 };

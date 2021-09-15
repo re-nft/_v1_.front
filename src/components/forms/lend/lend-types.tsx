@@ -1,3 +1,4 @@
+import { FormState, UseFormRegister } from "react-hook-form/dist/types";
 import { Observable } from "rxjs";
 import { TransactionStatus } from "../../../hooks/useTransactionWrapper";
 import { Nft } from "../../../types/classes";
@@ -13,12 +14,12 @@ export type LendFormProps = {
 
 export type LendInputProps = {
   amount: string;
-  lendAmount: number | undefined;
-  maxDuration: number | undefined;
-  borrowPrice: number | undefined;
-  nftPrice: number | undefined;
+  lendAmount: number;
+  maxDuration?: number;
+  borrowPrice?: number;
+  nftPrice?: number;
   tokenId: string;
-  pmToken: number | undefined;
+  pmToken?: number;
   key: string;
   nft: Nft;
 };
@@ -33,3 +34,12 @@ export type LendInputDefined = {
   nft: Nft;
 };
 export type FormProps = { inputs: LendInputProps[] };
+
+export interface ILendInput {
+  lendingInput: LendInputProps;
+  index: number;
+  disabled: boolean;
+  removeFromCart: (index: number) => void;
+  register: UseFormRegister<FormProps>;
+  formState: FormState<FormProps>;
+}

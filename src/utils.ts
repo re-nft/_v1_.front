@@ -12,8 +12,8 @@ import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 import add from "date-fns/add";
 
-import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
 import { unpackPrice } from "@renft/sdk";
+import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -250,7 +250,6 @@ export const sortNfts = (
 
 export const filterClaimed =
   (showClaimed: boolean) => (l: Lending | Renting) => {
-    console.log(showClaimed, l.lending.collateralClaimed);
     if (showClaimed) {
       if (l.lending) return l.lending.collateralClaimed;
       return false;

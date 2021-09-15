@@ -148,7 +148,7 @@ export const useTransactions = (): {
         map((receipts) => {
           const [hasFailure, hasPending] = getTransactionsStatus(receipts);
           setTransactions(key, {
-            hashes: transactions[key].hashes,
+            hashes: transactions[key]?.hashes || hashes,
             receipts,
             hasFailure,
             hasPending,
