@@ -29,7 +29,7 @@ export const TokenSelect: React.FC<{
         }
       });
     },
-    [handleChange]
+    [handleChange, name]
   );
   return (
     <div className="pb-4">
@@ -77,7 +77,7 @@ export const TokenSelect: React.FC<{
                       }
                       value={token.value}
                     >
-                      {({ selected, active }) => {
+                      {() => {
                         return (
                           <>
                             <span
@@ -101,3 +101,5 @@ export const TokenSelect: React.FC<{
     </div>
   );
 });
+
+TokenSelect.displayName = "TokenSelect"

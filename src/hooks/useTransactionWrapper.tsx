@@ -5,7 +5,6 @@ import { from, Observable, of } from "rxjs";
 import { map, mergeAll } from "rxjs/operators";
 import { TransactionStateEnum } from "../types";
 import ReactGA from "react-ga";
-import { nanoid } from "nanoid";
 import { useSnackProvider } from "./useSnackProvider";
 
 export interface TransactionStatus {
@@ -115,7 +114,7 @@ export const useTransactionWrapper = (): ((
   return useCallback(
     (promise: Promise<ContractTransaction[] | ContractTransaction>, ga) => {
       const { action, label } = ga;
-      const id = nanoid();
+      const id = Date.now().toString();
       ReactGA.event({
         category: "Contract interaction",
         action: `Start action:${action}`,
