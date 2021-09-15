@@ -1,13 +1,10 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import Modal from "./modal";
 
 import { Nft } from "../../types/classes";
-import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
 
-import { useStartLend } from "../../hooks/contract/useStartLend";
 import { LendForm } from "../forms/lend/lend-form";
-import { LendInputDefined } from "../forms/lend/lend-types";
 
 type LendModalProps = {
   nfts: Nft[];
@@ -18,31 +15,11 @@ type LendModalProps = {
 export const BatchLendModal: React.FC<LendModalProps> = ({
   nfts,
   open,
-  onClose,
+  onClose
 }) => {
-  const startLend = useStartLend();
-  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
-
-  const handleLend = useCallback(
-    (lendingInputs: LendInputDefined[]) => {
-      return startLend(lendingInputs);
-    },
-
-    [startLend]
-  );
-
   return (
     <Modal open={open} handleClose={onClose}>
-      {open && (
-        <LendForm
-          nfts={nfts}
-          isApproved={isApproved}
-          handleApproveAll={handleApproveAll}
-          handleSubmit={handleLend}
-          approvalStatus={approvalStatus}
-          onClose={onClose}
-        ></LendForm>
-      )}
+      {open && <LendForm nfts={nfts} onClose={onClose}></LendForm>}
     </Modal>
   );
 };

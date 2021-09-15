@@ -1,6 +1,15 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback
+} from "react";
 import { TransactionStateEnum } from "../../../types";
-import { StartRentNft } from "../../../hooks/contract/useStartRent";
+import {
+  StartRentNft,
+  useStartRent
+} from "../../../hooks/contract/useStartRent";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { Transition } from "@headlessui/react";
 import { FormProps, LendFormProps } from "./rent-types";
@@ -9,19 +18,41 @@ import { validationSchema } from "./rent-validate";
 import { Button } from "../../common/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Observable } from "rxjs";
+import { TransactionStatus } from "../../../hooks/useTransactionWrapper";
 
-export const RentForm: React.FC<LendFormProps> = ({
-  nfts,
-  isApproved,
-  handleApproveAll,
-  handleSubmit: handleSave,
-  approvalStatus,
-  onClose
-}) => {
+export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
+  const {
+    startRent,
+    isApproved,
+    handleApproveAll,
+    checkApprovals,
+    approvalStatus
+  } = useStartRent();
+
+  useEffect(() => {
+    checkApprovals(
+      nfts.map((nft) => ({
+        address: nft.address,
+        tokenId: nft.tokenId,
+        amount: nft.lending.lentAmount,
+        lendingId: nft.lending.id,
+        rentDuration: "",
+        paymentToken: nft.lending.paymentToken,
+        isERC721: nft.isERC721
+      }))
+    );
+  }, [checkApprovals, nfts]);
+
+  const handleSave = useCallback(
+    (items: StartRentNft[]): Observable<TransactionStatus> => {
+      return startRent(items);
+    },
+    [startRent]
+  );
   const defaultValues: FormProps = {
     inputs: nfts
   };
-  console.log(nfts)
   const [status, setStatus] = useState(TransactionStateEnum.PENDING);
   const [transactionHash, setTransactionhash] = useState<
     string[] | undefined

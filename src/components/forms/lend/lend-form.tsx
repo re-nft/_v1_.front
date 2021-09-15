@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useCallback, useMemo, useState } from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";
@@ -13,15 +13,20 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./lend-validation";
 import { Button } from "../../common/button";
+import { useStartLend } from "../../../hooks/contract/useStartLend";
+import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
 
-export const LendForm: React.FC<LendFormProps> = ({
-  nfts,
-  isApproved,
-  handleApproveAll,
-  handleSubmit: handleSave,
-  approvalStatus,
-  onClose
-}) => {
+export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
+  const startLend = useStartLend();
+  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
+
+  const handleSave = useCallback(
+    (lendingInputs: LendInputDefined[]) => {
+      return startLend(lendingInputs);
+    },
+
+    [startLend]
+  );
   const defaultValues = useMemo(
     () => ({
       inputs: nfts.map<LendInputProps>((nft) => ({

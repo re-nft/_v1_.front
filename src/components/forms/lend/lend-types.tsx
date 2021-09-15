@@ -1,14 +1,8 @@
 import { FormState, UseFormRegister } from "react-hook-form/dist/types";
-import { Observable } from "rxjs";
-import { TransactionStatus } from "../../../hooks/useTransactionWrapper";
 import { Nft } from "../../../types/classes";
 
 export type LendFormProps = {
   nfts: Nft[];
-  isApproved: boolean;
-  handleApproveAll: () => void;
-  handleSubmit: (arg: LendInputDefined[]) => Observable<TransactionStatus>;
-  approvalStatus: TransactionStatus;
   onClose: () => void;
 };
 
