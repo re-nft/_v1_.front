@@ -48,11 +48,14 @@ export const useClaim = (): ((
       );
       return transactionWrapper(sdk.claimRent(...params), {
         action: "claim",
-        label: `Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
+        label: `
+        Claim modal standardss : ${sortedNfts.map((nft) => nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155)}
+        Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
         Claim modal tokenId: ${sortedNfts.map((nft) => nft.tokenId)}
         Claim modal lendingIds: ${sortedNfts.map(
           (nft) => nft.renting?.lendingId
         )}
+        Claim model rentindIds ${sortedNfts.map((nft) => BigNumber.from(nft.renting?.id))}
         `,
       });
     },

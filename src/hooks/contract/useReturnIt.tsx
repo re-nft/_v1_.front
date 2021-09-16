@@ -32,11 +32,13 @@ export const useReturnIt = (): ((
         {
           action: "Return nft",
           label: `
+          standards: ${sortedNfts.map((nft) =>nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155),}
           addresses: ${sortedNfts.map((nft) => nft.address)}
           tokenIds: ${sortedNfts.map((nft) => BigNumber.from(nft.tokenId))}
           lendingIds: ${sortedNfts.map((nft) =>
             BigNumber.from(nft.renting.lendingId)
           )}
+          rentingIds: ${sortedNfts.map((nft) => BigNumber.from(nft.renting.id))}
         `,
         }
       );

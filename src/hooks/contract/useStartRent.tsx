@@ -163,10 +163,12 @@ export const useStartRent = (): {
         {
           action: "rent",
           label: `
+          standards: ${standards}
           addresses: ${addresses}
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
-          rentDurations: ${rentDurations}
+          rentDurations: ${rentDurations},
+          rentDurations: ${rentAmount}
           `,
         }
       );

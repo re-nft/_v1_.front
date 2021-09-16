@@ -66,6 +66,7 @@ export const useStartLend = (): ((
         {
           action: "lend",
           label: `
+        standards: ${standards}
         addresses: ${addresses}
         tokenIds: ${tokenIds}
         amounts: ${amounts}

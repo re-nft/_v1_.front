@@ -42,6 +42,7 @@ export const useStopLend = (): ((
       return transactionWrapper(sdk.stopLend(...arr), {
         action: "return nft",
         label: `
+          standards : ${arr[0]}
           addresses: ${nfts.map((nft) => nft.address)}
           tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
           lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
