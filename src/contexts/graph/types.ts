@@ -1,6 +1,6 @@
 //@ts-ignore
 
-import { PaymentToken } from "@renft/sdk";
+import { PaymentToken } from "@eenagy/sdk";
 import { Address, TokenId } from "../../types";
 
 export type NftTokenMeta = {

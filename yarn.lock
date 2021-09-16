@@ -1444,6 +1444,14 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
+"@eenagy/sdk@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@eenagy/sdk/-/sdk-2.2.5.tgz#f869d0b8baf02fffdf5e3f752ac93c70f114d988"
+  integrity sha512-2neynLgOpFr5MJTCgTXMX7WiKbd8RuFtRKaVLRht0CMFh0G6oenWYZLT/OcdgrP1a+W/Rcs+UR8MLiDVMXAsXA==
+  dependencies:
+    ethers "5.4.0"
+    typescript "^4.2.4"
+
 "@emotion/babel-plugin@^11.0.0":
   version "11.3.0"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.3.0.tgz#3a16850ba04d8d9651f07f3fb674b3436a4fb9d7"
@@ -2841,13 +2849,6 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
-
-"@renft/sdk@re-nft/sdk#f8a484be5ffc80e576bdff5329d717955692ecb5":
-  version "2.2.4"
-  resolved "https://codeload.github.com/re-nft/sdk/tar.gz/f8a484be5ffc80e576bdff5329d717955692ecb5"
-  dependencies:
-    ethers "5.4.0"
-    typescript "^4.2.4"
 
 "@rollup/plugin-alias@^3.1.1":
   version "3.1.5"

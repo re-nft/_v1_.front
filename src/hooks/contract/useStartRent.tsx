@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 //@ts-ignore
-import { NFTStandard, PaymentToken } from "@renft/sdk";
+import { NFTStandard, PaymentToken } from "@eenagy/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
 import { MAX_UINT256 } from "../../consts";

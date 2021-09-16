@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
 //@ts-ignore
-import { unpackPrice } from "@renft/sdk";
+import { unpackPrice } from "@eenagy/sdk";
 import { parsePaymentToken } from "../../utils";
 
 export const parseLending = (
