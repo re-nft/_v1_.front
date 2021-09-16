@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { CategoryOptions } from "../../hooks/useSearch";
+//@ts-ignore
 import Select, { components } from "react-select";
 
 const customStyles = {
