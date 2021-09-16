@@ -2842,7 +2842,7 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@@renft/sdk@re-nft/sdk#f8a484be5ffc80e576bdff5329d717955692ecb5":
+"@renft/sdk@re-nft/sdk#f8a484be5ffc80e576bdff5329d717955692ecb5":
   version "2.2.4"
   resolved "https://codeload.github.com/re-nft/sdk/tar.gz/f8a484be5ffc80e576bdff5329d717955692ecb5"
   dependencies:
