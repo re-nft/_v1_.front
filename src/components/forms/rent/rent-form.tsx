@@ -68,14 +68,14 @@ export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
     setStatus(TransactionStateEnum.PENDING);
     return new Promise<void>((resolve) => {
       const sub = handleSave(
-        values.inputs.map<StartRentNft>((nft) => ({
-          address: nft.address,
-          tokenId: nft.tokenId,
-          amount: nft.lending.lentAmount,
-          lendingId: nft.lending.id,
-          rentDuration: (nft.duration as number).toString(),
-          paymentToken: nft.lending.paymentToken,
-          isERC721: nft.isERC721
+        values.inputs.map<StartRentNft>((lending) => ({
+          address: lending.nftAddress,
+          tokenId: lending.tokenId,
+          amount: lending.lentAmount,
+          lendingId: lending.id,
+          rentDuration: lending.duration || "",
+          paymentToken: lending.paymentToken,
+          isERC721: lending.isERC721
         }))
       ).subscribe({
         next: (status) => {

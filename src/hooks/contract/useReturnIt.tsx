@@ -10,29 +10,29 @@ import {
 } from "../useTransactionWrapper";
 
 export const useReturnIt = (): ((
-  nfts: Renting[]
+  rentings: Renting[]
 ) => Observable<TransactionStatus>) => {
   const sdk = useSDK();
   const transactionWrapper = useTransactionWrapper();
 
   return useCallback(
-    (nfts: Renting[]) => {
+    (rentings: Renting[]) => {
       if (!sdk) return EMPTY;
-      if (nfts.length < 1) return EMPTY;
-      const sortedNfts = nfts.sort(sortNfts);
+      if (rentings.length < 1) return EMPTY;
+      const sortedNfts = rentings.sort(sortNfts);
       return transactionWrapper(
         sdk.returnIt(
-          sortedNfts.map((nft) => nft.address),
-          sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-          sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
+          sortedNfts.map((renting) => renting.nftAddress),
+          sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),
+          sortedNfts.map((renting) => BigNumber.from(renting.lendingId))
         ),
         {
           action: "Return nft",
           label: `
-          addresses: ${sortedNfts.map((nft) => nft.address)}
-          tokenIds: ${sortedNfts.map((nft) => BigNumber.from(nft.tokenId))}
-          lendingIds: ${sortedNfts.map((nft) =>
-            BigNumber.from(nft.renting.lendingId)
+          addresses: ${sortedNfts.map((renting) => renting.nftAddress)}
+          tokenIds: ${sortedNfts.map((renting) => BigNumber.from(renting.tokenId))}
+          lendingIds: ${sortedNfts.map((renting) =>
+            BigNumber.from(renting.lendingId)
           )}
         `,
         }

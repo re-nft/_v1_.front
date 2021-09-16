@@ -22,9 +22,9 @@ export const useAllAvailableToLend = (): {
   const filteredERC1155 = useMemo(() => {
     return ERC1155.filter(
       (nft) =>
-        nft.address.toLowerCase() !==
+        nft.nftAddress.toLowerCase() !==
           "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-        nft.address.toLowerCase() !==
+        nft.nftAddress.toLowerCase() !==
           "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
     );
   }, [ERC1155]);
@@ -32,9 +32,9 @@ export const useAllAvailableToLend = (): {
   const filteredERC721 = useMemo(() => {
     return ERC721.filter(
       (nft) =>
-        nft.address.toLowerCase() !==
+        nft.nftAddress.toLowerCase() !==
           "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-        nft.address.toLowerCase() !==
+        nft.nftAddress.toLowerCase() !==
           "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
     );
   }, [ERC721]);

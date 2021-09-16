@@ -3,7 +3,7 @@ import { ERC721 } from "./types/typechain/ERC721";
 import { ERC1155 } from "./types/typechain/ERC1155";
 import { ERC20 } from "./types/typechain/ERC20";
 import createDebugger from "debug";
-import { Lending, Nft, NftType, Renting } from "./types/classes";
+import { Lending, Nft, Renting } from "./types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
@@ -13,7 +13,13 @@ import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 import add from "date-fns/add";
 
 import { unpackPrice } from "@renft/sdk";
-import { ILending, ILendingWithoutCircularDeps, IRenting, LendingRaw, RentingRaw } from "./types";
+import {
+  ILending,
+  ILendingWithoutCircularDeps,
+  IRenting,
+  LendingRaw,
+  RentingRaw
+} from "./types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -40,7 +46,7 @@ const e20abi = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  "event Transfer(address indexed from, address indexed to, uint amount)",
+  "event Transfer(address indexed from, address indexed to, uint amount)"
 ];
 
 export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
@@ -223,8 +229,8 @@ export const getDistinctItems = <T extends Record<any, unknown>>(
 
 export const nftReturnIsExpired = (rent: Renting): boolean => {
   const isExpired =
-    add(new Date(rent.renting.rentedAt * 1000), {
-      days: rent.renting.rentDuration,
+    add(new Date(rent.rentedAt * 1000), {
+      days: rent.rentDuration
     }).valueOf() < Date.now();
   return isExpired;
 };
@@ -232,7 +238,7 @@ export const nftReturnIsExpired = (rent: Renting): boolean => {
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,
-  GREATER = 1,
+  GREATER = 1
 }
 export const sortNfts = (
   a: { tokenId: string; isERC721: boolean },
@@ -248,28 +254,23 @@ export const sortNfts = (
   }
 };
 
-export const filterClaimed =
-  (showClaimed: boolean) => (l: Lending | Renting) => {
-    if (showClaimed) {
-      if (l.lending) return l.lending.collateralClaimed;
-      return false;
-    } else {
-      if (l.lending) return !l.lending.collateralClaimed;
-      return true;
-    }
-  };
+export const filterClaimed = (showClaimed: boolean) => (l: Lending) => {
+  if (showClaimed) {
+    return l.collateralClaimed;
+  } else {
+    return !l.collateralClaimed;
+  }
+};
 
 export const mapAddRelendedField =
-  (ids: Set<string>) => (l: Lending | Renting) => {
+  (ids: Set<string>) => (l: Renting | Lending) => {
     return {
       ...l,
-      relended: ids.has(`${l.nftAddress}:${l.tokenId}`),
+      relended: ids.has(l.nId)
     };
   };
 export const mapToIds = (items: Renting[] | Lending[]) => {
-  return new Set(
-    items.map((r: Renting | Lending) => `${r.nftAddress}:${r.tokenId}`)
-  );
+  return new Set(items.map((r: Renting | Lending) => r.nId));
 };
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
@@ -284,7 +285,7 @@ export const isDegenerateNft = async (
   if (!provider) return true;
 
   const abi165 = [
-    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)"
   ];
   const contract = new ethers.Contract(address, abi165, provider);
   let isDegenerate = true;
@@ -314,7 +315,7 @@ export const hasDifference = (
   b: Record<string, unknown> | unknown[]
 ) => {
   const difference = diffJson(a, b, {
-    ignoreWhitespace: true,
+    ignoreWhitespace: true
   });
   //const difference = true;
   if (
@@ -330,15 +331,18 @@ export type UniqueID = string;
 
 // typeguard for Lending class
 export const isLending = (x: Nft | Lending | Renting): x is Lending => {
-  return x.type === NftType.Lending;
+  //TODO:eniko
+  return false;
 };
 
 export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
-  return x.type === NftType.Renting;
+  //TODO:eniko
+  return false;
 };
 
 export const isNft = (x: Nft | Lending | Renting): x is Nft => {
-  return x.type === NftType.Nft;
+  //TODO:eniko
+  return false;
 };
 export const getUniqueID = (
   nftAddress: string,
@@ -370,7 +374,7 @@ export const parseLending = (
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,
-    renting: parsedRenting,
+    renting: parsedRenting
   };
 };
 
@@ -384,6 +388,6 @@ export const parseRenting = (
     rentDuration: Number(renting.rentDuration),
     rentedAt: Number(renting.rentedAt),
     lendingId: parsedLending.id,
-    lending: parsedLending,
+    lending: parsedLending
   };
 };

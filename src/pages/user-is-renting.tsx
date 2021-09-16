@@ -15,38 +15,42 @@ import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
 import { useWallet } from "../hooks/useWallet";
+import { useNftsStore } from "../hooks/queries/useNftStore";
 
 const RentingCatalogueItem: React.FC<{
-  nft: Renting;
+  renting: Renting;
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
-  handleReturnNft: (nft: Renting) => () => void;
-}> = ({ nft, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
-  const id = nft.id;
+  handleReturnNft: (renting: Renting) => () => void;
+}> = ({ renting, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
+  const id = renting.id;
   const checked = !!checkedItems[id];
-  const isExpired = nftReturnIsExpired(nft);
-  const days = nft.renting.rentDuration;
+  const isExpired = nftReturnIsExpired(renting);
+  const days = renting.rentDuration;
+  const nft = useNftsStore(
+    useCallback((state) => state.nfts[renting.nId], [renting.nId])
+  );
   return (
     <CatalogueItem
       nft={nft}
       checked={checked}
       disabled={isExpired}
-      onCheckboxChange={checkBoxChangeWrapped(nft)}
+      onCheckboxChange={checkBoxChangeWrapped(renting)}
     >
       <CatalogueItemRow
         text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
-        value={nft.lending.dailyRentPrice.toString()}
+        value={renting.dailyRentPrice.toString()}
       />
       <CatalogueItemRow
         text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
       <div className="py-3 flex flex-auto items-end justify-center">
-        <ActionButton<Nft>
+        <ActionButton<Renting>
           title="Return It"
           disabled={isExpired}
-          nft={nft}
-          onClick={handleReturnNft(nft)}
+          nft={renting}
+          onClick={handleReturnNft(renting)}
         />
       </div>
     </CatalogueItem>
@@ -99,10 +103,10 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
         />
       )}
       <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
-        {currentPage.map((nft: Renting) => (
+        {currentPage.map((renting: Renting) => (
           <RentingCatalogueItem
-            nft={nft}
-            key={nft.id}
+            renting={renting}
+            key={renting.id}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleReturnNft={handleReturnNft}

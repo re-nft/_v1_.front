@@ -135,7 +135,7 @@ async function fetchWithTimeout(
 export const fetchNFTFromOtherSource = async (
   nft: Nft
 ): Promise<NftTokenMeta | NftError> => {
-  const key = getUniqueID(nft.address, nft.tokenId);
+  const key = getUniqueID(nft.nftAddress, nft.tokenId);
   const tokenURI = await normalizeTokenUri(nft);
 
   if (nft.mediaURI) return { image: nft.mediaURI, nId: key };

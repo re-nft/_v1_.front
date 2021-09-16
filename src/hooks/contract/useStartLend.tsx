@@ -40,8 +40,8 @@ export const useStartLend = (): ((
         nftPrice.push(item.nftPrice);
         pmtTokens.push(item.pmToken);
       });
-      sortedNfts.forEach(({ address, tokenId }) => {
-        addresses.push(address);
+      sortedNfts.forEach(({ nftAddress, tokenId }) => {
+        addresses.push(nftAddress);
         tokenIds.push(BigNumber.from(tokenId));
       });
       debug("addresses", addresses);

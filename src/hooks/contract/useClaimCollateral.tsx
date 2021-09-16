@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Lending } from "../../types/classes";
 import { sortNfts } from "../../utils";
@@ -13,41 +13,41 @@ import { EMPTY, Observable } from "rxjs";
 const debug = createDebugger("app:contracts:useClaimcollateral");
 
 export const useClaimcollateral = (): ((
-  nfts: Lending[]
+  lendings: Lending[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
   const sdk = useSDK();
 
   return useCallback(
-    (nfts: Lending[]) => {
+    (lendings: Lending[]) => {
       if (!sdk) {
         debug("SDK not found");
         return EMPTY;
       }
-      const sortedNfts = nfts.sort(sortNfts);
+      const sortedNfts = lendings.sort(sortNfts);
       const params: [string[], BigNumber[], BigNumber[]] = [
-        sortedNfts.map((nft) => nft.address),
-        sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId)),
+        sortedNfts.map((lending) => lending.nftAddress),
+        sortedNfts.map((lending) => BigNumber.from(lending.tokenId)),
+        sortedNfts.map((lending) => BigNumber.from(lending.id)),
       ];
       debug(
         "Claim modal addresses ",
-        sortedNfts.map((nft) => nft.address)
+        sortedNfts.map((lending) => lending.nftAddress)
       );
       debug(
         "Claim modal tokenId ",
-        sortedNfts.map((nft) => nft.tokenId)
+        sortedNfts.map((lending) => lending.tokenId)
       );
       debug(
         "Claim modal lendingId ",
-        sortedNfts.map((nft) => nft.renting?.lendingId)
+        sortedNfts.map((lending) => lending.id)
       );
       return transactionWrapper(sdk.claimCollateral(...params), {
         action: "claim",
-        label: `Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
-        Claim modal tokenId: ${sortedNfts.map((nft) => nft.tokenId)}
+        label: `Claim modal addresses : ${sortedNfts.map((lending) => lending.nftAddress)}
+        Claim modal tokenId: ${sortedNfts.map((lending) => lending.tokenId)}
         Claim modal lendingIds: ${sortedNfts.map(
-          (nft) => nft.renting?.lendingId
+          (lending) => lending.id
         )}
         `,
       });

@@ -2,17 +2,18 @@ import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
-import { Lending } from "../../types/classes";
+import { Lending, Nft } from "../../types/classes";
 import { useCallback, useEffect } from "react";
 import { usePrevious } from "../usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
-import { hasDifference, timeItAsync } from "../../utils";
+import { timeItAsync } from "../../utils";
 import { LendingRaw } from "../../types";
 import request from "graphql-request";
 import { queryUserLendingRenft } from "../../services/queries";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import { useNftsStore } from "./useNftStore";
 
 interface UserLending {
   userLending: Lending[];
@@ -33,9 +34,16 @@ const useUserLendingState = create<UserLending>((set) => ({
   setUserLending: (lending: Lending[]) =>
     set(
       produce((state) => {
-        state.userLending = lending;
+        lending.map((nft) => {
+          //TODO:eniko remove user lending
+          const previousNft = state.userLending[nft.id];
+          state.userLending[nft.id] = {
+            ...previousNft,
+            ...nft
+          };
+        });
       })
-    ),
+    )
 }));
 
 export const useUserIsLending = () => {
@@ -52,6 +60,8 @@ export const useUserIsLending = () => {
   );
   const setUserLending = useUserLendingState((state) => state.setUserLending);
   const setLoading = useUserLendingState((state) => state.setLoading);
+  const addNfts = useNftsStore((state) => state.addNfts);
+
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
     if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -86,11 +96,9 @@ export const useUserIsLending = () => {
     ).pipe(
       map((response) => {
         if (response && response.users && response.users[0]) {
-          return Object.values(response.users[0].lending)
-            .filter((v) => v != null)
-            .map((lending) => {
-              return new Lending(lending);
-            });
+          return Object.values(response.users[0].lending).filter(
+            (v) => v != null
+          );
         }
       }),
       map((lendings) => {
@@ -98,15 +106,17 @@ export const useUserIsLending = () => {
           setLoading(false);
           return;
         }
-        const normalizedLendings = userLending;
-        const normalizedLendingNew = lendings;
-
-        const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
-        if (currentAddress !== previousAddress) {
-          setUserLending(lendings);
-        } else if (hasDiff) {
-          setUserLending(lendings);
-        }
+        const nfts = lendings.map(
+          (lendingRaw) =>
+            new Nft(
+              lendingRaw.nftAddress,
+              lendingRaw.tokenId,
+              lendingRaw.lentAmount,
+              lendingRaw.isERC721
+            )
+        );
+        addNfts(nfts);
+        setUserLending(lendings.map((r) => new Lending(r)));
         setLoading(false);
       })
     );
@@ -118,7 +128,7 @@ export const useUserIsLending = () => {
     signer,
     network,
     setLoading,
-    setUserLending,
+    setUserLending
   ]);
 
   useEffect(() => {

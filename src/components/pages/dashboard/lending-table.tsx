@@ -12,7 +12,7 @@ export const LendingTable: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
   toggleClaimModal: (b: boolean) => void;
   toggleLendModal: (b: boolean) => void;
-  checkBoxChangeWrapped: (nft: Nft) => () => void;
+  checkBoxChangeWrapped: (nft: Lending) => () => void;
 }> = ({
   lendingItems,
   toggleClaimModal,
@@ -110,14 +110,14 @@ export const LendingTable: React.FC<{
                 <tbody className="divide-y divide-gray-300">
                   {lendingItems.map((lend) => {
                     const id = lend.id;
-                    const hasRenting = !!lend.renting;
+                    const hasRenting = lend.hasRenting;
                     const checked = !!checkedItems[id];
                     return (
                       <LendingRow
                         key={id}
                         hasRenting={hasRenting}
                         checked={checked}
-                        lend={lend}
+                        lending={lend}
                         openClaimModal={toggleClaimModal}
                         openLendModal={toggleLendModal}
                         checkBoxChangeWrapped={checkBoxChangeWrapped}

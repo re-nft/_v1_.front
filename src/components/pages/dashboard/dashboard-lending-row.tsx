@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { Lending, Nft } from "../../../types/classes";
-import { isClaimable } from "../../../hooks/useBatchItems";
+import { Lending } from "../../../types/classes";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
@@ -9,21 +8,20 @@ import shallow from "zustand/shallow";
 import { useTimestamp } from "../../../hooks/useTimestamp";
 
 export const LendingRow: React.FC<{
-  lend: Lending & { relended: boolean };
-  checkBoxChangeWrapped: (nft: Nft) => () => void;
+  lending: Lending & { relended: boolean };
+  checkBoxChangeWrapped: (lending: Lending) => () => void;
   checked: boolean;
   hasRenting: boolean;
   openClaimModal: (t: boolean) => void;
   openLendModal: (t: boolean) => void;
-}> = ({ lend, checkBoxChangeWrapped, checked, hasRenting }) => {
-  const lending = lend.lending;
+}> = ({ lending, checkBoxChangeWrapped, checked, hasRenting }) => {
   const blockTimeStamp = useTimestamp();
   const meta = useNftMetaState(
     useCallback(
       (state) => {
-        return state.metas[lend.nId] || {};
+        return state.metas[lending.nId] || {};
       },
-      [lend.nId]
+      [lending.nId]
     ),
     shallow
   );
@@ -31,11 +29,12 @@ export const LendingRow: React.FC<{
   const claimable = useMemo(
     () =>
       !!(
-        lend.renting &&
-        isClaimable(lend.renting, blockTimeStamp) &&
-        !lend.lending.collateralClaimed
+        lending.hasRenting &&
+        //TODO:eniko
+        // isClaimable(lend.renting, blockTimeStamp) &&
+        !lending.collateralClaimed
       ),
-    [lend, blockTimeStamp]
+    [lending]
   );
 
   const formatCollateral = (v: number) => {
@@ -50,8 +49,8 @@ export const LendingRow: React.FC<{
 
   const onRowClick = useCallback(() => {
     if (hasRenting && !claimable) return;
-    checkBoxChangeWrapped(lend)();
-  }, [checkBoxChangeWrapped, lend, hasRenting, claimable]);
+    checkBoxChangeWrapped(lending)();
+  }, [checkBoxChangeWrapped, lending, hasRenting, claimable]);
 
   return (
     <tr
@@ -69,7 +68,9 @@ export const LendingRow: React.FC<{
       <td className="px-1 whitespace-nowrap font-normal">
         <ShortenPopover longString={lending.tokenId}></ShortenPopover>
       </td>
-      <td className="px-1 whitespace-nowrap font-normal">{lend.amount}</td>
+      <td className="px-1 whitespace-nowrap font-normal">
+        {lending.lentAmount}
+      </td>
       <td className="px-1  whitespace-nowrap font-normal">
         {PaymentToken[lending.paymentToken ?? 0]}
       </td>
@@ -77,22 +78,22 @@ export const LendingRow: React.FC<{
         {lending.maxRentDuration} {lending.maxRentDuration > 1 ? "days" : "day"}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        {formatCollateral(lending.nftPrice * Number(lend.amount))}
+        {formatCollateral(lending.nftPrice * Number(lending.lentAmount))}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
         {lending.dailyRentPrice}
       </td>
 
       <td className="px-1 whitespace-nowrap font-normal">
-        {lend.relended ? "renter" : "owner"}
+        {lending.relended ? "renter" : "owner"}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        {claimable || lend.lending?.collateralClaimed ? "yes" : "no"}
+        {claimable || lending.collateralClaimed ? "yes" : "no"}
       </td>
 
       <td className="pr-8 flex justify-end whitespace-nowrap font-normal">
         <Checkbox
-          onChange={checkBoxChangeWrapped(lend)}
+          onChange={checkBoxChangeWrapped(lending)}
           checked={checked}
           disabled={hasRenting && !claimable}
         />

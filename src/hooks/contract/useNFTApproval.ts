@@ -12,23 +12,25 @@ import { useContractAddress } from "./useContractAddress";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
 
-export function useNFTApproval(nfts: Nft[]): {
+type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId">
+
+export function useNFTApproval(nfts: NFTApproval[]): {
   setApprovalForAll: (
-    nfts: Nft[],
+    nfts: NFTApproval[],
     currentAddress: string
   ) => Observable<TransactionStatus>;
   isApprovalForAll: (
-    nft: Nft[],
+    nft: NFTApproval[],
     currentAddress: string,
     contractAddress: string
-  ) => Promise<[boolean, Nft[]]>;
+  ) => Promise<[boolean, NFTApproval[]]>;
   isApproved: boolean;
   approvalStatus: TransactionStatus;
   handleApproveAll: () => void;
 } {
   const transactionWrapper = useTransactionWrapper();
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [nonApprovedNft, setNonApprovedNfts] = useState<Nft[]>([]);
+  const [nonApprovedNft, setNonApprovedNfts] = useState<NFTApproval[]>([]);
   const contractAddress = useContractAddress();
   const currentAddress = useCurrentAddress();
   const { web3Provider: provider, signer } = useWallet();
@@ -36,12 +38,12 @@ export function useNFTApproval(nfts: Nft[]): {
 
   // handle approve
   const setApprovalForAll = useCallback(
-    (nfts: Nft[], contractAddress: string) => {
+    (nfts: NFTApproval[], contractAddress: string) => {
       if (!currentAddress) return EMPTY;
       if (!nfts || nfts.length < 1) return EMPTY;
       const distinctItems = nfts.filter(
         (item, index, all) =>
-          all.findIndex((nft) => nft.address === item.address) === index
+          all.findIndex((nft) => nft.nftAddress === item.nftAddress) === index
       );
       if (distinctItems.length < 1) return EMPTY;
       if (!signer) return EMPTY;
@@ -50,7 +52,7 @@ export function useNFTApproval(nfts: Nft[]): {
         Promise.all(
           distinctItems.map((nft) => {
             return getContractWithSigner(
-              nft.address,
+              nft.nftAddress,
               signer,
               nft.isERC721
             ).then((contract) => {
@@ -61,7 +63,7 @@ export function useNFTApproval(nfts: Nft[]): {
         {
           action: "nft approval",
           label: `${distinctItems
-            .map((t) => `address: ${t.address} tokenId: ${t.tokenId}`)
+            .map((t) => `address: ${t.nftAddress} tokenId: ${t.tokenId}`)
             .join(",")}`,
         }
       );
@@ -72,16 +74,16 @@ export function useNFTApproval(nfts: Nft[]): {
   // check if approved
   const isApprovalForAll = useCallback(
     async (
-      nft: Nft[],
+      nft: NFTApproval[],
       currentAddress: string,
       contractAddress: string
-    ): Promise<[boolean, Nft[]]> => {
+    ): Promise<[boolean, NFTApproval[]]> => {
       if (!signer) return [false, []];
 
       const result = await Promise.all(
         //@ts-ignore
-        getDistinctItems(nft, "address").map((nft: Nft) => {
-          return getContractWithSigner(nft.address, signer, nft.isERC721).then(
+        getDistinctItems(nft, "address").map((nft: NFTApproval) => {
+          return getContractWithSigner(nft.nftAddress, signer, nft.isERC721).then(
             (contract) => {
               return contract
                 .isApprovedForAll(currentAddress, contractAddress)

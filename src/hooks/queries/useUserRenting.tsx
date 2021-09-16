@@ -5,12 +5,13 @@ import create from "zustand";
 
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { Renting } from "../../types/classes";
+import { Nft, Renting } from "../../types/classes";
 import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
-import { hasDifference, parseLending } from "../../utils";
+import { parseLending } from "../../utils";
 import { usePrevious } from "../usePrevious";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import { useNftsStore } from "./useNftStore";
 
 export type UserRentingState = {
   userRenting: Renting[];
@@ -33,7 +34,7 @@ const useUserRentingState = create<UserRentingState>((set) => ({
       produce((state) => {
         state.userRenting = r;
       })
-    ),
+    )
 }));
 
 export const useUserRenting = () => {
@@ -50,6 +51,7 @@ export const useUserRenting = () => {
   );
   const setRentings = useUserRentingState((state) => state.setRenting);
   const setLoading = useUserRentingState((state) => state.setLoading);
+  const addNfts = useNftsStore((state) => state.addNfts);
 
   const fetchRenting = useCallback(() => {
     if (!currentAddress || !signer) return EMPTY;
@@ -80,6 +82,16 @@ export const useUserRenting = () => {
             if (renting.length > 0) setRentings([]);
             return;
           }
+          const nfts = r.map(
+            (r) =>
+              new Nft(
+                r.lending.nftAddress,
+                r.lending.tokenId,
+                r.lending.lentAmount,
+                r.lending.isERC721
+              )
+          );
+          addNfts(nfts);
           const _renting: Renting[] = r
             .filter((v) => v.lending && !v.lending.collateralClaimed)
             .map(
@@ -91,18 +103,7 @@ export const useUserRenting = () => {
                   r
                 )
             );
-          const normalizedLendings = renting;
-          const normalizedLendingNew = _renting;
-
-          const hasDiff = hasDifference(
-            normalizedLendings,
-            normalizedLendingNew
-          );
-          if (currentAddress !== previousAddress) {
-            setRentings(_renting);
-          } else if (hasDiff) {
-            setRentings(_renting);
-          }
+          setRentings(_renting);
           setLoading(false);
         }
       })
@@ -115,7 +116,7 @@ export const useUserRenting = () => {
     signer,
     network,
     setLoading,
-    setRentings,
+    setRentings
   ]);
 
   useEffect(() => {

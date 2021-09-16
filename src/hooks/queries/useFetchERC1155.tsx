@@ -167,7 +167,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     const getAvailableTokenAmountForUser = async (nft: Nft) => {
       if (!currentAddress) return;
       else {
-        const contract = await getContractWithProvider(nft.address, false);
+        const contract = await getContractWithProvider(nft.nftAddress, false);
         const amount = await contract
           .balanceOf(currentAddress, nft.tokenId)
           .catch((e) => {

@@ -5,13 +5,10 @@ export type LendFormProps = {
   nfts: Lending[];
   onClose: () => void;
 };
-export interface LendingWithDuration extends Lending {
-  duration?: number;
-}
-export type FormProps = { inputs: LendingWithDuration[] };
+export type FormProps = { inputs: Lending[] };
 
 export interface RentItemProps {
-  item: LendingWithDuration;
+  item: Lending;
   removeFromCart: (id: number) => void;
   index: number;
   disabled: boolean;

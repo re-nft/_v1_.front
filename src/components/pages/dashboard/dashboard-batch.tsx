@@ -40,7 +40,7 @@ export const DashboardBatch: React.FC<{
     return checkedLendingItems.length;
   }, [checkedLendingItems]);
   const lendinItemsStopLendable = useMemo(() => {
-    return checkedLendingItems.filter((v) => !v.renting);
+    return checkedLendingItems.filter((v) => !v.hasRenting);
   }, [checkedLendingItems]);
   return (
     <>

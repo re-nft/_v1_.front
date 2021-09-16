@@ -26,7 +26,8 @@ export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
         tokenId: nft.tokenId,
         nft: nft,
         lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : Number(nft.amount),
-        amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount
+        amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount,
+        nftAddress: nft.nftAddress
       }))
     }),
     [nfts]

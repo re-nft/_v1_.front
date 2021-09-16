@@ -3,21 +3,21 @@ import { Lending } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { CatalogueItemRow } from "./catalogue-item/catalogue-item-row";
 
-const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
-  const days = parseInt(String(nft.lending.maxRentDuration), 10);
+const LendingFields: React.FC<{ lending: Lending }> = ({ lending }) => {
+  const days = parseInt(String(lending.maxRentDuration), 10);
   return (
     <>
       <CatalogueItemRow
-        text={`Daily price [${PaymentToken[nft.lending.paymentToken]}]`}
-        value={nft.lending.dailyRentPrice.toString()}
+        text={`Daily price [${PaymentToken[lending.paymentToken]}]`}
+        value={lending.dailyRentPrice.toString()}
       />
       <CatalogueItemRow
         text={`Max duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
       <CatalogueItemRow
-        text={`Collateral [${PaymentToken[nft.lending.paymentToken]}]`}
-        value={nft.lending.nftPrice.toString()}
+        text={`Collateral [${PaymentToken[lending.paymentToken]}]`}
+        value={lending.nftPrice.toString()}
       />
     </>
   );

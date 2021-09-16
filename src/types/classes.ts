@@ -1,5 +1,6 @@
 import { getUniqueID, parseLending, parseRenting } from "../utils";
-import { LendingRaw, RentingRaw, ILending, IRenting, NftToken, Address } from ".";
+import { LendingRaw, RentingRaw, ILending, IRenting, NftToken, Address, TokenId } from ".";
+import { PaymentToken } from "@renft/sdk";
 
 export enum NftType {
   Nft,
@@ -13,14 +14,13 @@ type NftOptions = {
   meta?: NftToken["meta"];
 };
 
+// Nft metadata, denormalize to avoid double fetching, and referencing
 class Nft {
-  type = NftType.Nft;
-  // unique id, is different for nft/lending/renting
-  id: string;
   // unique nft id = contractAddress + tokenid, doesn't differentiate between lending/renting
+  id: string;
+  //TODO:eniko remove double id
   nId: string;
   nftAddress: Address;
-  address: Address;
   tokenId: string;
   amount: string;
   isERC721: boolean;
@@ -38,66 +38,98 @@ class Nft {
     isERC721: boolean,
     options?: NftOptions
   ) {
-    this.address = nftAddress;
     this.nftAddress = nftAddress;
     this.tokenId = tokenId;
     this.amount = amount;
     this.isERC721 = isERC721;
     this._meta = options?.meta;
-    if (options?.mediaURI) {
-      this.mediaURI = options.mediaURI;
-    }
-    if (options?.tokenURI) {
-      this.tokenURI = options.tokenURI;
-    }
+    this.mediaURI = options?.mediaURI || "";
+    this.tokenURI = options?.tokenURI || "";
     //TODO:eniko check if we still need to do this
-    this.id = getUniqueID(nftAddress, tokenId, "0");
+    this.id = getUniqueID(nftAddress, tokenId);
     this.nId = getUniqueID(nftAddress, tokenId);
   }
 }
 
-class Lending extends Nft {
-  type = NftType.Lending;
-  lending: ILending;
-  renting?: IRenting;
+class Lending {
   id: string;
+  //nftId
+  nId: string;
+  // rentingId
+  rentingId?: string;
+  nftAddress: Address;
+  tokenId: TokenId;
 
-  constructor(lendingRaw: LendingRaw, options?: NftOptions) {
-    super(
-      lendingRaw.nftAddress,
-      lendingRaw.tokenId,
-      lendingRaw.lentAmount,
-      lendingRaw.isERC721,
-      options
-    );
+  lentAmount: string;
+  lenderAddress: Address;
+  maxRentDuration: number;
+  dailyRentPrice: number;
+  nftPrice: number;
+  paymentToken: PaymentToken;
+  collateralClaimed: boolean;
+  isERC721: boolean;
+  duration?: string;
+  hasRenting: boolean;
 
-    this.lending = parseLending(lendingRaw);
+  constructor(lendingRaw: LendingRaw) {
+    this.nId = getUniqueID(lendingRaw.nftAddress, lendingRaw.tokenId);
     this.id = lendingRaw.id;
+    this.rentingId = lendingRaw.renting?.id;
 
-    if (lendingRaw.renting) {
-      this.renting = parseRenting(lendingRaw.renting, {...this.lending, renting: undefined});
-    }
+    const lending = parseLending(lendingRaw)
+    this.nftAddress = lending.nftAddress;
+    this.tokenId= lending.tokenId;
+    this.lentAmount= lending.lentAmount
+    this.lenderAddress = lending.lenderAddress;
+    this.maxRentDuration = lending.maxRentDuration;
+    this.dailyRentPrice = lending.dailyRentPrice;
+    this.nftPrice = lending.nftPrice;
+    this.paymentToken = lending.paymentToken;
+    this.collateralClaimed = lending.collateralClaimed;
+    this.isERC721 = lending.collateralClaimed;
+    this.duration = this.duration
+    this.hasRenting = !!lendingRaw.renting
   }
 }
 
-class Renting extends Nft {
-  type = NftType.Renting;
-  lending: ILending;
-  renting: IRenting;
+class Renting {
   id: string;
+  //nftId
+  nId: string;
+  nftAddress: Address;
+  tokenId: string;
+  isERC721: boolean;
+
+  //lendingId
+  lendingId: string;
+  renterAddress: Address;
+  rentDuration: number;
+  rentedAt: number;
+  rentAmount: string;
+  paymentToken: PaymentToken;
+  dailyRentPrice: number;
+  nftPrice: number;
 
   constructor(
     nftAddress: Address,
     tokenId: string,
     lending: ILending,
-    rentingRaw: RentingRaw,
-    options?: NftOptions
+    rentingRaw: RentingRaw
   ) {
-    super(nftAddress, tokenId, lending.lentAmount, lending.isERC721, options);
-
-    this.lending = lending;
-    this.renting = parseRenting(rentingRaw, {...this.lending, renting: undefined});
+    this.nId = getUniqueID(nftAddress, tokenId);
+    this.nftAddress = nftAddress;
+    this.tokenId = tokenId;
+    this.isERC721 = lending.isERC721;
+    this.lendingId = lending.id;
     this.id = rentingRaw.id;
+    const renting = parseRenting(rentingRaw, {...lending, renting: undefined});
+    this.renterAddress = renting.renterAddress;
+    this.rentDuration = renting.rentDuration;
+    this.rentedAt = renting.rentedAt;
+    this.rentAmount = lending.lentAmount;
+    this.paymentToken = lending.paymentToken
+    this.dailyRentPrice = lending.dailyRentPrice;
+    this.nftPrice = lending.nftPrice
   }
 }
 

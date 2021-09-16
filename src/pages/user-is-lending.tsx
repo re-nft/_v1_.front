@@ -14,26 +14,30 @@ import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
 import { useWallet } from "../hooks/useWallet";
+import { useNftsStore } from "../hooks/queries/useNftStore";
 
 const LendingCatalogueItem: React.FC<{
-  nft: Lending;
+  lending: Lending;
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
   checkBoxChangeWrapped: (nft: Lending) => () => void;
   handleClickNft: (nft: Lending) => void;
-}> = ({ nft, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
-  const hasRenting = !!nft.renting;
-  const isChecked = !!checkedItems[nft.id];
+}> = ({ lending, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
+  const hasRenting = lending.hasRenting;
+  const isChecked = !!checkedItems[lending.id];
+  const nft = useNftsStore(
+    useCallback((state) => state.nfts[lending.nId], [lending.nId])
+  );
   return (
     <CatalogueItem
       checked={isChecked}
       nft={nft}
-      onCheckboxChange={checkBoxChangeWrapped(nft)}
+      onCheckboxChange={checkBoxChangeWrapped(lending)}
       disabled={hasRenting}
     >
-      <LendingFields nft={nft} />
+      <LendingFields lending={lending} />
       <div className="py-3 flex flex-auto items-end justify-center">
         <ActionButton<Lending>
-          nft={nft}
+          nft={lending}
           disabled={hasRenting || isChecked}
           title="Stop Lending"
           onClick={handleClickNft}
@@ -91,10 +95,10 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
         />
       )}
       <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
-        {currentPage.map((nft: Lending) => (
+        {currentPage.map((lending: Lending) => (
           <LendingCatalogueItem
-            nft={nft}
-            key={nft.id}
+            lending={lending}
+            key={lending.id}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleClickNft={handleClickNft}

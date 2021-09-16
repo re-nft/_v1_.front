@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import CatalogueLoader from "../components/catalogue-loader";
-import { Nft } from "../types/classes";
+import { Lending, Nft, Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
@@ -10,6 +10,7 @@ import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { getUniqueID } from "../utils";
 import { useUserData } from "../hooks/queries/useUserData";
+import { useNftsStore } from "../hooks/queries/useNftStore";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =
@@ -22,7 +23,7 @@ export const MyFavorites: React.FC = () => {
     const m = new Set(Object.keys(userData?.favorites));
     if (m.size < 1) return [];
     return allAvailableToRent.filter((item) => {
-      return m.has(getUniqueID(item.address, item.tokenId));
+      return m.has(getUniqueID(item.nftAddress, item.tokenId));
     });
   }, [allAvailableToRent, userData]);
 
@@ -36,7 +37,9 @@ export const MyFavorites: React.FC = () => {
   );
 
   const isLoading = userDataIsLoading || allAvailableIsLoading;
-
+  const nftsInStore = useNftsStore(
+    useCallback((state) => state.nfts, [])
+  );
   if (isLoading) {
     return (
       <div className="mx-auto">
@@ -59,10 +62,10 @@ export const MyFavorites: React.FC = () => {
         ItemsRenderer={({ currentPage }) => {
           return (
             <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
-              {currentPage.map((nft: Nft) => (
+              {currentPage.map((nft: Renting | Lending) => (
                 <CatalogueItem
                   key={nft.id}
-                  nft={nft}
+                  nft={nftsInStore[nft.nId]}
                   isAlreadyFavourited
                   onCheckboxChange={checkBoxChangeWrapped(nft)}
                 ></CatalogueItem>

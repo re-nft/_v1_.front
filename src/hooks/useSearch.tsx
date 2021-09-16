@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
-import { Lending, Nft } from "../types/classes";
+import { Lending, Nft, Renting } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "./queries/useExchangePrice";
 import { isLending } from "../utils";
@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 
 interface NftSearchState {
   nfts: string[];
-  setSearchNfts: (nfts: Nft[]) => void;
+  setSearchNfts: (nfts: (Renting | Lending | Nft)[]) => void;
 }
 
 export const useSearchNfts = create<NftSearchState>(
@@ -43,7 +43,7 @@ export const compare = (a: number, b: number) => {
 };
 
 export const sortByDailyRentPrice =
-  <T extends Nft>(dir: "asc" | "desc" = "asc") =>
+  <T extends Renting | Lending | Nft>(dir: "asc" | "desc" = "asc") =>
   (
     a: T & { priceInUSD: number; collateralInUSD: number },
     b: T & { priceInUSD: number; collateralInUSD: number }
@@ -53,7 +53,7 @@ export const sortByDailyRentPrice =
   };
 
 export const sortByCollateral =
-  <T extends Nft>(dir: "asc" | "desc" = "asc") =>
+  <T extends Renting | Lending | Nft>(dir: "asc" | "desc" = "asc") =>
   (
     a: T & { priceInUSD: number; collateralInUSD: number },
     b: T & { priceInUSD: number; collateralInUSD: number }
@@ -65,13 +65,13 @@ export const sortByCollateral =
 export const sortByDuration =
   (dir: "asc" | "desc" = "asc") =>
   (a: Lending, b: Lending) => {
-    const priceA = a.lending.maxRentDuration;
-    const priceB = b.lending.maxRentDuration;
+    const priceA = a.maxRentDuration;
+    const priceB = b.maxRentDuration;
     const result = compare(priceA, priceB);
     return dir === "desc" ? result : result * -1;
   };
 
-export const useSearch = <T extends Nft>(items: T[]): T[] => {
+export const useSearch = <T extends Renting | Lending | Nft>(items: T[]): T[] => {
   const filter = useNFTFilterBy(
     useCallback((state) => {
       return state.filters;
@@ -169,10 +169,10 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
     let r = items.map((r) => ({
       ...r,
       priceInUSD: isLending(r)
-        ? toUSD(r.lending.paymentToken, r.lending.dailyRentPrice, tokenPerUSD)
+        ? toUSD(r.paymentToken, r.dailyRentPrice, tokenPerUSD)
         : 1,
       collateralInUSD: isLending(r)
-        ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
+        ? toUSD(r.paymentToken, r.nftPrice, tokenPerUSD)
         : 1,
     }));
     r = filterItems(r, filter);

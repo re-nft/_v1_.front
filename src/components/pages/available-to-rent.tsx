@@ -11,26 +11,36 @@ import { PaginationList } from "../pagination-list";
 import { RentSwitchWrapper } from "../rent-switch-wrapper";
 import ItemWrapper from "../common/items-wrapper";
 import { useWallet } from "../../hooks/useWallet";
+import { useNftsStore } from "../../hooks/queries/useNftStore";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
-  nft: Lending;
-  checkBoxChangeWrapped: (nft: Lending) => () => void;
-  handleBatchModalOpen: (nft: Lending) => () => void;
-}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleBatchModalOpen }) => {
-  const isChecked = !!checkedItems[nft.id];
+  lending: Lending;
+  checkBoxChangeWrapped: (lending: Lending) => () => void;
+  handleBatchModalOpen: (lending: Lending) => () => void;
+}> = ({
+  checkedItems,
+  lending,
+  checkBoxChangeWrapped,
+  handleBatchModalOpen
+}) => {
+  const isChecked = !!checkedItems[lending.id];
+  const nft = useNftsStore(
+    useCallback((state) => state.nfts[lending.nId], [lending.nId])
+  );
+
   const { signer } = useWallet();
   return (
     <CatalogueItem
       nft={nft}
       checked={isChecked}
-      onCheckboxChange={checkBoxChangeWrapped(nft)}
+      onCheckboxChange={checkBoxChangeWrapped(lending)}
     >
-      <LendingFields nft={nft} />
+      <LendingFields lending={lending} />
       <div className="py-3 flex flex-auto items-end justify-center content-end">
         <ActionButton<Lending>
-          onClick={handleBatchModalOpen(nft)}
-          nft={nft}
+          onClick={handleBatchModalOpen(lending)}
+          nft={lending}
           title="Rent"
           disabled={isChecked || !signer}
         />
@@ -40,13 +50,13 @@ const RentCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
-  currentPage,
+  currentPage
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedLendingItems,
+    checkedLendingItems
   } = useBatchItems();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {
@@ -84,7 +94,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
         {currentPage.map((nft: Lending) => (
           <RentCatalogueItem
             key={nft.id}
-            nft={nft}
+            lending={nft}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleBatchModalOpen={handleBatchModalOpen}
@@ -103,7 +113,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
   );
 };
 export const AvailableToRent: React.FC<{
-  allAvailableToRent: Nft[];
+  allAvailableToRent: Lending[];
   isLoading: boolean;
 }> = ({ allAvailableToRent, isLoading }) => {
   const lendingItems = useMemo(() => {

@@ -5,7 +5,7 @@ import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 import { ShortenPopover } from "../common/shorten-popover";
 
 export type CommonInfoProps = {
-  nft: Nft;
+  nft: Pick<Nft, 'nftAddress' | "tokenId" | "id" | "isERC721">;
 };
 
 const ModalFields: React.FC<CommonInfoProps> = ({ children, nft }) => {
@@ -16,7 +16,7 @@ const ModalFields: React.FC<CommonInfoProps> = ({ children, nft }) => {
     >
       <CatalogueItemRow
         text={nft.isERC721 ? "721" : "1155"}
-        value={<ShortenPopover longString={nft.address} />}
+        value={<ShortenPopover longString={nft.nftAddress} />}
       />
       <CatalogueItemRow
         text={"Token Id"}

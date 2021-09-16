@@ -14,13 +14,13 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
   (props, ref) => {
     const { item, index, disabled, removeFromCart, register, formState } = props;
 
-    const token = item.lending.paymentToken;
+    const token = item.paymentToken;
     const paymentToken = PaymentToken[token];
-    const dailyRentPrice = item.lending.dailyRentPrice;
-    const nftPrice = item.lending.nftPrice;
+    const dailyRentPrice = item.dailyRentPrice;
+    const nftPrice = item.nftPrice;
     const totalRent = 
-      (item.lending.nftPrice || 0) * Number(item.amount) +
-      (item.lending.dailyRentPrice || 0) * Number(item.duration);
+      (item.nftPrice || 0) * Number(item.lentAmount) +
+      (item.dailyRentPrice || 0) * Number(item.duration);
 
     const registerFields = useRegisterFields(register, formState, index);
 
@@ -38,7 +38,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
     }, [index, removeFromCart]);
 
     const renderItem = () => {
-      const days = item.lending.maxRentDuration;
+      const days = item.maxRentDuration;
       return (
         <span>
           <span>Rent duration </span>
@@ -73,7 +73,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
         </div>
         <div className="flex-1">
           <ModalFields nft={item} key={item.id}>
-            <CatalogueItemRow text="Rent Amount" value={item.amount} />
+            <CatalogueItemRow text="Rent Amount" value={item.lentAmount} />
             <TextField
               required
               label={renderItem()}
@@ -105,7 +105,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
                     {item.duration ? item.duration : 0} days
                   </span>
                   <span>
-                    + &nbsp;{Number(nftPrice)} x {Number(item.amount)}
+                    + &nbsp;{Number(nftPrice)} x {Number(item.lentAmount)}
                   </span>
                   <span>=&nbsp;{totalRent ? totalRent : "? "}</span>
                 </div>

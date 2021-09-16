@@ -124,9 +124,10 @@ export const useBatchItems: () => BatchContextType = () => {
   const checkedClaims = useMemo(() => {
     return checkedLendingItems.filter(
       (l) =>
-        l.renting &&
-        claimable(l.renting, blockTimeStamp) &&
-        !l.lending.collateralClaimed
+        l.hasRenting &&
+        // TODO:eniko
+        // claimable(l.renting, blockTimeStamp) &&
+        !l.collateralClaimed
     );
   }, [blockTimeStamp, checkedLendingItems, claimable]);
 

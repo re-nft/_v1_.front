@@ -8,7 +8,7 @@ import Modal from "./modal";
 
 type ReturnModalProps = {
   open: boolean;
-  onClose: (nfts?: Nft[]) => void;
+  onClose: (nfts?: Lending[]) => void;
   nfts: Lending[];
 };
 
@@ -21,7 +21,7 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
   const [t, setObservable] = useObservable();
 
   const handleStopLend = useCallback(() => {
-    const items = nfts.map((nft) => ({ ...nft, lendingId: nft.lending.id }));
+    const items = nfts.map((lending) => ({ ...lending, lendingId: lending.id }));
     setObservable(stopLending(items));
   }, [nfts, stopLending, setObservable]);
 

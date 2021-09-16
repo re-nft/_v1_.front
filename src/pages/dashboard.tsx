@@ -4,14 +4,13 @@ import { useBatchItems } from "../hooks/useBatchItems";
 import CatalogueLoader from "../components/catalogue-loader";
 import {
   ExtendedLending,
-  LendingTable,
+  LendingTable
 } from "../components/pages/dashboard/lending-table";
 import {
   ExtendedRenting,
-  RentingTable,
+  RentingTable
 } from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
-import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
 import ToggleLayout from "../components/toggle-layout";
 import { useRouter } from "next/router";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
@@ -21,7 +20,7 @@ import { useCurrentAddress } from "../hooks/useCurrentAddress";
 
 enum DashboardViewType {
   LIST_VIEW,
-  MINIATURE_VIEW,
+  MINIATURE_VIEW
 }
 
 export const Dashboard: React.FC = () => {
@@ -31,7 +30,7 @@ export const Dashboard: React.FC = () => {
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);
   const {
-    query: { claimed },
+    query: { claimed }
   } = useRouter();
 
   const showClaimed = useMemo(() => {
@@ -45,7 +44,7 @@ export const Dashboard: React.FC = () => {
     checkedItems,
     checkedLendingItems,
     checkedRentingItems,
-    checkedClaims,
+    checkedClaims
   } = useBatchItems();
   const { renting: rentingItems, isLoading: userRentingLoading } =
     useUserRenting();
@@ -59,18 +58,21 @@ export const Dashboard: React.FC = () => {
 
   const relendedLendingItems: ExtendedLending[] = useMemo(() => {
     if (!rentingItems) return [];
-    return lendingItems
-      .map(mapAddRelendedField(mapToIds(rentingItems)))
-      .filter(filterClaimed(showClaimed));
-  }, [lendingItems, rentingItems, showClaimed]);
+    return lendingItems.map((r) => ({ ...r, relended: false }));
+    //TODO:eniko filterClaimed
+    //.map(mapAddRelendedField(mapToIds(rentingItems)))
+    // .filter(filterClaimed(showClaimed));
+  }, [lendingItems, rentingItems]);
 
   //@ts-ignore
   const relendedRentingItems: ExtendedRenting[] = useMemo(() => {
     if (!rentingItems) return [];
-    return rentingItems
-      .map(mapAddRelendedField(mapToIds(lendingItems)))
-      .filter(filterClaimed(showClaimed));
-  }, [lendingItems, rentingItems, showClaimed]);
+    return rentingItems;
+    //TODO:eniko filterClaimed
+
+    // .map(mapAddRelendedField(mapToIds(lendingItems)))
+    // .filter(filterClaimed(showClaimed));
+  }, [rentingItems]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -86,13 +88,13 @@ export const Dashboard: React.FC = () => {
       {
         name: "CURRENT",
         href: "/dashboard?claimed=false",
-        current: !showClaimed,
+        current: !showClaimed
       },
       {
         name: "SHOW CLAIMED",
         href: "/dashboard?claimed=true",
-        current: showClaimed,
-      },
+        current: showClaimed
+      }
     ];
   }, [showClaimed]);
 

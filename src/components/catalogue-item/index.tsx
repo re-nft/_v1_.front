@@ -49,7 +49,7 @@ const onExit =
       removeElement();
     };
   };
-
+//TODO:eniko make this component accept nId instead of Nft
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
   checked,
@@ -89,9 +89,9 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const knownContract = useMemo(() => {
     return (
-      nft.address.toLowerCase() === "0x0db8c099b426677f575d512874d45a767e9acc3c"
+      nft.nftAddress.toLowerCase() === "0x0db8c099b426677f575d512874d45a767e9acc3c"
     );
-  }, [nft.address]);
+  }, [nft.nftAddress]);
 
   return (
     <Flipped
@@ -123,7 +123,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                     className="flex-initial"
                     target="_blank"
                     rel="noreferrer"
-                    href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`}
+                    href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
                   >
                     <img src="/assets/rarible.png" className="nft__icon" />
                   </a>
@@ -138,7 +138,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                     </a>
                   )}
                   <CatalogueActions
-                    address={nft.address}
+                    address={nft.nftAddress}
                     tokenId={nft.tokenId}
                   />
                   <div className="flex-1 flex justify-end justify-self-end">
@@ -166,7 +166,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       </a>
                     )}
                     {isRentPage && (
-                      <CopyLink address={nft.address} tokenId={nft.tokenId} />
+                      <CopyLink address={nft.nftAddress} tokenId={nft.tokenId} />
                     )}
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               <div className="px-2 flex flex-auto flex-col">
                 <CatalogueItemRow
                   text="NFT Address"
-                  value={<ShortenPopover longString={nft.address} />}
+                  value={<ShortenPopover longString={nft.nftAddress} />}
                 />
                 <CatalogueItemRow
                   text="Token id"

@@ -6,13 +6,11 @@ import {
   useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
+import { Lending, Nft } from "../../types/classes";
+
 
 export const useStopLend = (): ((
-  nfts: {
-    address: string;
-    tokenId: string;
-    lendingId: string;
-  }[]
+  nfts: Lending[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
 
@@ -20,24 +18,20 @@ export const useStopLend = (): ((
 
   return useCallback(
     (
-      nfts: {
-        address: string;
-        tokenId: string;
-        lendingId: string;
-      }[]
+      lendings: Lending[]
     ) => {
       if (!sdk) return EMPTY;
       const arr: [string[], BigNumber[], BigNumber[]] = [
-        nfts.map((nft) => nft.address),
-        nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => BigNumber.from(nft.lendingId)),
+        lendings.map((lending) => lending.nftAddress),
+        lendings.map((lending) => BigNumber.from(lending.tokenId)),
+        lendings.map((lending) => BigNumber.from(lending.id)),
       ];
       return transactionWrapper(sdk.stopLending(...arr), {
         action: "return nft",
         label: `
-          addresses: ${nfts.map((nft) => nft.address)}
-          tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
-          lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
+          addresses: ${lendings.map((lending) => lending.nftAddress)}
+          tokenId: ${lendings.map((lending) => BigNumber.from(lending.tokenId))}
+          lendingId: ${lendings.map((lending) => BigNumber.from(lending.id))}
         `,
       });
     },

@@ -10,26 +10,25 @@ import add from "date-fns/add";
 
 export const RentingRow: React.FC<{
   checked: boolean;
-  rent: Renting & { relended: boolean };
+  renting: Renting & { relended: boolean };
   currentAddress: string;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   isExpired: boolean;
-}> = ({ checked, rent, checkBoxChangeWrapped, isExpired }) => {
-  const renting = rent.renting;
+}> = ({ checked, renting, checkBoxChangeWrapped, isExpired }) => {
   const meta = useNftMetaState(
     useCallback(
       (state) => {
-        return state.metas[rent.nId] || {};
+        return state.metas[renting.nId] || {};
       },
-      [rent.nId]
+      [renting.nId]
     ),
     shallow
   );
 
   const handleRowClicked = useCallback(() => {
-    if (isExpired || rent.relended) return;
-    checkBoxChangeWrapped(rent)();
-  }, [checkBoxChangeWrapped, rent, isExpired]);
+    if (isExpired || renting.relended) return;
+    checkBoxChangeWrapped(renting)();
+  }, [checkBoxChangeWrapped, renting, isExpired]);
   const days = renting.rentDuration;
 
   const formatCollateral = (v: number) => {
@@ -59,17 +58,17 @@ export const RentingRow: React.FC<{
 
       <td className="px-1 whitespace-nowrap font-normal">
         <ShortenPopover
-          longString={renting.lending.nftAddress}
+          longString={renting.nftAddress}
         ></ShortenPopover>
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        <ShortenPopover longString={rent.tokenId}></ShortenPopover>
+        <ShortenPopover longString={renting.tokenId}></ShortenPopover>
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        {renting.lending.lentAmount}
+        {renting.rentAmount}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        {PaymentToken[renting.lending.paymentToken ?? 0]}
+        {PaymentToken[renting.paymentToken ?? 0]}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
         {days} {days > 1 ? "days" : "day"}
@@ -77,11 +76,11 @@ export const RentingRow: React.FC<{
 
       <td className="px-1 whitespace-nowrap font-normal">
         {formatCollateral(
-          renting.lending.nftPrice * Number(renting.lending.lentAmount)
+          renting.nftPrice * Number(renting.rentAmount)
         )}
       </td>
       <td className="px-1 whitespace-nowrap font-normal">
-        {renting.lending.dailyRentPrice}
+        {renting.dailyRentPrice}
       </td>
 
       <td className="px-1 whitespace-nowrap font-normal">
@@ -93,9 +92,9 @@ export const RentingRow: React.FC<{
 
       <td className="pr-8 flex justify-end whitespace-nowrap font-normal">
         <Checkbox
-          onChange={checkBoxChangeWrapped(rent)}
+          onChange={checkBoxChangeWrapped(renting)}
           checked={checked}
-          disabled={isExpired || rent.relended}
+          disabled={isExpired || renting.relended}
         />
       </td>
     </tr>

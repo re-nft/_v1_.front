@@ -58,14 +58,14 @@ export const useStartRent = (): {
 
       setCheckLoading(true);
       const resolver = Resolver.attach(resolverAddress).connect(signer);
-      const nfts = items.map((nft) => ({
-        address: nft.address,
-        tokenId: nft.tokenId,
-        amount: nft.lending.lentAmount,
-        lendingId: nft.lending.id,
+      const nfts = items.map((lending) => ({
+        address: lending.nftAddress,
+        tokenId: lending.tokenId,
+        amount: lending.lentAmount,
+        lendingId: lending.id,
         rentDuration: "",
-        paymentToken: nft.lending.paymentToken,
-        isERC721: nft.isERC721
+        paymentToken: lending.paymentToken,
+        isERC721: lending.isERC721
       }));
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)

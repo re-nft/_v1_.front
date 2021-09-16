@@ -4,14 +4,15 @@ import { Lending, Nft } from "../../types/classes";
 import { queryAllLendingRenft } from "../../services/queries";
 import { timeItAsync } from "../../utils";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { debounceTime, from, map, switchMap, timer } from "rxjs";
+import { debounceTime, from, map, Observable, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
 import create from "zustand";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import { useNftsStore } from "./useNftStore";
 
-export const fetchRentings = () => {
+export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
     throw new Error("RENFT_API is not defined");
   }
@@ -26,12 +27,7 @@ export const fetchRentings = () => {
   ).pipe(
     map((response) => Object.values(response?.lendings || [])),
     map((lendings) => {
-      return lendings
-        .filter((v) => !v.renting)
-        .filter((v) => v != null)
-        .map((lending) => {
-          return new Lending(lending);
-        });
+      return lendings.filter((v) => !v.renting).filter((v) => v != null);
     })
   );
 };
@@ -46,33 +42,20 @@ interface allAvailableForRent {
 const useAllAvailableStore = create<allAvailableForRent>((set) => ({
   isLoading: false,
   nfts: [],
-  setNfts: (items: Lending[]) =>
+  setNfts: (nfts: Lending[]) =>
     set((state) => {
-      const previousNfts = state.nfts || [];
-      const map = items.reduce((acc, item) => {
-        acc.set(item.id, item);
-        return acc;
-      }, new Map<string, Nft>());
-      let nfts = [];
-      if (previousNfts.length === 0 || items.length === 0) {
-        nfts = items;
-      } else {
-        nfts = previousNfts.filter((item) => {
-          return map.has(item.id);
-        });
-      }
       return {
         ...state,
-        nfts,
+        nfts
       };
     }),
   setLoading: (isLoading: boolean) =>
     set((state) => {
       return {
         ...state,
-        isLoading,
+        isLoading
       };
-    }),
+    })
 }));
 
 export const useAllAvailableForRent = () => {
@@ -88,6 +71,7 @@ export const useAllAvailableForRent = () => {
   );
   const setNfts = useAllAvailableStore((state) => state.setNfts);
   const setLoading = useAllAvailableStore((state) => state.setLoading);
+  const addNfts = useNftsStore((state) => state.addNfts);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -104,7 +88,17 @@ export const useAllAvailableForRent = () => {
           return fetchRentings();
         }),
         map((items) => {
-          if (items) setNfts(items);
+          const nfts = items.map(
+            (lendingRaw) =>
+              new Nft(
+                lendingRaw.nftAddress,
+                lendingRaw.tokenId,
+                lendingRaw.lentAmount,
+                lendingRaw.isERC721
+              )
+          );
+          addNfts(nfts);
+          if (items) setNfts(items.map((r) => new Lending(r)));
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -115,7 +109,7 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [currentAddress, setLoading, network, nfts, setNfts]);
+  }, [currentAddress, setLoading, network, nfts, setNfts, addNfts]);
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
@@ -124,11 +118,8 @@ export const useAllAvailableForRent = () => {
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
       // ! therefore, this check is !==
       const userNotLender =
-        l.lending.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
-      const userNotRenter =
-        l.renting && l.renting.renterAddress
-          ? l.renting.renterAddress.toLowerCase() !== currentAddress
-          : true;
+        l.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
+      const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress
       return userNotLender && userNotRenter;
     });
   }, [currentAddress, nfts]);
