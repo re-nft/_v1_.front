@@ -8,7 +8,7 @@ import {
   TransactionStatus,
   useTransactionWrapper,
 } from "../useTransactionWrapper";
-import { NFTStandard } from "@eenagy/sdk";
+import { NFTStandard } from "@renft/sdk";
 
 export const useReturnIt = (): ((
   nfts: Renting[]

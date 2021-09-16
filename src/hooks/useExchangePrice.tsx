@@ -7,7 +7,7 @@ import shallow from "zustand/shallow";
 import create from "zustand";
 
 //@ts-ignore
-import { PaymentToken } from "@eenagy/sdk";
+import { PaymentToken } from "@renft/sdk";
 
 interface TOKEN_PRICE {
   tokenPerUSD: Record<PaymentToken, number>;

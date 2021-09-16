@@ -4,7 +4,7 @@ import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
 import { Lending, Nft } from "../contexts/graph/classes";
 //@ts-ignore
-import { PaymentToken } from "@eenagy/sdk";
+import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
 import { useNftMetaState } from "./useMetaState";

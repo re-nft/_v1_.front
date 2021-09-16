@@ -10,7 +10,7 @@ import {
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 //@ts-ignore
-import { NFTStandard } from "@eenagy/sdk";
+import { NFTStandard } from "@renft/sdk";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
 
