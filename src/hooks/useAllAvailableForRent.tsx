@@ -5,7 +5,11 @@ import { Lending, Nft } from "../contexts/graph/classes";
 import { queryAllLendingRenft } from "../contexts/graph/queries";
 import { timeItAsync } from "../utils";
 import UserContext from "../contexts/UserProvider";
-import { ANIMETAS_CONTRACT_ADDRESS, SECOND_IN_MILLISECONDS } from "../consts";
+import {
+  ANIMETAS_CONTRACT_ADDRESS,
+  ANIMONKEYS_CONTRACT_ADDRESS,
+  SECOND_IN_MILLISECONDS,
+} from "../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
@@ -29,7 +33,11 @@ export const fetchRentings = () => {
       return lendings
         .filter((v) => !v.renting || v.renting.length === 0)
         .filter((v) => v != null)
-        .filter((v) => v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS)
+        .filter(
+          (v) =>
+            v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+            v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+        )
         .map((lending) => {
           return new Lending(lending);
         });
@@ -114,7 +122,7 @@ export const useAllAvailableForRent = () => {
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
-    const items= nfts.filter((l: Lending) => {
+    const items = nfts.filter((l: Lending) => {
       // empty address show all renting
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
       // ! therefore, this check is !==

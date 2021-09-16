@@ -16,3 +16,4 @@ export const IS_PROD =
 export const NO_COLLECTION  = 'No collection'
 
 export const ANIMETAS_CONTRACT_ADDRESS = "0x18df6c571f6fe9283b87f910e41dc5c8b77b7da5"
+export const ANIMONKEYS_CONTRACT_ADDRESS = "0xa32422dfb5bf85b2084ef299992903eb93ff52b0";

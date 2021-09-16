@@ -1,5 +1,8 @@
 import { useContext, useMemo } from "react";
-import { ANIMETAS_CONTRACT_ADDRESS } from "../consts";
+import {
+  ANIMETAS_CONTRACT_ADDRESS,
+  ANIMONKEYS_CONTRACT_ADDRESS,
+} from "../consts";
 import { Nft } from "../contexts/graph/classes";
 import UserContext from "../contexts/UserProvider";
 import { useFetchERC1155 } from "./useFetchERC1155";
@@ -21,11 +24,19 @@ export const useAllAvailableToLend = (): {
   // TODO: below with hardcoding
 
   const filteredERC1155 = useMemo(() => {
-    return ERC1155.filter((nft) => nft.address.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS);
+    return ERC1155.filter(
+      (nft) =>
+        nft.address.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+        nft.address.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+    );
   }, [ERC1155]);
 
   const filteredERC721 = useMemo(() => {
-    return ERC721.filter((nft) => nft.address.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS);
+    return ERC721.filter(
+      (nft) =>
+        nft.address.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+        nft.address.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+    );
   }, [ERC721]);
 
   const allAvailableToLend: Nft[] = useMemo(() => {
