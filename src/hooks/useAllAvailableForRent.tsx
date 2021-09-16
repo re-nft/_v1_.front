@@ -5,7 +5,7 @@ import { Lending, Nft } from "../contexts/graph/classes";
 import { queryAllLendingRenft } from "../contexts/graph/queries";
 import { timeItAsync } from "../utils";
 import UserContext from "../contexts/UserProvider";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { ANIMETAS_CONTRACT_ADDRESS, SECOND_IN_MILLISECONDS } from "../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
@@ -29,6 +29,7 @@ export const fetchRentings = () => {
       return lendings
         .filter((v) => !v.renting || v.renting.length === 0)
         .filter((v) => v != null)
+        .filter((v) => v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS)
         .map((lending) => {
           return new Lending(lending);
         });

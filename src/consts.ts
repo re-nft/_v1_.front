@@ -14,3 +14,5 @@ export const IS_PROD =
   process.env["NODE_ENV"]?.toLowerCase() === "production";
 
 export const NO_COLLECTION  = 'No collection'
+
+export const ANIMETAS_CONTRACT_ADDRESS = "0x18df6c571f6fe9283b87f910e41dc5c8b77b7da5"
