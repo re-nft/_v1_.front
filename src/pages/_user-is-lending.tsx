@@ -1,3 +1,5 @@
+//TODO:eniko remove this file
+
 import React, { useCallback, useState, useMemo } from "react";
 
 import { Lending, Renting, Nft } from "../types/classes";
@@ -7,11 +9,10 @@ import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
 import { StopLendModal } from "../components/modals/stop-lend-modal";
-import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
+import { LendSearchLayout } from "../components/lend-search-layout";
 import { PaginationList } from "../components/pagination-list";
 import { isLending, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
-import { useSearch } from "../hooks/useSearch";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
 import { useWallet } from "../hooks/useWallet";
 import { useNftsStore } from "../hooks/queries/useNftStore";
@@ -124,27 +125,26 @@ const UserCurrentlyLending: React.FC = () => {
     return userLending.filter(isLending);
   }, [userLending]);
 
-  const items = useSearch(lendingItems);
 
   if (!signer) {
     return (
-      <LendSwitchWrapper>
+      <LendSearchLayout>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
-      </LendSwitchWrapper>
+      </LendSearchLayout>
     );
   }
 
   return (
-    <LendSwitchWrapper>
+    <LendSearchLayout>
       <PaginationList
-        nfts={items}
+        nfts={lendingItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not lending anything yet"
       />
-    </LendSwitchWrapper>
+    </LendSearchLayout>
   );
 };
 

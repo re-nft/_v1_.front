@@ -8,6 +8,7 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
+import { useNftsStore } from "./useNftStore";
 
 interface UserERC721State {
   users: Record<
@@ -128,6 +129,8 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   );
   const setUserNft = useERC721((state) => state.setUserNft);
   const setLoading = useERC721((state) => state.setLoading);
+  const addNfts = useNftsStore((state) => state.addNfts);
+
 
   useEffect(() => {
     const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
@@ -141,7 +144,10 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
           return fetchERC721(currentAddress);
         }),
         map((items) => {
-          if (items) setUserNft(currentAddress, items);
+          if (items) {
+            addNfts(items)
+            setUserNft(currentAddress, items)
+          };
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -152,7 +158,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, setLoading, setUserNft]);
+  }, [signer, currentAddress, setLoading, setUserNft, addNfts]);
 
   return { ERC721: nfts, isLoading };
 };

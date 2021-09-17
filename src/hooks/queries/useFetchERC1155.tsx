@@ -8,7 +8,7 @@ import {
   map,
   mergeMap,
   switchMap,
-  timer,
+  timer
 } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
@@ -20,6 +20,7 @@ import { useCurrentAddress } from "../useCurrentAddress";
 import produce from "immer";
 import { usePrevious } from "../usePrevious";
 import { NetworkName, NftToken } from "../../types";
+import { useNftsStore } from "./useNftStore";
 
 interface UserERC1155State {
   users: Record<
@@ -42,7 +43,7 @@ const fetchERC1155 = (currentAddress: string) => {
       fetchUserProd1155(currentAddress, 1),
       fetchUserProd1155(currentAddress, 2),
       fetchUserProd1155(currentAddress, 3),
-      fetchUserProd1155(currentAddress, 4),
+      fetchUserProd1155(currentAddress, 4)
     ]).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
@@ -60,7 +61,7 @@ const fetchERC1155 = (currentAddress: string) => {
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
             meta: nft.meta,
-            tokenURI: nft.tokenURI,
+            tokenURI: nft.tokenURI
           });
         })
         .forEach((nft) => {
@@ -151,13 +152,15 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     ),
     shallow
   );
+  const addNfts = useNftsStore((state) => state.addNfts);
+
   // All this is necessary because amount doesn't detected by zustand
   // which is a bug, most likely
   const previousAmounts = usePrevious(amounts);
-  const ERC1155 = useMemo(()=>{
-    if(previousAmounts !== amounts) return [...nfts]
+  const ERC1155 = useMemo(() => {
+    if (previousAmounts !== amounts) return [...nfts];
     return nfts;
-  }, [nfts, amounts, previousAmounts])
+  }, [nfts, amounts, previousAmounts]);
 
   const setUserNft = useERC1155((state) => state.setUserNft, shallow);
   const setLoading = useERC1155((state) => state.setLoading, shallow);
@@ -198,7 +201,10 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           return fetchERC1155(currentAddress);
         }),
         map((items) => {
-          if (items) setUserNft(currentAddress, items);
+          if (items) {
+            addNfts(items);
+            setUserNft(currentAddress, items);
+          }
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -209,7 +215,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, setUserNft, setLoading]);
+  }, [signer, currentAddress, setUserNft, setLoading, addNfts]);
 
   return { ERC1155, isLoading };
 };

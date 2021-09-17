@@ -8,7 +8,7 @@ import { CatalogueItem } from "../catalogue-item";
 import ActionButton from "../common/action-button";
 import LendingFields from "../lending-fields";
 import { PaginationList } from "../pagination-list";
-import { RentSwitchWrapper } from "../rent-switch-wrapper";
+import { RentSearchLayout } from "../rent-search-layout";
 import ItemWrapper from "../common/items-wrapper";
 import { useWallet } from "../../hooks/useWallet";
 import { useNftsStore } from "../../hooks/queries/useNftStore";
@@ -121,13 +121,13 @@ export const AvailableToRent: React.FC<{
   }, [allAvailableToRent]);
 
   return (
-    <RentSwitchWrapper>
+    <RentSearchLayout>
       <PaginationList
         nfts={lendingItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You can't rent anything yet"
       />
-    </RentSwitchWrapper>
+    </RentSearchLayout>
   );
 };

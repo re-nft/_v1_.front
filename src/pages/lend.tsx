@@ -6,11 +6,10 @@ import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
-import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
+import { LendSearchLayout } from "../components/lend-search-layout";
 import { PaginationList } from "../components/pagination-list";
 import { UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
-import { useSearch } from "../hooks/useSearch";
 import { useWallet } from "../hooks/useWallet";
 
 const LendCatalagoueItem: React.FC<{
@@ -104,27 +103,26 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
 const Lendings: React.FC = () => {
   const { signer } = useWallet();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
-  const items = useSearch(allAvailableToLend);
 
   if (!signer) {
     return (
-      <LendSwitchWrapper>
+      <LendSearchLayout>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
-      </LendSwitchWrapper>
+      </LendSearchLayout>
     );
   }
 
   return (
-    <LendSwitchWrapper>
+    <LendSearchLayout>
       <PaginationList
-        nfts={items}
+        nfts={allAvailableToLend}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You don't have any NFTs to lend"
       />
-    </LendSwitchWrapper>
+    </LendSearchLayout>
   );
 };
 

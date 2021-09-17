@@ -21,7 +21,6 @@ export const TokenSelect: React.FC<{
 }> = forwardRef(({ selectedValue, onChange: handleChange, disabled, name }, ref) => {
   const onChange = useCallback(
     (value) => {
-      console.log(value);
       handleChange({
         target: {
           value,

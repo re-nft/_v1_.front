@@ -7,7 +7,7 @@ export enum LendSpecificity {
   LENDING,
 }
 
-export const LendSwitchWrapper: React.FC = ({ children }) => {
+export const LendSearchLayout: React.FC = ({ children }) => {
   const router = useRouter();
   const specificity = useMemo(() => {
     return router.pathname === "/user-is-lending"
@@ -16,18 +16,19 @@ export const LendSwitchWrapper: React.FC = ({ children }) => {
   }, [router.pathname]);
 
   const tabs = useMemo(() => {
-    return [
-      {
-        name: "ALL TO LEND",
-        href: "/lend",
-        current: specificity === LendSpecificity.ALL,
-      },
-      {
-        name: "USER IS LENDING",
-        href: "/user-is-lending",
-        current: specificity !== LendSpecificity.ALL,
-      },
-    ];
+    return [];
+    // return [
+    //   {
+    //     name: "ALL TO LEND",
+    //     href: "/lend",
+    //     current: specificity === LendSpecificity.ALL,
+    //   },
+    //   {
+    //     name: "USER IS LENDING",
+    //     href: "/user-is-lending",
+    //     current: specificity !== LendSpecificity.ALL,
+    //   },
+    // ];
   }, [specificity]);
   return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };

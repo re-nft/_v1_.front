@@ -5,7 +5,6 @@ import XIcon from "@heroicons/react/outline/XIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Footer } from "./footer";
-import { SearchMenu } from "./search-menu";
 import { DevMenu } from "./dev-menu";
 import { Connect } from "./connect";
 import { classNames } from "../../utils";
@@ -128,7 +127,6 @@ export const AppLayout: React.FC = ({ children }) => {
                     </a>
                   </Link>
                 ))}
-                <SearchMenu />
               </nav>
             </div>
 

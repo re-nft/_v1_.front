@@ -4,11 +4,43 @@ import { BigNumber } from "ethers";
 import { Nft } from "../../types/classes";
 import usePoller from "../usePoller";
 import { usePrevious } from "../usePrevious";
-import { hasDifference } from "../../utils";
 import { useSmartContracts } from "../contract/useSmartContracts";
 import { useWallet } from "../useWallet";
 import { useCurrentAddress } from "../useCurrentAddress";
+import create from "zustand";
+import { devtools } from "zustand/middleware";
+import produce from "immer";
+import shallow from "zustand/shallow";
+import { useNftsStore } from "./useNftStore";
 
+type NftMetaState = {
+  nfts: Nft[];
+  isLoading: boolean;
+  setNfts: (nfts: Nft[]) => void;
+  setLoading: (b: boolean) => void;
+};
+
+export const useDevNftStore = create<NftMetaState>(
+  devtools(
+    (set) => ({
+      nfts: [],
+      isLoading: false,
+      setLoading: (loading: boolean) =>
+      set(
+        produce((state) => {
+          state.isLoading = loading;
+        })
+      ),
+      setNfts: (nfts: Nft[]) =>
+        set(
+          produce((state) => {
+            state.nfts = nfts;
+          })
+        )
+    }),
+    "dev-nfts"
+  )
+);
 export type CancellablePromise<T> = {
   promise: Promise<T>;
   cancel: () => void;
@@ -63,10 +95,16 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
   const { network, signer } = useWallet();
   const { E721, E721B, E1155, E1155B } = useSmartContracts();
-
-  const [devNfts, setDevNfts] = useState<Nft[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const devNfts = useDevNftStore(useCallback((state) => {
+    return state.nfts;
+  }, []), shallow)
+  const isLoading = useDevNftStore(useCallback((state) => {
+    return state.isLoading;
+  }, []), shallow)
+  const setDevNfts = useDevNftStore((state) => state.setNfts);
+  const setIsLoading = useDevNftStore((state) => state.setLoading);
   const previousAddress = usePrevious(currentAddress);
+  const addNfts = useNftsStore((state) => state.addNfts);
 
   const fetchAsync = useCallback(async () => {
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
@@ -169,13 +207,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       }
     }
 
-    const normalizedLendings = devNfts;
-    const normalizedLendingNew = usersNfts;
-
-    const hasDiff = hasDifference(normalizedLendings, normalizedLendingNew);
     if (currentAddress !== previousAddress) {
-      setDevNfts(usersNfts);
-    } else if (hasDiff) {
+      addNfts(usersNfts);
       setDevNfts(usersNfts);
     }
     setIsLoading(false);
@@ -190,6 +223,9 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     devNfts,
     previousAddress,
     network,
+    setIsLoading,
+    setDevNfts,
+    addNfts,
   ]);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { AvailableToRent } from "../../../components/pages/available-to-rent";
-import { RentSwitchWrapper } from "../../../components/rent-switch-wrapper";
+import { RentSearchLayout } from "../../../components/rent-search-layout";
 import { useAllAvailableForRent } from "../../../hooks/queries/useAllAvailableForRent";
 import Head from "next/head";
 import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
@@ -28,11 +28,11 @@ const AvailableToRentPage: React.FC<{
 
   if (!match && !isLoading)
     return (
-      <RentSwitchWrapper>
+      <RentSearchLayout>
         <div className="text-center text-base text-white font-display py-32 leading-tight">
           That item isn&apos;t available for renting at the moment.
         </div>
-      </RentSwitchWrapper>
+      </RentSearchLayout>
     );
   return (
     <>

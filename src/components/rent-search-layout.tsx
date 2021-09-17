@@ -8,7 +8,7 @@ export enum RentSpecificity {
   RENTING,
 }
 
-export const RentSwitchWrapper: React.FC = ({ children }) => {
+export const RentSearchLayout: React.FC = ({ children }) => {
   const router = useRouter();
   const specificity = useMemo(() => {
     return router.pathname === "/user-is-renting"
@@ -17,18 +17,19 @@ export const RentSwitchWrapper: React.FC = ({ children }) => {
   }, [router.pathname]);
 
   const tabs = useMemo(() => {
-    return [
-      {
-        name: "ALL TO RENT",
-        href: "/",
-        current: specificity === RentSpecificity.ALL,
-      },
-      {
-        name: "USER IS RENTING",
-        href: "/user-is-renting",
-        current: specificity !== RentSpecificity.ALL,
-      },
-    ];
+    return [];
+    // return [
+    //   {
+    //     name: "ALL TO RENT",
+    //     href: "/",
+    //     current: specificity === RentSpecificity.ALL,
+    //   },
+    //   {
+    //     name: "USER IS RENTING",
+    //     href: "/user-is-renting",
+    //     current: specificity !== RentSpecificity.ALL,
+    //   },
+    // ];
   }, [specificity]);
   return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };
