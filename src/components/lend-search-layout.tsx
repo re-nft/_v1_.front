@@ -29,6 +29,6 @@ export const LendSearchLayout: React.FC = ({ children }) => {
     //     current: specificity !== LendSpecificity.ALL,
     //   },
     // ];
-  }, [specificity]);
+  }, []);
   return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };

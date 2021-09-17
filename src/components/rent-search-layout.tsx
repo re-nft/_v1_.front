@@ -30,6 +30,6 @@ export const RentSearchLayout: React.FC = ({ children }) => {
     //     current: specificity !== RentSpecificity.ALL,
     //   },
     // ];
-  }, [specificity]);
+  }, []);
   return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
 };
