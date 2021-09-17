@@ -14,7 +14,7 @@ export const DevMenu: React.FC = () => {
   return (
     <div>
       {!open && (
-        <div className="absolute inset-0 w-32 left-0 overflow-hidden z-30">
+        <div className="absolute inset-0 top-16 w-32 left-6 md:top-20 overflow-hidden z-30">
           <button
             onClick={() => {
               setOpen(true);

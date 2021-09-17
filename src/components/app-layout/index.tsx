@@ -13,7 +13,8 @@ const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
-  { name: "Favourites", href: "/favourites" },
+// TODO:eniko
+//  { name: "Favourites", href: "/favourites" },
   { name: "Faq", href: "/faq" }
 ];
 const userNavigation = [
@@ -38,18 +39,45 @@ export const AppLayout: React.FC = ({ children }) => {
       <Disclosure as="header">
         {({ open }) => (
           <>
-            <div className="max-w-7xl mx-auto px-4 lg:px-4">
-              <div className="relative h-32 lg:h-32 flex justify-between">
+            <div className="max-w-7xl mx-auto px-4 lg:mt-8">
+              <div className="relative h-16 lg:h-24 flex justify-between">
                 <div className="relative z-10 flex lg:px-0">
                   <div className="flex-shrink-0 flex items-center">
                     <img
-                      className="block h-10 lg:h-14 w-auto"
+                      className="block h-8 lg:h-10 w-auto"
                       src="/assets/logo.svg"
                       alt="reNFT"
                     />
                   </div>
                 </div>
-                <div className="relative z-10 flex  items-center lg:hidden">
+                <nav
+                  className="hidden lg:flex lg:space-x-4 menu items-center"
+                  aria-label="Global"
+                >
+                  {navigation.map((item) => (
+                    <Link href={item.href} key={item.name}>
+                      <a
+                        className="relative outline-none block p-1"
+                        aria-current={
+                          isPathActive(item.href, pathname) ? "page" : undefined
+                        }
+                      >
+                        <div
+                          className={classNames(
+                            "relative py-1 text-gray-400 leading-5 font-display uppercase text-sm whitespace-nowrap ",
+                            isPathActive(item.href, pathname)
+                              ? "text-black border-b-4 border-rn-orange"
+                              : "border-b-4 border-white"
+                          )}
+                        >
+                          {item.name}
+                        </div>
+                      </a>
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="relative z-10 flex  items-center lg:hidden mr-2">
                   {/* Mobile menu button */}
                   <Disclosure.Button
                     className="border-2 border-black p-2 shadow-rn-one
@@ -57,16 +85,17 @@ export const AppLayout: React.FC = ({ children }) => {
                   >
                     <span className="sr-only">Open menu</span>
                     {open ? (
-                      <XIcon className="block h-6 w-6" aria-hidden="true" />
+                      <XIcon className="block h-4 w-4" aria-hidden="true" />
                     ) : (
-                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                      <MenuIcon className="block h-4 w-4" aria-hidden="true" />
                     )}
                   </Disclosure.Button>
                 </div>
+            
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <Connect />
+                    <Connect menuButton/>
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -102,34 +131,13 @@ export const AppLayout: React.FC = ({ children }) => {
                   </Menu>
                 </div>
               </div>
-              <nav
-                className="hidden lg:py-2 lg:flex lg:space-x-4 menu items-end"
-                aria-label="Global"
-              >
-                {navigation.map((item) => (
-                  <Link href={item.href} key={item.name}>
-                    <a
-                      className="relative outline-none block p-1 bg-black mt-3"
-                      aria-current={
-                        isPathActive(item.href, pathname) ? "page" : undefined
-                      }
-                    >
-                      <div
-                        className={classNames(
-                          "relative py-3 px-4 text-white leading-none font-display uppercase text-sm whitespace-nowrap ",
-                          isPathActive(item.href, pathname)
-                            ? "bg-rn-orange shadow-rn-inset-orange "
-                            : "bg-rn-purple shadow-rn-drop-purple -top-2 -left-2 hover:bg-rn-orange hover:shadow-rn-drop-orange "
-                        )}
-                      >
-                        {item.name}
-                      </div>
-                    </a>
-                  </Link>
-                ))}
-              </nav>
+              <div className="lg:hidden flex justify-end md:justify-none items-center">
+                  <div className="flex-shrink-0">
+                    <Connect/>
+                  </div>
+                </div>
             </div>
-
+            {/* Mobile menu */}
             <Disclosure.Panel
               as="nav"
               className="lg:hidden shadow-rn-one mx-4 mb-4 border-2  border-black"
@@ -154,12 +162,7 @@ export const AppLayout: React.FC = ({ children }) => {
                   </Link>
                 ))}
               </div>
-              <div className="border-t-2 border-gray-700 pt-4 pb-3 flex justify-end flex-col">
-                <div className="flex justify-center md:justify-none items-center">
-                  <div className="flex-shrink-0">
-                    <Connect />
-                  </div>
-                </div>
+              <div className="border-t-2 border-gray-700 pb-3 flex justify-end flex-col">
                 <div className="mt-3 space-y-1 justify-end">
                   {userNavigation.map((item) => (
                     <Link href={item.href} key={item.name}>
@@ -176,9 +179,9 @@ export const AppLayout: React.FC = ({ children }) => {
       </Disclosure>
 
       <main>
-        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full mt-6 overflow-y-hidden pb-6">
+        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full overflow-y-hidden pb-6">
           <div
-            className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-4 shadow-rn-one"
+            className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-6 shadow-rn-one"
             style={{
               backgroundImage:
                 "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
