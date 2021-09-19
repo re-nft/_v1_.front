@@ -4,7 +4,7 @@ import Checkbox from "../../common/checkbox";
 import { PaymentToken } from "@renft/sdk";
 import { CountDown } from "../../common/countdown";
 import { ShortenPopover } from "../../common/shorten-popover";
-import { useNftMetaState } from "../../../hooks/queries/useMetaState";
+import { useNftMetaState } from "../../../hooks/store/useMetaState";
 import shallow from "zustand/shallow";
 import add from "date-fns/add";
 

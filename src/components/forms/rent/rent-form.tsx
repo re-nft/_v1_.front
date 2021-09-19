@@ -18,7 +18,7 @@ import { validationSchema } from "./rent-validate";
 import { Button } from "../../common/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useLendingStore } from "../../../hooks/queries/useNftStore";
+import { useLendingStore } from "../../../hooks/store/useNftStore";
 
 export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => {
   const {

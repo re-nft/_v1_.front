@@ -17,7 +17,7 @@ import * as contractList from "../../contracts/contracts.js";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
-import { useWallet } from "../useWallet";
+import { useWallet } from "../store/useWallet";
 
 interface ContractsObject {
   ReNFT?: ReNFT;

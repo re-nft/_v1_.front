@@ -9,7 +9,7 @@ import ArrowDown from "@heroicons/react/solid/ArrowDownIcon";
 import Heart from "@heroicons/react/solid/HeartIcon";
 import HeartOutline from "@heroicons/react/outline/HeartIcon";
 import { useUserData } from "../../hooks/queries/useUserData";
-import { useCurrentAddress } from "../../hooks/useCurrentAddress";
+import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
 import { CopyLink } from "../copy-link";
 import Checkbox from "../common/checkbox";
 

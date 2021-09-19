@@ -4,7 +4,7 @@ import "../styles/nprogress.css";
 import "../styles/video-react.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { AppLayout } from "../components/app-layout";
+import { AppLayout } from "../components/layouts/app-layout";
 import type { AppProps } from "next/app";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";

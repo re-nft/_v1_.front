@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { usePrevious } from "./usePrevious";
-import { useWallet } from "./useWallet";
+import { useWallet } from "../store/useWallet";
 
 const useCurrentAddressState = create<{
   address: string;

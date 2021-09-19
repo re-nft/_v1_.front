@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Lending, Nft, Renting } from "../types/classes";
-import CatalogueLoader from "./catalogue-loader";
-import Pagination from "./common/pagination";
-import { useFetchMeta } from "../hooks/queries/useMetaState";
+import { Lending, Nft, Renting } from "../../types/classes";
+import CatalogueLoader from "../common/catalogue-loader";
+import Pagination from "../common/pagination";
+import { useFetchMeta } from "../../hooks/store/useMetaState";
 
 const defaultSate = {
   pageItems: [],

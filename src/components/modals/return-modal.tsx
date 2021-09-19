@@ -2,11 +2,11 @@ import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft } from "../../types/classes";
-import { useObservable } from "../../hooks/useObservable";
+import { useObservable } from "../../hooks/misc/useObservable";
 import { useReturnIt } from "../../hooks/contract/useReturnIt";
 import Modal from "./modal";
 import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
-import { useRentingStore } from "../../hooks/queries/useNftStore";
+import { useRentingStore } from "../../hooks/store/useNftStore";
 
 type ReturnModalProps = {
   checkedItems: Set<string>;

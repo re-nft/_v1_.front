@@ -1,5 +1,5 @@
 import React from "react";
-import { useMint } from "../../hooks/useMint";
+import { useMint } from "../../hooks/misc/useMint";
 import { advanceTime } from "../../utils";
 import { Button } from "../common/button";
 

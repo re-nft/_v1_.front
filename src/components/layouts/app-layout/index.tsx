@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Footer } from "./footer";
 import { Connect } from "./connect";
-import { classNames } from "../../utils";
+import { classNames } from "../../../utils";
 
 const navigation = [
   { name: "Rent", href: "/" },

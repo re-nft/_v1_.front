@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import createDebugger from "debug";
-import { useSmartContracts } from "./contract/useSmartContracts";
+import { useSmartContracts } from "../contract/useSmartContracts";
 
 const debug = createDebugger("app:contracts:test");
 

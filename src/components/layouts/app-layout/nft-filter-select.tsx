@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { CategorySelect } from "../common/category-select";
+import { CategorySelect } from "../../common/category-select";
 
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
-import { CategoryOptions, useSearchOptions } from "../../hooks/useSearch";
+import { CategoryOptions, useSearchOptions } from "../../../hooks/store/useSearch";
 import { useRouter } from "next/router";
 
 interface NftFilterState {

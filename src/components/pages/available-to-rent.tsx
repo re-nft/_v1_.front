@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Lending } from "../../types/classes";
-import { useBatchItems } from "../../hooks/useBatchItems";
+import { useBatchItems } from "../../hooks/misc/useBatchItems";
 import BatchRentModal from "../modals/batch-rent";
 import { isLending } from "../../utils";
 import { CatalogueItem } from "../catalogue-item";
 import LendingFields from "../lending-fields";
-import { PaginationList } from "../pagination-list";
-import { RentSearchLayout } from "../rent-search-layout";
+import { PaginationList } from "../layouts/pagination-list";
+import { RentSearchLayout } from "../layouts/rent-search-layout";
 import ItemWrapper from "../common/items-wrapper";
 
 const RentCatalogueItem: React.FC<{

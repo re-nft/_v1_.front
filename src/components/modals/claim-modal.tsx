@@ -3,9 +3,9 @@ import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft } from "../../types/classes";
 import { useClaimcollateral } from "../../hooks/contract/useClaimCollateral";
-import { useObservable } from "../../hooks/useObservable";
+import { useObservable } from "../../hooks/misc/useObservable";
 import Modal from "./modal";
-import { useLendingStore } from "../../hooks/queries/useNftStore";
+import { useLendingStore } from "../../hooks/store/useNftStore";
 
 type ReturnModalProps = {
   open: boolean;

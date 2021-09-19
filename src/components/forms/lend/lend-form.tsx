@@ -17,7 +17,7 @@ import { useStartLend } from "../../../hooks/contract/useStartLend";
 import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
 import {
   useNftsStore
-} from "../../../hooks/queries/useNftStore";
+} from "../../../hooks/store/useNftStore";
 
 export const LendForm: React.FC<LendFormProps> = ({
   checkedItems,

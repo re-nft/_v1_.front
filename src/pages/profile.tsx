@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { updateUserData } from "../services/firebase";
-import CatalogueLoader from "../components/catalogue-loader";
+import CatalogueLoader from "../components/common/catalogue-loader";
 import { useLookupAddress } from "../hooks/queries/useLookupAddress";
 import { Button } from "../components/common/button";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
@@ -8,8 +8,8 @@ import { TextField } from "../components/common/text-field";
 import { TextArea } from "../components/common/textarea";
 import { ShortenPopover } from "../components/common/shorten-popover";
 import { useUserData } from "../hooks/queries/useUserData";
-import { useWallet } from "../hooks/useWallet";
-import { useCurrentAddress } from "../hooks/useCurrentAddress";
+import { useWallet } from "../hooks/store/useWallet";
+import { useCurrentAddress } from "../hooks/misc/useCurrentAddress";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useUserData();

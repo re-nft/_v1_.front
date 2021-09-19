@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import { useDebounce } from "../hooks/useDebounce";
-import { useWallet } from "../hooks/useWallet";
+import { useDebounce } from "../hooks/misc/useDebounce";
+import { useWallet } from "../hooks/store/useWallet";
 import { NetworkName, TransactionHash, TransactionStateEnum } from "../types";
 
 const IMAGE_PENDING = "/assets/loading-pending.gif";

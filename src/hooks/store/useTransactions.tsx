@@ -2,8 +2,8 @@ import { useCallback } from "react";
 // TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
-import { TransactionHash, TransactionStateEnum } from "../types";
-import { IS_PROD, SECOND_IN_MILLISECONDS } from "../consts";
+import { TransactionHash, TransactionStateEnum } from "../../types";
+import { IS_PROD, SECOND_IN_MILLISECONDS } from "../../consts";
 
 import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
 import { ethers } from "ethers";

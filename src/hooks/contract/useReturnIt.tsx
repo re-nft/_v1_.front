@@ -7,7 +7,7 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 
 export const useReturnIt = (): ((
   rentings: Renting[]

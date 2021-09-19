@@ -5,15 +5,15 @@ import React, { useCallback, useState, useMemo } from "react";
 import { Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../components/modals/return-modal";
-import { useBatchItems } from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
 import { isRenting, nftReturnIsExpired } from "../utils";
 import { PaymentToken } from "@renft/sdk";
-import { RentSearchLayout } from "../components/rent-search-layout";
+import { RentSearchLayout } from "../components/layouts/rent-search-layout";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
-import { PaginationList } from "../components/pagination-list";
+import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
-import { useWallet } from "../hooks/useWallet";
+import { useWallet } from "../hooks/store/useWallet";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;

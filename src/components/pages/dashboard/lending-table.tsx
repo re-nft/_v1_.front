@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useUserIsLending } from "../../../hooks/queries/useUserIsLending";
 import { Lending } from "../../../types/classes";
-import CatalogueLoader from "../../catalogue-loader";
+import CatalogueLoader from "../../common/catalogue-loader";
 import { LendingRow } from "./dashboard-lending-row";
 
 export interface ExtendedLending extends Lending {

@@ -5,7 +5,7 @@ import CheckCircleIcon from "@heroicons/react/outline/CheckCircleIcon";
 import InformationCircleIcon from "@heroicons/react/outline/InformationCircleIcon";
 import ExclamationIcon from "@heroicons/react/outline/ExclamationIcon";
 import XIcon from "@heroicons/react/solid/XIcon";
-import { useSnackProvider } from "../../hooks/useSnackProvider";
+import { useSnackProvider } from "../../hooks/store/useSnackProvider";
 
 export const SnackAlert: React.FC = () => {
   const {

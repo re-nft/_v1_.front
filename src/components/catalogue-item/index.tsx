@@ -4,13 +4,13 @@ import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
 import { useRouter } from "next/router";
-import { useNftMetaState } from "../../hooks/queries/useMetaState";
+import { useNftMetaState } from "../../hooks/store/useMetaState";
 import shallow from "zustand/shallow";
 import { ShortenPopover } from "../common/shorten-popover";
 import { CatalogueActions } from "./catalogue-actions";
-import { useWallet } from "../../hooks/useWallet";
+import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
-import { useNftsStore } from "../../hooks/queries/useNftStore";
+import { useNftsStore } from "../../hooks/store/useNftStore";
 
 type CatalougeItemBaseProps = {
   nId: string;

@@ -1,16 +1,16 @@
 import React, { useCallback, useMemo } from "react";
 
-import CatalogueLoader from "../components/catalogue-loader";
+import CatalogueLoader from "../components/common/catalogue-loader";
 import { Lending, Nft, Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
 import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
-import SearchLayout from "../components/search-layout";
+import SearchLayout from "../components/layouts/search-layout";
 import ItemWrapper from "../components/common/items-wrapper";
-import { PaginationList } from "../components/pagination-list";
+import { PaginationList } from "../components/layouts/pagination-list";
 import { getUniqueID } from "../utils";
 import { useUserData } from "../hooks/queries/useUserData";
-import { useNftsStore } from "../hooks/queries/useNftStore";
+import { useNftsStore } from "../hooks/store/useNftStore";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =

@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from "react";
 
-import { useBatchItems } from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
 import { LendingTable } from "../components/pages/dashboard/lending-table";
 import { RentingTable } from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
-import SearchLayout from "../components/search-layout";
-import { useWallet } from "../hooks/useWallet";
+import SearchLayout from "../components/layouts/search-layout";
+import { useWallet } from "../hooks/store/useWallet";
 
 export const Dashboard: React.FC = () => {
   const { signer } = useWallet();

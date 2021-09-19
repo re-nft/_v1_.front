@@ -1,6 +1,6 @@
 import { RESOLVER_ADDRESS } from "@renft/sdk";
 import { NetworkName } from "../../types";
-import { useWallet } from "../useWallet";
+import { useWallet } from "../store/useWallet";
 import { useSmartContracts } from "./useSmartContracts";
 
 export const useResolverAddress = (): string => {

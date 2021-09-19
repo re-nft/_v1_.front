@@ -8,9 +8,9 @@ import { debounceTime, from, map, Observable, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
 import create from "zustand";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
-import { useNftsStore } from "./useNftStore";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useNftsStore } from "../store/useNftStore";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {

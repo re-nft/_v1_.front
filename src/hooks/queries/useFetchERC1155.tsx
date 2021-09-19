@@ -15,12 +15,12 @@ import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { getContractWithProvider } from "../../utils";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 import produce from "immer";
-import { usePrevious } from "../usePrevious";
+import { usePrevious } from "../misc/usePrevious";
 import { NetworkName, NftToken } from "../../types";
-import { useNftsStore } from "./useNftStore";
+import { useNftsStore } from "../store/useNftStore";
 
 interface UserERC1155State {
   users: Record<

@@ -3,9 +3,9 @@ import { Lending } from "../../../types/classes";
 import Checkbox from "../../common/checkbox";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@renft/sdk";
-import { useNftMetaState } from "../../../hooks/queries/useMetaState";
+import { useNftMetaState } from "../../../hooks/store/useMetaState";
 import shallow from "zustand/shallow";
-import { useTimestamp } from "../../../hooks/useTimestamp";
+import { useTimestamp } from "../../../hooks/misc/useTimestamp";
 
 export const LendingRow: React.FC<{
   lending: Lending & { relended: boolean };

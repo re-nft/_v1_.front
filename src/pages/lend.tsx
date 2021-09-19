@@ -2,12 +2,12 @@ import React, { useState, useCallback, useMemo } from "react";
 import { Nft } from "../types/classes";
 import BatchLendModal from "../components/modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
-import { LendSearchLayout } from "../components/lend-search-layout";
-import { PaginationList } from "../components/pagination-list";
+import { LendSearchLayout } from "../components/layouts/lend-search-layout";
+import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
-import { useWallet } from "../hooks/useWallet";
+import { useWallet } from "../hooks/store/useWallet";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: Set<string>;

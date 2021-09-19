@@ -2,17 +2,17 @@
 
 import React, { useCallback, useState, useMemo } from "react";
 
-import { Lending, Renting, Nft } from "../types/classes";
+import { Lending } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/useBatchItems";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
 import LendingFields from "../components/lending-fields";
 import { StopLendModal } from "../components/modals/stop-lend-modal";
-import { LendSearchLayout } from "../components/lend-search-layout";
-import { PaginationList } from "../components/pagination-list";
-import { isLending, UniqueID } from "../utils";
+import { LendSearchLayout } from "../components/layouts/lend-search-layout";
+import { PaginationList } from "../components/layouts/pagination-list";
+import { isLending } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
-import { useWallet } from "../hooks/useWallet";
+import { useWallet } from "../hooks/store/useWallet";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -24,9 +24,9 @@ const LendingCatalogueItem: React.FC<{
   const onClick = useCallback(() => {
     handleClickNft(lending);
   }, [lending, handleClickNft]);
-  const checkedMoreThanOne = useMemo(()=>{
-    return Object.values(checkedItems).length > 1
-  }, [checkedItems])
+  const checkedMoreThanOne = useMemo(() => {
+    return Object.values(checkedItems).length > 1;
+  }, [checkedItems]);
   const checked = useMemo(() => {
     return checkedItems.has(lending.nId);
   }, [checkedItems, lending]);
@@ -37,7 +37,7 @@ const LendingCatalogueItem: React.FC<{
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       disabled={hasRenting}
       hasAction
-      buttonTitle={checkedMoreThanOne ? "Stop lending all":"Stop lending"}
+      buttonTitle={checkedMoreThanOne ? "Stop lending all" : "Stop lending"}
       onClick={onClick}
     >
       <LendingFields lending={lending} />
@@ -60,7 +60,6 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
     setModalOpen(false);
     batchHandleReset();
   }, [batchHandleReset]);
-
 
   const handleClickNft = useCallback(
     (nft: Lending) => {

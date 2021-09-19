@@ -4,16 +4,16 @@ import create from "zustand";
 
 import { Lending, Nft } from "../../types/classes";
 import { useCallback, useEffect } from "react";
-import { usePrevious } from "../usePrevious";
+import { usePrevious } from "../misc/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
 import { timeItAsync } from "../../utils";
 import { LendingRaw } from "../../types";
 import request from "graphql-request";
 import { queryUserLendingRenft } from "../../services/queries";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
-import { useNftsStore } from "./useNftStore";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useNftsStore } from "../store/useNftStore";
 
 interface UserLending {
   userLending: Lending[];

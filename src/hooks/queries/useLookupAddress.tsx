@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAddress } from "@ethersproject/address";
 import { ethers } from "ethers";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 
 const lookupAddress = async (
   provider: ethers.providers.Web3Provider,

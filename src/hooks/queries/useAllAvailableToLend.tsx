@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Nft } from "../../types/classes";
-import { useWallet } from "../useWallet";
+import { useWallet } from "../store/useWallet";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";

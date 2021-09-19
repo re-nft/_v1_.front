@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
-import { hasDifference, THROWS } from "../utils";
+import { hasDifference, THROWS } from "../../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../consts";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
 import ReactGA from "react-ga";
 
 import produce from "immer";

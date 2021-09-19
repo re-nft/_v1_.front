@@ -5,10 +5,10 @@ import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
-import { useNftsStore } from "./useNftStore";
+import { useNftsStore } from "../store/useNftStore";
 
 interface UserERC721State {
   users: Record<

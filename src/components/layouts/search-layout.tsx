@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { classNames } from "../utils";
+import { classNames } from "../../utils";
 import { DevMenu } from "./app-layout/dev-menu";
-import { SnackAlert } from "./common/snack-alert";
+import { SnackAlert } from "../common/snack-alert";
 
 type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];

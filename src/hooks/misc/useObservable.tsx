@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { EMPTY, Observable, Subscription } from "rxjs";
-import { TransactionStateEnum } from "../types";
+import { TransactionStateEnum } from "../../types";
 import { TransactionStatus } from "./useTransactionWrapper";
 
 export const useObservable = (): [

@@ -1,5 +1,5 @@
-import { MintNfts } from "../dev/mint-nfts";
-import { MintTokens } from "../dev/mint-token";
+import { MintNfts } from "../../dev/mint-nfts";
+import { MintTokens } from "../../dev/mint-token";
 
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";

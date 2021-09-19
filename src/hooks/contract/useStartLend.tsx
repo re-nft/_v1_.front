@@ -5,7 +5,7 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";

@@ -1,11 +1,11 @@
 import { ContractTransaction } from "ethers";
 import { useCallback } from "react";
-import { useTransactions } from "./useTransactions";
+import { useTransactions } from "../store/useTransactions";
 import { from, Observable, of } from "rxjs";
 import { map, mergeAll } from "rxjs/operators";
-import { TransactionStateEnum } from "../types";
+import { TransactionStateEnum } from "../../types";
 import ReactGA from "react-ga";
-import { useSnackProvider } from "./useSnackProvider";
+import { useSnackProvider } from "../store/useSnackProvider";
 
 export interface TransactionStatus {
   hasFailure?: boolean;

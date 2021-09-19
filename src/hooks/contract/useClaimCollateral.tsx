@@ -7,7 +7,7 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 
 const debug = createDebugger("app:contracts:useClaimcollateral");

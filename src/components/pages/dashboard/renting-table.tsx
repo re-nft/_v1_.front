@@ -3,8 +3,8 @@ import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
 import { nftReturnIsExpired } from "../../../utils";
 import { useUserRenting } from "../../../hooks/queries/useUserRenting";
-import CatalogueLoader from "../../catalogue-loader";
-import { useCurrentAddress } from "../../../hooks/useCurrentAddress";
+import CatalogueLoader from "../../common/catalogue-loader";
+import { useCurrentAddress } from "../../../hooks/misc/useCurrentAddress";
 
 export interface ExtendedRenting extends Renting {
   relended: boolean;

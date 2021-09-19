@@ -4,7 +4,7 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { Lending, Nft } from "../../types/classes";
 

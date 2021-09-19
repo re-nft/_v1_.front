@@ -8,10 +8,10 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { Nft, Renting } from "../../types/classes";
 import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
 import { parseLending } from "../../utils";
-import { usePrevious } from "../usePrevious";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
-import { useNftsStore } from "./useNftStore";
+import { usePrevious } from "../misc/usePrevious";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useNftsStore } from "../store/useNftStore";
 
 export type UserRentingState = {
   userRenting: Renting[];

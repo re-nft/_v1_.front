@@ -2,16 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { Nft } from "../../types/classes";
-import usePoller from "../usePoller";
-import { usePrevious } from "../usePrevious";
+import usePoller from "../misc/usePoller";
+import { usePrevious } from "../misc/usePrevious";
 import { useSmartContracts } from "../contract/useSmartContracts";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 import shallow from "zustand/shallow";
-import { useNftsStore } from "./useNftStore";
+import { useNftsStore } from "../store/useNftStore";
 
 type NftMetaState = {
   nfts: Nft[];

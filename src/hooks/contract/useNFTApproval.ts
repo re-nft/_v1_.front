@@ -1,16 +1,16 @@
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 import { EMPTY, from, map, Observable } from "rxjs";
 import { Nft } from "../../types/classes";
 import { useCallback, useEffect, useState } from "react";
 import { getContractWithSigner, getDistinctItems } from "../../utils";
-import { useObservable } from "../useObservable";
+import { useObservable } from "../misc/useObservable";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 
 type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId">
 

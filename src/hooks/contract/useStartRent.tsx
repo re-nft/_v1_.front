@@ -9,15 +9,15 @@ import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
   useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../misc/useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
-import { useObservable } from "../useObservable";
+import { useObservable } from "../misc/useObservable";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
-import { useWallet } from "../useWallet";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useWallet } from "../store/useWallet";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { Lending } from "../../types/classes";
 
 const debug = createDebugger("app:contract:startRent");

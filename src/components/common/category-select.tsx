@@ -1,4 +1,4 @@
-import { CategoryOptions } from "../../hooks/useSearch";
+import { CategoryOptions } from "../../hooks/store/useSearch";
 import { Listbox, Transition } from "@headlessui/react";
 import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
 import { Fragment, useCallback } from "react";

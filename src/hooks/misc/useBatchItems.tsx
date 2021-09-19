@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 
-import { Nft, Lending, Renting } from "../types/classes";
-import { isLending, isRenting, THROWS, UniqueID } from "../utils";
-import { IRenting } from "../types";
+import { Nft, Lending, Renting } from "../../types/classes";
+import { isLending, isRenting, THROWS, UniqueID } from "../../utils";
+import { IRenting } from "../../types";
 import add from "date-fns/add";
 import isAfter from "date-fns/isAfter";
 

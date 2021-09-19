@@ -9,7 +9,7 @@ import { CalculatedUserVote, UserData, UsersVote } from "../../types";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { useCurrentAddress } from "../useCurrentAddress";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
 
 type UserDataState = {
   userData: UserData;
