@@ -1,5 +1,5 @@
 import request from "graphql-request";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Lending, Nft } from "../../types/classes";
 import { queryAllLendingRenft } from "../../services/queries";
 import { timeItAsync } from "../../utils";
@@ -7,10 +7,9 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { debounceTime, from, map, Observable, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
-import create from "zustand";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useNftsStore } from "../store/useNftStore";
+import { useLendingStore, useNftsStore } from "../store/useNftStore";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -32,46 +31,17 @@ export const fetchRentings = (): Observable<LendingRaw[]> => {
   );
 };
 
-interface allAvailableForRent {
-  isLoading: boolean;
-  nfts: Lending[];
-  setNfts: (nfts: Lending[]) => void;
-  setLoading: (loading: boolean) => void;
-}
-
-const useAllAvailableStore = create<allAvailableForRent>((set) => ({
-  isLoading: false,
-  nfts: [],
-  setNfts: (nfts: Lending[]) =>
-    set((state) => {
-      return {
-        ...state,
-        nfts
-      };
-    }),
-  setLoading: (isLoading: boolean) =>
-    set((state) => {
-      return {
-        ...state,
-        isLoading
-      };
-    })
-}));
-
 export const useAllAvailableForRent = () => {
   const { network } = useWallet();
+  const [isLoading, setLoading] = useState(false);
   const currentAddress = useCurrentAddress();
-  const nfts = useAllAvailableStore(
-    useCallback((state) => state.nfts, []),
+  const allLendings = useLendingStore(
+    useCallback((state) => state.lendings, []),
     shallow
   );
-  const isLoading = useAllAvailableStore(
-    useCallback((state) => state.isLoading, []),
-    shallow
-  );
-  const setNfts = useAllAvailableStore((state) => state.setNfts);
-  const setLoading = useAllAvailableStore((state) => state.setLoading);
+
   const addNfts = useNftsStore((state) => state.addNfts);
+  const addLendings = useLendingStore((state) => state.addLendings);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -81,7 +51,6 @@ export const useAllAvailableForRent = () => {
             network &&
             network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED
           ) {
-            if (nfts && nfts.length > 0) return [];
             return [];
           }
           setLoading(true);
@@ -98,7 +67,7 @@ export const useAllAvailableForRent = () => {
               )
           );
           addNfts(nfts);
-          if (items) setNfts(items.map((r) => new Lending(r)));
+          addLendings(items.map((r) => new Lending(r)));
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -109,20 +78,21 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [currentAddress, setLoading, network, nfts, setNfts, addNfts]);
+  }, [currentAddress, setLoading, network, addLendings, addNfts]);
 
   const allAvailableToRent = useMemo(() => {
-    if (!currentAddress) return nfts;
-    return nfts.filter((l: Lending) => {
+    if (!currentAddress) return allLendings;
+    const filterAvailableForRenting = (l: Lending) => {
       // empty address show all renting
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
       // ! therefore, this check is !==
       const userNotLender =
         l.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
-      const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress
+      const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress;
       return userNotLender && userNotRenter;
-    });
-  }, [currentAddress, nfts]);
+    }
+    return Object.values(allLendings).filter(filterAvailableForRenting);
+  }, [currentAddress, allLendings]);
 
   return { allAvailableToRent, isLoading };
 };

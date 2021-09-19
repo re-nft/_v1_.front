@@ -3,7 +3,7 @@ import { useLookupAddress } from "../../../hooks/queries/useLookupAddress";
 import { InstallMetamask } from "../../common/install-metamask";
 import { ShortenPopover } from "../../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";
-import { useUserData } from "../../../hooks/queries/useUserData";
+import { useUserData } from "../../../hooks/store/useUserData";
 import { useWallet } from "../../../hooks/store/useWallet";
 import { useCurrentAddress } from "../../../hooks/misc/useCurrentAddress";
 import { Menu } from "@headlessui/react";

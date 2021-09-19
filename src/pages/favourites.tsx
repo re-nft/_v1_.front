@@ -9,7 +9,7 @@ import SearchLayout from "../components/layouts/search-layout";
 import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/layouts/pagination-list";
 import { getUniqueID } from "../utils";
-import { useUserData } from "../hooks/queries/useUserData";
+import { useUserData } from "../hooks/store/useUserData";
 import { useNftsStore } from "../hooks/store/useNftStore";
 
 export const MyFavorites: React.FC = () => {

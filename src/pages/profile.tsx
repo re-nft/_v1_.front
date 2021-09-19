@@ -7,7 +7,7 @@ import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-ro
 import { TextField } from "../components/common/text-field";
 import { TextArea } from "../components/common/textarea";
 import { ShortenPopover } from "../components/common/shorten-popover";
-import { useUserData } from "../hooks/queries/useUserData";
+import { useUserData } from "../hooks/store/useUserData";
 import { useWallet } from "../hooks/store/useWallet";
 import { useCurrentAddress } from "../hooks/misc/useCurrentAddress";
 

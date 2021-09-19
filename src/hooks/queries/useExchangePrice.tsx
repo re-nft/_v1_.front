@@ -31,6 +31,7 @@ const useExchangePriceStore = create<TOKEN_PRICE>((set) => ({
     ),
 }));
 
+//TODO:eniko can be replaced by ethers, they implemented ETH price
 const getPrice = (): Promise<number> =>
   request(
     "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
