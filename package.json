@@ -20,6 +20,7 @@
     "@hookform/resolvers": "2.8.0",
     "@renft/sdk": "2.2.2",
     "@tailwindcss/aspect-ratio": "^0.2.1",
+    "@tailwindcss/forms": "0.3.3",
     "@ukstv/jazzicon-react": "1.0.0",
     "@welldone-software/why-did-you-render": "^6.2.0",
     "date-fns": "2.23.0",

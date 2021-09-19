@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { classNames } from "../utils";
+import { DevMenu } from "./app-layout/dev-menu";
 import { SnackAlert } from "./common/snack-alert";
 
 type PageLayoutProps = {
@@ -11,10 +12,17 @@ type PageLayoutProps = {
 const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
   const router = useRouter();
   if (!tabs || tabs.length < 1)
-    return <div className="flex flex-col py-4 w-full">{children}</div>;
+    return (
+      <div className="flex flex-col py-4 w-full">
+        <DevMenu />
+
+        {children}
+      </div>
+    );
 
   return (
     <div className="flex flex-col py-4 w-full">
+      <DevMenu />
       <div>
         <div className="sm:hidden">
           <label htmlFor="tabs" className="sr-only">

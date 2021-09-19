@@ -9,7 +9,7 @@ type ModalProps = {
 export const Modal: React.FC<ModalProps> = ({
   children,
   open,
-  handleClose,
+  handleClose
 }) => {
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -29,12 +29,7 @@ export const Modal: React.FC<ModalProps> = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay
-              className="fixed inset-0 transition-opacity"
-              style={{
-                backgroundColor: "rgba(238, 230, 246, 0.65)",
-              }}
-            />
+            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}

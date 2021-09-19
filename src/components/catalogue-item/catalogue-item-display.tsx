@@ -9,20 +9,20 @@ export const CatalogueItemDisplay: React.FC<{
 }> = ({ image, description }) => {
   if (!image)
     return (
-      <div className="border-b border-t border-black overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
-        <div className="flex items-center justify-center bg-gray-200">
+      <div className="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
+        <div className="flex items-center justify-center bg-purple-300 tracking-wide">
           NO IMG
         </div>
       </div>
     );
   if (isVideo(image))
     return (
-      <div className="border-b border-t border-black overflow-hidden aspect-h-1 overflow-hidden lg:h-50">
+      <div className="overflow-hidden aspect-h-1 overflow-hidden lg:h-50">
         <Player playsInline autoPlay src={image} muted />
       </div>
     );
   return (
-    <div className="border-b border-t border-black overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
+    <div className="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50">
       <img
         alt={description}
         src={image}

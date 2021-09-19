@@ -4,7 +4,6 @@ import React, { useCallback, useState, useMemo } from "react";
 
 import { Lending, Renting, Nft } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
-import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
@@ -15,7 +14,6 @@ import { isLending, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useUserIsLending } from "../hooks/queries/useUserIsLending";
 import { useWallet } from "../hooks/useWallet";
-import { useNftsStore } from "../hooks/queries/useNftStore";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -25,37 +23,35 @@ const LendingCatalogueItem: React.FC<{
 }> = ({ lending, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
   const hasRenting = lending.hasRenting;
   const isChecked = !!checkedItems[lending.id];
-  const nft = useNftsStore(
-    useCallback((state) => state.nfts[lending.nId], [lending.nId])
-  );
+  const onClick = useCallback(() => {
+    handleClickNft(lending);
+  }, [lending]);
+  const checkedMoreThanOne = useMemo(()=>{
+    return Object.values(checkedItems).filter(r => !!r).length > 1
+  }, [checkedItems])
   return (
     <CatalogueItem
       checked={isChecked}
-      nft={nft}
+      nId={lending.id}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       disabled={hasRenting}
+      hasAction
+      buttonTitle={checkedMoreThanOne ? "Stop lending all":"Stop lending"}
+      onClick={onClick}
     >
       <LendingFields lending={lending} />
-      <div className="py-3 flex flex-auto items-end justify-center">
-        <ActionButton<Lending>
-          nft={lending}
-          disabled={hasRenting || isChecked}
-          title="Stop Lending"
-          onClick={handleClickNft}
-        />
-      </div>
     </CatalogueItem>
   );
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
-  currentPage,
+  currentPage
 }) => {
   const {
     checkedItems,
     handleReset: batchHandleReset,
     checkedLendingItems,
-    onCheckboxChange,
+    onCheckboxChange
   } = useBatchItems();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -124,7 +120,6 @@ const UserCurrentlyLending: React.FC = () => {
   const lendingItems = useMemo(() => {
     return userLending.filter(isLending);
   }, [userLending]);
-
 
   if (!signer) {
     return (

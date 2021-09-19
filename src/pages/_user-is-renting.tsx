@@ -5,7 +5,6 @@ import React, { useCallback, useState, useMemo } from "react";
 import { Lending, Renting, Nft } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../components/modals/return-modal";
-import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
@@ -16,7 +15,6 @@ import { PaginationList } from "../components/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useUserRenting } from "../hooks/queries/useUserRenting";
 import { useWallet } from "../hooks/useWallet";
-import { useNftsStore } from "../hooks/queries/useNftStore";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
@@ -28,15 +26,18 @@ const RentingCatalogueItem: React.FC<{
   const checked = !!checkedItems[id];
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
-  const nft = useNftsStore(
-    useCallback((state) => state.nfts[renting.nId], [renting.nId])
-  );
+  const checkedMoreThanOne = useMemo(() => {
+    return Object.values(checkedItems).filter((r) => !!r).length > 1;
+  }, [checkedItems]);
   return (
     <CatalogueItem
-      nft={nft}
+      nId={renting.nId}
       checked={checked}
       disabled={isExpired}
       onCheckboxChange={checkBoxChangeWrapped(renting)}
+      hasAction
+      buttonTitle={checkedMoreThanOne ? "Return all" : "Return it"}
+      onClick={handleReturnNft(renting)}
     >
       <CatalogueItemRow
         text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
@@ -46,26 +47,18 @@ const RentingCatalogueItem: React.FC<{
         text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
-      <div className="py-3 flex flex-auto items-end justify-center">
-        <ActionButton<Renting>
-          title="Return It"
-          disabled={isExpired}
-          nft={renting}
-          onClick={handleReturnNft(renting)}
-        />
-      </div>
     </CatalogueItem>
   );
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
-  currentPage,
+  currentPage
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedRentingItems,
+    checkedRentingItems
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Ref } from "react";
 import { ReactEventOnClickType } from "../../types";
 import { classNames } from "../../utils";
 
@@ -7,33 +7,29 @@ type ButtonProps = {
   disabled?: boolean;
   description: string;
   datacy?: string;
-  type?: 'submit' | 'button'
+  type?: "submit" | "button";
 };
 
 export const Button: React.FC<ButtonProps> = React.forwardRef(
-  ({ disabled, onClick, description, datacy, type="button" }, ref) => {
+  (
+    { disabled, onClick, description, datacy, type = "button" },
+    ref: Ref<HTMLButtonElement>
+  ) => {
     return (
       <button
-        //@ts-ignore
         ref={ref}
-        className={`relative outline-none block p-1 bg-black ${
-          disabled ? "cursor-not-allowed" : ""
-        }`}
+        className={classNames(
+          "py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2",
+          disabled
+            ? "bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+            : "hover:bg-rn-orange hover:shadow-rn-drop-orange"
+        )}
         disabled={disabled}
         onClick={onClick}
         data-cy={datacy}
         type={type}
       >
-        <div
-          className={classNames(
-            "relative py-3 px-4 bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2",
-            disabled
-              ? "bg-rn-grey shadow-rn-drop-grey"
-              : "hover:bg-rn-orange hover:shadow-rn-drop-orange"
-          )}
-        >
-          {description}
-        </div>
+        {description}
       </button>
     );
   }

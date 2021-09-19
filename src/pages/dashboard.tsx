@@ -119,8 +119,9 @@ export const Dashboard: React.FC = () => {
     return (
       <ToggleLayout tabs={[]}>
         <div className="text-center text-base text-white font-display py-32 leading-tight">
-          You aren&apos;t lending or renting yet. To start lending, head to the
-          lend tab.
+          You aren&apos;t lending or renting yet.
+          <br/>
+          To start lending, head to the lend tab.
         </div>
       </ToggleLayout>
     );

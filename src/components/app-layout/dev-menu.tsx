@@ -14,13 +14,13 @@ export const DevMenu: React.FC = () => {
   return (
     <div>
       {!open && (
-        <div className="absolute inset-0 top-16 w-32 left-6 md:top-20 overflow-hidden z-30">
+        <div className="ml-8">
           <button
             onClick={() => {
               setOpen(true);
             }}
             className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm uppercase
-              text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              text-sm font-display tracking-widest font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Show mint sidebar
           </button>
@@ -46,7 +46,7 @@ export const DevMenu: React.FC = () => {
                 leaveTo="-translate-x-full"
               >
                 <div className="w-screen max-w-md">
-                  <div className="h-full flex flex-col py-6 bg-gray-200 shadow-xl overflow-y-scroll">
+                  <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-lg font-medium text-gray-900">
@@ -55,7 +55,7 @@ export const DevMenu: React.FC = () => {
                         <div className="ml-3 h-7 flex items-center">
                           <button
                             type="button"
-                            className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             onClick={() => setOpen(false)}
                           >
                             <span className="sr-only">Close panel</span>
@@ -67,7 +67,7 @@ export const DevMenu: React.FC = () => {
                     <div className="mt-6 relative flex-1 px-4 sm:px-6">
                       <div className="absolute inset-0 px-4 sm:px-6">
                         <div
-                          className="h-full border-2 border-dashed border-gray-200"
+                          className="h-full"
                           aria-hidden="true"
                         >
                           <div className="space-y-2">

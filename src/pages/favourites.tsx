@@ -65,7 +65,7 @@ export const MyFavorites: React.FC = () => {
               {currentPage.map((nft: Renting | Lending) => (
                 <CatalogueItem
                   key={nft.id}
-                  nft={nftsInStore[nft.nId]}
+                  nId={nft.nId}
                   isAlreadyFavourited
                   onCheckboxChange={checkBoxChangeWrapped(nft)}
                 ></CatalogueItem>

@@ -1,37 +1,45 @@
 import React, { useMemo, useCallback } from "react";
-import { Nft } from "../../types/classes";
 import { CatalogueItemRow } from "./catalogue-item-row";
-import { Checkbox } from "../common/checkbox";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
 import { useRouter } from "next/router";
 import { useNftMetaState } from "../../hooks/queries/useMetaState";
 import shallow from "zustand/shallow";
-import { CopyLink } from "../copy-link";
 import { ShortenPopover } from "../common/shorten-popover";
 import { CatalogueActions } from "./catalogue-actions";
 import { useWallet } from "../../hooks/useWallet";
+import { Button } from "../common/button";
+import { useNftsStore } from "../../hooks/queries/useNftStore";
 
-export type CatalogueItemProps = {
-  nft: Nft;
+type CatalougeItemBaseProps = {
+  nId: string;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
   onCheckboxChange: () => void;
   disabled?: boolean;
 };
+type CatalogueItemWithAction = CatalougeItemBaseProps & {
+  onClick: () => void;
+  buttonTitle: string;
+  hasAction: true;
+};
 
-//TODO:eniko make this component accept nId instead of Nft
+export type CatalogueItemProps =
+  | CatalogueItemWithAction
+  | (CatalougeItemBaseProps & { hasAction?: false });
+
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
-  nft,
+  nId,
   checked,
   onCheckboxChange,
   children,
-  disabled
+  disabled,
+  ...rest
 }) => {
+  const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
   const { signer } = useWallet();
   const { pathname } = useRouter();
-
   const meta = useNftMetaState(
     useCallback(
       (state) => {
@@ -52,13 +60,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     return pathname === "/" || pathname.includes("/rent");
   }, [pathname]);
 
-  const shouldFlip = useCallback((prev, current) => {
-    if (prev.type !== current.type) {
-      return true;
-    }
-    return false;
-  }, []);
-
   const knownContract = useMemo(() => {
     return (
       nft.nftAddress.toLowerCase() ===
@@ -69,8 +70,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   return (
     <div
       key={nft.id}
-      className={`text-base leading-tight flex flex-col bg-white border-4 border-black hover:shadow-rn-one pb-1 ${
-        checked ? "shadow-rn-one" : ""
+      className={`text-base leading-tight flex flex-col bg-white border-2 border-black hover:shadow-rn-one pb-1 ${
+        checked ? "shadow-rn-one border-4" : ""
       }`}
       data-item-id={nft.tokenId}
     >
@@ -79,38 +80,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         <>
           <>
             <div className="flex justify-center space-x-2">
-              <a
-                className="flex-initial"
-                target="_blank"
-                rel="noreferrer"
-                href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
-              >
-                <img src="/assets/rarible.png" className="nft__icon" />
-              </a>
-              {openseaLink && (
-                <a
-                  className="flex-initial"
-                  target="_blank"
-                  rel="noreferrer"
-                  href={openseaLink}
-                >
-                  <img src="/assets/opensea.png" className="nft__icon" />
-                </a>
-              )}
               <CatalogueActions
-                address={nft.nftAddress}
+                nftAddress={nft.nftAddress}
                 tokenId={nft.tokenId}
+                disabled={disabled || !signer}
+                checked={!!checked}
+                onCheckboxChange={onCheckboxChange}
               />
-              <div className="flex-1 flex justify-end justify-self-end">
-                <Checkbox
-                  checked={!!checked}
-                  onChange={onCheckboxChange}
-                  disabled={disabled || !signer}
-                ></Checkbox>
-              </div>
             </div>
             <CatalogueItemDisplay image={image} description={description} />
-            <div className="font-display text-xs leading-tight text-center py-3 px-4 flex flex-col justify-center items-center">
+            <div className="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center">
               <p className="flex-initial">{name}</p>
               <div className="flex flex-auto flex-row">
                 {knownContract && (
@@ -124,9 +103,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       className="nft__icon small"
                     />
                   </a>
-                )}
-                {isRentPage && (
-                  <CopyLink address={nft.nftAddress} tokenId={nft.tokenId} />
                 )}
               </div>
             </div>
@@ -147,6 +123,38 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             />
 
             {children}
+            <div className="py-3 flex flex-auto space-between">
+              <div className="flex-1">
+                <a
+                  className="flex-initial"
+                  target="_blank"
+                  rel="noreferrer"
+                  href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
+                >
+                  <img src="/assets/rarible.png" className="nft__icon" />
+                </a>
+                {openseaLink && (
+                  <a
+                    className="flex-initial"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={openseaLink}
+                  >
+                    <img src="/assets/opensea.png" className="nft__icon" />
+                  </a>
+                )}
+              </div>
+
+              {rest.hasAction && (
+                <div className="flex-1 flex justify-end pr-2">
+                  <Button
+                    onClick={rest.onClick}
+                    description={rest.buttonTitle}
+                    disabled={disabled || !checked || !signer}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}

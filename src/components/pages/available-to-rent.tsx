@@ -25,26 +25,19 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen
 }) => {
   const isChecked = !!checkedItems[lending.id];
-  const nft = useNftsStore(
-    useCallback((state) => state.nfts[lending.nId], [lending.nId])
-  );
-
-  const { signer } = useWallet();
+  const checkedMoreThanOne = useMemo(()=>{
+    return Object.values(checkedItems).filter(r => !!r).length > 1
+  }, [checkedItems])
   return (
     <CatalogueItem
-      nft={nft}
+      nId={lending.id}
       checked={isChecked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
+      hasAction
+      buttonTitle={checkedMoreThanOne? "Rent all": "Rent"}
+      onClick={handleBatchModalOpen(lending)}
     >
       <LendingFields lending={lending} />
-      <div className="py-3 flex flex-auto items-end justify-center content-end">
-        <ActionButton<Lending>
-          onClick={handleBatchModalOpen(lending)}
-          nft={lending}
-          title="Rent"
-          disabled={isChecked || !signer}
-        />
-      </div>
     </CatalogueItem>
   );
 };

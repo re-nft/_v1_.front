@@ -1,20 +1,7 @@
 import React, { useMemo } from "react";
 import ToggleLayout from "./toggle-layout";
-import { useRouter } from "next/router";
-
-export enum LendSpecificity {
-  ALL,
-  LENDING,
-}
 
 export const LendSearchLayout: React.FC = ({ children }) => {
-  const router = useRouter();
-  const specificity = useMemo(() => {
-    return router.pathname === "/user-is-lending"
-      ? LendSpecificity.LENDING
-      : LendSpecificity.ALL;
-  }, [router.pathname]);
-
   const tabs = useMemo(() => {
     return [];
     // return [

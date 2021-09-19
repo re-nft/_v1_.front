@@ -36,13 +36,7 @@ module.exports = {
         const orange = theme("colors")["rn-orange-dark"];
         const purple = theme("colors")["rn-purple-dark"];
         const grey = theme("colors")["rn-grey-dark"];
-        const getShadow = (color) => `7px 7px 0 ${color},
-        6px 6px 0 ${color},
-        5px 5px 0 ${color}, 
-        4px 4px 0 ${color},
-        3px 3px 0 ${color},
-        2px 2px 0 ${color},
-        1px 1px 0 ${color}`;
+        const getShadow = (color) => `7px 7px 0 ${color}`;
         return {
           "rn-drop-green": getShadow(green),
           "rn-drop-red": getShadow(red),
@@ -61,5 +55,5 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require("@tailwindcss/aspect-ratio")],
+  plugins: [require("@tailwindcss/aspect-ratio"), require('@tailwindcss/forms')],
 };

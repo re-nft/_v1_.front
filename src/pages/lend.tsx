@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Lending, Nft, Renting } from "../types/classes";
 import BatchLendModal from "../components/modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
-import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
@@ -19,22 +18,18 @@ const LendCatalagoueItem: React.FC<{
   handleStartLend: (nft: Nft) => () => void;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend }) => {
   const checked = !!checkedItems[nft.id];
-
+  const checkedMoreThanOne = useMemo(() => {
+    return Object.values(checkedItems).filter((r) => !!r).length > 1;
+  }, [checkedItems]);
   return (
     <CatalogueItem
-      nft={nft}
+      nId={nft.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
-    >
-      <div className="py-3 flex flex-auto items-end justify-center">
-        <ActionButton<Nft>
-          nft={nft}
-          title="Lend"
-          onClick={handleStartLend(nft)}
-          disabled={checked}
-        />
-      </div>
-    </CatalogueItem>
+      hasAction
+      buttonTitle={checkedMoreThanOne ? "Lend all" :"Lend"}
+      onClick={handleStartLend(nft)}
+    />
   );
 };
 

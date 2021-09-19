@@ -40,9 +40,9 @@ export const AppLayout: React.FC = ({ children }) => {
         {({ open }) => (
           <>
             <div className="max-w-7xl mx-auto px-4 lg:mt-8">
-              <div className="relative h-16 lg:h-24 flex justify-between">
+              <div className="relative h-16 lg:h-20 flex justify-between">
                 <div className="relative z-10 flex lg:px-0">
-                  <div className="flex-shrink-0 flex items-center">
+                  <div className="flex-shrink-0 flex items-center pb-2">
                     <img
                       className="block h-8 lg:h-10 w-auto"
                       src="/assets/logo.svg"
@@ -67,7 +67,7 @@ export const AppLayout: React.FC = ({ children }) => {
                             "relative py-1 text-gray-400 leading-5 font-display uppercase text-sm whitespace-nowrap ",
                             isPathActive(item.href, pathname)
                               ? "text-black border-b-4 border-rn-orange"
-                              : "border-b-4 border-white"
+                              : "border-b-4 border-white hover:border-rn-orange hover:text-black"
                           )}
                         >
                           {item.name}
@@ -187,11 +187,12 @@ export const AppLayout: React.FC = ({ children }) => {
                 "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
             }}
           >
-            <div className="flex mb-8 w-full ">{children}</div>
+            <div className="flex mb-8 w-full ">
+              {children}
+              </div>
           </div>
         </div>
       </main>
-      <DevMenu />
       <div id="pagination"></div>
       <Footer />
     </div>
