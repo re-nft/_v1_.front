@@ -9,7 +9,7 @@ type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];
 };
 
-const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
+const SearchLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
   const router = useRouter();
   if (!tabs || tabs.length < 1)
     return (
@@ -77,4 +77,4 @@ const ToggleLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
   );
 };
 
-export default ToggleLayout;
+export default SearchLayout;

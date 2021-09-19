@@ -1,24 +1,40 @@
-import { Lending, Nft, Renting } from "../../../types/classes";
+import { Renting } from "../../../types/classes";
 import React from "react";
 import { RentingRow } from "./dashboard-renting-row";
-import { nftReturnIsExpired, UniqueID } from "../../../utils";
+import { nftReturnIsExpired } from "../../../utils";
+import { useUserRenting } from "../../../hooks/queries/useUserRenting";
+import CatalogueLoader from "../../catalogue-loader";
+import { useCurrentAddress } from "../../../hooks/useCurrentAddress";
 
 export interface ExtendedRenting extends Renting {
   relended: boolean;
 }
 
 export const RentingTable: React.FC<{
-  rentingItems: ExtendedRenting[];
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedItems: Set<string>;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
-  currentAddress: string;
-}> = ({
-  rentingItems,
-  checkedItems,
-  checkBoxChangeWrapped,
-  currentAddress,
-}) => {
-  return rentingItems.length !== 0 ? (
+}> = ({ checkedItems, checkBoxChangeWrapped }) => {
+  const { renting: rentingItems, isLoading } = useUserRenting();
+  const currentAddress = useCurrentAddress();
+  //@ts-ignore
+  const relendedRentingItems: ExtendedRenting[] = useMemo(() => {
+    if (!rentingItems) return [];
+    return rentingItems;
+    //TODO:eniko filterClaimed
+
+    // .map(mapAddRelendedField(mapToIds(lendingItems)))
+    // .filter(filterClaimed(showClaimed));
+  }, [rentingItems]);
+  if (isLoading && relendedRentingItems.length === 0) return <CatalogueLoader />;
+  if (relendedRentingItems.length === 0)
+    return (
+      <div className="text-center text-base text-white font-display py-32 leading-tight">
+        You aren&apos;t renting yet.
+        <br />
+        To start renting, head to the rent tab.
+      </div>
+    );
+  return (
     <div className="py-4 px-8">
       <h2 className="">
         <span sr-only="Renting"></span>
@@ -107,8 +123,8 @@ export const RentingTable: React.FC<{
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-300">
-                  {rentingItems.map((rent: Renting & { relended: boolean }) => {
-                    const checked = !!checkedItems[rent.id];
+                  {relendedRentingItems.map((rent: Renting & { relended: boolean }) => {
+                    const checked = checkedItems.has(rent.id);
                     const isExpired = nftReturnIsExpired(rent);
                     return (
                       <RentingRow
@@ -128,5 +144,5 @@ export const RentingTable: React.FC<{
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };

@@ -1,5 +1,6 @@
 import React, {
   Fragment,
+  useCallback,
   useEffect,
   useMemo,
   useState
@@ -17,8 +18,9 @@ import { validationSchema } from "./rent-validate";
 import { Button } from "../../common/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useLendingStore } from "../../../hooks/queries/useNftStore";
 
-export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
+export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => {
   const {
     startRent: handleSave,
     isApproved,
@@ -27,14 +29,22 @@ export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
     approvalStatus
   } = useStartRent();
 
+  const selectedToRent = useLendingStore(
+    useCallback(
+      (state) => {
+        return Object.values(state.lendings).filter((l) => checkedItems.has(l.id));
+      },
+      [checkedItems]
+    )
+  );
   useEffect(() => {
     checkApprovals(
-      nfts
+      selectedToRent
     );
-  }, [checkApprovals, nfts]);
+  }, [checkApprovals, selectedToRent]);
 
   const defaultValues: FormProps = {
-    inputs: nfts
+    inputs: selectedToRent
   };
   const [status, setStatus] = useState(TransactionStateEnum.PENDING);
   const [transactionHash, setTransactionhash] = useState<
@@ -162,7 +172,7 @@ export const RentForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
                   transactionHashes={transactionHash}
                 >
                   <Button
-                    description={nfts.length > 1 ? "Rent all" : "Rent"}
+                    description={selectedToRent.length > 1 ? "Rent all" : "Rent"}
                     onClick={handleSubmit(onSubmit)}
                     disabled={
                       !isValid ||

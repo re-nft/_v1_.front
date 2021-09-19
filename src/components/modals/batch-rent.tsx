@@ -2,22 +2,23 @@ import React from "react";
 
 import Modal from "./modal";
 import { RentForm } from "../forms/rent/rent-form";
-import { Lending } from "../../types/classes";
 
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
-  nft: Lending[];
+  checkedItems: Set<string>;
 };
 
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({
   open,
   handleClose,
-  nft
+  checkedItems
 }) => {
   return (
     <Modal open={open} handleClose={handleClose}>
-      {open && <RentForm nfts={nft} onClose={handleClose}></RentForm>}
+      {open && (
+        <RentForm checkedItems={checkedItems} onClose={handleClose}></RentForm>
+      )}
     </Modal>
   );
 };

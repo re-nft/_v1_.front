@@ -15,7 +15,7 @@ type NftOptions = {
 };
 
 // Nft metadata, denormalize to avoid double fetching, and referencing
-class Nft {
+class NftMetadata {
   // unique nft id = contractAddress + tokenid, doesn't differentiate between lending/renting
   id: string;
   //TODO:eniko remove double id
@@ -133,4 +133,4 @@ class Renting {
   }
 }
 
-export { Nft, Lending, Renting };
+export { NftMetadata as Nft, Lending, Renting };

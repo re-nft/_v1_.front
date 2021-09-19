@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState, useCallback } from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";
@@ -15,14 +15,29 @@ import { validationSchema } from "./lend-validation";
 import { Button } from "../../common/button";
 import { useStartLend } from "../../../hooks/contract/useStartLend";
 import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
+import {
+  useNftsStore
+} from "../../../hooks/queries/useNftStore";
 
-export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
+export const LendForm: React.FC<LendFormProps> = ({
+  checkedItems,
+  onClose
+}) => {
   const handleSave = useStartLend();
-  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
+  const ownedNfts = useNftsStore(
+    useCallback(
+      (state) => {
+        return Object.values(state.nfts).filter((l) => checkedItems.has(l.id));
+      },
+      [checkedItems]
+    )
+  );
+  const { handleApproveAll, isApproved, approvalStatus } =
+    useNFTApproval(ownedNfts);
 
   const defaultValues = useMemo(
     () => ({
-      inputs: nfts.map<LendInputProps>((nft) => ({
+      inputs: ownedNfts.map<LendInputProps>((nft) => ({
         tokenId: nft.tokenId,
         nft: nft,
         lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : Number(nft.amount),
@@ -30,7 +45,7 @@ export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
         nftAddress: nft.nftAddress
       }))
     }),
-    [nfts]
+    [ownedNfts]
   );
   const [status, setStatus] = useState(TransactionStateEnum.PENDING);
   const [transactionHash, setTransactionhash] = useState<
@@ -147,7 +162,7 @@ export const LendForm: React.FC<LendFormProps> = ({ nfts, onClose }) => {
               >
                 <Button
                   onClick={handleSubmit(onSubmit)}
-                  description={nfts.length > 1 ? "Lend all" : "Lend"}
+                  description={ownedNfts.length > 1 ? "Lend all" : "Lend"}
                   disabled={
                     !isValid || isSubmitting || formSubmittedSuccessfully
                   }

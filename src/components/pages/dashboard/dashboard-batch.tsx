@@ -1,6 +1,4 @@
-import React, { useMemo } from "react";
-import MultipleBatchBar from "../../multiple-batch-bar";
-import { Lending, Renting } from "../../../types/classes";
+import React from "react";
 import ClaimModal from "../../modals/claim-modal";
 import ReturnModal from "../../modals/return-modal";
 import StopLendModal from "../../modals/stop-lend-modal";
@@ -8,86 +6,58 @@ import StopLendModal from "../../modals/stop-lend-modal";
 export const DashboardBatch: React.FC<{
   isReturnModalOpen: boolean;
   isLendModalOpen: boolean;
-  checkedRentingItems: Renting[];
+  checkedRentingItems: Set<string>;
   toggleReturnModal: (b: boolean) => void;
-  handleResetRenting: (r: string[]) => void;
-  checkedLendingItems: Lending[];
+  checkedLendingItems: Set<string>;
   toggleLendModal: (b: boolean) => void;
-  handleResetLending: (r: string[]) => void;
+  handleReset: (r: Set<string>) => void;
   isClaimModalOpen: boolean;
-  checkedClaims: Lending[];
+  checkedClaims: Set<string>;
   toggleClaimModal: (b: boolean) => void;
 }> = ({
   isReturnModalOpen,
   checkedRentingItems,
   toggleReturnModal,
-  handleResetRenting,
   isLendModalOpen,
   checkedLendingItems,
   toggleLendModal,
-  handleResetLending,
+  handleReset,
   isClaimModalOpen,
   checkedClaims,
-  toggleClaimModal,
+  toggleClaimModal
 }) => {
-  const checkedClaimsLength = useMemo(() => {
-    return checkedClaims.length;
-  }, [checkedClaims]);
-  const checkedRentingLength = useMemo(() => {
-    return checkedRentingItems.length;
-  }, [checkedRentingItems]);
-  const lendinItemsStopLendableLength = useMemo(() => {
-    return checkedLendingItems.length;
-  }, [checkedLendingItems]);
-  const lendinItemsStopLendable = useMemo(() => {
-    return checkedLendingItems.filter((v) => !v.hasRenting);
-  }, [checkedLendingItems]);
   return (
     <>
       {isReturnModalOpen && (
         <ReturnModal
-          nfts={checkedRentingItems}
+          checkedItems={checkedRentingItems}
           open={isReturnModalOpen}
           onClose={() => {
             toggleReturnModal(false);
-            handleResetRenting(checkedRentingItems.map((i) => i.id));
+            handleReset(checkedRentingItems);
           }}
         />
       )}
       {isLendModalOpen && (
         <StopLendModal
-          nfts={lendinItemsStopLendable}
+          checkedItems={checkedLendingItems}
           open={isLendModalOpen}
           onClose={() => {
             toggleLendModal(false);
-            handleResetLending(lendinItemsStopLendable.map((i) => i.id));
+            handleReset(checkedLendingItems);
           }}
         />
       )}
       {isClaimModalOpen && (
         <ClaimModal
-          nfts={checkedClaims}
+          checkedItems={checkedClaims}
           open={isClaimModalOpen}
           onClose={() => {
             toggleClaimModal(false);
-            handleResetLending(checkedClaims.map((i) => i.id));
+            handleReset(checkedClaims);
           }}
         />
       )}
-      <MultipleBatchBar
-        claimsNumber={checkedClaimsLength}
-        rentingNumber={checkedRentingLength}
-        lendingNumber={lendinItemsStopLendableLength}
-        onClaim={() => {
-          toggleClaimModal(true);
-        }}
-        onStopRent={() => {
-          toggleReturnModal(true);
-        }}
-        onStopLend={() => {
-          toggleLendModal(true);
-        }}
-      />
     </>
   );
 };

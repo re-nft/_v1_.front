@@ -2,12 +2,11 @@
 
 import React, { useCallback, useState, useMemo } from "react";
 
-import { Lending, Renting, Nft } from "../types/classes";
+import { Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ReturnModal from "../components/modals/return-modal";
-import BatchBar from "../components/batch-bar";
 import { useBatchItems } from "../hooks/useBatchItems";
-import { isRenting, nftReturnIsExpired, UniqueID } from "../utils";
+import { isRenting, nftReturnIsExpired } from "../utils";
 import { PaymentToken } from "@renft/sdk";
 import { RentSearchLayout } from "../components/rent-search-layout";
 import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
@@ -18,17 +17,19 @@ import { useWallet } from "../hooks/useWallet";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedItems: Set<string>;
   checkBoxChangeWrapped: (nft: Renting) => () => void;
   handleReturnNft: (renting: Renting) => () => void;
 }> = ({ renting, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
   const id = renting.id;
-  const checked = !!checkedItems[id];
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
-    return Object.values(checkedItems).filter((r) => !!r).length > 1;
+    return Object.values(checkedItems).length > 1;
   }, [checkedItems]);
+  const checked = useMemo(() => {
+    return checkedItems.has(renting.nId);
+  }, [checkedItems, renting]);
   return (
     <CatalogueItem
       nId={renting.nId}
@@ -57,8 +58,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
   const {
     checkedItems,
     handleReset: handleBatchReset,
-    onCheckboxChange,
-    checkedRentingItems
+    onCheckboxChange
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -92,11 +92,11 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
       {modalOpen && (
         <ReturnModal
           open={modalOpen}
-          nfts={checkedRentingItems}
+          checkedItems={checkedItems}
           onClose={handleCloseModal}
         />
       )}
-      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
+      <ItemWrapper>
         {currentPage.map((renting: Renting) => (
           <RentingCatalogueItem
             renting={renting}
@@ -107,16 +107,6 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
           />
         ))}
       </ItemWrapper>
-      {checkedRentingItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedRentingItems.length} items`}
-          actionTitle={
-            checkedRentingItems.length > 1 ? "Return all NFTs" : "Return NFT"
-          }
-          onCancel={handleBatchReset}
-          onClick={handleBatchStopRent}
-        />
-      )}
     </div>
   );
 };

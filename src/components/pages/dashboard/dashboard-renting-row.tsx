@@ -95,6 +95,8 @@ export const RentingRow: React.FC<{
           onChange={checkBoxChangeWrapped(renting)}
           checked={checked}
           disabled={isExpired || renting.relended}
+          label='Select for renting'
+          ariaLabel='Select for renting'
         />
       </td>
     </tr>

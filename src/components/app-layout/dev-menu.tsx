@@ -13,19 +13,17 @@ export const DevMenu: React.FC = () => {
 
   return (
     <div>
-      {!open && (
-        <div className="ml-8">
-          <button
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm uppercase
+      <div className="ml-8">
+        <button
+          onClick={() => {
+            setOpen(true);
+          }}
+          className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm uppercase
               text-sm font-display tracking-widest font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Show mint sidebar
-          </button>
-        </div>
-      )}
+        >
+          {open ? "Hide mint sidebar": "Show mint sidebar"}
+        </button>
+      </div>
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
@@ -66,10 +64,7 @@ export const DevMenu: React.FC = () => {
                     </div>
                     <div className="mt-6 relative flex-1 px-4 sm:px-6">
                       <div className="absolute inset-0 px-4 sm:px-6">
-                        <div
-                          className="h-full"
-                          aria-hidden="true"
-                        >
+                        <div className="h-full" aria-hidden="true">
                           <div className="space-y-2">
                             <MintNfts />
                             <MintTokens />

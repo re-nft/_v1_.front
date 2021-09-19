@@ -96,6 +96,8 @@ export const LendingRow: React.FC<{
           onChange={checkBoxChangeWrapped(lending)}
           checked={checked}
           disabled={hasRenting && !claimable}
+          label="Select for lending"
+          ariaLabel="Select for lending"
         />
       </td>
     </tr>

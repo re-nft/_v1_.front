@@ -5,7 +5,7 @@ import { Lending, Nft, Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/useBatchItems";
 import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
-import ToggleLayout from "../components/toggle-layout";
+import SearchLayout from "../components/search-layout";
 import ItemWrapper from "../components/common/items-wrapper";
 import { PaginationList } from "../components/pagination-list";
 import { getUniqueID } from "../utils";
@@ -56,12 +56,12 @@ export const MyFavorites: React.FC = () => {
     );
   }
   return (
-    <ToggleLayout tabs={[]}>
+    <SearchLayout tabs={[]}>
       <PaginationList
         nfts={favorites}
         ItemsRenderer={({ currentPage }) => {
           return (
-            <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
+            <ItemWrapper>
               {currentPage.map((nft: Renting | Lending) => (
                 <CatalogueItem
                   key={nft.id}
@@ -76,7 +76,7 @@ export const MyFavorites: React.FC = () => {
         isLoading={isLoading}
         emptyResultMessage="You are not renting anything yet"
       />
-    </ToggleLayout>
+    </SearchLayout>
   );
 };
 

@@ -1,28 +1,38 @@
 import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
-import { Nft, Lending } from "../../types/classes";
+import { Nft } from "../../types/classes";
 import { useClaimcollateral } from "../../hooks/contract/useClaimCollateral";
 import { useObservable } from "../../hooks/useObservable";
 import Modal from "./modal";
+import { useLendingStore } from "../../hooks/queries/useNftStore";
 
 type ReturnModalProps = {
   open: boolean;
   onClose: (nfts?: Nft[]) => void;
-  nfts: Lending[];
+  checkedItems: Set<string>;
 };
 
 export const ClaimModal: React.FC<ReturnModalProps> = ({
   open,
   onClose,
-  nfts,
+  checkedItems
 }) => {
   const claim = useClaimcollateral();
   const [t, setObservable] = useObservable();
-
+  const selectedToClaim = useLendingStore(
+    useCallback(
+      (state) => {
+        return Object.values(state.lendings).filter((l) =>
+          checkedItems.has(l.id)
+        );
+      },
+      [checkedItems]
+    )
+  );
   const handleClaim = useCallback(() => {
-    setObservable(claim(nfts));
-  }, [nfts, claim, setObservable]);
+    setObservable(claim(selectedToClaim));
+  }, [selectedToClaim, claim, setObservable]);
 
   return (
     <Modal open={open} handleClose={() => onClose()}>
@@ -36,7 +46,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
             transactionHashes={t.transactionHash}
           >
             <Button
-              description={nfts.length > 1 ? "Claim All" : "Claim"}
+              description={selectedToClaim.length > 1 ? "Claim All" : "Claim"}
               disabled={t.isLoading}
               onClick={handleClaim}
             />

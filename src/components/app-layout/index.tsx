@@ -5,7 +5,6 @@ import XIcon from "@heroicons/react/outline/XIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Footer } from "./footer";
-import { DevMenu } from "./dev-menu";
 import { Connect } from "./connect";
 import { classNames } from "../../utils";
 
@@ -13,8 +12,8 @@ const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
-// TODO:eniko
-//  { name: "Favourites", href: "/favourites" },
+  // TODO:eniko
+  //  { name: "Favourites", href: "/favourites" },
   { name: "Faq", href: "/faq" }
 ];
 const userNavigation = [
@@ -91,11 +90,11 @@ export const AppLayout: React.FC = ({ children }) => {
                     )}
                   </Disclosure.Button>
                 </div>
-            
+
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <Connect menuButton/>
+                    <Connect menuButton />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -132,10 +131,10 @@ export const AppLayout: React.FC = ({ children }) => {
                 </div>
               </div>
               <div className="lg:hidden flex justify-end md:justify-none items-center">
-                  <div className="flex-shrink-0">
-                    <Connect/>
-                  </div>
+                <div className="flex-shrink-0">
+                  <Connect />
                 </div>
+              </div>
             </div>
             {/* Mobile menu */}
             <Disclosure.Panel
@@ -187,9 +186,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
             }}
           >
-            <div className="flex mb-8 w-full ">
-              {children}
-              </div>
+            <div className="flex mb-8 w-full ">{children}</div>
           </div>
         </div>
       </main>

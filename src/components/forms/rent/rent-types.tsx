@@ -2,7 +2,7 @@ import { FormState, UseFormRegister } from "react-hook-form/dist/types";
 import { Lending } from "../../../types/classes";
 
 export type LendFormProps = {
-  nfts: Lending[];
+  checkedItems: Set<string>;
   onClose: () => void;
 };
 export type FormProps = { inputs: Lending[] };

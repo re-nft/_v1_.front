@@ -1,29 +1,42 @@
 import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
-import { Lending, Nft } from "../../types/classes";
+import { Lending } from "../../types/classes";
 import { useObservable } from "../../hooks/useObservable";
 import { useStopLend } from "../../hooks/contract/useStopLend";
 import Modal from "./modal";
+import { useLendingStore } from "../../hooks/queries/useNftStore";
 
 type ReturnModalProps = {
   open: boolean;
   onClose: (nfts?: Lending[]) => void;
-  nfts: Lending[];
+  checkedItems: Set<string>;
 };
 
 export const StopLendModal: React.FC<ReturnModalProps> = ({
   open,
   onClose,
-  nfts,
+  checkedItems
 }) => {
   const stopLending = useStopLend();
   const [t, setObservable] = useObservable();
-
+  const selectedToStopLend = useLendingStore(
+    useCallback(
+      (state) => {
+        return Object.values(state.lendings).filter((l) =>
+          checkedItems.has(l.id)
+        );
+      },
+      [checkedItems]
+    )
+  );
   const handleStopLend = useCallback(() => {
-    const items = nfts.map((lending) => ({ ...lending, lendingId: lending.id }));
+    const items = selectedToStopLend.map((lending) => ({
+      ...lending,
+      lendingId: lending.id
+    }));
     setObservable(stopLending(items));
-  }, [nfts, stopLending, setObservable]);
+  }, [selectedToStopLend, stopLending, setObservable]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -37,7 +50,9 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
             transactionHashes={t.transactionHash}
           >
             <Button
-              description={nfts.length > 1 ? "Stop Lend All" : "Stop Lend"}
+              description={
+                selectedToStopLend.length > 1 ? "Stop Lend All" : "Stop Lend"
+              }
               disabled={t.isLoading}
               onClick={handleStopLend}
             />

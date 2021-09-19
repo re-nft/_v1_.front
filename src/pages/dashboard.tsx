@@ -1,78 +1,19 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 
 import { useBatchItems } from "../hooks/useBatchItems";
-import CatalogueLoader from "../components/catalogue-loader";
-import {
-  ExtendedLending,
-  LendingTable
-} from "../components/pages/dashboard/lending-table";
-import {
-  ExtendedRenting,
-  RentingTable
-} from "../components/pages/dashboard/renting-table";
+import { LendingTable } from "../components/pages/dashboard/lending-table";
+import { RentingTable } from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
-import ToggleLayout from "../components/toggle-layout";
-import { useRouter } from "next/router";
-import { useUserIsLending } from "../hooks/queries/useUserIsLending";
-import { useUserRenting } from "../hooks/queries/useUserRenting";
+import SearchLayout from "../components/search-layout";
 import { useWallet } from "../hooks/useWallet";
-import { useCurrentAddress } from "../hooks/useCurrentAddress";
-
-enum DashboardViewType {
-  LIST_VIEW,
-  MINIATURE_VIEW
-}
 
 export const Dashboard: React.FC = () => {
-  const currentAddress = useCurrentAddress();
   const { signer } = useWallet();
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);
-  const {
-    query: { claimed }
-  } = useRouter();
 
-  const showClaimed = useMemo(() => {
-    return claimed === "true";
-  }, [claimed]);
-
-  const {
-    onCheckboxChange,
-    handleResetLending,
-    handleResetRenting,
-    checkedItems,
-    checkedLendingItems,
-    checkedRentingItems,
-    checkedClaims
-  } = useBatchItems();
-  const { renting: rentingItems, isLoading: userRentingLoading } =
-    useUserRenting();
-  const { userLending: lendingItems, isLoading: userLendingLoading } =
-    useUserIsLending();
-  const [viewType, _] = useState<DashboardViewType>(
-    DashboardViewType.LIST_VIEW
-  );
-
-  const isLoading = userLendingLoading || userRentingLoading;
-
-  const relendedLendingItems: ExtendedLending[] = useMemo(() => {
-    if (!rentingItems) return [];
-    return lendingItems.map((r) => ({ ...r, relended: false }));
-    //TODO:eniko filterClaimed
-    //.map(mapAddRelendedField(mapToIds(rentingItems)))
-    // .filter(filterClaimed(showClaimed));
-  }, [lendingItems, rentingItems]);
-
-  //@ts-ignore
-  const relendedRentingItems: ExtendedRenting[] = useMemo(() => {
-    if (!rentingItems) return [];
-    return rentingItems;
-    //TODO:eniko filterClaimed
-
-    // .map(mapAddRelendedField(mapToIds(lendingItems)))
-    // .filter(filterClaimed(showClaimed));
-  }, [rentingItems]);
+  const { onCheckboxChange, handleReset, checkedItems } = useBatchItems();
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -83,85 +24,44 @@ export const Dashboard: React.FC = () => {
     [onCheckboxChange]
   );
 
-  const tabs = useMemo(() => {
-    return [
-      {
-        name: "CURRENT",
-        href: "/dashboard?claimed=false",
-        current: !showClaimed
-      },
-      {
-        name: "SHOW CLAIMED",
-        href: "/dashboard?claimed=true",
-        current: showClaimed
-      }
-    ];
-  }, [showClaimed]);
-
   if (!signer) {
     return (
-      <ToggleLayout tabs={[]}>
+      <SearchLayout tabs={[]}>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
-      </ToggleLayout>
-    );
-  }
-
-  if (isLoading && lendingItems.length === 0 && rentingItems.length === 0)
-    return (
-      <ToggleLayout tabs={[]}>
-        <CatalogueLoader />
-      </ToggleLayout>
-    );
-
-  if (!isLoading && lendingItems.length === 0 && rentingItems.length === 0) {
-    return (
-      <ToggleLayout tabs={[]}>
-        <div className="text-center text-base text-white font-display py-32 leading-tight">
-          You aren&apos;t lending or renting yet.
-          <br/>
-          To start lending, head to the lend tab.
-        </div>
-      </ToggleLayout>
+      </SearchLayout>
     );
   }
 
   return (
-    <ToggleLayout tabs={tabs}>
-      {viewType === DashboardViewType.LIST_VIEW && (
-        <div className="flex flex-col space-y-2 text-white text-base">
-          <LendingTable
-            checkedItems={checkedItems}
-            toggleClaimModal={toggleClaimModal}
-            toggleLendModal={toggleLendModal}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
-            lendingItems={relendedLendingItems}
-          />
-          <RentingTable
-            checkedItems={checkedItems}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
-            rentingItems={relendedRentingItems}
-            currentAddress={currentAddress}
-          />
-        </div>
-      )}
+    <SearchLayout tabs={[]}>
+      <div className="flex flex-col space-y-2 text-white text-base">
+        <LendingTable
+          checkedItems={checkedItems}
+          toggleClaimModal={toggleClaimModal}
+          toggleLendModal={toggleLendModal}
+          checkBoxChangeWrapped={checkBoxChangeWrapped}
+        />
+        <RentingTable
+          checkedItems={checkedItems}
+          checkBoxChangeWrapped={checkBoxChangeWrapped}
+        />
+      </div>
       <DashboardBatch
         isReturnModalOpen={isReturnModalOpen}
-        checkedRentingItems={checkedRentingItems}
+        checkedRentingItems={checkedItems}
         toggleReturnModal={toggleReturnModal}
-        handleResetRenting={handleResetRenting}
         isLendModalOpen={isLendModalOpen}
-        checkedLendingItems={checkedLendingItems}
+        checkedLendingItems={checkedItems}
         toggleLendModal={toggleLendModal}
-        handleResetLending={handleResetLending}
+        handleReset={handleReset}
         isClaimModalOpen={isClaimModalOpen}
-        checkedClaims={checkedClaims}
+        checkedClaims={checkedItems}
         toggleClaimModal={toggleClaimModal}
       />
-    </ToggleLayout>
+    </SearchLayout>
   );
 };
 
-// this keeps rerendering
 export default Dashboard;

@@ -1,6 +1,7 @@
-import React from "react";
-import { Lending, Nft, Renting } from "../../../types/classes";
-import { UniqueID } from "../../../utils";
+import React, { useMemo } from "react";
+import { useUserIsLending } from "../../../hooks/queries/useUserIsLending";
+import { Lending } from "../../../types/classes";
+import CatalogueLoader from "../../catalogue-loader";
 import { LendingRow } from "./dashboard-lending-row";
 
 export interface ExtendedLending extends Lending {
@@ -8,19 +9,35 @@ export interface ExtendedLending extends Lending {
 }
 
 export const LendingTable: React.FC<{
-  lendingItems: ExtendedLending[];
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedItems: Set<string>;
   toggleClaimModal: (b: boolean) => void;
   toggleLendModal: (b: boolean) => void;
   checkBoxChangeWrapped: (nft: Lending) => () => void;
 }> = ({
-  lendingItems,
   toggleClaimModal,
   toggleLendModal,
   checkBoxChangeWrapped,
-  checkedItems,
+  checkedItems
 }) => {
-  return lendingItems.length !== 0 ? (
+  const { userLending: lendingItems, isLoading } = useUserIsLending();
+  const relendedLendingItems: ExtendedLending[] = useMemo(() => {
+    if (!lendingItems) return [];
+    return lendingItems.map((r) => ({ ...r, relended: false }));
+    //TODO:eniko filterClaimed
+    //.map(mapAddRelendedField(mapToIds(rentingItems)))
+    // .filter(filterClaimed(showClaimed));
+  }, [lendingItems]);
+
+  if (isLoading) return <CatalogueLoader />;
+  if (relendedLendingItems.length === 0)
+    return (
+      <div className="text-center text-base text-white font-display py-32 leading-tight">
+        You aren&apos;t lending yet.
+        <br />
+        To start lending, head to the lend tab.
+      </div>
+    );
+  return (
     <div className=" px-8">
       <h2>
         <span sr-only="Lending"></span>
@@ -108,10 +125,10 @@ export const LendingTable: React.FC<{
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-300">
-                  {lendingItems.map((lend) => {
+                  {relendedLendingItems.map((lend) => {
                     const id = lend.id;
                     const hasRenting = lend.hasRenting;
-                    const checked = !!checkedItems[id];
+                    const checked = checkedItems.has(id);
                     return (
                       <LendingRow
                         key={id}
@@ -131,5 +148,5 @@ export const LendingTable: React.FC<{
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };

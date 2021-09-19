@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import ToggleLayout from "./toggle-layout";
+import SearchLayout from "./search-layout";
 
 export const LendSearchLayout: React.FC = ({ children }) => {
   const tabs = useMemo(() => {
@@ -17,5 +17,5 @@ export const LendSearchLayout: React.FC = ({ children }) => {
     //   },
     // ];
   }, []);
-  return <ToggleLayout tabs={tabs}>{children}</ToggleLayout>;
+  return <SearchLayout tabs={tabs}>{children}</SearchLayout>;
 };

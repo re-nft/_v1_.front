@@ -1,20 +1,16 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Lending, Nft, Renting } from "../../types/classes";
+import { Lending } from "../../types/classes";
 import { useBatchItems } from "../../hooks/useBatchItems";
 import BatchRentModal from "../modals/batch-rent";
-import { isLending, UniqueID } from "../../utils";
-import BatchBar from "../batch-bar";
+import { isLending } from "../../utils";
 import { CatalogueItem } from "../catalogue-item";
-import ActionButton from "../common/action-button";
 import LendingFields from "../lending-fields";
 import { PaginationList } from "../pagination-list";
 import { RentSearchLayout } from "../rent-search-layout";
 import ItemWrapper from "../common/items-wrapper";
-import { useWallet } from "../../hooks/useWallet";
-import { useNftsStore } from "../../hooks/queries/useNftStore";
 
 const RentCatalogueItem: React.FC<{
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedItems: Set<string>;
   lending: Lending;
   checkBoxChangeWrapped: (lending: Lending) => () => void;
   handleBatchModalOpen: (lending: Lending) => () => void;
@@ -24,17 +20,19 @@ const RentCatalogueItem: React.FC<{
   checkBoxChangeWrapped,
   handleBatchModalOpen
 }) => {
-  const isChecked = !!checkedItems[lending.id];
-  const checkedMoreThanOne = useMemo(()=>{
-    return Object.values(checkedItems).filter(r => !!r).length > 1
-  }, [checkedItems])
+  const checkedMoreThanOne = useMemo(() => {
+    return Object.values(checkedItems).length > 1;
+  }, [checkedItems]);
+  const checked = useMemo(() => {
+    return checkedItems.has(lending.nId);
+  }, [checkedItems, lending]);
   return (
     <CatalogueItem
       nId={lending.id}
-      checked={isChecked}
+      checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction
-      buttonTitle={checkedMoreThanOne? "Rent all": "Rent"}
+      buttonTitle={checkedMoreThanOne ? "Rent all" : "Rent"}
       onClick={handleBatchModalOpen(lending)}
     >
       <LendingFields lending={lending} />
@@ -48,8 +46,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
   const {
     checkedItems,
     handleReset: handleBatchReset,
-    onCheckboxChange,
-    checkedLendingItems
+    onCheckboxChange
   } = useBatchItems();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {
@@ -58,16 +55,11 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
   }, [handleBatchReset, setOpenBatchModel]);
 
   const handleBatchModalOpen = useCallback(
-    (nft: Lending) => () => {
-      onCheckboxChange(nft);
+    () => () => {
       setOpenBatchModel(true);
     },
-    [setOpenBatchModel, onCheckboxChange]
+    [setOpenBatchModel]
   );
-
-  const handleBatchRent = useCallback(() => {
-    setOpenBatchModel(true);
-  }, []);
 
   const checkBoxChangeWrapped = useCallback(
     (nft: Lending) => () => {
@@ -80,10 +72,10 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
       <BatchRentModal
         open={isOpenBatchModel}
         handleClose={handleBatchModalClose}
-        nft={checkedLendingItems}
+        checkedItems={checkedItems}
       />
 
-      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
+      <ItemWrapper>
         {currentPage.map((nft: Lending) => (
           <RentCatalogueItem
             key={nft.id}
@@ -94,14 +86,6 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
           />
         ))}
       </ItemWrapper>
-      {checkedLendingItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedLendingItems.length} items`}
-          actionTitle="Rent All"
-          onCancel={handleBatchReset}
-          onClick={handleBatchRent}
-        />
-      )}
     </>
   );
 };

@@ -1,39 +1,26 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 import { Nft, Lending, Renting } from "../types/classes";
-import { isLending, isNft, isRenting, THROWS, UniqueID } from "../utils";
+import { isLending, isRenting, THROWS, UniqueID } from "../utils";
 import { IRenting } from "../types";
-import { useTimestamp } from "./useTimestamp";
 import add from "date-fns/add";
 import isAfter from "date-fns/isAfter";
 
 export type BatchContextType = {
-  // needs to be a hashmap because we need to check the presence in O(1) time
-  // lendingId is the one unique id. However, you can check the nfts that are
-  // not yet lent, in which case the id can't be lending id. It is then
-  // nftAddress::tokenId::0 <- 0 in the end is the sentinel placeholder
-  // if there is a lending id, then the id becomes
-  // nftAddress::tokenId:lendingId
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
-  checkedNftItems: Nft[];
-  checkedLendingItems: Lending[];
-  checkedClaims: Lending[];
-  checkedRentingItems: Renting[];
+  // nftAddress::tokenId::lendingId
+  checkedItems: Set<string>;
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
-
-  handleReset(): void;
-  handleResetLending(lending?: string[]): void;
-  handleResetRenting(renting?: string[]): void;
+  handleReset(items?: Set<string>): void;
   onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
 const defaultBatchContext = {
-  checkedItems: {},
+  checkedItems: new Set<string>(),
   // functions
   handleReset: THROWS,
   handleResetLending: THROWS,
   handleResetRenting: THROWS,
-  onCheckboxChange: THROWS,
+  onCheckboxChange: THROWS
 };
 
 const shouldDelete =
@@ -65,32 +52,20 @@ const filter = (
 };
 
 export const useBatchItems: () => BatchContextType = () => {
-  //TODO:eniko the memory usage bug
-  const blockTimeStamp = useTimestamp();
   const [checkedItems, setCheckedItems] = useState<
     BatchContextType["checkedItems"]
   >(defaultBatchContext.checkedItems);
 
-  const handleReset = useCallback(() => {
-    if (Object.keys(checkedItems).length > 0)
-      setCheckedItems(defaultBatchContext.checkedItems);
-  }, [checkedItems]);
-
-  const handleResetRenting = useCallback(
-    (renting?: string[]) => {
-      if (Object.keys(checkedItems).length > 0)
-        setCheckedItems(filter(checkedItems, renting));
-    },
-    [checkedItems]
-  );
-
-  // remove provided items or all the lendings
-  const handleResetLending = useCallback(
-    (lending?: string[]) => {
-      if (Object.keys(checkedItems).length > 0) {
-        const items = filter(checkedItems, lending, false);
-        setCheckedItems(items);
-      }
+  const handleReset = useCallback(
+    (items: Set<string>) => {
+      if (items) {
+        const set = new Set(checkedItems);
+        items.forEach((i) => {
+          set.delete(i);
+        });
+        setCheckedItems(set);
+      } else if (Object.keys(checkedItems).length > 0)
+        setCheckedItems(defaultBatchContext.checkedItems);
     },
     [checkedItems]
   );
@@ -98,53 +73,35 @@ export const useBatchItems: () => BatchContextType = () => {
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
     (item) => {
       const uniqueID = item.id;
-      let newState = {};
+      const newSet = new Set(checkedItems);
       // if contained in prev, remove
-      if (checkedItems[uniqueID]) {
-        const state = { ...checkedItems };
-        delete state[uniqueID];
-        newState = state;
+      if (newSet.has(uniqueID)) {
+        newSet.delete(uniqueID);
         // if not, add
       } else {
-        newState = { ...checkedItems, [uniqueID]: item };
+        newSet.add(uniqueID);
       }
-      setCheckedItems(newState);
+      setCheckedItems(newSet);
     },
     [checkedItems]
   );
-  const checkedNftItems: Nft[] = useMemo(() => {
-    return Object.values(checkedItems).filter(isNft);
-  }, [checkedItems]);
-  const checkedLendingItems: Lending[] = useMemo(() => {
-    return Object.values(checkedItems).filter(isLending);
-  }, [checkedItems]);
 
-  const claimable = useCallback(isClaimable, []);
+  // const claimable = useCallback(isClaimable, []);
 
-  const checkedClaims = useMemo(() => {
-    return checkedLendingItems.filter(
-      (l) =>
-        l.hasRenting &&
-        // TODO:eniko
-        // claimable(l.renting, blockTimeStamp) &&
-        !l.collateralClaimed
-    );
-  }, [blockTimeStamp, checkedLendingItems, claimable]);
-
-  const checkedRentingItems: Renting[] = useMemo(() => {
-    return Object.values(checkedItems).filter(isRenting);
-  }, [checkedItems]);
+  // const checkedClaims = useMemo(() => {
+  //   return checkedLendingItems.filter(
+  //     (l) =>
+  //       l.hasRenting &&
+  //       // TODO:eniko
+  //       // claimable(l.renting, blockTimeStamp) &&
+  //       !l.collateralClaimed
+  //   );
+  // }, [blockTimeStamp, checkedLendingItems, claimable]);
 
   return {
     checkedItems,
-    checkedNftItems,
-    checkedLendingItems,
-    checkedClaims,
     handleReset,
-    onCheckboxChange,
-    handleResetLending,
-    handleResetRenting,
-    checkedRentingItems,
+    onCheckboxChange
   };
 };
 
@@ -154,7 +111,7 @@ export const isClaimable = (
 ): boolean => {
   const returnBy = (rentedAt: number, rentDuration: number) => {
     return add(new Date(rentedAt * 1000), {
-      days: rentDuration,
+      days: rentDuration
     });
   };
   const _returnBy = (renting: IRenting) =>

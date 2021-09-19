@@ -1,30 +1,43 @@
 import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
-import { Nft, Renting } from "../../types/classes";
+import { Nft } from "../../types/classes";
 import { useObservable } from "../../hooks/useObservable";
 import { useReturnIt } from "../../hooks/contract/useReturnIt";
 import Modal from "./modal";
 import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
+import { useRentingStore } from "../../hooks/queries/useNftStore";
 
 type ReturnModalProps = {
-  nfts: Renting[];
+  checkedItems: Set<string>;
   open: boolean;
   onClose: (nfts?: Nft[]) => void;
 };
 
 export const ReturnModal: React.FC<ReturnModalProps> = ({
-  nfts,
+  checkedItems,
   open,
-  onClose,
+  onClose
 }) => {
   const returnIt = useReturnIt();
   const [returnT, setReturnObservable] = useObservable();
-  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
+
+  const selectedToReturn = useRentingStore(
+    useCallback(
+      (state) => {
+        return Object.values(state.rentings).filter((l) =>
+          checkedItems.has(l.id)
+        );
+      },
+      [checkedItems]
+    )
+  );
+  const { handleApproveAll, isApproved, approvalStatus } =
+    useNFTApproval(selectedToReturn);
 
   const handleReturnNft = useCallback(() => {
-    setReturnObservable(returnIt(nfts));
-  }, [nfts, returnIt, setReturnObservable]);
+    setReturnObservable(returnIt(selectedToReturn));
+  }, [selectedToReturn, returnIt, setReturnObservable]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -52,7 +65,9 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
               transactionHashes={returnT.transactionHash}
             >
               <Button
-                description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
+                description={
+                  checkedItems.size > 1 ? "Return All NFTs" : "Return NFT"
+                }
                 disabled={approvalStatus.isLoading || !isApproved}
                 onClick={handleReturnNft}
               />
