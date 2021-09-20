@@ -1,16 +1,16 @@
 import React, { useCallback, useMemo } from "react";
 
-import CatalogueLoader from "../components/common/catalogue-loader";
-import { Lending, Renting } from "../types/classes";
-import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/misc/useBatchItems";
-import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
-import SearchLayout from "../components/layouts/search-layout";
-import ItemWrapper from "../components/common/items-wrapper";
-import { PaginationList } from "../components/layouts/pagination-list";
-import { getUniqueID } from "../utils";
-import { useUserData } from "../hooks/store/useUserData";
-import { useNftsStore } from "../hooks/store/useNftStore";
+import CatalogueLoader from "../common/catalogue-loader";
+import { Lending, Renting } from "../../types/classes";
+import { CatalogueItem } from "../catalogue-item";
+import { useBatchItems } from "../../hooks/misc/useBatchItems";
+import { useAllAvailableForRent } from "../../hooks/queries/useAllAvailableForRent";
+import SearchLayout from "../layouts/search-layout";
+import ItemWrapper from "../common/items-wrapper";
+import { PaginationList } from "../layouts/pagination-list";
+import { getUniqueID } from "../../utils";
+import { useUserData } from "../../hooks/store/useUserData";
+import { useNftsStore } from "../../hooks/store/useNftStore";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =

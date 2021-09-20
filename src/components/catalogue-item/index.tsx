@@ -3,7 +3,6 @@ import { CatalogueItemRow } from "./catalogue-item-row";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
-import { useRouter } from "next/router";
 import { useNftMetaState } from "../../hooks/store/useMetaState";
 import shallow from "zustand/shallow";
 import { ShortenPopover } from "../common/shorten-popover";
