@@ -1,10 +1,7 @@
 import { useState, useCallback } from "react";
 
 import { Nft, Lending, Renting } from "../../types/classes";
-import { isLending, isRenting, THROWS, UniqueID } from "../../utils";
-import { IRenting } from "../../types";
-import add from "date-fns/add";
-import isAfter from "date-fns/isAfter";
+import { THROWS, UniqueID } from "../../utils";
 
 export type BatchContextType = {
   // nftAddress::tokenId::lendingId
@@ -21,34 +18,6 @@ const defaultBatchContext = {
   handleResetLending: THROWS,
   handleResetRenting: THROWS,
   onCheckboxChange: THROWS
-};
-
-const shouldDelete =
-  (items: string[] | undefined, isrentcheck = true) =>
-  (item: Renting | Lending | Nft) => {
-    const keys = new Set(items);
-    if (keys && keys.size > 0) {
-      const id = item.id;
-      if (id) {
-        return keys.has(id);
-      }
-    }
-    return isrentcheck ? isRenting(item) : isLending(item);
-  };
-
-const filter = (
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>,
-  items: string[] | undefined,
-  isrentcheck = true
-) => {
-  const fn = shouldDelete(items, isrentcheck);
-  return Object.keys(checkedItems).reduce<
-    Record<UniqueID, Nft | Lending | Renting>
-  >((acc, key) => {
-    const item = checkedItems[key];
-    if (!fn(item)) acc[key] = item;
-    return acc;
-  }, {});
 };
 
 export const useBatchItems: () => BatchContextType = () => {
@@ -85,23 +54,9 @@ export const useBatchItems: () => BatchContextType = () => {
     },
     [checkedItems]
   );
-
-  // const claimable = useCallback(isClaimable, []);
-
-  // const checkedClaims = useMemo(() => {
-  //   return checkedLendingItems.filter(
-  //     (l) =>
-  //       l.hasRenting &&
-  //       // TODO:eniko
-  //       // claimable(l.renting, blockTimeStamp) &&
-  //       !l.collateralClaimed
-  //   );
-  // }, [blockTimeStamp, checkedLendingItems, claimable]);
-
   return {
     checkedItems,
     handleReset,
     onCheckboxChange
   };
 };
-

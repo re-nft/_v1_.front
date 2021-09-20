@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
-import { AvailableToRent } from "../../../components/pages/available-to-rent";
 import { RentSearchLayout } from "../../../components/layouts/rent-search-layout";
 import { useAllAvailableForRent } from "../../../hooks/queries/useAllAvailableForRent";
 import Head from "next/head";
 import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
+import { AvailableToRent } from "../../../components/pages/available-to-rent";
 
 const AvailableToRentPage: React.FC<{
   imageURL?: string;

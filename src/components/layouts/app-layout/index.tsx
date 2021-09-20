@@ -12,8 +12,6 @@ const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
-  // TODO:eniko
-  //  { name: "Favourites", href: "/favourites" },
   { name: "Faq", href: "/faq" }
 ];
 const userNavigation = [
@@ -24,8 +22,8 @@ const userNavigation = [
 
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
-  if (pathname.includes(linkPath) && linkPath !== "/") return true;
-  if (pathname.includes("/rent") && linkPath === "/") return true;
+  if (pathname.startsWith(linkPath) && linkPath !== "/") return true;
+  if (pathname.startsWith("/rent") && linkPath === "/") return true;
   if (pathname === "/user-is-renting" && linkPath === "/") return true;
   if (pathname === "/user-is-lending" && linkPath === "/lend") return true;
   return false;

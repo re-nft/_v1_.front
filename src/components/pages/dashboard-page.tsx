@@ -1,31 +1,31 @@
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
-import { useWallet } from "../../../hooks/store/useWallet";
-import SearchLayout from "../../layouts/search-layout";
+import { useWallet } from "../../hooks/store/useWallet";
+import SearchLayout from "../layouts/search-layout";
 
 export const DashboardPage: React.FC = ({ children }) => {
   const { signer } = useWallet();
-  const router = useRouter();
+  const {pathname} = useRouter();
 
   const tabs = useMemo(()=>{
     return [
       {
         name: "Lending",
-        current: router.route === '/dashboard/[lending]' || router.route === '/dashboard',
+        current: pathname === '/dashboard/lending' || pathname === '/dashboard',
         href: "/dashboard/lending"
       },
       {
         name: "Renting",
-        current: router.route === '/dashboard/[renting]',
+        current: pathname === '/dashboard/renting',
         href: "/dashboard/renting"
       },
       {
         name: "Favorites",
-        current: router.route == '/dashboard/[favorites]',
+        current: pathname == '/dashboard/favorites',
         href: "/dashboard/favorites"
       }
     ]
-  }, [router.route])
+  }, [pathname])
   if (!signer) {
     return (
       <SearchLayout tabs={[]}>

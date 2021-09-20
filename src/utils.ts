@@ -329,21 +329,6 @@ export const hasDifference = (
 };
 export type UniqueID = string;
 
-// typeguard for Lending class
-export const isLending = (x: Nft | Lending | Renting): x is Lending => {
-  //TODO:eniko
-  return false;
-};
-
-export const isRenting = (x: Nft | Lending | Renting): x is Renting => {
-  //TODO:eniko
-  return false;
-};
-
-export const isNft = (x: Nft | Lending | Renting): x is Nft => {
-  //TODO:eniko
-  return false;
-};
 export const getUniqueID = (
   nftAddress: string,
   tokenId: string,

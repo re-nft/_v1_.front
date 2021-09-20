@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Lending } from "../../types/classes";
 import { useBatchItems } from "../../hooks/misc/useBatchItems";
 import BatchRentModal from "../modals/batch-rent";
-import { isLending } from "../../utils";
 import { CatalogueItem } from "../catalogue-item";
 import LendingFields from "../lending-fields";
 import { PaginationList } from "../layouts/pagination-list";
@@ -24,11 +23,11 @@ const RentCatalogueItem: React.FC<{
     return Object.values(checkedItems).length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(lending.nId);
+    return checkedItems.has(lending.id);
   }, [checkedItems, lending]);
   return (
     <CatalogueItem
-      nId={lending.id}
+      nId={lending.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction
@@ -76,10 +75,10 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
       />
 
       <ItemWrapper>
-        {currentPage.map((nft: Lending) => (
+        {currentPage.map((lending: Lending) => (
           <RentCatalogueItem
-            key={nft.id}
-            lending={nft}
+            key={lending.id}
+            lending={lending}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleBatchModalOpen={handleBatchModalOpen}
@@ -93,14 +92,10 @@ export const AvailableToRent: React.FC<{
   allAvailableToRent: Lending[];
   isLoading: boolean;
 }> = ({ allAvailableToRent, isLoading }) => {
-  const lendingItems = useMemo(() => {
-    return allAvailableToRent.filter(isLending);
-  }, [allAvailableToRent]);
-
   return (
     <RentSearchLayout>
       <PaginationList
-        nfts={lendingItems}
+        nfts={allAvailableToRent}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You can't rent anything yet"

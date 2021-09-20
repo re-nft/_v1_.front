@@ -8,7 +8,7 @@ export const validationSchema = yup.object().shape({
         .number()
         .required("* required")
         .min(1, "must be greater or equal than 1")
-        .max(yup.ref("lending.maxRentDuration"), "cannot be greater than maximum duration"),
+        .max(yup.ref("maxRentDuration"), "cannot be greater than maximum duration"),
     })
   )
 });

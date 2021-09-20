@@ -43,6 +43,7 @@ export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => 
     );
   }, [checkApprovals, selectedToRent]);
 
+
   const defaultValues: FormProps = {
     inputs: selectedToRent
   };

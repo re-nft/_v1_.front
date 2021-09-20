@@ -1,8 +1,7 @@
 import React from "react";
 
-import { UserIsLending } from "../../components/pages/user-is-lending";
 import { UserIsRenting } from "../../components/pages/user-is-renting";
-import { DashboardPage } from "../../components/pages/dashboard";
+import { DashboardPage } from "../../components/pages/dashboard-page";
 
 export const Dashboard: React.FC = () => {
   return (

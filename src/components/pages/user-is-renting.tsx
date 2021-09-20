@@ -4,7 +4,7 @@ import { Renting } from "../../types/classes";
 import { CatalogueItem } from "../catalogue-item";
 import ReturnModal from "../modals/return-modal";
 import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { formatCollateral, isRenting, nftReturnIsExpired } from "../../utils";
+import { formatCollateral, nftReturnIsExpired } from "../../utils";
 import { PaymentToken } from "@renft/sdk";
 import { RentSearchLayout } from "../layouts/rent-search-layout";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
@@ -116,11 +116,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
 };
 export const UserIsRenting: React.FC = () => {
   const { signer } = useWallet();
-  const { renting: userRenting, isLoading } = useUserRenting();
-
-  const rentingItems = useMemo(() => {
-    return userRenting.filter(isRenting);
-  }, [userRenting]);
+  const { renting, isLoading } = useUserRenting();
 
   if (!signer) {
     return (
@@ -144,7 +140,7 @@ export const UserIsRenting: React.FC = () => {
         </h3>
       </div>
       <PaginationList
-        nfts={rentingItems}
+        nfts={renting}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not renting anything yet"
