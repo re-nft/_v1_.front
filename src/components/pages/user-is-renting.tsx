@@ -17,16 +17,16 @@ import { useTimestamp } from "../../hooks/misc/useTimestamp";
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
   checkedItems: Set<string>;
-  checkBoxChangeWrapped: (nft: Renting) => () => void;
+  onCheckboxChange: () => void;
   handleReturnNft: (renting: Renting) => () => void;
-}> = ({ renting, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
+}> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft }) => {
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
-    return Object.values(checkedItems).length > 1;
+    return checkedItems.size > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(renting.nId);
+    return checkedItems.has(renting.id);
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {
@@ -38,9 +38,9 @@ const RentingCatalogueItem: React.FC<{
       nId={renting.nId}
       checked={checked}
       disabled={isExpired}
-      onCheckboxChange={checkBoxChangeWrapped(renting)}
+      onCheckboxChange={onCheckboxChange}
       hasAction
-      buttonTitle={checkedMoreThanOne ? "Return all" : "Return it"}
+      buttonTitle={checkedMoreThanOne ? "Return all" : "Return"}
       onClick={handleReturnNft(renting)}
     >
       <CatalogueItemRow
@@ -86,7 +86,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
       return () => {
-        onCheckboxChange(nft);
+        onCheckboxChange(nft)
       };
     },
     [onCheckboxChange]
@@ -106,7 +106,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
             renting={renting}
             key={renting.id}
             checkedItems={checkedItems}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            onCheckboxChange={checkBoxChangeWrapped(renting)}
             handleReturnNft={handleReturnNft}
           />
         ))}

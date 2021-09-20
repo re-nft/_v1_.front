@@ -20,7 +20,7 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen
 }) => {
   const checkedMoreThanOne = useMemo(() => {
-    return Object.values(checkedItems).length > 1;
+    return checkedItems.size > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
     return checkedItems.has(lending.id);

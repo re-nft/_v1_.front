@@ -20,7 +20,7 @@ const LendCatalagoueItem: React.FC<{
   }, [checkedItems, nft.nId]);
 
   const checkedMoreThanOne = useMemo(() => {
-    return Object.values(checkedItems).length > 0;
+    return checkedItems.size > 1;
   }, [checkedItems]);
   return (
     <CatalogueItem

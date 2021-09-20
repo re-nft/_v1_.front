@@ -18,7 +18,7 @@ import { formatCollateral } from "../../utils";
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
   checkedItems: Set<string>;
-  onCheckboxChange: (nft: Lending) => void;
+  onCheckboxChange: () => void;
   handleClickNft: (nft: Lending) => void;
 }> = ({ lending, checkedItems, onCheckboxChange, handleClickNft }) => {
   const hasRenting = lending.hasRenting;
@@ -26,10 +26,10 @@ const LendingCatalogueItem: React.FC<{
     handleClickNft(lending);
   }, [lending, handleClickNft]);
   const checkedMoreThanOne = useMemo(() => {
-    return Object.values(checkedItems).length > 1;
+    return checkedItems.size;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(lending.nId);
+    return checkedItems.has(lending.id);
   }, [checkedItems, lending]);
   const days = parseInt(String(lending.maxRentDuration), 10);
   const isClaimable = useIsClaimable(
@@ -38,14 +38,14 @@ const LendingCatalogueItem: React.FC<{
   );
   const buttonTitle = useMemo(()=> {
     if (isClaimable) return checkedMoreThanOne ? "Claim all" : "Claim";
-    return checkedMoreThanOne ? "Stop lending all" : "Stop lending";
+    return checkedMoreThanOne ? "Stop lend all" : "Stop lend";
   }, [isClaimable])
 
   return (
     <CatalogueItem
       checked={checked}
       nId={lending.nId}
-      onCheckboxChange={() => onCheckboxChange(lending)}
+      onCheckboxChange={onCheckboxChange}
       disabled={hasRenting}
       hasAction
       buttonTitle={buttonTitle}
@@ -98,6 +98,14 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
     },
     [onCheckboxChange]
   );
+  const checkBoxChangeWrapped = useCallback(
+    (nft) => {
+      return () => {
+        onCheckboxChange(nft)
+      };
+    },
+    [onCheckboxChange]
+  );
   return (
     <div>
       {modalOpen && (
@@ -113,7 +121,7 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
             lending={lending}
             key={lending.id}
             checkedItems={checkedItems}
-            onCheckboxChange={onCheckboxChange}
+            onCheckboxChange={checkBoxChangeWrapped(lending)}
             handleClickNft={handleClickNft}
           />
         ))}

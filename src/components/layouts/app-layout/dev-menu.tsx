@@ -48,7 +48,7 @@ export const DevMenu: React.FC = () => {
                     <div className="px-4 sm:px-6">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-lg font-medium text-gray-900">
-                          Mint functionality
+                          Mint sidebar
                         </Dialog.Title>
                         <div className="ml-3 h-7 flex items-center">
                           <button
@@ -65,7 +65,7 @@ export const DevMenu: React.FC = () => {
                     <div className="mt-6 relative flex-1 px-4 sm:px-6">
                       <div className="absolute inset-0 px-4 sm:px-6">
                         <div className="h-full" aria-hidden="true">
-                          <div className="space-y-2">
+                          <div className="flex flex-col space-y-4">
                             <MintNfts />
                             <MintTokens />
                           </div>
