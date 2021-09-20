@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
 import SearchLayout from "./search-layout";
 
-export const LendSearchLayout: React.FC = ({ children }) => {
+export const LendSearchLayout: React.FC<{
+  hideDevMenu?: true
+}> = ({ children, hideDevMenu }) => {
   const tabs = useMemo(() => {
     return [];
     // return [
@@ -17,5 +19,5 @@ export const LendSearchLayout: React.FC = ({ children }) => {
     //   },
     // ];
   }, []);
-  return <SearchLayout tabs={tabs}>{children}</SearchLayout>;
+  return <SearchLayout tabs={tabs} hideDevMenu={hideDevMenu}>{children}</SearchLayout>;
 };

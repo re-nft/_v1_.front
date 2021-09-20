@@ -21,6 +21,7 @@ const userNavigation = [
   { name: "Sign out", href: "/signout", disabled: true }
 ];
 
+
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
   if (pathname.includes(linkPath) && linkPath !== "/") return true;
@@ -63,10 +64,10 @@ export const AppLayout: React.FC = ({ children }) => {
                       >
                         <div
                           className={classNames(
-                            "relative py-1 text-gray-400 leading-5 font-display uppercase text-sm whitespace-nowrap ",
+                            "relative py-1  leading-5 font-display uppercase text-sm whitespace-nowrap ",
                             isPathActive(item.href, pathname)
                               ? "text-black border-b-4 border-rn-orange"
-                              : "border-b-4 border-white hover:border-rn-orange hover:text-black"
+                              : "text-gray-400 border-b-4 border-white hover:border-rn-orange hover:text-black"
                           )}
                         >
                           {item.name}

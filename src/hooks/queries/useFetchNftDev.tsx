@@ -11,7 +11,7 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 import shallow from "zustand/shallow";
-import { useNftsStore } from "../store/useNftStore";
+import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 
 type NftMetaState = {
   nfts: Nft[];
@@ -208,7 +208,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     }
 
     if (currentAddress !== previousAddress) {
-      addNfts(usersNfts);
+      addNfts(usersNfts, OWNED_NFT_TYPE.DEV_NFT);
       setDevNfts(usersNfts);
     }
     setIsLoading(false);

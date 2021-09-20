@@ -3,25 +3,72 @@ import create from "zustand";
 import { devtools } from "zustand/middleware";
 import produce from "immer";
 
+export enum NFTRentType {
+  USER_IS_LENDING,
+  ALL_AVAILABLE_TO_RENT
+}
+export enum OWNED_NFT_TYPE {
+  DEV_NFT = 1,
+  EXTERNAL_ERC721,
+  EXTERNAL_ERC1155
+}
 type NftMetaState = {
   nfts: Record<string, Nft>;
-  addNfts: (nfts: Nft[]) => void
+  // ids of owned Nfts
+  ownedNfts: Set<string>;
+  dev_nfts: Set<string>;
+  external_erc721s: Set<string>;
+  external_erc1155s: Set<string>;
+  // add nft metadatat to store, if ownedNfts specified it updates user ownedNfts
+  // second argument add together the three seperate places where nfts can come from
+  // if not specified than user has no ownership to nft
+  addNfts: (nfts: Nft[], ownedNftType?: OWNED_NFT_TYPE) => void;
 };
 
+// Nfts from 5 places
+// devnfts both standard on localhost/ropsten
+// erc721 for ownership
+// erc1155 for ownership
+// renting from our graph
+// lending from our graph
+// based on time and user the status are different
 export const useNftsStore = create<NftMetaState>(
   devtools(
     (set) => ({
       nfts: {},
-      addNfts: (nfts: Nft[]) =>
+      ownedNfts: new Set(),
+      dev_nfts: new Set(),
+      external_erc721s: new Set(),
+      external_erc1155s: new Set(),
+      addNfts: (nfts: Nft[], ownedNftType?: OWNED_NFT_TYPE) =>
         set(
           produce((state) => {
             nfts.map((nft) => {
-             const previousNft = state.nfts[nft.id];
+              const previousNft = state.nfts[nft.id];
               state.nfts[nft.id] = {
-                  ...previousNft,
-                  ...nft
+                ...previousNft,
+                ...nft
               };
             });
+            if (ownedNftType) {
+              const ids = new Set(nfts.map((i) => i.nId));
+              ids.forEach((el) => state.ownedNfts.add(el));
+              switch (ownedNftType) {
+                case OWNED_NFT_TYPE.DEV_NFT: {
+                  state.dev_nfts = ids;
+                  return;
+                }
+                case OWNED_NFT_TYPE.EXTERNAL_ERC1155: {
+                  state.external_erc1155s = ids;
+                  return;
+                }
+                case OWNED_NFT_TYPE.EXTERNAL_ERC721:
+                  {
+                    state.external_erc721s = ids;
+                    return;
+                  }
+              }
+            }
           })
         )
     }),
@@ -31,23 +78,40 @@ export const useNftsStore = create<NftMetaState>(
 
 type LendingState = {
   lendings: Record<string, Lending>;
-  addLendings: (nfts: Lending[]) => void
+  addLendings: (nfts: Lending[], type: NFTRentType) => void;
+  // ids
+  userIsRenting: Set<string>;
+  userIsLending: Set<string>;
+  allAvailableToRent: Set<string>;
 };
 
 export const useLendingStore = create<LendingState>(
   devtools(
     (set) => ({
       lendings: {},
-      addLendings: (lendings: Lending[]) =>
+      userIsRenting: new Set(),
+      userIsLending: new Set(),
+      allAvailableToRent: new Set(),
+      addLendings: (lendings: Lending[], type: NFTRentType) =>
         set(
           produce((state) => {
             lendings.map((lending) => {
-             const previousNft = state.lendings[lending.id];
+              const previousNft = state.lendings[lending.id];
               state.lendings[lending.id] = {
-                  ...previousNft,
-                  ...lending
+                ...previousNft,
+                ...lending
               };
             });
+            switch (type) {
+              case NFTRentType.ALL_AVAILABLE_TO_RENT: {
+                state.allAvailableToRent = new Set(lendings.map((i) => i.id));
+                return;
+              }
+              case NFTRentType.USER_IS_LENDING: {
+                state.userIsLending = new Set(lendings.map((i) => i.id));
+                return;
+              }
+            }
           })
         )
     }),
@@ -56,8 +120,9 @@ export const useLendingStore = create<LendingState>(
 );
 type RentingState = {
   rentings: Record<string, Renting>;
-  addRentings: (nfts: Renting[]) => void
+  addRentings: (nfts: Renting[]) => void;
 };
+// delete previous rentings, as only user rentings are stored here
 export const useRentingStore = create<RentingState>(
   devtools(
     (set) => ({
@@ -65,13 +130,18 @@ export const useRentingStore = create<RentingState>(
       addRentings: (rentings: Renting[]) =>
         set(
           produce((state) => {
+            const previous = new Set(Object.keys(state.rentings))
             rentings.map((renting) => {
-             const previousNft = state.rentings[renting.id];
+              const previousNft = state.rentings[renting.id];
               state.rentings[renting.id] = {
-                  ...previousNft,
-                  ...renting
+                ...previousNft,
+                ...renting
               };
+              previous.delete(renting.id)
             });
+            previous.forEach((id)=>{
+              delete state.rentings[id]
+            })
           })
         )
     }),

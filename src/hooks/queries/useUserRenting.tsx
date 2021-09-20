@@ -1,7 +1,5 @@
-import { useCallback, useEffect } from "react";
-import produce from "immer";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import shallow from "zustand/shallow";
-import create from "zustand";
 
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
@@ -11,52 +9,25 @@ import { parseLending } from "../../utils";
 import { usePrevious } from "../misc/usePrevious";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useNftsStore } from "../store/useNftStore";
-
-export type UserRentingState = {
-  userRenting: Renting[];
-  isLoading: boolean;
-  setRenting: (r: Renting[]) => void;
-  setLoading: (r: boolean) => void;
-};
-
-const useUserRentingState = create<UserRentingState>((set) => ({
-  userRenting: [],
-  isLoading: false,
-  setLoading: (isLoading: boolean) =>
-    set(
-      produce((state) => {
-        state.isLoading = isLoading;
-      })
-    ),
-  setRenting: (r: Renting[]) =>
-    set(
-      produce((state) => {
-        state.userRenting = r;
-      })
-    )
-}));
+import { useNftsStore, useRentingStore } from "../store/useNftStore";
 
 export const useUserRenting = () => {
   const { signer, network } = useWallet();
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
-  const renting = useUserRentingState(
-    useCallback((state) => state.userRenting, []),
-    shallow
-  );
-  const isLoading = useUserRentingState(
-    useCallback((state) => state.isLoading, []),
-    shallow
-  );
-  const setRentings = useUserRentingState((state) => state.setRenting);
-  const setLoading = useUserRentingState((state) => state.setLoading);
+
+  const [isLoading, setLoading] = useState(false);
   const addNfts = useNftsStore((state) => state.addNfts);
+  const addRentings = useRentingStore((state) => state.addRentings);
+  const rentings = useRentingStore(
+    useCallback((state) => state.rentings, []),
+    shallow
+  );
 
   const fetchRenting = useCallback(() => {
     if (!currentAddress || !signer) return EMPTY;
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      if (renting && renting.length > 0) setRentings([]);
+      if (rentings && Object.keys(rentings).length > 0) addRentings([]);
       return EMPTY;
     }
     setLoading(true);
@@ -67,19 +38,19 @@ export const useUserRenting = () => {
         if (usersRenting) {
           const { users } = usersRenting;
           if (!users) {
-            if (renting.length > 0) setRentings([]);
+            if (Object.keys(rentings).length > 0) addRentings([]);
             setLoading(false);
             return EMPTY;
           }
           if (users.length < 1) {
-            if (renting.length > 0) setRentings([]);
+            if (Object.keys(rentings).length > 0) addRentings([]);
             setLoading(false);
             return EMPTY;
           }
           const firstMatch = users[0];
           const { renting: r } = firstMatch;
           if (!r) {
-            if (renting.length > 0) setRentings([]);
+            if (Object.keys(rentings).length > 0) addRentings([]);
             return;
           }
           const nfts = r.map(
@@ -103,7 +74,7 @@ export const useUserRenting = () => {
                   r
                 )
             );
-          setRentings(_renting);
+          addRentings(_renting);
           setLoading(false);
         }
       })
@@ -112,11 +83,11 @@ export const useUserRenting = () => {
   }, [
     currentAddress,
     previousAddress,
-    renting,
+    rentings,
     signer,
     network,
     setLoading,
-    setRentings
+    addRentings
   ]);
 
   useEffect(() => {
@@ -127,6 +98,10 @@ export const useUserRenting = () => {
       if (subscription) subscription.unsubscribe();
     };
   }, [fetchRenting, currentAddress]);
+
+  const renting = useMemo(() => {
+    return Object.values(rentings);
+  }, [rentings]);
 
   return { renting, isLoading };
 };

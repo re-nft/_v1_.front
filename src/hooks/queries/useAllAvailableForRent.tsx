@@ -9,7 +9,7 @@ import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useLendingStore, useNftsStore } from "../store/useNftStore";
+import { NFTRentType, useLendingStore, useNftsStore } from "../store/useNftStore";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -39,10 +39,14 @@ export const useAllAvailableForRent = () => {
     useCallback((state) => state.lendings, []),
     shallow
   );
+  
 
   const addNfts = useNftsStore((state) => state.addNfts);
   const addLendings = useLendingStore((state) => state.addLendings);
-
+  const allAvailableToRentIds = useLendingStore(
+    useCallback((state) => state.allAvailableToRent, []),
+    shallow
+  );
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
       .pipe(
@@ -67,7 +71,7 @@ export const useAllAvailableForRent = () => {
               )
           );
           addNfts(nfts);
-          addLendings(items.map((r) => new Lending(r)));
+          addLendings(items.map((r) => new Lending(r)), NFTRentType.ALL_AVAILABLE_TO_RENT);
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -81,7 +85,7 @@ export const useAllAvailableForRent = () => {
   }, [currentAddress, setLoading, network, addLendings, addNfts]);
 
   const allAvailableToRent = useMemo(() => {
-    if (!currentAddress) return allLendings;
+    if (!currentAddress) return Object.values(allLendings);
     const filterAvailableForRenting = (l: Lending) => {
       // empty address show all renting
       // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
@@ -89,10 +93,10 @@ export const useAllAvailableForRent = () => {
       const userNotLender =
         l.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
       const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress;
-      return userNotLender && userNotRenter;
+      return userNotLender && userNotRenter && allAvailableToRentIds.has(l.id);
     }
     return Object.values(allLendings).filter(filterAvailableForRenting);
-  }, [currentAddress, allLendings]);
+  }, [currentAddress, allLendings, allAvailableToRentIds]);
 
   return { allAvailableToRent, isLoading };
 };

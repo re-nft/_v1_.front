@@ -1,18 +1,15 @@
-//TODO:eniko remove this file
-
 import React, { useCallback, useState, useMemo } from "react";
 
-import { Lending } from "../types/classes";
-import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/misc/useBatchItems";
-import LendingFields from "../components/lending-fields";
-import { StopLendModal } from "../components/modals/stop-lend-modal";
-import { LendSearchLayout } from "../components/layouts/lend-search-layout";
-import { PaginationList } from "../components/layouts/pagination-list";
-import { isLending } from "../utils";
-import ItemWrapper from "../components/common/items-wrapper";
-import { useUserIsLending } from "../hooks/queries/useUserIsLending";
-import { useWallet } from "../hooks/store/useWallet";
+import { Lending } from "../../types/classes";
+import { CatalogueItem } from "../catalogue-item";
+import { useBatchItems } from "../../hooks/misc/useBatchItems";
+import LendingFields from "../lending-fields";
+import { StopLendModal } from "../modals/stop-lend-modal";
+import { LendSearchLayout } from "../layouts/lend-search-layout";
+import { PaginationList } from "../layouts/pagination-list";
+import ItemWrapper from "../common/items-wrapper";
+import { useUserIsLending } from "../../hooks/queries/useUserIsLending";
+import { useWallet } from "../../hooks/store/useWallet";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -33,7 +30,7 @@ const LendingCatalogueItem: React.FC<{
   return (
     <CatalogueItem
       checked={checked}
-      nId={lending.id}
+      nId={lending.nId}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       disabled={hasRenting}
       hasAction
@@ -101,17 +98,14 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
     </div>
   );
 };
-const UserCurrentlyLending: React.FC = () => {
+
+export const UserIsLending: React.FC = () => {
   const { signer } = useWallet();
   const { userLending, isLoading } = useUserIsLending();
 
-  const lendingItems = useMemo(() => {
-    return userLending.filter(isLending);
-  }, [userLending]);
-
   if (!signer) {
     return (
-      <LendSearchLayout>
+      <LendSearchLayout hideDevMenu>
         <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
@@ -120,9 +114,18 @@ const UserCurrentlyLending: React.FC = () => {
   }
 
   return (
-    <LendSearchLayout>
+    <LendSearchLayout hideDevMenu>
+      <div className="mt- px-8">
+        <h2>
+          <span sr-only="Lending"></span>
+          <img src="/assets/Lending-headline.svg" className="h-12" />
+        </h2>
+        <h3 className="text-lg">
+          Here you will find he NFTs that you are lending.
+        </h3>
+      </div>
       <PaginationList
-        nfts={lendingItems}
+        nfts={userLending}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not lending anything yet"
@@ -130,5 +133,3 @@ const UserCurrentlyLending: React.FC = () => {
     </LendSearchLayout>
   );
 };
-
-export default UserCurrentlyLending;

@@ -7,14 +7,19 @@ import { SnackAlert } from "../common/snack-alert";
 
 type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];
+  hideDevMenu?: true;
 };
 
-const SearchLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
+const SearchLayout: React.FC<PageLayoutProps> = ({
+  tabs,
+  children,
+  hideDevMenu = false
+}) => {
   const router = useRouter();
   if (!tabs || tabs.length < 1)
     return (
       <div className="flex flex-col py-4 w-full">
-        <DevMenu />
+        {!hideDevMenu && <DevMenu />}
 
         {children}
       </div>
@@ -22,7 +27,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
 
   return (
     <div className="flex flex-col py-4 w-full">
-      <DevMenu />
+      {!hideDevMenu && <DevMenu />}
       <div>
         <div className="sm:hidden">
           <label htmlFor="tabs" className="sr-only">
@@ -45,9 +50,9 @@ const SearchLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
           </select>
         </div>
         <div className="hidden sm:block">
-          <div className="flex justify-end p-4">
+          <div className="flex justify-start ml-6 py-4">
             <nav
-              className="-mb-px flex justify-end bg-rn-green p-1 font-body text-4xl leading-rn-1"
+              className="-mb-px flex justify-end space-x-2 leading-rn-1"
               aria-label="Tabs"
             >
               {tabs.map((tab) => (
@@ -55,9 +60,9 @@ const SearchLayout: React.FC<PageLayoutProps> = ({ tabs, children }) => {
                   <a
                     className={classNames(
                       tab.current
-                        ? "text-rn-green bg-gray-200"
-                        : "bg-rn-green text-white hover:text-rn-green hover:bg-gray-200",
-                      "whitespace-nowrap flex py-4 px-1 text-xs font-display w-52 text-center justify-center items-center"
+                        ? "text-rn-orange"
+                        : "text-white hover:text-rn-orange",
+                      "whitespace-nowrap flex px-1 text-lg px-2 font-display"
                     )}
                     aria-current={tab.current ? "page" : undefined}
                   >

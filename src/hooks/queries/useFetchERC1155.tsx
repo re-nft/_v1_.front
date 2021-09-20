@@ -20,7 +20,7 @@ import { useCurrentAddress } from "../misc/useCurrentAddress";
 import produce from "immer";
 import { usePrevious } from "../misc/usePrevious";
 import { NetworkName, NftToken } from "../../types";
-import { useNftsStore } from "../store/useNftStore";
+import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 
 interface UserERC1155State {
   users: Record<
@@ -202,7 +202,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         }),
         map((items) => {
           if (items) {
-            addNfts(items);
+            addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC1155);
             setUserNft(currentAddress, items);
           }
         }),

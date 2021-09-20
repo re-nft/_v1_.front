@@ -56,10 +56,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const { name, image, description, openseaLink } = meta;
 
-  const isRentPage = useMemo(() => {
-    return pathname === "/" || pathname.includes("/rent");
-  }, [pathname]);
-
   const knownContract = useMemo(() => {
     return (
       nft.nftAddress.toLowerCase() ===
@@ -113,14 +109,14 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               text="NFT Address"
               value={<ShortenPopover longString={nft.nftAddress} />}
             />
-            <CatalogueItemRow
+            {/* <CatalogueItemRow
               text="Token id"
               value={<ShortenPopover longString={nft.tokenId} />}
             />
             <CatalogueItemRow
               text="Standard"
               value={nft.isERC721 ? "721" : "1155"}
-            />
+            /> */}
 
             {children}
             <div className="py-3 flex flex-auto space-between">

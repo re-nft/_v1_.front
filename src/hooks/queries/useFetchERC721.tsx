@@ -8,7 +8,7 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
-import { useNftsStore } from "../store/useNftStore";
+import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 
 interface UserERC721State {
   users: Record<
@@ -145,7 +145,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         }),
         map((items) => {
           if (items) {
-            addNfts(items)
+            addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC721)
             setUserNft(currentAddress, items)
           };
         }),
