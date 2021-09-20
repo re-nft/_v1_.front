@@ -5,7 +5,6 @@ import shallow from "zustand/shallow";
 import { Lending, Nft, Renting } from "../../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "../queries/useExchangePrice";
-import { isLending } from "../../utils";
 import { useNftMetaState } from "./useMetaState";
 import { NO_COLLECTION } from "../../consts";
 import create from "zustand";
@@ -26,7 +25,7 @@ export const useSearchNfts = create<NftSearchState>(
         produce((state) => {
           state.nfts = nfts.map((n) => n.nId);
         })
-      ),
+      )
   }))
 );
 
@@ -71,7 +70,9 @@ export const sortByDuration =
     return dir === "desc" ? result : result * -1;
   };
 
-export const useSearch = <T extends Renting | Lending | Nft>(items: T[]): T[] => {
+export const useSearch = <T extends Renting | Lending | Nft>(
+  items: T[]
+): T[] => {
   const filter = useNFTFilterBy(
     useCallback((state) => {
       return state.filters;
@@ -168,12 +169,14 @@ export const useSearch = <T extends Renting | Lending | Nft>(items: T[]): T[] =>
   return useMemo(() => {
     let r = items.map((r) => ({
       ...r,
-      priceInUSD: isLending(r)
-        ? toUSD(r.paymentToken, r.dailyRentPrice, tokenPerUSD)
-        : 1,
-      collateralInUSD: isLending(r)
-        ? toUSD(r.paymentToken, r.nftPrice, tokenPerUSD)
-        : 1,
+      priceInUSD:
+        r instanceof Lending || r instanceof Renting
+          ? toUSD(r.paymentToken, r.dailyRentPrice, tokenPerUSD)
+          : 1,
+      collateralInUSD:
+        r instanceof Lending || r instanceof Renting
+          ? toUSD(r.paymentToken, r.nftPrice, tokenPerUSD)
+          : 1
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -216,7 +219,7 @@ export const useSearchOptions = (): CategoryOptions[] => {
           arr.push({
             value: meta.collection.name,
             label: meta.collection.name,
-            imageUrl: meta.collection.imageUrl,
+            imageUrl: meta.collection.imageUrl
           });
         }
       } else {
@@ -235,7 +238,7 @@ export const useSortOptions = (): CategoryOptions[] => {
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
+      { label: "Lowest Collateral", value: "lc", imageUrl: "" }
     ];
   }, []);
 };

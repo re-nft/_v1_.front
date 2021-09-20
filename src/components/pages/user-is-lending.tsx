@@ -39,7 +39,7 @@ const LendingCatalogueItem: React.FC<{
   const buttonTitle = useMemo(()=> {
     if (isClaimable) return checkedMoreThanOne ? "Claim all" : "Claim";
     return checkedMoreThanOne ? "Stop lend all" : "Stop lend";
-  }, [isClaimable])
+  }, [isClaimable, checkedMoreThanOne])
 
   return (
     <CatalogueItem

@@ -39,7 +39,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
   const { signer } = useWallet();
-  const { pathname } = useRouter();
   const meta = useNftMetaState(
     useCallback(
       (state) => {

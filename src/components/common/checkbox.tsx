@@ -17,15 +17,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   srOnly = true,
   ariaLabel
 }) => {
-  const onChangeWrapper = useCallback(
-    (...args) => {
-      if (disabled) return;
-      //@ts-ignore
-      onChange(args);
-    },
-    [onChange, disabled]
-  );
-
   return (
     <>
       <div className="flex items-center h-5">

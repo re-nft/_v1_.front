@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import CatalogueLoader from "../components/common/catalogue-loader";
-import { Lending, Nft, Renting } from "../types/classes";
+import { Lending, Renting } from "../types/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import { useBatchItems } from "../hooks/misc/useBatchItems";
 import { useAllAvailableForRent } from "../hooks/queries/useAllAvailableForRent";
@@ -37,9 +37,7 @@ export const MyFavorites: React.FC = () => {
   );
 
   const isLoading = userDataIsLoading || allAvailableIsLoading;
-  const nftsInStore = useNftsStore(
-    useCallback((state) => state.nfts, [])
-  );
+  const nftsInStore = useNftsStore(useCallback((state) => state.nfts, []));
   if (isLoading) {
     return (
       <div className="mx-auto">
