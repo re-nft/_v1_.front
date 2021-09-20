@@ -104,19 +104,19 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             </div>
           </>
 
-          <div className="px-2 flex flex-auto flex-col">
+          <div className="px-2 flex flex-auto flex-col text-black">
             <CatalogueItemRow
               text="NFT Address"
               value={<ShortenPopover longString={nft.nftAddress} />}
             />
-            {/* <CatalogueItemRow
+            <CatalogueItemRow
               text="Token id"
               value={<ShortenPopover longString={nft.tokenId} />}
             />
             <CatalogueItemRow
               text="Standard"
               value={nft.isERC721 ? "721" : "1155"}
-            /> */}
+            />
 
             {children}
             <div className="py-3 flex flex-auto space-between">

@@ -13,6 +13,10 @@ import "../scripts/wdyr";
 import NProgress from "nprogress";
 import { NetworkName } from "../types";
 
+import { enableMapSet } from "immer";
+
+enableMapSet();
+
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
     debug: false,
@@ -20,9 +24,9 @@ if (typeof window !== "undefined") {
     //   ? window.location.hostname !== "dapp.renft.io"
     //   : true,
     gaOptions: {
-      siteSpeedSampleRate: 100,
+      siteSpeedSampleRate: 100
     },
-    testMode: window.location.hostname !== "dapp.renft.io",
+    testMode: window.location.hostname !== "dapp.renft.io"
   });
 }
 

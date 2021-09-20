@@ -105,17 +105,3 @@ export const useBatchItems: () => BatchContextType = () => {
   };
 };
 
-export const isClaimable = (
-  renting: IRenting,
-  blockTimeStamp: number
-): boolean => {
-  const returnBy = (rentedAt: number, rentDuration: number) => {
-    return add(new Date(rentedAt * 1000), {
-      days: rentDuration
-    });
-  };
-  const _returnBy = (renting: IRenting) =>
-    returnBy(renting.rentedAt, renting.rentDuration);
-  const _now = new Date(blockTimeStamp);
-  return isAfter(_now, _returnBy(renting));
-};

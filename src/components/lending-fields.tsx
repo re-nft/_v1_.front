@@ -8,7 +8,7 @@ const LendingFields: React.FC<{ lending: Lending }> = ({ lending }) => {
   return (
     <>
       <CatalogueItemRow
-        text={`Daily price [${PaymentToken[lending.paymentToken]}]`}
+        text={`Price/day [${PaymentToken[lending.paymentToken]}]`}
         value={lending.dailyRentPrice.toString()}
       />
       <CatalogueItemRow

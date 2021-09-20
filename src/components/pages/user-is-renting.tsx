@@ -4,7 +4,7 @@ import { Renting } from "../../types/classes";
 import { CatalogueItem } from "../catalogue-item";
 import ReturnModal from "../modals/return-modal";
 import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { isRenting, nftReturnIsExpired } from "../../utils";
+import { formatCollateral, isRenting, nftReturnIsExpired } from "../../utils";
 import { PaymentToken } from "@renft/sdk";
 import { RentSearchLayout } from "../layouts/rent-search-layout";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
@@ -12,6 +12,7 @@ import { PaginationList } from "../layouts/pagination-list";
 import ItemWrapper from "../common/items-wrapper";
 import { useUserRenting } from "../../hooks/queries/useUserRenting";
 import { useWallet } from "../../hooks/store/useWallet";
+import { useTimestamp } from "../../hooks/misc/useTimestamp";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
@@ -27,6 +28,11 @@ const RentingCatalogueItem: React.FC<{
   const checked = useMemo(() => {
     return checkedItems.has(renting.nId);
   }, [checkedItems, renting]);
+  const blockTimeStamp = useTimestamp();
+  const expired = useMemo(() => {
+    return renting.rentedAt * 1000 < blockTimeStamp;
+  }, [blockTimeStamp, renting.rentedAt]);
+
   return (
     <CatalogueItem
       nId={renting.nId}
@@ -38,13 +44,18 @@ const RentingCatalogueItem: React.FC<{
       onClick={handleReturnNft(renting)}
     >
       <CatalogueItemRow
-        text={`Daily price [${PaymentToken[PaymentToken.DAI]}]`}
+        text={`Price/day [${PaymentToken[renting.paymentToken]}]`}
         value={renting.dailyRentPrice.toString()}
       />
       <CatalogueItemRow
-        text={`Rent Duration [${days > 1 ? "days" : "day"}]`}
+        text={`Max duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
       />
+      <CatalogueItemRow
+        text={`Collateral [${PaymentToken[renting.paymentToken]}]`}
+        value={formatCollateral(renting.nftPrice * Number(renting.rentAmount))}
+      />
+      <CatalogueItemRow text="Defaulted" value={expired ? "yes" : "no"} />
     </CatalogueItem>
   );
 };

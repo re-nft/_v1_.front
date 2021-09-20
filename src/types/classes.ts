@@ -89,6 +89,7 @@ class Lending {
     this.isERC721 = lending.collateralClaimed;
     this.duration = this.duration
     this.hasRenting = !!lendingRaw.renting
+    this.rentingId = lendingRaw.renting?.id
   }
 }
 

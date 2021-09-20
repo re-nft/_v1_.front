@@ -391,3 +391,13 @@ export const parseRenting = (
     lending: parsedLending
   };
 };
+
+export const formatCollateral = (v: number) => {
+  const parts = v.toString().split(".");
+  if (parts.length === 1) {
+    return v.toString();
+  }
+  const wholePart = parts[0];
+  const decimalPart = parts[1];
+  return `${wholePart}.${decimalPart.substring(0, 4)}`;
+};
