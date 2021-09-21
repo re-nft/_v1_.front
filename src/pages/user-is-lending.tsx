@@ -21,19 +21,17 @@ const LendingCatalogueItem: React.FC<{
   checkBoxChangeWrapped: (nft: Lending) => () => void;
   handleClickNft: (nft: Lending) => void;
 }> = ({ nft, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
-  const hasRenting = !!nft.renting;
   const isChecked = !!checkedItems[nft.id];
   return (
     <CatalogueItem
       checked={isChecked}
       nft={nft}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
-      disabled={hasRenting}
     >
       <LendingFields nft={nft} />
       <ActionButton<Lending>
         nft={nft}
-        disabled={hasRenting || isChecked}
+        disabled={isChecked || !nft.lending.rentClaimed}
         title="Stop Lending"
         onClick={handleClickNft}
       />

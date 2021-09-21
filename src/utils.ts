@@ -13,6 +13,7 @@ import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
+import { IRenting } from "./contexts/graph/types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -220,10 +221,10 @@ export const getDistinctItems = <T extends Object>(
   return distinctItems;
 };
 
-export const nftReturnIsExpired = (rent: Renting): boolean => {
+export const nftReturnIsExpired = (renting: IRenting): boolean => {
   const isExpired =
-    moment(rent.renting.rentedAt * 1000)
-      .add(rent.renting.rentDuration, "days")
+    moment(renting.rentedAt * 1000)
+      .add(renting.rentDuration, "days")
       .unix() *
       1000 <
     moment.now();

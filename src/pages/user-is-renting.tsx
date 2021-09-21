@@ -26,8 +26,9 @@ const RentingCatalogueItem: React.FC<{
 }> = ({ nft, checkedItems, checkBoxChangeWrapped, handleReturnNft }) => {
   const id = nft.id;
   const checked = !!checkedItems[id];
-  const isExpired = nftReturnIsExpired(nft);
+  const isExpired = nftReturnIsExpired(nft.renting);
   const days = nft.renting.rentDuration;
+  if (isExpired) return null;
   return (
     <CatalogueItem
       nft={nft}
@@ -54,13 +55,13 @@ const RentingCatalogueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
-  currentPage,
+  currentPage
 }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
     onCheckboxChange,
-    checkedRentingItems,
+    checkedRentingItems
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 
