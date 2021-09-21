@@ -6,11 +6,10 @@ import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { UserLendingContext } from "../contexts/UserLending";
 import { UserRentingContext } from "../contexts/UserRenting";
 import UserContext from "../contexts/UserProvider";
-import { Toggle } from "../components/common/toggle";
 import { ExtendedLending, LendingTable } from "../components/pages/dashboard/lending-table";
 import { ExtendedRenting, RentingTable } from "../components/pages/dashboard/renting-table";
 import { DashboardBatch } from "../components/pages/dashboard/dashboard-batch";
-import { mapAddRelendedField, mapToIds, filterClaimed } from "../utils";
+import { mapAddRelendedField, mapToIds } from "../utils";
 import PageLayout from "../components/page-layout";
 
 enum DashboardViewType {
@@ -24,7 +23,6 @@ export const Dashboard: React.FC = () => {
   const [isClaimModalOpen, toggleClaimModal] = useState(false);
   const [isLendModalOpen, toggleLendModal] = useState(false);
   const [isReturnModalOpen, toggleReturnModal] = useState(false);
-  const [showClaimed, toggleClaimed] = useState(true);
 
   const {
     onCheckboxChange,
@@ -49,16 +47,14 @@ export const Dashboard: React.FC = () => {
     if (!rentingItems) return [];
     return lendingItems
       .map(mapAddRelendedField(mapToIds(rentingItems)))
-      .filter(filterClaimed(showClaimed));
-  }, [lendingItems, rentingItems, showClaimed]);
+  }, [lendingItems, rentingItems]);
 
   //@ts-ignore
   const relendedRentingItems: ExtendedRenting[] = useMemo(() => {
     if (!rentingItems) return [];
     return rentingItems
       .map(mapAddRelendedField(mapToIds(lendingItems)))
-      .filter(filterClaimed(showClaimed));
-  }, [lendingItems, rentingItems, showClaimed]);
+  }, [lendingItems, rentingItems]);
 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
@@ -68,14 +64,6 @@ export const Dashboard: React.FC = () => {
     },
     [onCheckboxChange]
   );
-
-  const toggleClaimSwitch = useCallback(() => {
-    toggleClaimed(!showClaimed);
-  }, [showClaimed]);
-
-  const toggleTitle = useMemo(() => {
-    return showClaimed ? "Hide claimed items" : "Show claimed items";
-  }, [showClaimed]);
 
   if (!signer) {
     return (
@@ -109,11 +97,6 @@ export const Dashboard: React.FC = () => {
     <PageLayout>
       {viewType === DashboardViewType.LIST_VIEW && (
         <div className="dashboard-list-view">
-          <Toggle
-            toggleValue={showClaimed}
-            onSwitch={toggleClaimSwitch}
-            title={toggleTitle}
-          />
           <LendingTable
             checkedItems={checkedItems}
             toggleClaimModal={toggleClaimModal}

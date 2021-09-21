@@ -11,6 +11,7 @@ import LendingFields from "../lending-fields";
 import { PaginationList } from "../pagination-list";
 import { RentSwitchWrapper } from "../rent-switch-wrapper";
 import ItemWrapper from "../common/items-wrapper";
+import { CurrentAddressWrapper } from "../../contexts/CurrentAddressWrapper";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: Record<UniqueID, Nft | Lending | Renting>;
@@ -20,6 +21,9 @@ const RentCatalogueItem: React.FC<{
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleBatchModalOpen }) => {
   const isChecked = !!checkedItems[nft.id];
   const { signer } = useContext(UserContext);
+  const currentAddress = useContext(CurrentAddressWrapper);
+  const userLender =
+    nft.lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
   return (
     <CatalogueItem
       nft={nft}
@@ -30,8 +34,8 @@ const RentCatalogueItem: React.FC<{
       <ActionButton<Lending>
         onClick={handleBatchModalOpen(nft)}
         nft={nft}
-        title="Rent Now"
-        disabled={isChecked || !signer}
+        title={userLender? "Your lending": "Rent Now"}
+        disabled={isChecked || !signer || userLender}
       />
     </CatalogueItem>
   );

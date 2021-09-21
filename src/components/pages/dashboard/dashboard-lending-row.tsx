@@ -9,6 +9,7 @@ import { ShortenPopover } from "../../common/shorten-popover";
 import { PaymentToken } from "@eenagy/sdk";
 import { Tooltip } from "@material-ui/core";
 import { Button } from "../../common/button";
+import { nftReturnIsExpired } from "../../../utils";
 
 export const LendingRow: React.FC<{
   lend: Lending & { relended: boolean };
@@ -36,20 +37,6 @@ export const LendingRow: React.FC<{
       ),
     [lend, blockTimeStamp]
   );
-  const claimed = useMemo(
-    () => lend.renting && lend.lending.rentClaimed,
-    [lend, blockTimeStamp]
-  );
-
-  const formatCollateral = (v: number) => {
-    const parts = v.toString().split(".");
-    if (parts.length === 1) {
-      return v.toString();
-    }
-    const wholePart = parts[0];
-    const decimalPart = parts[1];
-    return `${wholePart}.${decimalPart.substring(0, 4)}`;
-  };
 
   const handleClaim = useCallback(() => {
     if (!claimable) return;
@@ -76,7 +63,7 @@ export const LendingRow: React.FC<{
   const lendTooltip = hasRenting
     ? "The item is rented out. You have to wait until the renter returns the item."
     : "Click to stop lending this item.";
-  if (claimed) return null;
+  
   return (
     <Tr onClick={onRowClick}>
       <Td className="action-column">
@@ -112,7 +99,7 @@ export const LendingRow: React.FC<{
           <span>
             <Button
               onClick={handleClickLend}
-              disabled={checked || hasRenting}
+              disabled={checked || !lend.lending.rentClaimed}
               description="Stop lend"
             />
           </span>

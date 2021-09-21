@@ -3,12 +3,12 @@ import { useContext, useEffect, useMemo } from "react";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { queryAllLendingRenft } from "../contexts/graph/queries";
-import { timeItAsync } from "../utils";
+import { nftReturnIsExpired, timeItAsync } from "../utils";
 import UserContext from "../contexts/UserProvider";
 import {
   ANIMETAS_CONTRACT_ADDRESS,
   ANIMONKEYS_CONTRACT_ADDRESS,
-  SECOND_IN_MILLISECONDS,
+  SECOND_IN_MILLISECONDS
 } from "../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
@@ -30,17 +30,23 @@ export const fetchRentings = () => {
   ).pipe(
     map((response) => Object.values(response?.lendings || [])),
     map((lendings) => {
-      return lendings
-        .filter((v) => !v.renting || v.renting.length === 0)
-        .filter((v) => v != null)
-        .filter(
-          (v) =>
-            v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
-            v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
-        )
-        .map((lending) => {
-          return new Lending(lending);
-        });
+      return (
+        lendings
+          .filter((v) => v != null)
+          .filter((v) => {
+            return process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === "mainnet"
+              ? v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+                  v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+              : true;
+          })
+          .map((lending) => {
+            return new Lending(lending);
+          })
+          // if renting is expired show as relendable
+          .filter((lending) =>
+            lending.renting ? nftReturnIsExpired(lending.renting) : true
+          )
+      );
     })
   );
 };
@@ -72,16 +78,16 @@ const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
       }
       return {
         ...state,
-        nfts,
+        nfts
       };
     }),
   setLoading: (isLoading: boolean) =>
     set((state) => {
       return {
         ...state,
-        isLoading,
+        isLoading
       };
-    }),
+    })
 }));
 
 export const useAllAvailableForRent = () => {
@@ -122,18 +128,14 @@ export const useAllAvailableForRent = () => {
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
-    const items = nfts.filter((l: Lending) => {
-      // empty address show all renting
-      // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
-      // ! therefore, this check is !==
-      const userNotLender =
-        l.lending.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
-      const userNotRenter =
-        l.renting && l.renting.renterAddress
-          ? l.renting.renterAddress.toLowerCase() !== currentAddress
-          : true;
-      return userNotLender && userNotRenter;
-    });
+    const items = nfts
+      .filter((l: Lending) => {
+        const userNotRenter =
+          l.renting && l.renting.renterAddress
+            ? l.renting.renterAddress.toLowerCase() !== currentAddress
+            : true;
+        return userNotRenter;
+      })
     return items;
   }, [currentAddress, nfts]);
 

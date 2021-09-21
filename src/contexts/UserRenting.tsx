@@ -65,7 +65,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             return;
           }
           const _renting: Renting[] = r
-            .filter((v) => v.lending && !v.lending.rentClaimed)
+            .filter((v) => v.lending)
             .map(
               (r) =>
                 new Renting(

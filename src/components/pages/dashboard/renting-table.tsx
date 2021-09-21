@@ -49,7 +49,8 @@ export const RentingTable: React.FC<{
         <Tbody>
           {rentingItems.map((rent: Renting & { relended: boolean }) => {
             const checked = !!checkedItems[rent.id];
-            const isExpired = nftReturnIsExpired(rent);
+            const isExpired = nftReturnIsExpired(rent.renting);
+            if(isExpired) return null;
             return (
               <RentingRow
                 checked={checked}
