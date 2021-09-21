@@ -53,6 +53,8 @@ export const LendingRow: React.FC<{
     if (hasRenting && !claimable) return;
     checkBoxChangeWrapped(lend)();
   }, [checkBoxChangeWrapped, lend, hasRenting, claimable]);
+  const isExpired = useMemo(() => lend.renting ? nftReturnIsExpired(lend.renting): false, [lend.renting]);
+
   const claimTooltip = claimable
     ? "The NFT renting period is over. Click to claim your collateral."
     : hasRenting
@@ -60,7 +62,7 @@ export const LendingRow: React.FC<{
       ? "The item is already claimed"
       : "The item rental is not expired yet."
     : "No one rented the item as so far.";
-  const lendTooltip = hasRenting
+  const lendTooltip = (hasRenting && !isExpired) || !hasRenting
     ? "The item is rented out. You have to wait until the renter returns the item."
     : "Click to stop lending this item.";
   
