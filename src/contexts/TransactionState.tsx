@@ -37,7 +37,7 @@ export const TransactionStateContext = createContext<TransactionStateType>(
 );
 TransactionStateContext.displayName = "TransactionStateContext";
 
-const NUMBER_OF_CONFIRMATIONS = IS_PROD ? 3 : 1; //let's make it 5, so graph has time to sync
+const NUMBER_OF_CONFIRMATIONS = IS_PROD ? 1 : 1; //let's make it 5, so graph has time to sync
 const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
 
 const waitForTransactions = (
