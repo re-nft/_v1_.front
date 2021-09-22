@@ -5,6 +5,7 @@ import { timer, from, switchMap, map } from "rxjs";
 import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
+import { devtools } from "zustand/middleware";
 
 import { PaymentToken } from "@renft/sdk";
 
@@ -13,7 +14,7 @@ interface TOKEN_PRICE {
   setWETH: (price: number) => void;
 }
 
-const useExchangePriceStore = create<TOKEN_PRICE>((set) => ({
+const useExchangePriceStore = create<TOKEN_PRICE>(devtools((set) => ({
   tokenPerUSD: {
     [PaymentToken.WETH]: 1,
     [PaymentToken.DAI]: 1,
@@ -29,7 +30,7 @@ const useExchangePriceStore = create<TOKEN_PRICE>((set) => ({
         state.tokenPerUSD[PaymentToken.WETH] = price;
       })
     ),
-}));
+})));
 
 //TODO:eniko can be replaced by ethers, they implemented ETH price
 const getPrice = (): Promise<number> =>

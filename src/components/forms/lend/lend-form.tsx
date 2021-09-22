@@ -15,9 +15,7 @@ import { validationSchema } from "./lend-validation";
 import { Button } from "../../common/button";
 import { useStartLend } from "../../../hooks/contract/useStartLend";
 import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
-import {
-  useNftsStore
-} from "../../../hooks/store/useNftStore";
+import { useNftsStore } from "../../../hooks/store/useNftStore";
 
 export const LendForm: React.FC<LendFormProps> = ({
   checkedItems,
@@ -32,20 +30,28 @@ export const LendForm: React.FC<LendFormProps> = ({
       [checkedItems]
     )
   );
+  const amounts = useNftsStore(
+    useCallback((state) => {
+      return state.amounts;
+    }, [])
+  );
   const { handleApproveAll, isApproved, approvalStatus } =
     useNFTApproval(ownedNfts);
 
   const defaultValues = useMemo(
     () => ({
-      inputs: ownedNfts.map<LendInputProps>((nft) => ({
-        tokenId: nft.tokenId,
-        nft: nft,
-        lendAmount: nft.amount == "1" || nft.isERC721 ? 1 : Number(nft.amount),
-        amount: nft.amount == "1" || nft.isERC721 ? "1" : nft.amount,
-        nftAddress: nft.nftAddress
-      }))
+      inputs: ownedNfts.map<LendInputProps>((nft) => {
+        const amount = amounts.get(nft.nId);
+        return {
+          tokenId: nft.tokenId,
+          nft: nft,
+          lendAmount: amount || 1,
+          amount: amount?.toString() || '1',
+          nftAddress: nft.nftAddress
+        };
+      })
     }),
-    [ownedNfts]
+    [ownedNfts, amounts]
   );
   const [status, setStatus] = useState(TransactionStateEnum.PENDING);
   const [transactionHash, setTransactionhash] = useState<

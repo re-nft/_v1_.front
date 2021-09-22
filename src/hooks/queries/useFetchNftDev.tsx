@@ -2,84 +2,21 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { Nft } from "../../types/classes";
-import usePoller from "../misc/usePoller";
 import { usePrevious } from "../misc/usePrevious";
 import { useSmartContracts } from "../contract/useSmartContracts";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import create from "zustand";
-import { devtools } from "zustand/middleware";
-import produce from "immer";
 import shallow from "zustand/shallow";
 import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
+import { debounceTime, EMPTY, map, switchMap, timer } from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { NetworkName } from "../../types";
 
-type NftMetaState = {
-  nfts: Nft[];
-  isLoading: boolean;
-  setNfts: (nfts: Nft[]) => void;
-  setLoading: (b: boolean) => void;
-};
-
-export const useDevNftStore = create<NftMetaState>(
-  devtools(
-    (set) => ({
-      nfts: [],
-      isLoading: false,
-      setLoading: (loading: boolean) =>
-      set(
-        produce((state) => {
-          state.isLoading = loading;
-        })
-      ),
-      setNfts: (nfts: Nft[]) =>
-        set(
-          produce((state) => {
-            state.nfts = nfts;
-          })
-        )
-    }),
-    "dev-nfts"
-  )
-);
 export type CancellablePromise<T> = {
   promise: Promise<T>;
   cancel: () => void;
 };
 
-export default function createCancellablePromise<T>(
-  promise: Promise<T>
-): CancellablePromise<T> {
-  let cancel = () => {
-    console.warn("nothing to cancel");
-  };
-
-  const cancellablePromise: Promise<T> = new Promise(
-    (
-      resolve: (value: T | PromiseLike<T>) => void,
-      reject: (reason?: any) => void
-    ) => {
-      cancel = () => {
-        resolve = () => null;
-        reject = () => null;
-      };
-
-      promise
-        .then(
-          (value) => {
-            if (resolve) resolve(value);
-          },
-          (error) => {
-            if (reject) reject(error);
-          }
-        )
-        .catch(() => {
-          console.warn("cancellable function error");
-        });
-    }
-  );
-
-  return { promise: cancellablePromise, cancel };
-}
 const BigNumZero = BigNumber.from("0");
 
 function range(start: number, stop: number, step: number) {
@@ -95,28 +32,27 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
   const { network, signer } = useWallet();
   const { E721, E721B, E1155, E1155B } = useSmartContracts();
-  const devNfts = useDevNftStore(useCallback((state) => {
-    return state.nfts;
-  }, []), shallow)
-  const isLoading = useDevNftStore(useCallback((state) => {
-    return state.isLoading;
-  }, []), shallow)
-  const setDevNfts = useDevNftStore((state) => state.setNfts);
-  const setIsLoading = useDevNftStore((state) => state.setLoading);
+  const [isLoading, setLoading] = useState(false);
+  const devNfts = useNftsStore(
+    useCallback((state) => {
+      const tokens = state.dev_nfts;
+      const arr: Nft[] = [];
+      tokens.forEach((i) => arr.push(state.nfts[i]));
+      return arr;
+    }, []),
+    shallow
+  );
+
   const previousAddress = usePrevious(currentAddress);
   const addNfts = useNftsStore((state) => state.addNfts);
+  const setAmount = useNftsStore((state) => state.setAmount);
 
-  const fetchAsync = useCallback(async () => {
-    if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      if (isLoading) setIsLoading(false);
-      if (devNfts && devNfts.length > 0) setDevNfts([]);
-    }
+  const fetchDevNfts = useCallback(async (currentAddress: string) => {
+
     if (typeof process.env.NEXT_PUBLIC_FETCH_NFTS_DEV === "undefined") {
-      if (isLoading) setIsLoading(false);
-      return;
+      return [];
     }
     if (!E1155 || !E721 || !E721B || !E1155B || !signer || !currentAddress) {
-      setIsLoading(false);
       return [];
     }
     const usersNfts: Nft[] = [];
@@ -178,14 +114,14 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
 
     for (let i = 0; i < num1155s.length; i++) {
       if (amountBalance[i].toNumber() > 0) {
-        usersNfts.push(
-          new Nft(
-            e1155.address,
-            E1155IDs[i].toString(),
-            amountBalance[i].toString(),
-            false
-          )
+        const nft = new Nft(
+          e1155.address,
+          E1155IDs[i].toString(),
+          amountBalance[i].toString(),
+          false
         );
+        setAmount(nft.nId, Number(amountBalance[i].toString()));
+        usersNfts.push(nft);
       }
     }
 
@@ -196,22 +132,17 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
 
     for (let i = 0; i < num1155bs.length; i++) {
       if (amountBalance[i].toNumber() > 0) {
-        usersNfts.push(
-          new Nft(
-            e1155b.address,
-            E1155IDs[i].toString(),
-            amountBalance[i].toString(),
-            false
-          )
+        const nft = new Nft(
+          e1155b.address,
+          E1155IDs[i].toString(),
+          amountBalance[i].toString(),
+          false
         );
+        setAmount(nft.nId, Number(amountBalance[i].toString()));
+        usersNfts.push(nft);
       }
     }
-
-    if (currentAddress !== previousAddress) {
-      addNfts(usersNfts, OWNED_NFT_TYPE.DEV_NFT);
-      setDevNfts(usersNfts);
-    }
-    setIsLoading(false);
+    return usersNfts;
   }, [
     E1155,
     E721,
@@ -223,20 +154,36 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     devNfts,
     previousAddress,
     network,
-    setIsLoading,
-    setDevNfts,
     addNfts,
+    setAmount
   ]);
 
   useEffect(() => {
-    const fetchRequest = createCancellablePromise(fetchAsync());
-    return fetchRequest.cancel;
-  }, [fetchAsync]);
-
-  usePoller(() => {
-    const fetchRequest = createCancellablePromise(fetchAsync());
-    return fetchRequest.cancel;
-  }, 3000);
+    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+      .pipe(
+        switchMap(() => {
+          if (!signer) return EMPTY;
+          if (!currentAddress) return EMPTY;
+          // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
+          if (network !== NetworkName.mainnet) return EMPTY;
+          setLoading(true);
+          return fetchDevNfts(currentAddress);
+        }),
+        map((items) => {
+          if (items) {
+            addNfts(items, OWNED_NFT_TYPE.DEV_NFT);
+          }
+        }),
+        debounceTime(SECOND_IN_MILLISECONDS),
+        map(() => {
+          setLoading(false);
+        })
+      )
+      .subscribe();
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [signer, currentAddress, addNfts]);
 
   return { devNfts, isLoading };
 };

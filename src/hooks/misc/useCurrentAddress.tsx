@@ -4,11 +4,12 @@ import create from "zustand";
 import shallow from "zustand/shallow";
 import { usePrevious } from "./usePrevious";
 import { useWallet } from "../store/useWallet";
+import { devtools } from "zustand/middleware";
 
 const useCurrentAddressState = create<{
   address: string;
   setAddress: (r: string) => void;
-}>((set) => ({
+}>(devtools((set) => ({
   address: "",
   setAddress: (r: string) =>
     set(
@@ -16,7 +17,7 @@ const useCurrentAddressState = create<{
         state.address = r;
       })
     ),
-}));
+})));
 
 export const useCurrentAddress = () => {
   const { address } = useWallet();

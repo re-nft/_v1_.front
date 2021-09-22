@@ -37,7 +37,6 @@ export const MyFavorites: React.FC = () => {
   );
 
   const isLoading = userDataIsLoading || allAvailableIsLoading;
-  const nftsInStore = useNftsStore(useCallback((state) => state.nfts, []));
   if (isLoading) {
     return (
       <div className="mx-auto">

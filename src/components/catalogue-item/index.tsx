@@ -10,6 +10,7 @@ import { CatalogueActions } from "./catalogue-actions";
 import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
 import { useNftsStore } from "../../hooks/store/useNftStore";
+import { ReactEventOnClickType } from "../../types";
 
 type CatalougeItemBaseProps = {
   nId: string;
@@ -19,7 +20,7 @@ type CatalougeItemBaseProps = {
   disabled?: boolean;
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
-  onClick: () => void;
+  onClick: ReactEventOnClickType;
   buttonTitle: string;
   hasAction: true;
 };
@@ -61,6 +62,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     );
   }, [nft.nftAddress]);
 
+  const cb: ReactEventOnClickType = useCallback(
+    (e: React.MouseEvent<unknown>) => {
+      e.stopPropagation();
+      if (rest.hasAction) {
+        rest.onClick(e);
+      }
+    },
+    [rest]
+  );
+
   return (
     <div
       key={nft.id}
@@ -68,6 +79,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         checked ? "shadow-rn-one border-4" : ""
       }`}
       data-item-id={nft.tokenId}
+      onClick={onCheckboxChange}
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
@@ -142,7 +154,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               {rest.hasAction && (
                 <div className="flex-1 flex justify-end pr-2">
                   <Button
-                    onClick={rest.onClick}
+                    onClick={cb}
                     description={rest.buttonTitle}
                     disabled={disabled || !checked || !signer}
                   />

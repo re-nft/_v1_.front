@@ -23,6 +23,9 @@ type NftMetaState = {
   // second argument add together the three seperate places where nfts can come from
   // if not specified than user has no ownership to nft
   addNfts: (nfts: Nft[], ownedNftType?: OWNED_NFT_TYPE) => void;
+  // amounts are queried from a different source, so store it in different place to avoid unnessecary rerender and requery
+  amounts: Map<string, number>;
+  setAmount: (id: string, amount: number) => void;
 };
 
 // Nfts from 5 places
@@ -40,11 +43,18 @@ export const useNftsStore = create<NftMetaState>(
       dev_nfts: new Set(),
       external_erc721s: new Set(),
       external_erc1155s: new Set(),
+      amounts: new Map<string, number>(),
+      setAmount: (id: string, amount: number) =>
+        set(
+          produce((state) => {
+            state.amounts.set(id, amount);
+          })
+        ),
       addNfts: (nfts: Nft[], ownedNftType?: OWNED_NFT_TYPE) =>
         set(
           produce((state) => {
             nfts.map((nft) => {
-              const previousNft = state.nfts[nft.id];
+              const previousNft: Nft = state.nfts[nft.id];
               state.nfts[nft.id] = {
                 ...previousNft,
                 ...nft
@@ -62,11 +72,11 @@ export const useNftsStore = create<NftMetaState>(
                   state.external_erc1155s = ids;
                   return;
                 }
-                case OWNED_NFT_TYPE.EXTERNAL_ERC721:
-                  {
-                    state.external_erc721s = ids;
-                    return;
-                  }
+                case OWNED_NFT_TYPE.EXTERNAL_ERC721: {
+                  state.external_erc721s = ids;
+                  ids.forEach((id) => state.amounts.set(id, 1))
+                  return;
+                }
               }
             }
           })
@@ -130,18 +140,18 @@ export const useRentingStore = create<RentingState>(
       addRentings: (rentings: Renting[]) =>
         set(
           produce((state) => {
-            const previous = new Set(Object.keys(state.rentings))
+            const previous = new Set(Object.keys(state.rentings));
             rentings.map((renting) => {
               const previousNft = state.rentings[renting.id];
               state.rentings[renting.id] = {
                 ...previousNft,
                 ...renting
               };
-              previous.delete(renting.id)
+              previous.delete(renting.id);
             });
-            previous.forEach((id)=>{
-              delete state.rentings[id]
-            })
+            previous.forEach((id) => {
+              delete state.rentings[id];
+            });
           })
         )
     }),

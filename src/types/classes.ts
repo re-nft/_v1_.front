@@ -22,7 +22,6 @@ class NftMetadata {
   nId: string;
   nftAddress: Address;
   tokenId: string;
-  amount: string;
   isERC721: boolean;
   _meta: NftToken["meta"] | undefined;
   mediaURI = "";
@@ -40,7 +39,6 @@ class NftMetadata {
   ) {
     this.nftAddress = nftAddress;
     this.tokenId = tokenId;
-    this.amount = amount;
     this.isERC721 = isERC721;
     this._meta = options?.meta;
     this.mediaURI = options?.mediaURI || "";
