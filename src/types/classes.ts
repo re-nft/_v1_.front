@@ -68,6 +68,7 @@ class Lending {
   isERC721: boolean;
   duration?: string;
   hasRenting: boolean;
+  renterAddress: string;
 
   constructor(lendingRaw: LendingRaw) {
     this.nId = getUniqueID(lendingRaw.nftAddress, lendingRaw.tokenId);
@@ -88,6 +89,7 @@ class Lending {
     this.duration = this.duration
     this.hasRenting = !!lendingRaw.renting
     this.rentingId = lendingRaw.renting?.id
+    this.renterAddress = lendingRaw.renting?.renterAddress || ""
   }
 }
 

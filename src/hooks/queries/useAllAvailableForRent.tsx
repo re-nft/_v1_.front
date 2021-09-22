@@ -92,26 +92,17 @@ export const useAllAvailableForRent = () => {
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return Object.values(allLendings);
-    const filterAvailableForRenting = (l: Lending) => {
-      // empty address show all renting
-      // ! not equal. if lender address === address, then that means we have lent the item, and now want to rent our own item
-      // ! therefore, this check is !==
-      const userNotLender =
-        l.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
-      const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress;
-      return userNotLender && userNotRenter;
+    const userNotRenter = (l: Lending) => {
+      const userNotRenter = l.renterAddress.toLowerCase() !== currentAddress;
+      return userNotRenter;
     };
     const arr: Lending[] = allAvailableToRentIds
       .map((i) => {
         return allLendings[i];
       })
-      .filter(filterAvailableForRenting);
+      .filter(userNotRenter);
     return arr;
-  }, [
-    currentAddress,
-    allLendings,
-    allAvailableToRentIds
-  ]);
+  }, [currentAddress, allLendings, allAvailableToRentIds]);
 
   return { allAvailableToRent, isLoading };
 };

@@ -7,6 +7,7 @@ import LendingFields from "../lending-fields";
 import { PaginationList } from "../layouts/pagination-list";
 import { RentSearchLayout } from "../layouts/rent-search-layout";
 import ItemWrapper from "../common/items-wrapper";
+import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: string[];
@@ -21,6 +22,7 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen,
   show
 }) => {
+  const currentAddress = useCurrentAddress();
   const checkedMoreThanOne = useMemo(() => {
     return checkedItems.length > 1;
   }, [checkedItems]);
@@ -28,14 +30,21 @@ const RentCatalogueItem: React.FC<{
     const set = new Set(checkedItems);
     return set.has(lending.id);
   }, [checkedItems, lending]);
+  const userLender =
+    lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
+  const buttonTitle = useMemo(() => {
+    if (userLender) return "Lending";
+    return checkedMoreThanOne && checked ? "Rent all" : "Rent";
+  }, [userLender, checkedMoreThanOne, checked]);
   return (
     <CatalogueItem
       nId={lending.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction
+      disabled={userLender}
       show={show}
-      buttonTitle={checkedMoreThanOne && checked ? "Rent all" : "Rent"}
+      buttonTitle={buttonTitle}
       onClick={handleBatchModalOpen(lending)}
     >
       <LendingFields lending={lending} />
@@ -43,9 +52,9 @@ const RentCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = ({
-  currentPage
-}) => {
+const ItemsRenderer: React.FC<{
+  currentPage: (Lending & { show: boolean })[];
+}> = ({ currentPage }) => {
   const {
     checkedItems,
     handleReset: handleBatchReset,
@@ -79,7 +88,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = 
       />
 
       <ItemWrapper>
-        {currentPage.map((lending: (Lending & {show: boolean})) => (
+        {currentPage.map((lending: Lending & { show: boolean }) => (
           <RentCatalogueItem
             key={lending.id}
             show={lending.show}

@@ -10,14 +10,15 @@ import { CatalogueActions } from "./catalogue-actions";
 import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
 import { useNftsStore } from "../../hooks/store/useNftStore";
-import { ReactEventOnClickType } from "../../types";
+import { ReactEventOnChangeType, ReactEventOnClickType } from "../../types";
 import { Transition } from "@headlessui/react";
+import { classNames } from "../../utils";
 
 type CatalougeItemBaseProps = {
   nId: string;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
-  onCheckboxChange: () => void;
+  onCheckboxChange: ReactEventOnChangeType;
   disabled?: boolean;
   show: boolean;
 };
@@ -67,12 +68,20 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const cb: ReactEventOnClickType = useCallback(
     (e: React.MouseEvent<unknown>) => {
+      if (disabled) return;
       e.stopPropagation();
       if (rest.hasAction) {
         rest.onClick(e);
       }
     },
-    [rest]
+    [rest, disabled]
+  );
+  const onChange: ReactEventOnChangeType = useCallback(
+    (e: React.ChangeEvent<unknown>) => {
+      if (disabled) return;
+      onCheckboxChange(e);
+    },
+    [rest, disabled]
   );
 
   return (
@@ -86,10 +95,13 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
       key={nft.id}
-      className={`text-base leading-tight flex flex-col bg-white border-2 border-black hover:shadow-rn-one pb-1 ${
-        checked ? "shadow-rn-one border-4" : ""
-      }`}
-      onClick={onCheckboxChange}
+      className={classNames(
+        disabled && "cursor-not-allowed",
+        !disabled && "hover:shadow-rn-one",
+        checked && "shadow-rn-one border-4",
+        "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
+      )}
+      onClick={onChange}
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (

@@ -12,12 +12,13 @@ import { useUserData } from "../../hooks/store/useUserData";
 import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
 import { CopyLink } from "../copy-link";
 import Checkbox from "../common/checkbox";
+import { ReactEventOnChangeType } from "../../types";
 
 export const CatalogueActions: React.FC<{
   nftAddress: string;
   tokenId: string;
   checked: boolean;
-  onCheckboxChange: () => void;
+  onCheckboxChange: ReactEventOnChangeType;
   disabled?: boolean;
 }> = ({ nftAddress, tokenId, checked, onCheckboxChange, disabled }) => {
   const currentAddress = useCurrentAddress();
