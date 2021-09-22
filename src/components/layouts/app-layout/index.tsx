@@ -49,7 +49,7 @@ export const AppLayout: React.FC = ({ children }) => {
                   </div>
                 </div>
                 <nav
-                  className="hidden lg:flex lg:space-x-4 menu items-center"
+                  className="hidden flex-initial items-center justify-center flex-grow-0 lg:flex lg:space-x-4"
                   aria-label="Global"
                 >
                   {navigation.map((item) => (
@@ -90,7 +90,7 @@ export const AppLayout: React.FC = ({ children }) => {
                   </Disclosure.Button>
                 </div>
 
-                <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
+                <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex flex-shrink-0 lg:items-center lg:w-64 lg:justify-self-end lg:justify-end">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
                     <Connect menuButton />
