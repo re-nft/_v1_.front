@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from "react";
 
-import CatalogueLoader from "../common/catalogue-loader";
 import { Lending, Renting } from "../../types/classes";
 import { CatalogueItem } from "../catalogue-item";
 import { useBatchItems } from "../../hooks/misc/useBatchItems";
@@ -36,25 +35,12 @@ export const MyFavorites: React.FC = () => {
   );
 
   const isLoading = userDataIsLoading || allAvailableIsLoading;
-  if (isLoading) {
-    return (
-      <div className="mx-auto">
-        <CatalogueLoader />
-      </div>
-    );
-  }
 
-  if (!isLoading && favorites.length === 0) {
-    return (
-      <div className="mx-auto text-center text-base text-white font-display py-32 leading-tight">
-        You dont have any NFTs added to favourites yet
-      </div>
-    );
-  }
   return (
     <SearchLayout tabs={[]}>
       <PaginationList
         nfts={favorites}
+        emptyResultMessage="You dont have any NFTs added to favourites yet"
         ItemsRenderer={({ currentPage }) => {
           return (
             <ItemWrapper>
@@ -77,7 +63,6 @@ export const MyFavorites: React.FC = () => {
           );
         }}
         isLoading={isLoading}
-        emptyResultMessage="You are not renting anything yet"
       />
     </SearchLayout>
   );

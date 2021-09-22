@@ -12,6 +12,9 @@
   left: 8px;
   width: 16px;
   animation: loader-anim 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  transition-property: all;
+  transition-duration: 4s;
+  transition-delay: 2s;
 
 
 }

@@ -128,29 +128,27 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
         page.push({ ...previousPage[value], show: false });
       });
     }
-    console.log(page.map(i => i.show))
+    console.log(page.map((i) => i.show));
     return page;
   }, [currentPage, previousPage]);
 
-  if (isLoading && currentPage.length === 0) {
-    return <CatalogueLoader />;
-  }
-
-  if (!isLoading && currentPage.length === 0) {
-    return (
-      <div className="text-center text-base text-white font-display py-32 leading-tight">
-        {emptyResultMessage}
-      </div>
-    );
-  }
   return (
     <>
-      <ItemsRenderer currentPage={currentPageWithShow}></ItemsRenderer>
-      <Pagination
-        totalPages={totalPages}
-        currentPageNumber={currentPageNumber}
-        onSetPage={onSetPage}
-      />
+      {isLoading && <div className='absolute inset-0 bottom-0'><CatalogueLoader /></div>}
+      {currentPage.length === 0 ? (
+        <div className="text-center text-base text-white font-display py-32 leading-tight">
+          {emptyResultMessage}
+        </div>
+      ) : (
+        <>
+          <ItemsRenderer currentPage={currentPageWithShow}></ItemsRenderer>
+          <Pagination
+            totalPages={totalPages}
+            currentPageNumber={currentPageNumber}
+            onSetPage={onSetPage}
+          />
+        </>
+      )}
     </>
   );
 };

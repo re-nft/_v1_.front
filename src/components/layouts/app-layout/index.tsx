@@ -177,7 +177,7 @@ export const AppLayout: React.FC = ({ children }) => {
       </Disclosure>
 
       <main>
-        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full overflow-y-hidden pb-6">
+        <div className="max-w-7xl mx-auto flex text-sm font-body leading-tight min-h-full w-full overflow-y-hidden pb-6 relative">
           <div
             className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-6 shadow-rn-one"
             style={{
