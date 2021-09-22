@@ -81,7 +81,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       if (disabled) return;
       onCheckboxChange(e);
     },
-    [rest, disabled]
+    [disabled, onCheckboxChange]
   );
 
   return (

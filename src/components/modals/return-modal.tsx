@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
-import { Nft } from "../../types/classes";
+import { Nft, Renting } from "../../types/classes";
 import { useObservable } from "../../hooks/misc/useObservable";
 import { useReturnIt } from "../../hooks/contract/useReturnIt";
 import Modal from "./modal";
@@ -25,7 +25,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   const selectedToReturn = useRentingStore(
     useCallback(
       (state) => {
-        return checkedItems.map(i => state.rentings[i])
+        const set = new Set(checkedItems)
+        return state.rentings.filter((r: Renting) => set.has(r.id));
       },
       [checkedItems]
     )

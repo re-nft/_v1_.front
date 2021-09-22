@@ -25,7 +25,10 @@ export const useIsClaimable = (
   const blockTimeStamp = useTimestamp();
   const renting = useRentingStore(
     useCallback(
-      (state) => (rentingId ? state.rentings[rentingId] : null),
+      (state) =>
+        rentingId
+          ? state.rentings.find((r: Renting) => r.id === rentingId)
+          : null,
       [rentingId]
     ),
     shallow
