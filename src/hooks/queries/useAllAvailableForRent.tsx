@@ -74,7 +74,6 @@ export const useAllAvailableForRent = () => {
               )
           );
           addNfts(nfts);
-          console.log(items);
           addLendings(
             items.map((r) => new Lending(r)),
             NFTRentType.ALL_AVAILABLE_TO_RENT

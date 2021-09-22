@@ -37,7 +37,7 @@ export const MyFavorites: React.FC = () => {
   const isLoading = userDataIsLoading || allAvailableIsLoading;
 
   return (
-    <SearchLayout tabs={[]}>
+    <SearchLayout tabs={[]} hideDevMenu>
       <PaginationList
         nfts={favorites}
         emptyResultMessage="You dont have any NFTs added to favourites yet"

@@ -130,29 +130,18 @@ export const useLendingStore = create<LendingState>(
   )
 );
 type RentingState = {
-  rentings: Record<string, Renting>;
+  rentings: [];
   addRentings: (nfts: Renting[]) => void;
 };
 // delete previous rentings, as only user rentings are stored here
 export const useRentingStore = create<RentingState>(
   devtools(
     (set) => ({
-      rentings: {},
+      rentings: [],
       addRentings: (rentings: Renting[]) =>
         set(
           produce((state) => {
-            const previous = new Set(Object.keys(state.rentings));
-            rentings.map((renting) => {
-              const previousNft = state.rentings[renting.id];
-              state.rentings[renting.id] = {
-                ...previousNft,
-                ...renting
-              };
-              previous.delete(renting.id);
-            });
-            previous.forEach((id) => {
-              delete state.rentings[id];
-            });
+            state.rentings = rentings;
           })
         )
     }),

@@ -128,7 +128,6 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
         page.push({ ...previousPage[value], show: false });
       });
     }
-    console.log(page.map((i) => i.show));
     return page;
   }, [currentPage, previousPage]);
 

@@ -83,7 +83,6 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             return "0";
           });
         // amount should not be a too big number
-        console.log(nft.nId, amount);
         setAmount(nft.nId, Number(amount.toString));
       }
     };

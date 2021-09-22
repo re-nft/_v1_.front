@@ -20,9 +20,9 @@ export const DashboardPage: React.FC = ({ children }) => {
         href: "/dashboard/renting"
       },
       {
-        name: "Favorites",
-        current: pathname == '/dashboard/favorites',
-        href: "/dashboard/favorites"
+        name: "Favourites",
+        current: pathname == '/dashboard/favourites',
+        href: "/dashboard/favourites"
       }
     ]
   }, [pathname])
