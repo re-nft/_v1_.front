@@ -53,7 +53,7 @@ export const useAllAvailableForRent = () => {
     shallow
   );
   useEffect(() => {
-    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
           if (
