@@ -9,7 +9,11 @@ import { LendingRaw } from "../../types";
 import shallow from "zustand/shallow";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { NFTRentType, useLendingStore, useNftsStore } from "../store/useNftStore";
+import {
+  NFTRentType,
+  useLendingStore,
+  useNftsStore
+} from "../store/useNftStore";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -39,7 +43,6 @@ export const useAllAvailableForRent = () => {
     useCallback((state) => state.lendings, []),
     shallow
   );
-  
 
   const addNfts = useNftsStore((state) => state.addNfts);
   const addLendings = useLendingStore((state) => state.addLendings);
@@ -71,7 +74,11 @@ export const useAllAvailableForRent = () => {
               )
           );
           addNfts(nfts);
-          addLendings(items.map((r) => new Lending(r)), NFTRentType.ALL_AVAILABLE_TO_RENT);
+          console.log(items);
+          addLendings(
+            items.map((r) => new Lending(r)),
+            NFTRentType.ALL_AVAILABLE_TO_RENT
+          );
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -93,10 +100,19 @@ export const useAllAvailableForRent = () => {
       const userNotLender =
         l.lenderAddress.toLowerCase() !== currentAddress.toLowerCase();
       const userNotRenter = l.lenderAddress.toLowerCase() !== currentAddress;
-      return userNotLender && userNotRenter && allAvailableToRentIds.has(l.id);
-    }
-    return Object.values(allLendings).filter(filterAvailableForRenting);
-  }, [currentAddress, allLendings, allAvailableToRentIds]);
+      return userNotLender && userNotRenter;
+    };
+    const arr: Lending[] = allAvailableToRentIds
+      .map((i) => {
+        return allLendings[i];
+      })
+      .filter(filterAvailableForRenting);
+    return arr;
+  }, [
+    currentAddress,
+    allLendings,
+    allAvailableToRentIds
+  ]);
 
   return { allAvailableToRent, isLoading };
 };

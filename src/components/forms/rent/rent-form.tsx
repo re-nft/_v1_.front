@@ -123,7 +123,7 @@ export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => 
             {defaultValues.inputs.map((item) => {
               // render the initial values so transition can be shown
               const index = controlledFields.findIndex(
-                (v) => v.nId === item.nId
+                (v) => v.id === item.id
               );
               const show = index >= 0;
               return (

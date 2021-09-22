@@ -15,10 +15,10 @@ export enum OWNED_NFT_TYPE {
 type NftMetaState = {
   nfts: Record<string, Nft>;
   // ids of owned Nfts
-  ownedNfts: Set<string>;
-  dev_nfts: Set<string>;
-  external_erc721s: Set<string>;
-  external_erc1155s: Set<string>;
+  ownedNfts: string[];
+  dev_nfts: string[];
+  external_erc721s: string[];
+  external_erc1155s: string[];
   // add nft metadatat to store, if ownedNfts specified it updates user ownedNfts
   // second argument add together the three seperate places where nfts can come from
   // if not specified than user has no ownership to nft
@@ -39,10 +39,10 @@ export const useNftsStore = create<NftMetaState>(
   devtools(
     (set) => ({
       nfts: {},
-      ownedNfts: new Set(),
-      dev_nfts: new Set(),
-      external_erc721s: new Set(),
-      external_erc1155s: new Set(),
+      ownedNfts: [],
+      dev_nfts: [],
+      external_erc721s: [],
+      external_erc1155s: [],
       amounts: new Map<string, number>(),
       setAmount: (id: string, amount: number) =>
         set(
@@ -61,8 +61,9 @@ export const useNftsStore = create<NftMetaState>(
               };
             });
             if (ownedNftType) {
-              const ids = new Set(nfts.map((i) => i.nId));
-              ids.forEach((el) => state.ownedNfts.add(el));
+              const ids = nfts.map((i) => i.nId);
+              const set = new Set(...state.ownedNfts, ...ids)
+              state.ownedNfts = Array.from(set)
               switch (ownedNftType) {
                 case OWNED_NFT_TYPE.DEV_NFT: {
                   state.dev_nfts = ids;
@@ -90,18 +91,18 @@ type LendingState = {
   lendings: Record<string, Lending>;
   addLendings: (nfts: Lending[], type: NFTRentType) => void;
   // ids
-  userIsRenting: Set<string>;
-  userIsLending: Set<string>;
-  allAvailableToRent: Set<string>;
+  userIsRenting: string[];
+  userIsLending: string[];
+  allAvailableToRent: string[];
 };
 
 export const useLendingStore = create<LendingState>(
   devtools(
     (set) => ({
       lendings: {},
-      userIsRenting: new Set(),
-      userIsLending: new Set(),
-      allAvailableToRent: new Set(),
+      userIsRenting: [],
+      userIsLending: [],
+      allAvailableToRent: [],
       addLendings: (lendings: Lending[], type: NFTRentType) =>
         set(
           produce((state) => {
@@ -114,11 +115,11 @@ export const useLendingStore = create<LendingState>(
             });
             switch (type) {
               case NFTRentType.ALL_AVAILABLE_TO_RENT: {
-                state.allAvailableToRent = new Set(lendings.map((i) => i.id));
+                state.allAvailableToRent = lendings.map((i) => i.id);
                 return;
               }
               case NFTRentType.USER_IS_LENDING: {
-                state.userIsLending = new Set(lendings.map((i) => i.id));
+                state.userIsLending = lendings.map((i) => i.id);
                 return;
               }
             }

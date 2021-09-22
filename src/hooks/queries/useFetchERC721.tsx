@@ -54,12 +54,9 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
 
   const ERC721 = useNftsStore(
     useCallback((state) => {
-      const erc721 = state.external_erc721s;
-      const arr: Nft[] = [];
-      erc721.forEach((i) => {
-        arr.push(state.nfts[i]);
+      return state.external_erc721s.map((i) => {
+        return state.nfts[i];
       });
-      return arr;
     }, [])
   );
   const addNfts = useNftsStore((state) => state.addNfts);

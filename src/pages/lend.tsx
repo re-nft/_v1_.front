@@ -28,7 +28,7 @@ const LendCatalagoueItem: React.FC<{
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
       hasAction
-      buttonTitle={checkedMoreThanOne ? "Lend all" : "Lend"}
+      buttonTitle={checkedMoreThanOne && checked ? "Lend all" : "Lend"}
       onClick={handleStartLend}
     />
   );

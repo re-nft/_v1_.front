@@ -1,4 +1,3 @@
-
 import { Lending, Nft } from "../../types/classes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePrevious } from "../misc/usePrevious";
@@ -10,7 +9,11 @@ import request from "graphql-request";
 import { queryUserLendingRenft } from "../../services/queries";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { NFTRentType, useLendingStore, useNftsStore } from "../store/useNftStore";
+import {
+  NFTRentType,
+  useLendingStore,
+  useNftsStore
+} from "../store/useNftStore";
 import shallow from "zustand/shallow";
 
 export const useUserIsLending = () => {
@@ -29,14 +32,15 @@ export const useUserIsLending = () => {
     useCallback((state) => state.userIsLending, []),
     shallow
   );
-  
+
   const fetchLending = useCallback(() => {
     if (!signer) return EMPTY;
     if (!process.env.NEXT_PUBLIC_RENFT_API) {
       throw new Error("RENFT_API is not defined");
     }
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      if (userIsLendingIds && userIsLendingIds.size > 0) addLendings([], NFTRentType.USER_IS_LENDING);
+      if (userIsLendingIds && userIsLendingIds.length > 0)
+        addLendings([], NFTRentType.USER_IS_LENDING);
       return EMPTY;
     }
 
@@ -84,7 +88,10 @@ export const useUserIsLending = () => {
             )
         );
         addNfts(nfts);
-        addLendings(lendings.map((r) => new Lending(r)), NFTRentType.USER_IS_LENDING);
+        addLendings(
+          lendings.map((r) => new Lending(r)),
+          NFTRentType.USER_IS_LENDING
+        );
         setLoading(false);
       })
     );
@@ -107,13 +114,11 @@ export const useUserIsLending = () => {
     };
   }, [fetchLending, currentAddress]);
 
-  const userLending = useMemo(()=>{
-    const arr: Lending[] = []
-    userIsLendingIds.forEach(i=> {
-      arr.push(lendings[i])
-    })
-    return arr;
-  }, [userIsLendingIds, lendings])
-  
+  const userLending = useMemo(() => {
+    return userIsLendingIds.map((i) => {
+      return lendings[i];
+    });
+  }, [userIsLendingIds, lendings]);
+
   return { userLending, isLoading };
 };

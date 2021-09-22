@@ -65,18 +65,17 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
 
   const ERC1155 = useNftsStore(
     useCallback((state) => {
-      const tokens = state.external_erc1155s;
-      const arr: Nft[] = [];
-      tokens.forEach((i) => {
-        arr.push(state.nfts[i]);
+      return state.external_erc1155s.map((i) => {
+        return state.nfts[i];
       });
-      return arr;
-    }, []), shallow
+    }, []),
+    shallow
   );
   const external_erc1155s = useNftsStore(
     useCallback((state) => {
-      return  state.external_erc1155s;
-    }, []), shallow
+      return state.external_erc1155s;
+    }, []),
+    shallow
   );
   const addNfts = useNftsStore((state) => state.addNfts);
   const setAmount = useNftsStore((state) => state.setAmount);
@@ -93,8 +92,8 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
             console.log(e);
             return "0";
           });
-        // amount should not be a too big number 
-        console.log(nft.nId, amount)
+        // amount should not be a too big number
+        console.log(nft.nId, amount);
         setAmount(nft.nId, Number(amount.toString));
       }
     };

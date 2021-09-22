@@ -40,7 +40,7 @@ const RentingCatalogueItem: React.FC<{
       disabled={isExpired}
       onCheckboxChange={onCheckboxChange}
       hasAction
-      buttonTitle={checkedMoreThanOne ? "Return all" : "Return"}
+      buttonTitle={checkedMoreThanOne && checked ? "Return all" : "Return"}
       onClick={handleReturnNft(renting)}
     >
       <CatalogueItemRow

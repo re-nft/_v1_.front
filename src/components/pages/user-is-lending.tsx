@@ -37,8 +37,8 @@ const LendingCatalogueItem: React.FC<{
     lending.collateralClaimed
   );
   const buttonTitle = useMemo(()=> {
-    if (isClaimable) return checkedMoreThanOne ? "Claim all" : "Claim";
-    return checkedMoreThanOne ? "Stop lend all" : "Stop lend";
+    if (isClaimable) return checkedMoreThanOne && checked ? "Claim all" : "Claim";
+    return checkedMoreThanOne && checked ? "Stop lend all" : "Stop lend";
   }, [isClaimable, checkedMoreThanOne])
 
   return (

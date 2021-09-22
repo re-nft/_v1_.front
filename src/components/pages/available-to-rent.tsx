@@ -31,7 +31,7 @@ const RentCatalogueItem: React.FC<{
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction
-      buttonTitle={checkedMoreThanOne ? "Rent all" : "Rent"}
+      buttonTitle={checkedMoreThanOne && checked ? "Rent all" : "Rent"}
       onClick={handleBatchModalOpen(lending)}
     >
       <LendingFields lending={lending} />
