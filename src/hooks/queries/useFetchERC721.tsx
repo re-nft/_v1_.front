@@ -7,6 +7,7 @@ import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
 import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
+import { usePrevious } from "../misc/usePrevious";
 
 const fetchERC721 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC721
@@ -49,6 +50,7 @@ const fetchERC721 = (currentAddress: string) => {
 };
 export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
+  const previousAddress = usePrevious(currentAddress);
   const { signer, network } = useWallet();
   const [isLoading, setLoading] = useState(false);
 
@@ -73,9 +75,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
           return fetchERC721(currentAddress);
         }),
         map((items) => {
-          if (items) {
-            addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC721);
-          }
+          addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC721);
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -88,5 +88,10 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     };
   }, [signer, currentAddress, setLoading, addNfts]);
 
+  // reset on wallet change
+  useEffect(() => {
+    addNfts([], OWNED_NFT_TYPE.EXTERNAL_ERC721);
+  }, [currentAddress, previousAddress, addNfts]);
+  
   return { ERC721, isLoading };
 };

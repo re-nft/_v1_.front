@@ -17,6 +17,7 @@ import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
 import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 import shallow from "zustand/shallow";
+import { usePrevious } from "../misc/usePrevious";
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
@@ -52,6 +53,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const currentAddress = useCurrentAddress();
   const { signer, network } = useWallet();
   const [isLoading, setLoading] = useState(false);
+  const previousAddress = usePrevious(currentAddress);
 
   const ERC1155 = useNftsStore(
     useCallback((state) => {
@@ -106,9 +108,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           return fetchERC1155(currentAddress);
         }),
         map((items) => {
-          if (items) {
-            addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC1155);
-          }
+          addNfts(items, OWNED_NFT_TYPE.EXTERNAL_ERC1155);
         }),
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
@@ -121,5 +121,9 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     };
   }, [signer, currentAddress, setLoading, addNfts]);
 
+  // reset on wallet change
+  useEffect(() => {
+    addNfts([], OWNED_NFT_TYPE.EXTERNAL_ERC1155);
+  }, [currentAddress, previousAddress, addNfts]);
   return { ERC1155, isLoading };
 };

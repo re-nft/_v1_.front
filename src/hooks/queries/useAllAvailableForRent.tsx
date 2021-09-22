@@ -14,6 +14,7 @@ import {
   useLendingStore,
   useNftsStore
 } from "../store/useNftStore";
+import { usePrevious } from "../misc/usePrevious";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -39,6 +40,7 @@ export const useAllAvailableForRent = () => {
   const { network } = useWallet();
   const [isLoading, setLoading] = useState(false);
   const currentAddress = useCurrentAddress();
+  const previousAddress = usePrevious(currentAddress);
   const allLendings = useLendingStore(
     useCallback((state) => state.lendings, []),
     shallow
@@ -103,6 +105,11 @@ export const useAllAvailableForRent = () => {
       .filter(userNotRenter);
     return arr;
   }, [currentAddress, allLendings, allAvailableToRentIds]);
+
+  // reset on wallet change
+  useEffect(() => {
+    addLendings([], NFTRentType.ALL_AVAILABLE_TO_RENT);
+  }, [currentAddress, previousAddress, addLendings]);
 
   return { allAvailableToRent, isLoading };
 };

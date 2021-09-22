@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import shallow from "zustand/shallow";
 
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
@@ -9,10 +9,12 @@ import { parseLending } from "../../utils";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { useNftsStore, useRentingStore } from "../store/useNftStore";
+import { usePrevious } from "../misc/usePrevious";
 
 export const useUserRenting = () => {
   const { signer, network } = useWallet();
   const currentAddress = useCurrentAddress();
+  const previousAddress = usePrevious(currentAddress);
 
   const [isLoading, setLoading] = useState(false);
   const addNfts = useNftsStore((state) => state.addNfts);
@@ -73,13 +75,7 @@ export const useUserRenting = () => {
       })
     );
     return fetchRequest;
-  }, [
-    currentAddress,
-    signer,
-    network,
-    setLoading,
-    addRentings
-  ]);
+  }, [currentAddress, signer, network, setLoading, addRentings]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -90,5 +86,9 @@ export const useUserRenting = () => {
     };
   }, [fetchRenting, currentAddress]);
 
+  // reset on wallet change
+  useEffect(() => {
+    addRentings([]);
+  }, [currentAddress, previousAddress, addRentings]);
   return { renting, isLoading };
 };

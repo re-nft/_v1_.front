@@ -162,7 +162,11 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           if (!signer) return EMPTY;
           if (!currentAddress) return EMPTY;
           // we only support mainnet for graph E721 and E1555, other networks we need to roll out our own solution
-          if (network !== NetworkName.localhost && network !== NetworkName.ropsten) return EMPTY;
+          if (
+            network !== NetworkName.localhost &&
+            network !== NetworkName.ropsten
+          )
+            return EMPTY;
           setLoading(true);
           return from(fetchDevNfts(currentAddress, signer));
         }),
@@ -179,6 +183,11 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       subscription?.unsubscribe();
     };
   }, [signer, currentAddress, addNfts]);
+
+  // reset on wallet change
+  useEffect(() => {
+    addNfts([], OWNED_NFT_TYPE.DEV_NFT);
+  }, [currentAddress, previousAddress, addNfts]);
 
   return { devNfts, isLoading };
 };

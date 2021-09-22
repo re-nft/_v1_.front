@@ -120,5 +120,10 @@ export const useUserIsLending = () => {
     });
   }, [userIsLendingIds, lendings]);
 
+  // reset on wallet change
+  useEffect(() => {
+    addLendings([], NFTRentType.USER_IS_LENDING);
+  }, [currentAddress, previousAddress, addLendings]);
+
   return { userLending, isLoading };
 };
