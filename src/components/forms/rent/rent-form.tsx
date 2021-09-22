@@ -20,7 +20,10 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useLendingStore } from "../../../hooks/store/useNftStore";
 
-export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => {
+export const RentForm: React.FC<LendFormProps> = ({
+  checkedItems,
+  onClose
+}) => {
   const {
     startRent: handleSave,
     isApproved,
@@ -32,17 +35,14 @@ export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => 
   const selectedToRent = useLendingStore(
     useCallback(
       (state) => {
-        return Object.values(state.lendings).filter((l) => checkedItems.has(l.id));
+        return checkedItems.map((i) => state.lendings[i]);
       },
       [checkedItems]
     )
   );
   useEffect(() => {
-    checkApprovals(
-      selectedToRent
-    );
+    checkApprovals(selectedToRent);
   }, [checkApprovals, selectedToRent]);
-
 
   const defaultValues: FormProps = {
     inputs: selectedToRent
@@ -122,9 +122,7 @@ export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => 
           <ul role="list" className="flex flex-col space-y-8  ">
             {defaultValues.inputs.map((item) => {
               // render the initial values so transition can be shown
-              const index = controlledFields.findIndex(
-                (v) => v.id === item.id
-              );
+              const index = controlledFields.findIndex((v) => v.id === item.id);
               const show = index >= 0;
               return (
                 <Transition
@@ -173,7 +171,9 @@ export const RentForm: React.FC<LendFormProps> = ({ checkedItems, onClose }) => 
                   transactionHashes={transactionHash}
                 >
                   <Button
-                    description={selectedToRent.length > 1 ? "Rent all" : "Rent"}
+                    description={
+                      selectedToRent.length > 1 ? "Rent all" : "Rent"
+                    }
                     onClick={handleSubmit(onSubmit)}
                     disabled={
                       !isValid ||

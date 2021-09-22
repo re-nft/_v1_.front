@@ -17,7 +17,7 @@ import { formatCollateral } from "../../utils";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
-  checkedItems: Set<string>;
+  checkedItems: string[];
   onCheckboxChange: () => void;
   handleClickNft: (nft: Lending) => void;
 }> = ({ lending, checkedItems, onCheckboxChange, handleClickNft }) => {
@@ -26,10 +26,11 @@ const LendingCatalogueItem: React.FC<{
     handleClickNft(lending);
   }, [lending, handleClickNft]);
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.size;
+    return checkedItems.length;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(lending.id);
+    const set = new Set(checkedItems);
+    return set.has(lending.id);
   }, [checkedItems, lending]);
   const days = parseInt(String(lending.maxRentDuration), 10);
   const isClaimable = useIsClaimable(
@@ -39,7 +40,7 @@ const LendingCatalogueItem: React.FC<{
   const buttonTitle = useMemo(()=> {
     if (isClaimable) return checkedMoreThanOne && checked ? "Claim all" : "Claim";
     return checkedMoreThanOne && checked ? "Stop lend all" : "Stop lend";
-  }, [isClaimable, checkedMoreThanOne])
+  }, [isClaimable, checkedMoreThanOne, checked])
 
   return (
     <CatalogueItem

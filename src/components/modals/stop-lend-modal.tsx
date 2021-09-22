@@ -10,7 +10,7 @@ import { useLendingStore } from "../../hooks/store/useNftStore";
 type ReturnModalProps = {
   open: boolean;
   onClose: (nfts?: Lending[]) => void;
-  checkedItems: Set<string>;
+  checkedItems: string[];
 };
 
 export const StopLendModal: React.FC<ReturnModalProps> = ({
@@ -23,9 +23,7 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
   const selectedToStopLend = useLendingStore(
     useCallback(
       (state) => {
-        return Object.values(state.lendings).filter((l) =>
-          checkedItems.has(l.id)
-        );
+        return checkedItems.map(i => state.lendings[i])
       },
       [checkedItems]
     )

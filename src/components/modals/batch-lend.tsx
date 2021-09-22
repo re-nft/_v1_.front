@@ -5,7 +5,7 @@ import Modal from "./modal";
 import { LendForm } from "../forms/lend/lend-form";
 
 type LendModalProps = {
-  checkedItems: Set<string>;
+  checkedItems: string[];
   open: boolean;
   onClose(): void;
 };

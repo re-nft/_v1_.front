@@ -16,17 +16,18 @@ import { useTimestamp } from "../../hooks/misc/useTimestamp";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
-  checkedItems: Set<string>;
+  checkedItems: string[];
   onCheckboxChange: () => void;
   handleReturnNft: (renting: Renting) => () => void;
 }> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft }) => {
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.size > 1;
+    return checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(renting.id);
+    const set = new Set(checkedItems)
+    return set.has(renting.id);
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {

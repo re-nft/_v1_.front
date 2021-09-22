@@ -9,7 +9,7 @@ import { RentSearchLayout } from "../layouts/rent-search-layout";
 import ItemWrapper from "../common/items-wrapper";
 
 const RentCatalogueItem: React.FC<{
-  checkedItems: Set<string>;
+  checkedItems: string[];
   lending: Lending;
   checkBoxChangeWrapped: (lending: Lending) => () => void;
   handleBatchModalOpen: (lending: Lending) => () => void;
@@ -20,10 +20,11 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen
 }) => {
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.size > 1;
+    return checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    return checkedItems.has(lending.id);
+    const set = new Set(checkedItems);
+    return set.has(lending.id);
   }, [checkedItems, lending]);
   return (
     <CatalogueItem

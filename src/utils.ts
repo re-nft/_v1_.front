@@ -262,16 +262,6 @@ export const filterClaimed = (showClaimed: boolean) => (l: Lending) => {
   }
 };
 
-export const mapAddRelendedField =
-  (ids: Set<string>) => (l: Renting | Lending) => {
-    return {
-      ...l,
-      relended: ids.has(l.nId)
-    };
-  };
-export const mapToIds = (items: Renting[] | Lending[]) => {
-  return new Set(items.map((r: Renting | Lending) => r.nId));
-};
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
 // for example supporting 721 and 1155 standard at the same time

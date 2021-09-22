@@ -10,17 +10,18 @@ import ItemWrapper from "../components/common/items-wrapper";
 import { useWallet } from "../hooks/store/useWallet";
 
 const LendCatalagoueItem: React.FC<{
-  checkedItems: Set<string>;
+  checkedItems: string[];
   nft: Nft;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   handleStartLend: () => void;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend }) => {
   const checked = useMemo(() => {
-    return checkedItems.has(nft.nId);
+    const set = new Set(checkedItems)
+    return set.has(nft.nId);
   }, [checkedItems, nft.nId]);
 
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.size > 1;
+    return checkedItems.length > 1;
   }, [checkedItems]);
   return (
     <CatalogueItem

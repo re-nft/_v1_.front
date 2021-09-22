@@ -2,7 +2,7 @@ import { FormState, UseFormRegister } from "react-hook-form/dist/types";
 import { Nft } from "../../../types/classes";
 
 export type LendFormProps = {
-  checkedItems: Set<string>;
+  checkedItems: string[];
   onClose: () => void;
 };
 

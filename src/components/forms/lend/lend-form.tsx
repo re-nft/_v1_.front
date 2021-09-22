@@ -25,7 +25,7 @@ export const LendForm: React.FC<LendFormProps> = ({
   const ownedNfts = useNftsStore(
     useCallback(
       (state) => {
-        return Object.values(state.nfts).filter((l) => checkedItems.has(l.id));
+        return checkedItems.map((i) => state.nfts[i])
       },
       [checkedItems]
     )

@@ -5,14 +5,14 @@ import { THROWS, UniqueID } from "../../utils";
 
 export type BatchContextType = {
   // nftAddress::tokenId::lendingId
-  checkedItems: Set<string>;
+  checkedItems: string[];
   // checkedLending and checkedRenting items are typeguarded items derived from checkedMap
-  handleReset(items?: Set<string>): void;
+  handleReset(items?: string[]): void;
   onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
 const defaultBatchContext = {
-  checkedItems: new Set<string>(),
+  checkedItems: new Map<string, boolean>(),
   // functions
   handleReset: THROWS,
   handleResetLending: THROWS,
@@ -21,20 +21,18 @@ const defaultBatchContext = {
 };
 
 export const useBatchItems: () => BatchContextType = () => {
-  const [checkedItems, setCheckedItems] = useState<
-    BatchContextType["checkedItems"]
-  >(defaultBatchContext.checkedItems);
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   const handleReset = useCallback(
-    (items: Set<string>) => {
+    (items: string[]) => {
       if (items) {
         const set = new Set(checkedItems);
         items.forEach((i) => {
           set.delete(i);
         });
-        setCheckedItems(set);
+        setCheckedItems(Array.from(set));
       } else if (Object.keys(checkedItems).length > 0)
-        setCheckedItems(defaultBatchContext.checkedItems);
+        setCheckedItems([]);
     },
     [checkedItems]
   );
@@ -42,15 +40,15 @@ export const useBatchItems: () => BatchContextType = () => {
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
     (item) => {
       const uniqueID = item.id;
-      const newSet = new Set(checkedItems);
+      const set = new Set(checkedItems)
       // if contained in prev, remove
-      if (newSet.has(uniqueID)) {
-        newSet.delete(uniqueID);
+      if (set.has(uniqueID)) {
+        set.delete(uniqueID);
         // if not, add
       } else {
-        newSet.add(uniqueID);
+        set.add(uniqueID);
       }
-      setCheckedItems(newSet);
+      setCheckedItems(Array.from(set));
     },
     [checkedItems]
   );

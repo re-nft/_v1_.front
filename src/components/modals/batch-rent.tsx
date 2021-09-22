@@ -6,7 +6,7 @@ import { RentForm } from "../forms/rent/rent-form";
 type BatchRentModalProps = {
   open: boolean;
   handleClose: () => void;
-  checkedItems: Set<string>;
+  checkedItems: string[];
 };
 
 export const BatchRentModal: React.FC<BatchRentModalProps> = ({

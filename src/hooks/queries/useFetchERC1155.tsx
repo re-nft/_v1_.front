@@ -38,22 +38,12 @@ const fetchERC1155 = (currentAddress: string) => {
   ).pipe(
     map((result) => {
       // filter out duplicates
-      const items: Nft[] = [];
-      const resultIds = new Set<string>();
-      result
-        .map((nft) => {
-          return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
-            meta: nft.meta,
-            tokenURI: nft.tokenURI
-          });
-        })
-        .forEach((nft) => {
-          if (!resultIds.has(nft.id)) {
-            items.push(nft);
-            resultIds.add(nft.id);
-          }
+      return result.map((nft) => {
+        return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
+          meta: nft.meta,
+          tokenURI: nft.tokenURI
         });
-      return items;
+      });
     })
   );
 };
