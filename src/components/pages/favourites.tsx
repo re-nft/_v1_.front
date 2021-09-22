@@ -10,7 +10,6 @@ import ItemWrapper from "../common/items-wrapper";
 import { PaginationList } from "../layouts/pagination-list";
 import { getUniqueID } from "../../utils";
 import { useUserData } from "../../hooks/store/useUserData";
-import { useNftsStore } from "../../hooks/store/useNftStore";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =
@@ -59,14 +58,21 @@ export const MyFavorites: React.FC = () => {
         ItemsRenderer={({ currentPage }) => {
           return (
             <ItemWrapper>
-              {currentPage.map((nft: Renting | Lending) => (
-                <CatalogueItem
-                  key={nft.id}
-                  nId={nft.nId}
-                  isAlreadyFavourited
-                  onCheckboxChange={checkBoxChangeWrapped(nft)}
-                ></CatalogueItem>
-              ))}
+              {currentPage.map(
+                (
+                  nft:
+                    | (Renting & { show: boolean })
+                    | (Lending & { show: boolean })
+                ) => (
+                  <CatalogueItem
+                    show={nft.show}
+                    key={nft.id}
+                    nId={nft.nId}
+                    isAlreadyFavourited
+                    onCheckboxChange={checkBoxChangeWrapped(nft)}
+                  ></CatalogueItem>
+                )
+              )}
             </ItemWrapper>
           );
         }}

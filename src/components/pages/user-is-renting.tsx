@@ -19,7 +19,8 @@ const RentingCatalogueItem: React.FC<{
   checkedItems: string[];
   onCheckboxChange: () => void;
   handleReturnNft: (renting: Renting) => () => void;
-}> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft }) => {
+  show: boolean
+}> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft, show }) => {
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
@@ -41,6 +42,7 @@ const RentingCatalogueItem: React.FC<{
       disabled={isExpired}
       onCheckboxChange={onCheckboxChange}
       hasAction
+      show={show}
       buttonTitle={checkedMoreThanOne && checked ? "Return all" : "Return"}
       onClick={handleReturnNft(renting)}
     >
@@ -61,7 +63,7 @@ const RentingCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
+const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = ({
   currentPage
 }) => {
   const {
@@ -102,10 +104,11 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
         />
       )}
       <ItemWrapper>
-        {currentPage.map((renting: Renting) => (
+        {currentPage.map((renting: (Renting & {show: boolean})) => (
           <RentingCatalogueItem
             renting={renting}
             key={renting.id}
+            show={renting.show}
             checkedItems={checkedItems}
             onCheckboxChange={checkBoxChangeWrapped(renting)}
             handleReturnNft={handleReturnNft}

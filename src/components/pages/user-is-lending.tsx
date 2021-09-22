@@ -20,7 +20,8 @@ const LendingCatalogueItem: React.FC<{
   checkedItems: string[];
   onCheckboxChange: () => void;
   handleClickNft: (nft: Lending) => void;
-}> = ({ lending, checkedItems, onCheckboxChange, handleClickNft }) => {
+  show: boolean;
+}> = ({ lending, checkedItems, onCheckboxChange, handleClickNft, show }) => {
   const hasRenting = lending.hasRenting;
   const onClick = useCallback(() => {
     handleClickNft(lending);
@@ -49,6 +50,7 @@ const LendingCatalogueItem: React.FC<{
       onCheckboxChange={onCheckboxChange}
       disabled={hasRenting}
       hasAction
+      show={show}
       buttonTitle={buttonTitle}
       onClick={onClick}
     >
@@ -76,7 +78,7 @@ const LendingCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
+const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = ({
   currentPage
 }) => {
   const {
@@ -117,9 +119,10 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
         />
       )}
       <ItemWrapper>
-        {currentPage.map((lending: Lending) => (
+        {currentPage.map((lending: (Lending & {show: boolean})) => (
           <LendingCatalogueItem
             lending={lending}
+            show={lending.show}
             key={lending.id}
             checkedItems={checkedItems}
             onCheckboxChange={checkBoxChangeWrapped(lending)}

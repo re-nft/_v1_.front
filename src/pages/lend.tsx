@@ -14,9 +14,10 @@ const LendCatalagoueItem: React.FC<{
   nft: Nft;
   checkBoxChangeWrapped: (nft: Nft) => () => void;
   handleStartLend: () => void;
-}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend }) => {
+  show: boolean;
+}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend, show }) => {
   const checked = useMemo(() => {
-    const set = new Set(checkedItems)
+    const set = new Set(checkedItems);
     return set.has(nft.nId);
   }, [checkedItems, nft.nId]);
 
@@ -25,6 +26,7 @@ const LendCatalagoueItem: React.FC<{
   }, [checkedItems]);
   return (
     <CatalogueItem
+      show={show}
       nId={nft.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
@@ -35,7 +37,9 @@ const LendCatalagoueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
+const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
+  currentPage
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { checkedItems, handleReset, onCheckboxChange } = useBatchItems();
   const handleClose = useCallback(() => {
@@ -66,9 +70,10 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
         />
       )}
       <ItemWrapper>
-        {currentPage.map((nft: Nft) => (
+        {currentPage.map((nft: Nft & { show: boolean }) => (
           <LendCatalagoueItem
             nft={nft}
+            show={nft.show}
             key={nft.id}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}

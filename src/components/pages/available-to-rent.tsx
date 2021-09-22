@@ -13,11 +13,13 @@ const RentCatalogueItem: React.FC<{
   lending: Lending;
   checkBoxChangeWrapped: (lending: Lending) => () => void;
   handleBatchModalOpen: (lending: Lending) => () => void;
+  show: boolean;
 }> = ({
   checkedItems,
   lending,
   checkBoxChangeWrapped,
-  handleBatchModalOpen
+  handleBatchModalOpen,
+  show
 }) => {
   const checkedMoreThanOne = useMemo(() => {
     return checkedItems.length > 1;
@@ -32,6 +34,7 @@ const RentCatalogueItem: React.FC<{
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction
+      show={show}
       buttonTitle={checkedMoreThanOne && checked ? "Rent all" : "Rent"}
       onClick={handleBatchModalOpen(lending)}
     >
@@ -40,7 +43,7 @@ const RentCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
+const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = ({
   currentPage
 }) => {
   const {
@@ -76,10 +79,11 @@ const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
       />
 
       <ItemWrapper>
-        {currentPage.map((lending: Lending) => (
+        {currentPage.map((lending: (Lending & {show: boolean})) => (
           <RentCatalogueItem
             key={lending.id}
-            lending={lending}
+            show={lending.show}
+            lending={lending as Lending}
             checkedItems={checkedItems}
             checkBoxChangeWrapped={checkBoxChangeWrapped}
             handleBatchModalOpen={handleBatchModalOpen}

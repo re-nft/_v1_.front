@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Lending, Nft, Renting } from "../../types/classes";
 import CatalogueLoader from "../common/catalogue-loader";
 import Pagination from "../common/pagination";
 import { useFetchMeta } from "../../hooks/store/useMetaState";
+import { usePrevious } from "../../hooks/misc/usePrevious";
 
 const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1,
+  totalPages: 1
 };
 
 type State<T> = {
@@ -24,15 +25,16 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
   nfts,
   ItemsRenderer,
   isLoading,
-  emptyResultMessage,
+  emptyResultMessage
 }: {
   nfts: T[] | T[];
   isLoading: boolean;
-  ItemsRenderer: React.FC<{ currentPage: T[] }>;
+  ItemsRenderer: React.FC<{ currentPage: (T & { show: boolean })[] }>;
   emptyResultMessage: string;
 }) => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
     useState<State<T>>(defaultSate);
+  const previousPage = usePrevious(currentPage);
 
   const [newState, setNewState] = useState<State<T>>(defaultSate);
 
@@ -59,7 +61,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage,
+        currentPage
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -85,7 +87,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems),
+        currentPage: getCurrentPage(1, totalPages, newItems)
       });
     },
     [getCurrentPage]
@@ -106,8 +108,29 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
   // Fetch meta state
   useEffect(() => {
     if (isLoading) return;
-    fetchMeta(currentPage.map(n => n.nId));
+    fetchMeta(currentPage.map((n) => n.nId));
   }, [currentPage, isLoading, fetchMeta]);
+
+  const currentPageWithShow = useMemo(() => {
+    // id, index
+    const previousItems = new Map<string, number>();
+    if (previousPage) {
+      previousPage.forEach((i: T, index: number) => {
+        previousItems.set(i.id, index);
+      });
+    }
+    const page = currentPage.map((c) => {
+      previousItems.delete(c.id);
+      return { ...c, show: true };
+    });
+    if (previousItems.size > 0) {
+      previousItems.forEach((value: number, key: string) => {
+        page.push({ ...previousPage[value], show: false });
+      });
+    }
+    console.log(page.map(i => i.show))
+    return page;
+  }, [currentPage, previousPage]);
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
@@ -122,7 +145,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
   }
   return (
     <>
-      <ItemsRenderer currentPage={currentPage}></ItemsRenderer>
+      <ItemsRenderer currentPage={currentPageWithShow}></ItemsRenderer>
       <Pagination
         totalPages={totalPages}
         currentPageNumber={currentPageNumber}

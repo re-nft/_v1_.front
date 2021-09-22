@@ -11,15 +11,6 @@ export type BatchContextType = {
   onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
-const defaultBatchContext = {
-  checkedItems: new Map<string, boolean>(),
-  // functions
-  handleReset: THROWS,
-  handleResetLending: THROWS,
-  handleResetRenting: THROWS,
-  onCheckboxChange: THROWS
-};
-
 export const useBatchItems: () => BatchContextType = () => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
 

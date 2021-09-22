@@ -81,8 +81,7 @@ export function useNFTApproval(nfts: NFTApproval[]): {
       if (!signer) return [false, []];
 
       const result = await Promise.all(
-        //@ts-ignore
-        getDistinctItems(nft, "address").map((nft: NFTApproval) => {
+        getDistinctItems(nft, "nftAddress").map((nft: NFTApproval) => {
           return getContractWithSigner(nft.nftAddress, signer, nft.isERC721).then(
             (contract) => {
               return contract

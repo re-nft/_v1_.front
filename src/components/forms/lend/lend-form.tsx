@@ -1,4 +1,10 @@
-import React, { Fragment, useMemo, useState, useCallback } from "react";
+import React, {
+  Fragment,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect
+} from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";
@@ -25,7 +31,7 @@ export const LendForm: React.FC<LendFormProps> = ({
   const ownedNfts = useNftsStore(
     useCallback(
       (state) => {
-        return checkedItems.map((i) => state.nfts[i])
+        return checkedItems.map((i) => state.nfts[i]);
       },
       [checkedItems]
     )
@@ -46,7 +52,7 @@ export const LendForm: React.FC<LendFormProps> = ({
           tokenId: nft.tokenId,
           nft: nft,
           lendAmount: amount || 1,
-          amount: amount?.toString() || '1',
+          amount: amount?.toString() || "1",
           nftAddress: nft.nftAddress
         };
       })

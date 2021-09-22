@@ -11,6 +11,7 @@ import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
 import { useNftsStore } from "../../hooks/store/useNftStore";
 import { ReactEventOnClickType } from "../../types";
+import { Transition } from "@headlessui/react";
 
 type CatalougeItemBaseProps = {
   nId: string;
@@ -18,6 +19,7 @@ type CatalougeItemBaseProps = {
   isAlreadyFavourited?: boolean;
   onCheckboxChange: () => void;
   disabled?: boolean;
+  show: boolean;
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
   onClick: ReactEventOnClickType;
@@ -35,6 +37,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   onCheckboxChange,
   children,
   disabled,
+  show,
   ...rest
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
@@ -73,12 +76,19 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 
   return (
-    <div
+    <Transition
+      show={show}
+      as="div"
+      enter="transition-opacity ease-linear duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity ease-linear duration-300"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
       key={nft.id}
       className={`text-base leading-tight flex flex-col bg-white border-2 border-black hover:shadow-rn-one pb-1 ${
         checked ? "shadow-rn-one border-4" : ""
       }`}
-      data-item-id={nft.tokenId}
       onClick={onCheckboxChange}
     >
       {!imageIsReady && <Skeleton />}
@@ -164,6 +174,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
           </div>
         </>
       )}
-    </div>
+    </Transition>
   );
 };
