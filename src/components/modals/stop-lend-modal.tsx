@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Lending } from "../../types/classes";
-import { useObservable } from "../../hooks/misc/useObservable";
 import { useStopLend } from "../../hooks/contract/useStopLend";
 import Modal from "./modal";
 import { useLendingStore } from "../../hooks/store/useNftStore";
@@ -18,12 +17,11 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
   onClose,
   checkedItems
 }) => {
-  const stopLending = useStopLend();
-  const [t, setObservable] = useObservable();
+  const { stopLend, status } = useStopLend();
   const selectedToStopLend = useLendingStore(
     useCallback(
       (state) => {
-        return checkedItems.map(i => state.lendings[i])
+        return checkedItems.map((i) => state.lendings[i]);
       },
       [checkedItems]
     )
@@ -33,8 +31,8 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
       ...lending,
       lendingId: lending.id
     }));
-    setObservable(stopLending(items));
-  }, [selectedToStopLend, stopLending, setObservable]);
+    stopLend(items);
+  }, [selectedToStopLend, stopLend]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -42,16 +40,16 @@ export const StopLendModal: React.FC<ReturnModalProps> = ({
         <div className="text-xl">Do you want to stop lending?</div>
         <div className="py-3 flex flex-auto items-end justify-center">
           <TransactionWrapper
-            isLoading={t.isLoading}
+            isLoading={status.isLoading}
             closeWindow={onClose}
-            status={t.status}
-            transactionHashes={t.transactionHash}
+            status={status.status}
+            transactionHashes={status.transactionHash}
           >
             <Button
               description={
                 selectedToStopLend.length > 1 ? "Stop Lend All" : "Stop Lend"
               }
-              disabled={t.isLoading}
+              disabled={status.isLoading}
               onClick={handleStopLend}
             />
           </TransactionWrapper>

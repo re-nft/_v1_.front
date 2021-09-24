@@ -1,26 +1,29 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper,
-} from "../misc/useTransactionWrapper";
-import { EMPTY, Observable } from "rxjs";
+  useOptimisticTransaction
+} from "../misc/useOptimisticTransaction";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";
+import { TransactionStateEnum } from "../../types";
 
 const debug = createDebugger("app:contract");
 
-export const useStartLend = (): ((
-  lendingInputs: LendInputDefined[]
-) => Observable<TransactionStatus>) => {
+export const useStartLend = (): {
+  startLend: (lendingInputs: LendInputDefined[]) => void;
+  status: TransactionStatus;
+} => {
   const sdk = useSDK();
-  const transactionWrapper = useTransactionWrapper();
+  const { createTransaction, transactionRequests, pendingTransactionRequests } =
+    useOptimisticTransaction();
+  const [requestId, setRequestId] = useState<string>();
 
   const startLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
-      if (!sdk) return EMPTY;
+      if (!sdk) return false;
 
       const amounts: number[] = [];
       const maxRentDurations: number[] = [];
@@ -52,7 +55,7 @@ export const useStartLend = (): ((
       debug("nftPrice", nftPrice);
       debug("tokens", pmtTokens);
 
-      return transactionWrapper(
+      const id = createTransaction(
         sdk.lend(
           addresses,
           tokenIds,
@@ -72,11 +75,25 @@ export const useStartLend = (): ((
         dailyRentPrices: ${dailyRentPrices}
         nftPrice: ${nftPrice}
         tokens: ${pmtTokens}
-        `,
+        `
         }
       );
+      setRequestId(id);
     },
-    [sdk, transactionWrapper]
+    [sdk, createTransaction]
   );
-  return startLend;
+  const request = useMemo(() => {
+    return requestId ? transactionRequests[requestId] : null;
+  }, [requestId, transactionRequests]);
+  const status = useMemo(() => {
+    console.log(pendingTransactionRequests)
+    return (
+      request?.transactionStatus || {
+        isLoading: true,
+        hasFailure: false,
+        status: TransactionStateEnum.WAITING_FOR_SIGNATURE
+      }
+    );
+  }, [request, pendingTransactionRequests]);
+  return { startLend, status };
 };

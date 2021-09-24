@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 // TODO: otherwise it takes it from packages/front and crashes everything
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
@@ -44,37 +44,78 @@ const waitForTransactions = (
   );
 };
 
-type TransactionState = {
+export type TransactionState = {
   hashes: TransactionHash[];
   receipts: (TransactionReceipt | null)[] | undefined;
   hasFailure: boolean;
   hasPending: boolean;
 };
+export type TransactionStatus = {
+  key: string;
+  hasFailure: boolean;
+  hasPending: boolean;
+};
+
 const useTransactionState = create<{
+  // start lend transactions
+  // start rent transactions
+  // claim transactions
+  // return transactions
+  // stop lend transactions
   transactions: Record<string, TransactionState>;
+  pendingTransactions: string[];
   setTransactions: (key: string, t: TransactionState) => void;
+  removeTransactionId: (keys: string[]) => void;
+  addTransactionId: (keys: string) => void;
 }>((set) => ({
   transactions: {},
+  pendingTransactions: [],
   setTransactions: (key: string, transactions: TransactionState) =>
     set(
       produce((state) => {
         state.transactions[key] = transactions;
       })
     ),
+  addTransactionId: (key: string) =>
+    set(
+      produce((state) => {
+        state.pendingTransactions.push(key);
+      })
+    ),
+
+  removeTransactionId: (keys: string[]) =>
+    set(
+      produce((state) => {
+        if (keys.length === 0) return;
+        const set = new Set(state.pendingTransactions);
+        keys.forEach((key) => {
+          set.delete(key);
+        });
+        state.pendingTransactions = Array.from(set);
+      })
+    )
 }));
-// save transaction hashes for each address and hashes
+// simple transaction manager
 export const useTransactions = (): {
-  setHash: (
-    h: TransactionHash | TransactionHash[]
-  ) => Observable<[boolean, boolean]>;
-  getHashStatus: (key: string) => Observable<[boolean, boolean]>;
+  setHash: (h: TransactionHash | TransactionHash[]) => string | false;
+  transactions: Record<string, TransactionState>
 } => {
   const { web3Provider: provider } = useWallet();
   const transactions = useTransactionState(
     useCallback((state) => state.transactions, []),
     shallow
   );
+  const pendingTransactions = useTransactionState(
+    useCallback((state) => state.pendingTransactions, []),
+    shallow
+  );
   const setTransactions = useTransactionState((state) => state.setTransactions);
+  const removeTransactionId = useTransactionState(
+    (state) => state.removeTransactionId
+  );
+  const addTransactionId = useTransactionState(
+    (state) => state.addTransactionId
+  );
   const { setError } = useSnackProvider();
 
   const getTransactionsStatus = useCallback(
@@ -104,12 +145,26 @@ export const useTransactions = (): {
   );
 
   const getHashStatus = useCallback(
-    (key): Observable<[boolean, boolean]> => {
-      if (!key) return of([false, false]);
+    (key): Observable<TransactionStatus> => {
+      if (!key)
+        return of({
+          key,
+          hasFailure: true,
+          hasPending: false
+        });
       const transaction = transactions[key];
-      if (!transaction) return of([false, false]);
+      if (!transaction)
+        return of({
+          key,
+          hasFailure: true,
+          hasPending: false
+        });
       if (transaction.hasFailure || !transactions.hasPending)
-        return of([false, false]);
+        return of({
+          key,
+          hasFailure: true,
+          hasPending: false
+        });
 
       return waitForTransactions(transaction.hashes, provider, setError).pipe(
         map((receipts) => {
@@ -118,46 +173,61 @@ export const useTransactions = (): {
             hashes: transactions[key].hashes,
             receipts,
             hasFailure,
-            hasPending,
+            hasPending
           });
           if (hasFailure) setError("Transaction is not successful!", "warning");
-          return [hasFailure, hasPending];
+          return {
+            key,
+            hasFailure,
+            hasPending
+          };
         })
       );
     },
     [getTransactionsStatus, provider, setError, transactions, setTransactions]
   );
   const setHash = useCallback(
-    (
-      h: TransactionHash | TransactionHash[]
-    ): Observable<[boolean, boolean]> => {
+    (h: TransactionHash | TransactionHash[]): string | false => {
       if (!provider) {
         console.warn("cannot set transaction hash. no provider");
-        return of([false, false]);
+        return false;
       }
       const hashes = Array.isArray(h) ? h : [h];
       setTransactions(hashes[0], {
         hashes,
         receipts: [],
         hasFailure: false,
-        hasPending: true,
+        hasPending: true
       });
       const key = hashes[0];
-
-      return waitForTransactions(hashes, provider, setError).pipe(
-        map((receipts) => {
-          const [hasFailure, hasPending] = getTransactionsStatus(receipts);
-          setTransactions(key, {
-            hashes: transactions[key]?.hashes || hashes,
-            receipts,
-            hasFailure,
-            hasPending,
-          });
-          return [hasFailure, hasPending];
-        })
-      );
+      addTransactionId(key);
+      return key;
     },
-    [getTransactionsStatus, provider, setError, transactions, setTransactions]
+    [
+      getTransactionsStatus,
+      provider,
+      setError,
+      transactions,
+      setTransactions,
+      addTransactionId
+    ]
   );
-  return { setHash, getHashStatus };
+  useEffect(() => {
+    const subscription = from(pendingTransactions.map((t) => getHashStatus(t)))
+      .pipe(
+        zipAll(),
+        map((statuses: TransactionStatus[]) => {
+          const ids: string[] = [];
+          statuses.map((status) => {
+            if (status.hasFailure) ids.push(status.key);
+          });
+          removeTransactionId(ids);
+        })
+      )
+      .subscribe();
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [pendingTransactions]);
+  return { setHash, transactions };
 };

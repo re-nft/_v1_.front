@@ -1,9 +1,8 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft } from "../../types/classes";
 import { useClaimcollateral } from "../../hooks/contract/useClaimCollateral";
-import { useObservable } from "../../hooks/misc/useObservable";
 import Modal from "./modal";
 import { useLendingStore } from "../../hooks/store/useNftStore";
 
@@ -18,8 +17,7 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   onClose,
   checkedItems
 }) => {
-  const claim = useClaimcollateral();
-  const [t, setObservable] = useObservable();
+  const {claim, status} = useClaimcollateral();
   const selectedToClaim = useLendingStore(
     useCallback(
       (state) => {
@@ -29,8 +27,8 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
     )
   );
   const handleClaim = useCallback(() => {
-    setObservable(claim(selectedToClaim));
-  }, [selectedToClaim, claim, setObservable]);
+    claim(selectedToClaim);
+  }, [selectedToClaim, claim]);
 
   return (
     <Modal open={open} handleClose={() => onClose()}>
@@ -38,14 +36,14 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
         <div className="text-xl">Do you want to claim?</div>
         <div className="py-3 flex flex-auto items-end justify-center">
           <TransactionWrapper
-            isLoading={t.isLoading}
+            isLoading={status.isLoading}
             closeWindow={onClose}
-            status={t.status}
-            transactionHashes={t.transactionHash}
+            status={status.status}
+            transactionHashes={status.transactionHash}
           >
             <Button
               description={selectedToClaim.length > 1 ? "Claim All" : "Claim"}
-              disabled={t.isLoading}
+              disabled={status.isLoading}
               onClick={handleClaim}
             />
           </TransactionWrapper>

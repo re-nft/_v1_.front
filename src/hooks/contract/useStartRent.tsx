@@ -8,10 +8,8 @@ import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper,
-} from "../misc/useTransactionWrapper";
-import { EMPTY, Observable } from "rxjs";
-import { useObservable } from "../misc/useObservable";
+  useOptimisticTransaction
+} from "../misc/useOptimisticTransaction";
 import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
@@ -33,7 +31,8 @@ export type StartRentNft = {
 
 export const useStartRent = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => Observable<TransactionStatus>;
+  startRent: (nfts: StartRentNft[]) => void;
+  status: TransactionStatus;
   handleApproveAll: () => void;
   checkApprovals: (nfts: Lending[]) => void;
   approvalStatus: TransactionStatus;
@@ -46,8 +45,12 @@ export const useStartRent = (): {
   const contractAddress = useContractAddress();
   const resolverAddress = useResolverAddress();
   const sdk = useSDK();
-  const transactionWrapper = useTransactionWrapper();
-  const [approvalStatus, setObservable] = useObservable();
+  const { createTransaction, transactionRequests } = useOptimisticTransaction();
+  const [approvalStatus, setApprovalStatus] = useState<TransactionStatus>({
+    isLoading: false,
+    status: TransactionStateEnum.WAITING_FOR_SIGNATURE
+  });
+  const [requestId, setRequestId] = useState<string>();
 
   const checkApprovals = useCallback(
     (items: Lending[]) => {
@@ -119,22 +122,21 @@ export const useStartRent = (): {
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      setObservable(
-        transactionWrapper(
-          Promise.all(
-            approvals.map((approval) =>
-              approval.approve(contractAddress, MAX_UINT256)
-            )
-          ),
-          { action: "Rent approve tokens", label: "" }
-        )
+      const id = createTransaction(
+        Promise.all(
+          approvals.map((approval) =>
+            approval.approve(contractAddress, MAX_UINT256)
+          )
+        ),
+        { action: "Rent approve tokens", label: "" }
       );
+      setApprovalStatus(transactionRequests[id].transactionStatus);
     }
-  }, [approvals, contractAddress, setObservable, transactionWrapper]);
+  }, [approvals, contractAddress, createTransaction]);
 
   const startRent = useCallback(
     (nfts: StartRentNft[]) => {
-      if (!sdk) return EMPTY;
+      if (!sdk) return false;
 
       const sortedNfts = nfts.sort(sortNfts);
       const addresses = sortedNfts.map((nft) => nft.address);
@@ -152,7 +154,7 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      return transactionWrapper(
+      const id = createTransaction(
         sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
         {
           action: "rent",
@@ -161,20 +163,30 @@ export const useStartRent = (): {
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
-          `,
+          `
         }
       );
+      setRequestId(id);
     },
-    [sdk, transactionWrapper]
+    [sdk, createTransaction]
   );
-
+  const status = useMemo(() => {
+    return requestId
+      ? transactionRequests[requestId].transactionStatus
+      : {
+          isLoading: true,
+          hasFailure: false,
+          status: TransactionStateEnum.WAITING_FOR_SIGNATURE
+        };
+  }, [transactionRequests, requestId]);
   return {
+    status,
     startRent,
     checkApprovals,
     handleApproveAll,
     isApproved,
     approvalStatus: {
-      ...approvalStatus,
-    },
+      ...approvalStatus
+    }
   };
 };

@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft, Renting } from "../../types/classes";
-import { useObservable } from "../../hooks/misc/useObservable";
 import { useReturnIt } from "../../hooks/contract/useReturnIt";
 import Modal from "./modal";
 import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
@@ -19,8 +18,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   open,
   onClose
 }) => {
-  const returnIt = useReturnIt();
-  const [returnT, setReturnObservable] = useObservable();
+  const {returnIt, status} = useReturnIt();
 
   const selectedToReturn = useRentingStore(
     useCallback(
@@ -35,8 +33,8 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     useNFTApproval(selectedToReturn);
 
   const handleReturnNft = useCallback(() => {
-    setReturnObservable(returnIt(selectedToReturn));
-  }, [selectedToReturn, returnIt, setReturnObservable]);
+    returnIt(selectedToReturn);
+  }, [selectedToReturn, returnIt]);
 
   return (
     <Modal open={open} handleClose={onClose}>
@@ -58,10 +56,10 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
           )}
           {isApproved && (
             <TransactionWrapper
-              isLoading={returnT.isLoading}
+              isLoading={status.isLoading}
               closeWindow={onClose}
-              status={returnT.status}
-              transactionHashes={returnT.transactionHash}
+              status={status.status}
+              transactionHashes={status.transactionHash}
             >
               <Button
                 description={

@@ -91,7 +91,6 @@ type LendingState = {
   lendings: Record<string, Lending>;
   addLendings: (nfts: Lending[], type: NFTRentType) => void;
   // ids
-  userIsRenting: string[];
   userIsLending: string[];
   allAvailableToRent: string[];
 };
@@ -100,7 +99,6 @@ export const useLendingStore = create<LendingState>(
   devtools(
     (set) => ({
       lendings: {},
-      userIsRenting: [],
       userIsLending: [],
       allAvailableToRent: [],
       addLendings: (lendings: Lending[], type: NFTRentType) =>

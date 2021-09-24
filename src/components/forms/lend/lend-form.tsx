@@ -1,7 +1,6 @@
 import React, {
   Fragment,
   useMemo,
-  useState,
   useCallback,
   useEffect
 } from "react";
@@ -27,7 +26,7 @@ export const LendForm: React.FC<LendFormProps> = ({
   checkedItems,
   onClose
 }) => {
-  const handleSave = useStartLend();
+  const { status, startLend } = useStartLend();
   const ownedNfts = useNftsStore(
     useCallback(
       (state) => {
@@ -59,10 +58,10 @@ export const LendForm: React.FC<LendFormProps> = ({
     }),
     [ownedNfts, amounts]
   );
-  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
-  const [transactionHash, setTransactionhash] = useState<
-    string[] | undefined
-  >();
+
+  useEffect(() => {
+    console.log(status);
+  }, [status]);
   const {
     register,
     handleSubmit,
@@ -88,22 +87,10 @@ export const LendForm: React.FC<LendFormProps> = ({
     };
   });
   const onSubmit = (values: FormProps) => {
-    setStatus(TransactionStateEnum.PENDING);
-    return new Promise<void>((resolve) => {
-      const sub = handleSave(values.inputs as LendInputDefined[]).subscribe({
-        next: (status) => {
-          setStatus(status.status);
-          setTransactionhash(status.transactionHash);
-        },
-        complete: () => {
-          sub.unsubscribe();
-          resolve();
-        }
-      });
-    });
+    startLend(values.inputs as LendInputDefined[]);
   };
   const formSubmittedSuccessfully = useMemo(
-    () => status === TransactionStateEnum.SUCCESS,
+    () => status.status === TransactionStateEnum.SUCCESS,
     [status]
   );
   return (
@@ -168,8 +155,8 @@ export const LendForm: React.FC<LendFormProps> = ({
             {(isApproved || isSubmitting) && (
               <TransactionWrapper
                 isLoading={isSubmitting}
-                status={status}
-                transactionHashes={transactionHash}
+                status={status.status}
+                transactionHashes={status.transactionHash}
                 closeWindow={onClose}
               >
                 <Button

@@ -26,6 +26,7 @@ export const RentForm: React.FC<LendFormProps> = ({
 }) => {
   const {
     startRent: handleSave,
+    status,
     isApproved,
     handleApproveAll,
     checkApprovals,
@@ -47,10 +48,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   const defaultValues: FormProps = {
     inputs: selectedToRent
   };
-  const [status, setStatus] = useState(TransactionStateEnum.PENDING);
-  const [transactionHash, setTransactionhash] = useState<
-    string[] | undefined
-  >();
+
   const {
     register,
     handleSubmit,
@@ -76,9 +74,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     };
   });
   const onSubmit = (values: FormProps) => {
-    setStatus(TransactionStateEnum.PENDING);
-    return new Promise<void>((resolve) => {
-      const sub = handleSave(
+    handleSave(
         values.inputs.map<StartRentNft>((lending) => ({
           address: lending.nftAddress,
           tokenId: lending.tokenId,
@@ -88,20 +84,10 @@ export const RentForm: React.FC<LendFormProps> = ({
           paymentToken: lending.paymentToken,
           isERC721: lending.isERC721
         }))
-      ).subscribe({
-        next: (status) => {
-          setStatus(status.status);
-          setTransactionhash(status.transactionHash);
-        },
-        complete: () => {
-          sub.unsubscribe();
-          resolve();
-        }
-      });
-    });
-  };
+      )
+    };
   const formSubmittedSuccessfully = useMemo(
-    () => status === TransactionStateEnum.SUCCESS,
+    () => status.status === TransactionStateEnum.SUCCESS,
     [status]
   );
 
@@ -166,9 +152,9 @@ export const RentForm: React.FC<LendFormProps> = ({
               {(isApproved || isSubmitting) && (
                 <TransactionWrapper
                   isLoading={isSubmitting}
-                  status={status}
+                  status={status.status}
                   closeWindow={onClose}
-                  transactionHashes={transactionHash}
+                  transactionHashes={status.transactionHash}
                 >
                   <Button
                     description={

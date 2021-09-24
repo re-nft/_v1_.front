@@ -1,26 +1,28 @@
 import { BigNumber } from "ethers";
-import { useCallback } from "react";
-import { EMPTY, Observable } from "rxjs";
+import { useCallback, useMemo, useState } from "react";
 import { Renting } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper,
-} from "../misc/useTransactionWrapper";
+  useOptimisticTransaction
+} from "../misc/useOptimisticTransaction";
+import { TransactionStateEnum } from "../../types";
 
-export const useReturnIt = (): ((
-  rentings: Renting[]
-) => Observable<TransactionStatus>) => {
+export const useReturnIt = (): {
+  returnIt: (rentings: Renting[]) => void;
+  status: TransactionStatus;
+} => {
   const sdk = useSDK();
-  const transactionWrapper = useTransactionWrapper();
+  const { createTransaction, transactionRequests } = useOptimisticTransaction();
+  const [requestId, setRequestId] = useState<string>();
 
-  return useCallback(
+  const returnIt = useCallback(
     (rentings: Renting[]) => {
-      if (!sdk) return EMPTY;
-      if (rentings.length < 1) return EMPTY;
+      if (!sdk) return false;
+      if (rentings.length < 1) return false;
       const sortedNfts = rentings.sort(sortNfts);
-      return transactionWrapper(
+      const id = createTransaction(
         sdk.returnIt(
           sortedNfts.map((renting) => renting.nftAddress),
           sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),
@@ -30,14 +32,27 @@ export const useReturnIt = (): ((
           action: "Return nft",
           label: `
           addresses: ${sortedNfts.map((renting) => renting.nftAddress)}
-          tokenIds: ${sortedNfts.map((renting) => BigNumber.from(renting.tokenId))}
+          tokenIds: ${sortedNfts.map((renting) =>
+            BigNumber.from(renting.tokenId)
+          )}
           lendingIds: ${sortedNfts.map((renting) =>
             BigNumber.from(renting.lendingId)
           )}
-        `,
+        `
         }
       );
+      setRequestId(id);
     },
-    [sdk, transactionWrapper]
+    [sdk, createTransaction]
   );
+  const status = useMemo(() => {
+    return requestId
+      ? transactionRequests[requestId].transactionStatus
+      : {
+          isLoading: true,
+          hasFailure: false,
+          status: TransactionStateEnum.WAITING_FOR_SIGNATURE
+        };
+  }, [transactionRequests, requestId]);
+  return { returnIt, status };
 };
