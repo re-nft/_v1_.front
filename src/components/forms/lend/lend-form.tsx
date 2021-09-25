@@ -1,9 +1,4 @@
-import React, {
-  Fragment,
-  useMemo,
-  useCallback,
-  useEffect
-} from "react";
+import React, { Fragment, useMemo, useCallback } from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";

@@ -5,6 +5,8 @@ import { useAllAvailableForRent } from "../../../hooks/queries/useAllAvailableFo
 import Head from "next/head";
 import { fetchNFTsFromOpenSea } from "../../../services/fetch-nft-meta";
 import { AvailableToRent } from "../../../components/pages/available-to-rent";
+import { NftTokenMeta } from "../../../types";
+import { GetServerSideProps } from "next";
 
 const AvailableToRentPage: React.FC<{
   imageURL?: string;
@@ -61,19 +63,22 @@ const AvailableToRentPage: React.FC<{
 };
 // This gets called on every request
 // this will bake metatags into every request to a shared url
-export async function getServerSideProps({
-  params: { contractId, tokenId },
+export const getServerSideProps: GetServerSideProps = async ({
+  params,
   req
-}: any) {
-  const metas: any[] | undefined = await fetchNFTsFromOpenSea(
-    [contractId],
-    [tokenId]
-  );
-  const imageURL = metas && metas.length > 0 ? metas[0]?.image : "";
-  const href = new URL(req.url, `https://${req.headers.host}`).href;
+}) => {
+  if (Array.isArray(params)) {
+    const metas: NftTokenMeta[] | undefined = await fetchNFTsFromOpenSea(
+      [params.contractId as string],
+      [params.tokenId as string]
+    );
+    const imageURL = metas && metas.length > 0 ? metas[0]?.image : "";
+    const href = new URL(req?.url || "", `https://${req.headers.host}`).href;
 
-  // Pass data to the page via props
-  return { props: { imageURL, href } };
-}
+    // Pass data to the page via props
+    return { props: { imageURL, href } };
+  }
+  return { props: { imageURL: null, href: null } };
+};
 
 export default AvailableToRentPage;

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Button } from "../common/button";
 import { TransactionWrapper } from "../transaction-wrapper";
 import { Nft } from "../../types/classes";
@@ -17,11 +17,11 @@ export const ClaimModal: React.FC<ReturnModalProps> = ({
   onClose,
   checkedItems
 }) => {
-  const {claim, status} = useClaimcollateral();
+  const { claim, status } = useClaimcollateral();
   const selectedToClaim = useLendingStore(
     useCallback(
       (state) => {
-        return checkedItems.map(i => state.lendings[i])
+        return checkedItems.map((i) => state.lendings[i]);
       },
       [checkedItems]
     )

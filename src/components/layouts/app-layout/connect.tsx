@@ -9,8 +9,8 @@ import { useCurrentAddress } from "../../../hooks/misc/useCurrentAddress";
 import { Menu } from "@headlessui/react";
 
 const RenderButton: React.FC<{
-  menuButton: boolean,
-  [s:string]: any
+  menuButton: boolean;
+  [s: string]: unknown;
 }> = ({ children, menuButton, ...props }) => {
   return !menuButton ? (
     <button {...props}>{children}</button>
@@ -57,11 +57,9 @@ export const Connect: React.FC<{
         <div className="flex flex-col justify-end items-end lg:flex-row lg:justify-center lg:items-center md:px-0 font-display">
           <div>
             <div className="text-sm leading-tight text-rn-purple border-b-4 border-white">
-              <span className='uppercase'>{network}&nbsp;</span>
+              <span className="uppercase">{network}&nbsp;</span>
               {networkNotSupported && (
-                <span className="text-black">
-                  is not supported
-                </span>
+                <span className="text-black">is not supported</span>
               )}
             </div>
             {networkNotSupported && (

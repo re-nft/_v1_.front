@@ -3,12 +3,11 @@ import { ERC721 } from "./types/typechain/ERC721";
 import { ERC1155 } from "./types/typechain/ERC1155";
 import { ERC20 } from "./types/typechain/ERC20";
 import createDebugger from "debug";
-import { Lending, Nft, Renting } from "./types/classes";
+import { Lending, Renting } from "./types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
-import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
 import add from "date-fns/add";
 
@@ -185,17 +184,6 @@ export const toDataURLFromURL = (
       return "";
     });
 
-/**
- * ReNFT is implemented in such a way that it invokes handlers (lent, rend, stopLend, claim, return)
- * on unique groups of NFTs. For example, 721A,1155A,1155A,1155B will invoke the handler 3 times.
- * Once for 721A, once for 1155A,1155A and once for 1155B. This means, that we must bundle the NFTs
- * correctly on the front-end to be passed to the contracts. That means that same addresses must
- * be next to each other, and the respective tokenIds (in the case of 1155s) must be ordered in ascending
- * order
- */
-const bundleNfts = () => {
-  true;
-};
 
 /**
  * Helps advance time on test blockhain to test claimcollateral and similar
@@ -211,7 +199,9 @@ export const advanceTime = async (seconds: number): Promise<void> => {
   }
 };
 
-export const getDistinctItems = <T extends Record<any, unknown>>(
+export const getDistinctItems = <
+  T extends Record<string | number | symbol, unknown>
+>(
   nfts: T[],
   property: keyof T
 ): T[] => {
@@ -254,14 +244,15 @@ export const sortNfts = (
   }
 };
 
-export const filterClaimed = (showClaimed: boolean) => (l: Lending) => {
-  if (showClaimed) {
-    return l.collateralClaimed;
-  } else {
-    return !l.collateralClaimed;
-  }
-};
-
+export const filterClaimed =
+  (showClaimed: boolean) =>
+  (l: Lending): boolean => {
+    if (showClaimed) {
+      return l.collateralClaimed;
+    } else {
+      return !l.collateralClaimed;
+    }
+  };
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
 // for example supporting 721 and 1155 standard at the same time
@@ -292,31 +283,15 @@ export const isDegenerateNft = async (
   return isDegenerate;
 };
 
-export const isVideo = (image: string | undefined) =>
+export const isVideo = (image: string | undefined): boolean =>
   image?.endsWith("mp4") ||
   image?.endsWith("mkv") ||
   image?.endsWith("webm") ||
   image?.endsWith("mov") ||
   image?.endsWith("avi") ||
-  image?.endsWith("flv");
+  image?.endsWith("flv") ||
+  false;
 
-export const hasDifference = (
-  a: Record<string, unknown> | unknown[],
-  b: Record<string, unknown> | unknown[]
-) => {
-  const difference = diffJson(a, b, {
-    ignoreWhitespace: true
-  });
-  //const difference = true;
-  if (
-    difference &&
-    difference[1] &&
-    (difference[1].added || difference[1].removed)
-  ) {
-    return true;
-  }
-  return false;
-};
 export type UniqueID = string;
 
 export const getUniqueID = (
@@ -329,7 +304,7 @@ export const getUniqueID = (
   }`;
 };
 
-export function classNames(...classes: any[]) {
+export function classNames(...classes: unknown[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -367,7 +342,7 @@ export const parseRenting = (
   };
 };
 
-export const formatCollateral = (v: number) => {
+export const formatCollateral = (v: number): string => {
   const parts = v.toString().split(".");
   if (parts.length === 1) {
     return v.toString();

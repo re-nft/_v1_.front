@@ -10,11 +10,15 @@ import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { useNftsStore, useRentingStore } from "../store/useNftStore";
 import { usePrevious } from "../misc/usePrevious";
-import { EventTrackedTransactionStateManager, SmartContractEventType, useEventTrackedTransactionState } from "../misc/useEventTrackedTransactions";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
 
 export const useUserRenting = (): {
   isLoading: boolean;
-  renting: Renting[]
+  renting: Renting[];
 } => {
   const { signer, network } = useWallet();
   const currentAddress = useCurrentAddress();
@@ -26,10 +30,7 @@ export const useUserRenting = (): {
       const pendingLendings =
         state.pendingTransactions[SmartContractEventType.RETURN_RENTAL];
       // refetch will change when you start renting goes from non-empty array to empty array
-      return (
-        pendingLendings.length +
-        pendingStopRentals.length 
-      );
+      return pendingLendings.length + pendingStopRentals.length;
     }, []),
     shallow
   );
@@ -95,7 +96,7 @@ export const useUserRenting = (): {
   }, [currentAddress, signer, network, renting, addRentings, addNfts]);
 
   useEffect(() => {
-    const start = refetchAfterOperation? 0: 0;
+    const start = refetchAfterOperation ? 0 : 0;
     const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(switchMap(fetchRenting))
       .subscribe();

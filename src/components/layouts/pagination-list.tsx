@@ -31,7 +31,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
   isLoading: boolean;
   ItemsRenderer: React.FC<{ currentPage: (T & { show: boolean })[] }>;
   emptyResultMessage: string;
-}) => {
+}): JSX.Element => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
     useState<State<T>>(defaultSate);
   const previousPage = usePrevious(currentPage);
@@ -124,7 +124,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
       return { ...c, show: true };
     });
     if (previousItems.size > 0) {
-      previousItems.forEach((value: number, key: string) => {
+      previousItems.forEach((value: number) => {
         page.push({ ...previousPage[value], show: false });
       });
     }
