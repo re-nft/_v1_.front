@@ -8,6 +8,11 @@ import { LendSearchLayout } from "../components/layouts/lend-search-layout";
 import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useWallet } from "../hooks/store/useWallet";
+import {
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../hooks/misc/useEventTrackedTransactions";
+import shallow from "zustand/shallow";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
@@ -16,16 +21,30 @@ const LendCatalagoueItem: React.FC<{
   handleStartLend: () => void;
   show: boolean;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend, show }) => {
+  //TODO:eniko optimize
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
     return set.has(nft.nId);
   }, [checkedItems, nft.nId]);
+  const hasPending = useEventTrackedTransactionState(
+    useCallback(
+      (state) => {
+        const pending =
+          state.pendingTransactions[SmartContractEventType.START_LEND];
+        return new Set(pending).has(nft.nId);
+      },
+      [nft.nId]
+    ),
+    shallow
+  );
 
   const checkedMoreThanOne = useMemo(() => {
     return checkedItems.length > 1;
   }, [checkedItems]);
+
   return (
     <CatalogueItem
+      hasPending={hasPending}
       show={show}
       nId={nft.nId}
       checked={checked}

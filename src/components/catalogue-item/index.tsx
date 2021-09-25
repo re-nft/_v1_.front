@@ -10,9 +10,14 @@ import { CatalogueActions } from "./catalogue-actions";
 import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
 import { useNftsStore } from "../../hooks/store/useNftStore";
-import { ReactEventOnChangeType, ReactEventOnClickType } from "../../types";
+import {
+  ReactEventOnChangeType,
+  ReactEventOnClickType,
+  TransactionStateEnum
+} from "../../types";
 import { Transition } from "@headlessui/react";
 import { classNames } from "../../utils";
+import { PendingTransactionsLoader } from "../pending-transactions-loader";
 
 type CatalougeItemBaseProps = {
   nId: string;
@@ -21,6 +26,7 @@ type CatalougeItemBaseProps = {
   onCheckboxChange: ReactEventOnChangeType;
   disabled?: boolean;
   show: boolean;
+  hasPending: boolean;
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
   onClick: ReactEventOnClickType;
@@ -39,6 +45,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
   disabled,
   show,
+  hasPending,
   ...rest
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
@@ -83,7 +90,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     },
     [disabled, onCheckboxChange]
   );
-
   return (
     <Transition
       show={show}
@@ -116,7 +122,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 onCheckboxChange={onCheckboxChange}
               />
             </div>
-            <CatalogueItemDisplay image={image} description={description} />
+            <div className="relative">
+              <CatalogueItemDisplay image={image} description={description} />
+              <div className="absolute inset-0  flex items-center text-center justify-center">
+                {hasPending && (
+                  <PendingTransactionsLoader
+                    status={TransactionStateEnum.PENDING}
+                  />
+                )}
+              </div>
+            </div>
             <div className="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center">
               <p className="flex-initial">{name}</p>
               <div className="flex flex-auto flex-row">
@@ -135,7 +150,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               </div>
             </div>
           </>
-
           <div className="px-2 flex flex-auto flex-col text-black">
             <CatalogueItemRow
               text="NFT Address"

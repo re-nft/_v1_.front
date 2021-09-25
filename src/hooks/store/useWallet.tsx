@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
-import { hasDifference, THROWS } from "../../utils";
+import { THROWS } from "../../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import ReactGA from "react-ga";
@@ -9,6 +9,9 @@ import ReactGA from "react-ga";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
+import {
+  ExternalProvider
+} from "@ethersproject/providers";
 
 type WalletContextType = {
   address: string;
@@ -17,8 +20,8 @@ type WalletContextType = {
   signer: Signer | undefined;
   web3Provider: ethers.providers.Web3Provider | undefined;
   network: string;
-  provider: any;
-  setProvider: (p: any) => void;
+  provider: unknown;
+  setProvider: (p: unknown) => void;
   setNetworkName: (str: string) => void;
   setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) => void;
   setAddress: (address: string) => void;
@@ -34,7 +37,7 @@ const useWalletState = create<WalletContextType>((set) => ({
   web3Provider: undefined,
   network: "",
   permissions: [],
-  setProvider: (provider: any) =>
+  setProvider: (provider: unknown) =>
     set(
       produce((state) => {
         state.provider = provider;
@@ -69,10 +72,16 @@ const useWalletState = create<WalletContextType>((set) => ({
       produce((state) => {
         state.web3Provider = p;
       })
-    ),
+    )
 }));
 
-export const useWallet = () => {
+export const useWallet = (): {
+  connect: () => void;
+  signer: ethers.Signer | undefined;
+  address: string;
+  web3Provider: ethers.providers.Web3Provider | undefined;
+  network: string;
+} => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
   const provider = useWalletState(
     useCallback((state) => state.provider, []),
@@ -114,14 +123,16 @@ export const useWallet = () => {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions, // required
+          providerOptions // required
         })
       : null;
   }, [providerOptions, hasWindow]);
 
   const initState = useCallback(
-    async (provider: any) => {
-      const web3p = new ethers.providers.Web3Provider(provider);
+    async (provider: unknown) => {
+      const web3p = new ethers.providers.Web3Provider(
+        provider as ExternalProvider
+      );
       const network = await web3p?.getNetwork();
       const name = network.chainId === 31337 ? "localhost" : network?.name;
       const nname = name === "homestead" ? "mainnet" : name;
@@ -172,9 +183,9 @@ export const useWallet = () => {
       new Promise((resolve) => {
         window.ethereum
           .request({ method: "wallet_getPermissions" })
-          .then((w: any) => {
+          .then((w: unknown) => {
             //TODO they keep changing wallet_getPermissions
-            resolve(w[0]?.caveats[1]?.value || {});
+            resolve(Array.isArray(w) ? w[0]?.caveats[1]?.value || {} : {});
           })
           .catch((error: unknown) => {
             console.warn("wallet_getPermissions", error);
@@ -183,13 +194,11 @@ export const useWallet = () => {
       })
     ).pipe(
       map((newPermissions: string[]) => {
-        if (hasDifference(newPermissions, permissions)) {
-          setPermissions(newPermissions);
-          if (newPermissions.length < 1) {
-            if (signer) setSigner(undefined);
-            if (address) setAddress("");
-            if (network) setNetworkName("");
-          }
+        setPermissions(newPermissions);
+        if (newPermissions.length < 1) {
+          if (signer) setSigner(undefined);
+          if (address) setAddress("");
+          if (network) setNetworkName("");
         }
         return;
       })
@@ -199,11 +208,10 @@ export const useWallet = () => {
     network,
     signer,
     hasWindow,
-    permissions,
     setPermissions,
     setAddress,
     setSigner,
-    setNetworkName,
+    setNetworkName
   ]);
 
   useEffect(() => {
@@ -256,36 +264,35 @@ export const useWallet = () => {
       setPermissions,
       setAddress,
       setSigner,
-      setNetworkName,
+      setNetworkName
     ]
   );
-  const chainChanged = useCallback(
-    (arg) => {
-      const check = connect(true).subscribe(() => {
-        check.unsubscribe();
-      });
-    },
-    [connect]
-  );
+  const chainChanged = useCallback(() => {
+    const check = connect(true).subscribe(() => {
+      check.unsubscribe();
+    });
+  }, [connect]);
 
   // change account
   useEffect(() => {
-    if (provider && provider.on) {
-      provider.on("accountsChanged", accountsChanged);
-      provider.on("chainChanged", chainChanged);
-    } else if (provider && provider.addListener) {
-      provider.addListener("accountsChanged", accountsChanged);
-      provider.addListener("chainChanged", chainChanged);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const p = provider as any;
+    if (provider && p.on) {
+      p.on("accountsChanged", accountsChanged);
+      p.on("chainChanged", chainChanged);
+    } else if (p && p.addListener) {
+      p.addListener("accountsChanged", accountsChanged);
+      p.addListener("chainChanged", chainChanged);
     }
     return () => {
       // this is strange, there is On method, but there is no off method
       // add both cases for sanity
-      if (provider && provider.off) {
-        provider.off("accountsChanged", accountsChanged);
-        provider.off("chainChanged", chainChanged);
-      } else if (provider && provider.removeListener) {
-        provider.removeListener("accountsChanged", accountsChanged);
-        provider.removeListener("chainChanged", chainChanged);
+      if (p && p.off) {
+        p.off("accountsChanged", accountsChanged);
+        p.off("chainChanged", chainChanged);
+      } else if (p && p.removeListener) {
+        p.removeListener("accountsChanged", accountsChanged);
+        p.removeListener("chainChanged", chainChanged);
       }
     };
   }, [accountsChanged, chainChanged, provider]);
@@ -295,6 +302,6 @@ export const useWallet = () => {
     signer,
     address,
     web3Provider,
-    network,
+    network
   };
 };
