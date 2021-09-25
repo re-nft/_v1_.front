@@ -19,7 +19,7 @@ import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {

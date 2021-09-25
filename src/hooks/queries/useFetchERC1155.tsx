@@ -22,7 +22,7 @@ import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155

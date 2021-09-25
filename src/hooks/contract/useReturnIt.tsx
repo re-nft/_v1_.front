@@ -7,7 +7,7 @@ import {
   SmartContractEventType,
   TransactionStatus,
 } from "../misc/useEventTrackedTransactions";
-import { useCreateRequest } from "../misc/useCreateRequest";
+import { useCreateRequest } from "../store/useCreateRequest";
 
 export const useReturnIt = (): {
   returnIt: (rentings: Renting[]) => void;

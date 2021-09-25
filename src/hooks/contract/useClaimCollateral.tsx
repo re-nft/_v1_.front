@@ -7,7 +7,7 @@ import { useSDK } from "./useSDK";
 import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
 import {
   useCreateRequest
-} from "../misc/useCreateRequest";
+} from "../store/useCreateRequest";
 
 const debug = createDebugger("app:contracts:useClaimcollateral");
 

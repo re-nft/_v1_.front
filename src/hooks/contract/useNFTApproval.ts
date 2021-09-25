@@ -10,7 +10,7 @@ import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useCreateRequest } from "../misc/useCreateRequest";
+import { useCreateRequest } from "../store/useCreateRequest";
 
 type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId" | "id">;
 

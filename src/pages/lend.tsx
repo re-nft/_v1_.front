@@ -11,7 +11,7 @@ import { useWallet } from "../hooks/store/useWallet";
 import {
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../hooks/misc/useEventTrackedTransactions";
+} from "../hooks/store/useEventTrackedTransactions";
 import shallow from "zustand/shallow";
 
 const LendCatalagoueItem: React.FC<{
@@ -21,11 +21,11 @@ const LendCatalagoueItem: React.FC<{
   handleStartLend: () => void;
   show: boolean;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend, show }) => {
-  //TODO:eniko optimize
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
     return set.has(nft.nId);
-  }, [checkedItems, nft.nId]);
+  }, [checkedItems, nft.nId])
+  //TODO:eniko optimize
   const hasPending = useEventTrackedTransactionState(
     useCallback(
       (state) => {

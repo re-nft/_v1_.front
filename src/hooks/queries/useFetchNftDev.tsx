@@ -15,7 +15,7 @@ import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 
 export type CancellablePromise<T> = {
   promise: Promise<T>;

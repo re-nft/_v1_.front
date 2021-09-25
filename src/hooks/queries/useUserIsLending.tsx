@@ -19,7 +19,7 @@ import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 
 export const useUserIsLending = (): {
   isLoading: boolean;

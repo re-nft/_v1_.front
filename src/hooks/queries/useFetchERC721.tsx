@@ -12,7 +12,7 @@ import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
   useEventTrackedTransactionState
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 import shallow from "zustand/shallow";
 
 const fetchERC721 = (currentAddress: string) => {

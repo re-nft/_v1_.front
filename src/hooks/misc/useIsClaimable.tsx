@@ -21,7 +21,7 @@ const isClaimable = (renting: Renting, blockTimeStamp: number): boolean => {
 export const useIsClaimable = (
   rentingId: string | undefined,
   collateralClaimed: boolean
-) => {
+): boolean => {
   const blockTimeStamp = useTimestamp();
   const renting = useRentingStore(
     useCallback(

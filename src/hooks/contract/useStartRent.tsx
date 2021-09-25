@@ -15,7 +15,7 @@ import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { Lending } from "../../types/classes";
 import {
   useCreateRequest
-} from "../misc/useCreateRequest";
+} from "../store/useCreateRequest";
 
 const debug = createDebugger("app:contract:startRent");
 

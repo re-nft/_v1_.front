@@ -8,7 +8,7 @@ import {
 } from "../misc/useEventTrackedTransactions";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";
-import {  useCreateRequest } from "../misc/useCreateRequest";
+import {  useCreateRequest } from "../store/useCreateRequest";
 
 const debug = createDebugger("app:contract");
 

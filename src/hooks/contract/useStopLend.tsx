@@ -5,7 +5,7 @@ import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrack
 import { Lending } from "../../types/classes";
 import {
   useCreateRequest
-} from "../misc/useCreateRequest";
+} from "../store/useCreateRequest";
 
 export const useStopLend = (): {
   stopLend: (lendings: Lending[]) => void;
