@@ -53,8 +53,11 @@ export const useAllAvailableForRent = (): {
     useCallback((state: EventTrackedTransactionStateManager) => {
       const pendingRentings =
         state.pendingTransactions[SmartContractEventType.START_RENT];
-      // refetch will change when you start renting goes from non-empty array to empty array  
-      return pendingRentings.length === 0;
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.START_LEND];
+      const pendingRentals =
+        state.pendingTransactions[SmartContractEventType.STOP_LEND];
+      return pendingRentings.length + pendingLendings.length + pendingRentals.length;
     }, []),
     shallow
   );
@@ -71,7 +74,7 @@ export const useAllAvailableForRent = (): {
   );
   useEffect(() => {
     // stupid way to force refetch
-    const start = refetchAfterOperation? 0 : 0;
+    const start = refetchAfterOperation ? 0 : 0;
     const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {

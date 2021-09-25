@@ -51,7 +51,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       const pendingLendings =
         state.pendingTransactions[SmartContractEventType.START_LEND];
       // refetch will change when you start renting goes from non-empty array to empty array
-      return pendingLendings.length === 0 || pendingStopRentals.length === 0;
+      return pendingLendings.length + pendingStopRentals.length ;
     }, []),
     shallow
   );

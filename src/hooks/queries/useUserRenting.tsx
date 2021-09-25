@@ -27,8 +27,8 @@ export const useUserRenting = (): {
         state.pendingTransactions[SmartContractEventType.RETURN_RENTAL];
       // refetch will change when you start renting goes from non-empty array to empty array
       return (
-        pendingLendings.length === 0 ||
-        pendingStopRentals.length === 0
+        pendingLendings.length +
+        pendingStopRentals.length 
       );
     }, []),
     shallow
@@ -96,7 +96,7 @@ export const useUserRenting = (): {
 
   useEffect(() => {
     const start = refetchAfterOperation? 0: 0;
-    const subscription = timer(start, 10 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(switchMap(fetchRenting))
       .subscribe();
     return () => {
