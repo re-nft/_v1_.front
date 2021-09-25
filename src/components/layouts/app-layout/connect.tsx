@@ -42,41 +42,40 @@ export const Connect: React.FC<{
   }, [userData]);
 
   const networkNotSupported = useMemo(() => {
-    return network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED;
+    return network && network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED;
   }, [network]);
 
- 
   return (
     <>
       {!installMetaMask && (!currentAddress || !network) ? (
         <button className="relative outline-none block" onClick={connect}>
-          <div className="relative py-1 text-rn-purple leading-5 text-xl whitespace-nowrap border-b-4 border-white">
+          <div className="relative py-1 text-rn-purple leading-5 font-display text-sm uppercase whitespace-nowrap border-b-4 border-white">
             Connect Wallet
           </div>
         </button>
       ) : (
-        <div className="flex flex-col justify-end items-end lg:flex-row lg:justify-center lg:items-center md:px-0 font-body">
+        <div className="flex flex-col justify-end items-end lg:flex-row lg:justify-center lg:items-center md:px-0 font-display">
           <div>
-            <p className="text-xl leading-tight text-rn-purple border-b-4 border-white">
-              {network} &nbsp;
+            <div className="text-sm leading-tight text-rn-purple border-b-4 border-white">
+              <span className='uppercase'>{network}&nbsp;</span>
               {networkNotSupported && (
-                <span className="text-xl leading-tight text-black">
+                <span className="text-black">
                   is not supported
                 </span>
               )}
-            </p>
+            </div>
             {networkNotSupported && (
-              <p className="text-xl leading-tight text-black">
-                Please switch to{" "}
-                <span className="text-xl leading-loose text-rn-purple">
+              <div className="text-sm leading-tight text-black">
+                Please switch to&nbsp;
+                <span className="text-rn-purple uppercase">
                   {process.env.NEXT_PUBLIC_NETWORK_SUPPORTED}
                 </span>
-              </p>
+              </div>
             )}
           </div>
 
           {!networkNotSupported && (
-            <div className="text-rn-purple text-xl px-2 border-b-4 border-white">
+            <div className="text-rn-purple text-sm px-2 border-b-4 border-white">
               {installMetaMask && <InstallMetamask />}
 
               {!installMetaMask && !!currentAddress && (
