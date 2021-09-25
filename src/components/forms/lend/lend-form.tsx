@@ -59,9 +59,6 @@ export const LendForm: React.FC<LendFormProps> = ({
     [ownedNfts, amounts]
   );
 
-  useEffect(() => {
-    console.log(status);
-  }, [status]);
   const {
     register,
     handleSubmit,

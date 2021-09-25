@@ -2,12 +2,12 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
-  useMemo,
-  useState
+  useMemo
 } from "react";
 import { TransactionStateEnum } from "../../../types";
 import {
   StartRentNft,
+  useRentApproval,
   useStartRent
 } from "../../../hooks/contract/useStartRent";
 import { TransactionWrapper } from "../../transaction-wrapper";
@@ -25,13 +25,12 @@ export const RentForm: React.FC<LendFormProps> = ({
   onClose
 }) => {
   const {
-    startRent: handleSave,
-    status,
     isApproved,
     handleApproveAll,
     checkApprovals,
-    approvalStatus
-  } = useStartRent();
+    status: approvalStatus
+  } = useRentApproval();
+  const { startRent: handleSave, status } = useStartRent();
 
   const selectedToRent = useLendingStore(
     useCallback(
@@ -75,17 +74,17 @@ export const RentForm: React.FC<LendFormProps> = ({
   });
   const onSubmit = (values: FormProps) => {
     handleSave(
-        values.inputs.map<StartRentNft>((lending) => ({
-          address: lending.nftAddress,
-          tokenId: lending.tokenId,
-          amount: lending.lentAmount,
-          lendingId: lending.id,
-          rentDuration: lending.duration || "",
-          paymentToken: lending.paymentToken,
-          isERC721: lending.isERC721
-        }))
-      )
-    };
+      values.inputs.map<StartRentNft>((lending) => ({
+        address: lending.nftAddress,
+        tokenId: lending.tokenId,
+        amount: lending.lentAmount,
+        lendingId: lending.id,
+        rentDuration: lending.duration || "",
+        paymentToken: lending.paymentToken,
+        isERC721: lending.isERC721
+      }))
+    );
+  };
   const formSubmittedSuccessfully = useMemo(
     () => status.status === TransactionStateEnum.SUCCESS,
     [status]

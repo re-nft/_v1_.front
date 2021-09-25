@@ -7,6 +7,7 @@ import { useSDK } from "./useSDK";
 import {
   TransactionId,
   TransactionStatus,
+  useCreateRequest,
   useOptimisticTransaction
 } from "../misc/useOptimisticTransaction";
 import { TransactionStateEnum } from "../../types";
@@ -17,8 +18,7 @@ export const useClaimcollateral = (): {
   claim: (lendings: Lending[]) => void;
   status: TransactionStatus;
 } => {
-  const { createTransaction, transactionRequests } = useOptimisticTransaction();
-  const [requestId, setRequestId] = useState<TransactionId>();
+  const { createRequest, status } = useCreateRequest();
 
   const sdk = useSDK();
 
@@ -46,7 +46,7 @@ export const useClaimcollateral = (): {
         "Claim modal lendingId ",
         sortedNfts.map((lending) => lending.id)
       );
-      const id = createTransaction(sdk.claimCollateral(...params), {
+      createRequest(sdk.claimCollateral(...params), {
         action: "claim",
         label: `Claim modal addresses : ${sortedNfts.map(
           (lending) => lending.nftAddress
@@ -55,20 +55,9 @@ export const useClaimcollateral = (): {
         Claim modal lendingIds: ${sortedNfts.map((lending) => lending.id)}
         `
       });
-      setRequestId(id);
     },
-    [sdk, createTransaction]
+    [sdk, createRequest]
   );
-
-  const status = useMemo(() => {
-    return requestId
-      ? transactionRequests[requestId as TransactionId].transactionStatus
-      : {
-          isLoading: true,
-          hasFailure: false,
-          status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-        };
-  }, [transactionRequests, requestId]);
 
   return { claim, status };
 };

@@ -118,19 +118,20 @@ export const useTransactions = (): {
   );
   const { setError } = useSnackProvider();
 
+
+  const transactionSucceeded =
+    (state: TransactionStateEnum) =>
+      (receipt: TransactionReceipt | null) => {
+        if (!receipt) return false;
+        const status = receipt.status;
+        if (!status) return false;
+        return TransactionStateEnum[status] === TransactionStateEnum[state];
+      };
   const getTransactionsStatus = useCallback(
     (receipts: (TransactionReceipt | null)[] | undefined) => {
       if (!receipts) return [true, false];
       if (receipts && receipts.length < 1) return [true, false];
 
-      const transactionSucceeded =
-        (state: TransactionStateEnum) =>
-        (receipt: TransactionReceipt | null) => {
-          if (!receipt) return false;
-          const status = receipt.status;
-          if (!status) return false;
-          return TransactionStateEnum[status] === TransactionStateEnum[state];
-        };
       const hasFailure =
         receipts.filter(transactionSucceeded(TransactionStateEnum.FAILED))
           .length > 0;
@@ -153,19 +154,12 @@ export const useTransactions = (): {
           hasPending: false
         });
       const transaction = transactions[key];
-      if (!transaction)
+      if (transaction.hasFailure)
         return of({
           key,
           hasFailure: true,
           hasPending: false
         });
-      if (transaction.hasFailure || !transactions.hasPending)
-        return of({
-          key,
-          hasFailure: true,
-          hasPending: false
-        });
-
       return waitForTransactions(transaction.hashes, provider, setError).pipe(
         map((receipts) => {
           const [hasFailure, hasPending] = getTransactionsStatus(receipts);

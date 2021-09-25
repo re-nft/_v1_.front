@@ -1,7 +1,6 @@
 import {
-  TransactionId,
   TransactionStatus,
-  useOptimisticTransaction
+  useCreateRequest
 } from "../misc/useOptimisticTransaction";
 import { from, map } from "rxjs";
 import { Nft } from "../../types/classes";
@@ -24,17 +23,12 @@ export function useNFTApproval(nfts: NFTApproval[]): {
   approvalStatus: TransactionStatus;
   handleApproveAll: () => void;
 } {
-  const { createTransaction, transactionRequests } = useOptimisticTransaction();
+  const { createRequest, status: approvalStatus } = useCreateRequest();
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<NFTApproval[]>([]);
   const contractAddress = useContractAddress();
   const currentAddress = useCurrentAddress();
   const { web3Provider: provider, signer } = useWallet();
-  const [approvalStatus, setApprovalStatus] = useState<TransactionStatus>({
-    isLoading: false,
-    status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-  });
-  const [requestId, setRequestId] = useState<TransactionId>('');
 
   // handle approve
   const setApprovalForAll = useCallback(
@@ -48,7 +42,7 @@ export function useNFTApproval(nfts: NFTApproval[]): {
       if (distinctItems.length < 1) return false;
       if (!signer) return false;
 
-      return createTransaction(
+      createRequest(
         Promise.all(
           distinctItems.map((nft) => {
             return getContractWithSigner(
@@ -68,7 +62,7 @@ export function useNFTApproval(nfts: NFTApproval[]): {
         }
       );
     },
-    [createTransaction, signer, currentAddress]
+    [createRequest, signer, currentAddress]
   );
 
   // check if approved
@@ -139,26 +133,8 @@ export function useNFTApproval(nfts: NFTApproval[]): {
   // handle function to approve and subscribe to result
   const handleApproveAll = useCallback(() => {
     if (!provider) return;
-    const id = setApprovalForAll(nonApprovedNft, contractAddress);
-    if (id !== false) setRequestId(id);
-    else {
-      setApprovalStatus({
-        isLoading: false,
-        status: TransactionStateEnum.FAILED
-      });
-    }
-  }, [
-    provider,
-    setApprovalForAll,
-    setApprovalStatus,
-    nonApprovedNft,
-    contractAddress
-  ]);
-
-  useEffect(()=> {
-    const status = transactionRequests[requestId]?.transactionStatus
-    if(status) setApprovalStatus(status)
-  }, [requestId, transactionRequests])
+    setApprovalForAll(nonApprovedNft, contractAddress);
+  }, [provider, setApprovalForAll, nonApprovedNft, contractAddress]);
 
   return {
     isApprovalForAll,

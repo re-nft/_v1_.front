@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
@@ -8,9 +8,8 @@ import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useOptimisticTransaction
+  useCreateRequest
 } from "../misc/useOptimisticTransaction";
-import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
@@ -29,13 +28,12 @@ export type StartRentNft = {
   isERC721: boolean;
 };
 
-export const useStartRent = (): {
+// first approve
+export const useRentApproval = (): {
   isApproved: boolean;
-  startRent: (nfts: StartRentNft[]) => void;
   status: TransactionStatus;
   handleApproveAll: () => void;
   checkApprovals: (nfts: Lending[]) => void;
-  approvalStatus: TransactionStatus;
 } => {
   const { signer } = useWallet();
   const { Resolver } = useSmartContracts();
@@ -44,13 +42,7 @@ export const useStartRent = (): {
   const [isCheckLoading, setCheckLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
   const resolverAddress = useResolverAddress();
-  const sdk = useSDK();
-  const { createTransaction, transactionRequests } = useOptimisticTransaction();
-  const [approvalStatus, setApprovalStatus] = useState<TransactionStatus>({
-    isLoading: false,
-    status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-  });
-  const [requestId, setRequestId] = useState<string>();
+  const { createRequest, status } = useCreateRequest();
 
   const checkApprovals = useCallback(
     (items: Lending[]) => {
@@ -109,20 +101,14 @@ export const useStartRent = (): {
     // better to call the smart contracts periodically for allowance check
     // need to optimize this later on
     if (isCheckLoading) return false;
-    if (approvalStatus.isLoading) return false;
+    if (status.isLoading) return false;
     if (!approvals) return true;
     return approvals?.length < 1;
-  }, [approvals, approvalStatus.isLoading, isCheckLoading]);
-
-  useEffect(() => {
-    if (approvalStatus.status === TransactionStateEnum.SUCCESS) {
-      setApprovals([]);
-    }
-  }, [approvalStatus.status]);
+  }, [approvals, status.isLoading, isCheckLoading]);
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      const id = createTransaction(
+      createRequest(
         Promise.all(
           approvals.map((approval) =>
             approval.approve(contractAddress, MAX_UINT256)
@@ -130,9 +116,23 @@ export const useStartRent = (): {
         ),
         { action: "Rent approve tokens", label: "" }
       );
-      setApprovalStatus(transactionRequests[id].transactionStatus);
     }
-  }, [approvals, contractAddress, createTransaction]);
+  }, [approvals, contractAddress, createRequest]);
+
+  return {
+    status,
+    checkApprovals,
+    handleApproveAll,
+    isApproved
+  };
+};
+
+export const useStartRent = (): {
+  startRent: (nfts: StartRentNft[]) => void;
+  status: TransactionStatus;
+} => {
+  const sdk = useSDK();
+  const { createRequest, status } = useCreateRequest();
 
   const startRent = useCallback(
     (nfts: StartRentNft[]) => {
@@ -154,7 +154,7 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      const id = createTransaction(
+      createRequest(
         sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
         {
           action: "rent",
@@ -166,27 +166,11 @@ export const useStartRent = (): {
           `
         }
       );
-      setRequestId(id);
     },
-    [sdk, createTransaction]
+    [sdk, createRequest]
   );
-  const status = useMemo(() => {
-    return requestId
-      ? transactionRequests[requestId].transactionStatus
-      : {
-          isLoading: true,
-          hasFailure: false,
-          status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-        };
-  }, [transactionRequests, requestId]);
   return {
     status,
-    startRent,
-    checkApprovals,
-    handleApproveAll,
-    isApproved,
-    approvalStatus: {
-      ...approvalStatus
-    }
+    startRent
   };
 };

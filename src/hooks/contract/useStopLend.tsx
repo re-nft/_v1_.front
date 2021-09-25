@@ -1,19 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useOptimisticTransaction
+  useCreateRequest
 } from "../misc/useOptimisticTransaction";
 import { Lending } from "../../types/classes";
-import { TransactionStateEnum } from "../../types";
 
 export const useStopLend = (): {
   stopLend: (lendings: Lending[]) => void;
   status: TransactionStatus;
 } => {
-  const { createTransaction, transactionRequests } = useOptimisticTransaction();
-  const [requestId, setRequestId] = useState<string>();
+  const { createRequest, status } = useCreateRequest();
 
   const sdk = useSDK();
 
@@ -25,7 +23,7 @@ export const useStopLend = (): {
         lendings.map((lending) => BigNumber.from(lending.tokenId)),
         lendings.map((lending) => BigNumber.from(lending.id))
       ];
-      const id = createTransaction(sdk.stopLending(...arr), {
+      createRequest(sdk.stopLending(...arr), {
         action: "return nft",
         label: `
           addresses: ${lendings.map((lending) => lending.nftAddress)}
@@ -33,19 +31,8 @@ export const useStopLend = (): {
           lendingId: ${lendings.map((lending) => BigNumber.from(lending.id))}
         `
       });
-      setRequestId(id);
     },
-    [sdk, createTransaction]
+    [sdk, createRequest]
   );
-
-  const status = useMemo(() => {
-    return requestId
-      ? transactionRequests[requestId].transactionStatus
-      : {
-          isLoading: true,
-          hasFailure: false,
-          status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-        };
-  }, [transactionRequests, requestId]);
   return { stopLend, status };
 };

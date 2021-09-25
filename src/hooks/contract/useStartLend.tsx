@@ -1,14 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useOptimisticTransaction
+  useCreateRequest
 } from "../misc/useOptimisticTransaction";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";
-import { TransactionStateEnum } from "../../types";
 
 const debug = createDebugger("app:contract");
 
@@ -17,9 +16,7 @@ export const useStartLend = (): {
   status: TransactionStatus;
 } => {
   const sdk = useSDK();
-  const { createTransaction, transactionRequests, pendingTransactionRequests } =
-    useOptimisticTransaction();
-  const [requestId, setRequestId] = useState<string>();
+  const { createRequest, status } = useCreateRequest();
 
   const startLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
@@ -55,7 +52,7 @@ export const useStartLend = (): {
       debug("nftPrice", nftPrice);
       debug("tokens", pmtTokens);
 
-      const id = createTransaction(
+      createRequest(
         sdk.lend(
           addresses,
           tokenIds,
@@ -78,22 +75,9 @@ export const useStartLend = (): {
         `
         }
       );
-      setRequestId(id);
     },
-    [sdk, createTransaction]
+    [sdk, createRequest]
   );
-  const request = useMemo(() => {
-    return requestId ? transactionRequests[requestId] : null;
-  }, [requestId, transactionRequests]);
-  const status = useMemo(() => {
-    console.log(pendingTransactionRequests)
-    return (
-      request?.transactionStatus || {
-        isLoading: true,
-        hasFailure: false,
-        status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-      }
-    );
-  }, [request, pendingTransactionRequests]);
+
   return { startLend, status };
 };

@@ -1,7 +1,7 @@
 import { PaymentToken } from "@renft/sdk";
 import { Listbox, Transition } from "@headlessui/react";
 import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
-import { Fragment, useCallback, forwardRef, Ref } from "react";
+import React, { Fragment, useCallback, Ref } from "react";
 import { classNames } from "../../utils";
 import { ReactEventOnChangeType } from "../../types";
 
@@ -18,7 +18,7 @@ export const TokenSelect: React.FC<{
   onChange: ReactEventOnChangeType;
   disabled?: boolean;
   name: string;
-}> = forwardRef(
+}> = React.forwardRef(
   ({ selectedValue, onChange: handleChange, disabled, name }, ref) => {
     const onChange = useCallback(
       (value) => {
@@ -32,13 +32,13 @@ export const TokenSelect: React.FC<{
       [handleChange, name]
     );
     return (
-      <div className="pb-4">
+      <div className="pb-4" ref={ref as Ref<HTMLDivElement>}
+      >
         <Listbox
           as="div"
           value={selectedValue}
           onChange={onChange}
           disabled={disabled}
-          ref={ref as Ref<HTMLDivElement>}
         >
           {({ open }) => (
             <>
