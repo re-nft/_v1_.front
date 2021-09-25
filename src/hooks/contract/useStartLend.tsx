@@ -3,11 +3,12 @@ import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
-  TransactionStatus,
-  useCreateRequest
-} from "../misc/useOptimisticTransaction";
+  SmartContractEventType,
+  TransactionStatus
+} from "../misc/useEventTrackedTransactions";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";
+import {  useCreateRequest } from "../misc/useCreateRequest";
 
 const debug = createDebugger("app:contract");
 
@@ -73,6 +74,10 @@ export const useStartLend = (): {
         nftPrice: ${nftPrice}
         tokens: ${pmtTokens}
         `
+        },
+        {
+          ids: lendingInputs.map((l) => l.nft.id),
+          type: SmartContractEventType.START_LEND
         }
       );
     },

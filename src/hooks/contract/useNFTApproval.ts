@@ -1,7 +1,7 @@
 import {
-  TransactionStatus,
-  useCreateRequest
-} from "../misc/useOptimisticTransaction";
+  SmartContractEventType,
+  TransactionStatus
+} from "../misc/useEventTrackedTransactions";
 import { from, map } from "rxjs";
 import { Nft } from "../../types/classes";
 import { useCallback, useEffect, useState } from "react";
@@ -10,8 +10,9 @@ import { TransactionStateEnum } from "../../types";
 import { useContractAddress } from "./useContractAddress";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useCreateRequest } from "../misc/useCreateRequest";
 
-type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId">;
+type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId" | "id">;
 
 export function useNFTApproval(nfts: NFTApproval[]): {
   isApprovalForAll: (
@@ -59,6 +60,10 @@ export function useNFTApproval(nfts: NFTApproval[]): {
           label: `${distinctItems
             .map((t) => `address: ${t.nftAddress} tokenId: ${t.tokenId}`)
             .join(",")}`
+        },
+        {
+          ids: distinctItems.map((l) => l.id),
+          type: SmartContractEventType.APPROVE_NFT
         }
       );
     },

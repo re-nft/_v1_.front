@@ -10,12 +10,29 @@ import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { useNftsStore, useRentingStore } from "../store/useNftStore";
 import { usePrevious } from "../misc/usePrevious";
+import { EventTrackedTransactionStateManager, SmartContractEventType, useEventTrackedTransactionState } from "../misc/useEventTrackedTransactions";
 
-export const useUserRenting = () => {
+export const useUserRenting = (): {
+  isLoading: boolean;
+  renting: Renting[]
+} => {
   const { signer, network } = useWallet();
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
-
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingStopRentals =
+        state.pendingTransactions[SmartContractEventType.START_RENT];
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.RETURN_RENTAL];
+      // refetch will change when you start renting goes from non-empty array to empty array
+      return (
+        pendingLendings.length === 0 ||
+        pendingStopRentals.length === 0
+      );
+    }, []),
+    shallow
+  );
   const [isLoading, setLoading] = useState(false);
   const addNfts = useNftsStore((state) => state.addNfts);
   const addRentings = useRentingStore((state) => state.addRentings);
@@ -75,16 +92,17 @@ export const useUserRenting = () => {
       })
     );
     return fetchRequest;
-  }, [currentAddress, signer, network, setLoading, addRentings]);
+  }, [currentAddress, signer, network, renting, addRentings, addNfts]);
 
   useEffect(() => {
-    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+    const start = refetchAfterOperation? 0: 0;
+    const subscription = timer(start, 10 * SECOND_IN_MILLISECONDS)
       .pipe(switchMap(fetchRenting))
       .subscribe();
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchRenting, currentAddress]);
+  }, [fetchRenting, currentAddress, refetchAfterOperation]);
 
   // reset on wallet change
   useEffect(() => {

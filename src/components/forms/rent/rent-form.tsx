@@ -47,7 +47,6 @@ export const RentForm: React.FC<LendFormProps> = ({
   const defaultValues: FormProps = {
     inputs: selectedToRent
   };
-
   const {
     register,
     handleSubmit,

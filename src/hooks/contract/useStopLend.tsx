@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
-import {
-  TransactionStatus,
-  useCreateRequest
-} from "../misc/useOptimisticTransaction";
+import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
 import { Lending } from "../../types/classes";
+import {
+  useCreateRequest
+} from "../misc/useCreateRequest";
 
 export const useStopLend = (): {
   stopLend: (lendings: Lending[]) => void;
@@ -23,14 +23,21 @@ export const useStopLend = (): {
         lendings.map((lending) => BigNumber.from(lending.tokenId)),
         lendings.map((lending) => BigNumber.from(lending.id))
       ];
-      createRequest(sdk.stopLending(...arr), {
-        action: "return nft",
-        label: `
+      createRequest(
+        sdk.stopLending(...arr),
+        {
+          action: "return nft",
+          label: `
           addresses: ${lendings.map((lending) => lending.nftAddress)}
           tokenId: ${lendings.map((lending) => BigNumber.from(lending.tokenId))}
           lendingId: ${lendings.map((lending) => BigNumber.from(lending.id))}
         `
-      });
+        },
+        {
+          ids: lendings.map((l) => l.id),
+          type: SmartContractEventType.STOP_LEND
+        }
+      );
     },
     [sdk, createRequest]
   );

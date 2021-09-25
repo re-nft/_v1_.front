@@ -15,6 +15,11 @@ import {
   useNftsStore
 } from "../store/useNftStore";
 import { usePrevious } from "../misc/usePrevious";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -36,11 +41,23 @@ export const fetchRentings = (): Observable<LendingRaw[]> => {
   );
 };
 
-export const useAllAvailableForRent = () => {
+export const useAllAvailableForRent = (): {
+  isLoading: boolean;
+  allAvailableToRent: Lending[];
+} => {
   const { network } = useWallet();
   const [isLoading, setLoading] = useState(false);
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingRentings =
+        state.pendingTransactions[SmartContractEventType.START_RENT];
+      // refetch will change when you start renting goes from non-empty array to empty array  
+      return pendingRentings.length === 0;
+    }, []),
+    shallow
+  );
   const allLendings = useLendingStore(
     useCallback((state) => state.lendings, []),
     shallow
@@ -53,7 +70,9 @@ export const useAllAvailableForRent = () => {
     shallow
   );
   useEffect(() => {
-    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+    // stupid way to force refetch
+    const start = refetchAfterOperation? 0 : 0;
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
           if (
@@ -90,7 +109,14 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [currentAddress, setLoading, network, addLendings, addNfts]);
+  }, [
+    currentAddress,
+    setLoading,
+    network,
+    addLendings,
+    addNfts,
+    refetchAfterOperation
+  ]);
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return Object.values(allLendings);

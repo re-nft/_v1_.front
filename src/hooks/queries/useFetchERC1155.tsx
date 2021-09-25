@@ -18,6 +18,11 @@ import { NetworkName, NftToken } from "../../types";
 import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 import shallow from "zustand/shallow";
 import { usePrevious } from "../misc/usePrevious";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
@@ -54,7 +59,17 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   const { signer, network } = useWallet();
   const [isLoading, setLoading] = useState(false);
   const previousAddress = usePrevious(currentAddress);
-
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingStopRentals =
+        state.pendingTransactions[SmartContractEventType.STOP_LEND];
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.START_LEND];
+      // refetch will change when you start renting goes from non-empty array to empty array
+      return pendingLendings.length === 0 || pendingStopRentals.length === 0;
+    }, []),
+    shallow
+  );
   const ERC1155 = useNftsStore(
     useCallback((state) => {
       return state.external_erc1155s.map((i) => {
@@ -97,7 +112,9 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   }, [currentAddress, setAmount, external_erc1155s, ERC1155]);
 
   useEffect(() => {
-    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+    // stupid way to force refetch
+    const start = refetchAfterOperation ? 0 : 0;
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
           if (!signer) return EMPTY;
@@ -119,7 +136,14 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, setLoading, addNfts]);
+  }, [
+    signer,
+    currentAddress,
+    setLoading,
+    addNfts,
+    refetchAfterOperation,
+    network
+  ]);
 
   // reset on wallet change
   useEffect(() => {

@@ -4,9 +4,10 @@ import { Renting } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
 import {
+  SmartContractEventType,
   TransactionStatus,
-  useCreateRequest
-} from "../misc/useOptimisticTransaction";
+} from "../misc/useEventTrackedTransactions";
+import { useCreateRequest } from "../misc/useCreateRequest";
 
 export const useReturnIt = (): {
   returnIt: (rentings: Renting[]) => void;
@@ -37,7 +38,12 @@ export const useReturnIt = (): {
             BigNumber.from(renting.lendingId)
           )}
         `
+        },
+        {
+          ids: rentings.map((l) => l.id),
+          type: SmartContractEventType.RETURN_RENTAL
         }
+
       );
     },
     [sdk, createRequest]

@@ -15,12 +15,37 @@ import {
   useNftsStore
 } from "../store/useNftStore";
 import shallow from "zustand/shallow";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
 
-export const useUserIsLending = () => {
+export const useUserIsLending = (): {
+  isLoading: boolean;
+  userLending: Lending[];
+} => {
   const currentAddress = useCurrentAddress();
   const previousAddress = usePrevious(currentAddress);
   const { signer, network } = useWallet();
   const [isLoading, setLoading] = useState(false);
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingStopRentals =
+        state.pendingTransactions[SmartContractEventType.STOP_LEND];
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.START_LEND];
+      const claimLendings =
+        state.pendingTransactions[SmartContractEventType.CLAIM];
+      // refetch will change when you start renting goes from non-empty array to empty array
+      return (
+        pendingLendings.length === 0 ||
+        pendingStopRentals.length === 0 ||
+        claimLendings.length === 0
+      );
+    }, []),
+    shallow
+  );
 
   const addNfts = useNftsStore((state) => state.addNfts);
   const addLendings = useLendingStore((state) => state.addLendings);
@@ -96,23 +121,18 @@ export const useUserIsLending = () => {
       })
     );
     return fetchRequest;
-  }, [
-    currentAddress,
-    previousAddress,
-    signer,
-    network,
-    setLoading,
-    addLendings
-  ]);
+  }, [signer, network, userIsLendingIds, addLendings, currentAddress, addNfts]);
 
   useEffect(() => {
-    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+    // stupid way to force refetch
+    const start = refetchAfterOperation ? 0 : 0;
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(switchMap(fetchLending))
       .subscribe();
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchLending, currentAddress]);
+  }, [fetchLending, currentAddress, refetchAfterOperation]);
 
   const userLending = useMemo(() => {
     return userIsLendingIds.map((i) => {

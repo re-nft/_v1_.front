@@ -1,16 +1,13 @@
 import { BigNumber } from "ethers";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { Lending } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
+import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
 import {
-  TransactionId,
-  TransactionStatus,
-  useCreateRequest,
-  useOptimisticTransaction
-} from "../misc/useOptimisticTransaction";
-import { TransactionStateEnum } from "../../types";
+  useCreateRequest
+} from "../misc/useCreateRequest";
 
 const debug = createDebugger("app:contracts:useClaimcollateral");
 
@@ -46,15 +43,22 @@ export const useClaimcollateral = (): {
         "Claim modal lendingId ",
         sortedNfts.map((lending) => lending.id)
       );
-      createRequest(sdk.claimCollateral(...params), {
-        action: "claim",
-        label: `Claim modal addresses : ${sortedNfts.map(
-          (lending) => lending.nftAddress
-        )}
+      createRequest(
+        sdk.claimCollateral(...params),
+        {
+          action: "claim",
+          label: `Claim modal addresses : ${sortedNfts.map(
+            (lending) => lending.nftAddress
+          )}
         Claim modal tokenId: ${sortedNfts.map((lending) => lending.tokenId)}
         Claim modal lendingIds: ${sortedNfts.map((lending) => lending.id)}
         `
-      });
+        },
+        {
+          ids: lendings.map((l) => l.id),
+          type: SmartContractEventType.CLAIM
+        }
+      );
     },
     [sdk, createRequest]
   );

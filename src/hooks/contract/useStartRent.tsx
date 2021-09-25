@@ -6,16 +6,16 @@ import { MAX_UINT256 } from "../../consts";
 import createDebugger from "debug";
 import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
-import {
-  TransactionStatus,
-  useCreateRequest
-} from "../misc/useOptimisticTransaction";
+import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { Lending } from "../../types/classes";
+import {
+  useCreateRequest
+} from "../misc/useCreateRequest";
 
 const debug = createDebugger("app:contract:startRent");
 
@@ -114,7 +114,12 @@ export const useRentApproval = (): {
             approval.approve(contractAddress, MAX_UINT256)
           )
         ),
-        { action: "Rent approve tokens", label: "" }
+        { action: "Rent approve tokens", label: "" },
+        {
+          //todo:eniko
+          ids: [],
+          type: SmartContractEventType.APPROVE_PAYMENT_TOKEN
+        }
       );
     }
   }, [approvals, contractAddress, createRequest]);
@@ -164,6 +169,10 @@ export const useStartRent = (): {
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
           `
+        },
+        {
+          ids: nfts.map((l) => l.lendingId),
+          type: SmartContractEventType.START_RENT
         }
       );
     },

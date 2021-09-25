@@ -1,5 +1,5 @@
 import { ContractTransaction } from "ethers";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { TransactionState, useTransactions } from "../store/useTransactions";
 import { from, map, switchMap, timer } from "rxjs";
 import { TransactionStateEnum } from "../../types";
@@ -59,7 +59,6 @@ const events = {
     });
   }
 };
-//TODO:eniko events
 const mapTransactions = (
   setHash: (t: string | string[]) => string | false,
   ga: { action: string; id: string },
@@ -84,27 +83,6 @@ const mapTransactions = (
       key: id,
       ga
     };
-    // .pipe(
-    //   map(([hasFailure, _]) => {
-    //     return {
-    //       hasFailure,
-    //       transactionHash: transactions.map((t) => t.hash),
-    //       isLoading: false,
-    //       status: hasFailure
-    //         ? TransactionStateEnum.FAILED
-    //         : TransactionStateEnum.SUCCESS
-    //     };
-    //   })
-    // )
-    // .subscribe((value) => {
-    //   subscriber.next(value);
-    //   events.transactionEnded({
-    //     action,
-    //     id,
-    //     hasFailure: value.hasFailure
-    //   });
-    //   subscriber.complete();
-    // });
   } else {
     const tx = transactions;
     events.transactionStart({ action, id, hash: tx.hash });
@@ -114,27 +92,6 @@ const mapTransactions = (
       isLoading: true,
       status: TransactionStateEnum.PENDING
     };
-    // .pipe(
-    //   map(([hasFailure, _]) => {
-    //     return {
-    //       hasFailure,
-    //       transactionHash: [tx.hash],
-    //       isLoading: false,
-    //       status: hasFailure
-    //         ? TransactionStateEnum.FAILED
-    //         : TransactionStateEnum.SUCCESS
-    //     };
-    //   })
-    // )
-    // .subscribe((value) => {
-    //   subscriber.next(value);
-    //   events.transactionEnded({
-    //     action,
-    //     id,
-    //     hasFailure: !value.hasFailure
-    //   });
-    //   subscriber.complete();
-    // });
   }
 };
 export interface TransactionStatus {
@@ -143,23 +100,27 @@ export interface TransactionStatus {
   status: TransactionStateEnum;
   isLoading: boolean;
 }
-export type TransactionId = string;
 export type TransactionRequest = {
+  event: { ids: string[]; type: SmartContractEventType };
   promise: Promise<ContractTransaction[] | ContractTransaction>;
   transactionStatus: TransactionStatus;
   ga: { action: string; label: string };
 };
 export type TransactionRequests = {
-  [id: TransactionId]: TransactionRequest;
+  [id: string]: TransactionRequest;
 };
+export enum SmartContractEventType {
+  START_LEND = 1,
+  START_RENT,
+  RETURN_RENTAL,
+  STOP_LEND,
+  CLAIM,
+  APPROVE_PAYMENT_TOKEN,
+  APPROVE_NFT
+}
 
-type OptmisticTransactionState = {
-  // start lend transactions
-  // start rent transactions
-  // claim transactions
-  // return transactions
-  // stop lend transactions
-  // approve transactions
+export type EventTrackedTransactionStateManager = {
+  pendingTransactions: Record<SmartContractEventType, string[]>;
   transactionRequests: Record<string, TransactionRequest>;
   pendingTransactionRequests: string[];
   addTransactionRequest: (key: string, request: TransactionRequest) => void;
@@ -167,14 +128,31 @@ type OptmisticTransactionState = {
   removePendingTransaction: (keys: string) => void;
   addToPendingTransaction: (keys: string) => void;
 };
-const useOptimisticTransactionState = create<OptmisticTransactionState>(
-  (set) => ({
+export const useEventTrackedTransactionState =
+  create<EventTrackedTransactionStateManager>((set) => ({
+    // additional layer to track user inititated, but waiting for signature
     transactionRequests: {},
+    //these are the submitted transactions to blockchain
     pendingTransactionRequests: [],
+    pendingTransactions: {
+      [SmartContractEventType.APPROVE_NFT]: [],
+      [SmartContractEventType.APPROVE_PAYMENT_TOKEN]: [],
+      [SmartContractEventType.CLAIM]: [],
+      [SmartContractEventType.RETURN_RENTAL]: [],
+      [SmartContractEventType.START_LEND]: [],
+      [SmartContractEventType.START_RENT]: [],
+      [SmartContractEventType.STOP_LEND]: []
+    },
     addTransactionRequest: (key: string, request: TransactionRequest) =>
       set(
-        produce((state: OptmisticTransactionState) => {
+        produce((state: EventTrackedTransactionStateManager) => {
           state.transactionRequests[key] = request;
+          state.pendingTransactions[request.event.type] = Array.from(
+            new Set([
+              ...request.event.ids,
+              ...state.pendingTransactions[request.event.type]
+            ])
+          );
         })
       ),
     updateTransactionRequest: (
@@ -182,7 +160,7 @@ const useOptimisticTransactionState = create<OptmisticTransactionState>(
       transactionStatus: TransactionStatus
     ) =>
       set(
-        produce((state: OptmisticTransactionState) => {
+        produce((state: EventTrackedTransactionStateManager) => {
           state.transactionRequests[key].transactionStatus.hasFailure =
             transactionStatus.hasFailure;
           state.transactionRequests[key].transactionStatus.isLoading =
@@ -195,57 +173,66 @@ const useOptimisticTransactionState = create<OptmisticTransactionState>(
       ),
     removePendingTransaction: (key: string) =>
       set(
-        produce((state: OptmisticTransactionState) => {
+        produce((state: EventTrackedTransactionStateManager) => {
+          const event = state.transactionRequests[key].event;
+          const set = new Set(event.ids);
+          state.pendingTransactions[event.type] = state.pendingTransactions[
+            event.type
+          ].filter((i) => !set.has(i));
           state.pendingTransactionRequests =
             state.pendingTransactionRequests.filter((id: string) => id !== key);
         })
       ),
     addToPendingTransaction: (key: string) =>
       set(
-        produce((state: OptmisticTransactionState) => {
+        produce((state: EventTrackedTransactionStateManager) => {
           state.pendingTransactionRequests = Array.from(
             new Set([...state.pendingTransactionRequests, key])
           );
         })
       )
-  })
-);
+  }));
 
-export const useOptimisticTransaction = (): {
+export const useEventTrackedTransactionManager = (): {
   createTransaction: (
     promise: Promise<ContractTransaction[] | ContractTransaction>,
-    ga: { action: string; label: string }
-  ) => TransactionId;
+    ga: { action: string; label: string },
+    event: {
+      ids: string[];
+      type: SmartContractEventType;
+    }
+  ) => string;
   transactionRequests: TransactionRequests;
   pendingTransactionRequests: string[];
 } => {
   const { setHash, transactions } = useTransactions();
   const { setError } = useSnackProvider();
   // submitted request which we track and fire events on
-  const pendingTransactionRequests = useOptimisticTransactionState(
+  const pendingTransactionRequests = useEventTrackedTransactionState(
     useCallback((state) => state.pendingTransactionRequests, []),
     shallow
   );
-  const transactionRequests = useOptimisticTransactionState(
+  const transactionRequests = useEventTrackedTransactionState(
     useCallback((state) => state.transactionRequests, []),
     shallow
   );
-  const addToPendingTransaction = useOptimisticTransactionState(
+  const addToPendingTransaction = useEventTrackedTransactionState(
     useCallback((state) => state.addToPendingTransaction, [])
   );
-  const removePendingTransaction = useOptimisticTransactionState(
+  const removePendingTransaction = useEventTrackedTransactionState(
     useCallback((state) => state.removePendingTransaction, [])
   );
-  const updateTransactionRequest = useOptimisticTransactionState(
+  const updateTransactionRequest = useEventTrackedTransactionState(
     useCallback((state) => state.updateTransactionRequest, [])
   );
-  const addTransactionRequest = useOptimisticTransactionState(
+  const addTransactionRequest = useEventTrackedTransactionState(
     useCallback((state) => state.addTransactionRequest, [])
   );
   const createTransaction = useCallback(
     (
       promise: Promise<ContractTransaction[] | ContractTransaction>,
-      ga
+      ga,
+      event
     ): string => {
       const { action, label } = ga;
       const id = Date.now().toString();
@@ -253,6 +240,7 @@ export const useOptimisticTransaction = (): {
       const transaction = {
         promise,
         ga: ga,
+        event,
         transactionStatus: {
           status: TransactionStateEnum.PENDING,
           isLoading: true,
@@ -274,15 +262,27 @@ export const useOptimisticTransaction = (): {
         })
         .catch((err) => {
           events.error({ ...ga, id, err });
+          updateTransactionRequest(id, {
+            hasFailure: true,
+            isLoading: false,
+            status: TransactionStateEnum.DENIED_SIGNATURE
+          });
+
           setError(err.message, "warning");
         });
       return id;
     },
-    [addTransactionRequest, setHash, updateTransactionRequest, addToPendingTransaction, setError]
+    [
+      addTransactionRequest,
+      setHash,
+      updateTransactionRequest,
+      addToPendingTransaction,
+      setError
+    ]
   );
 
   useEffect(() => {
-    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(0, 2 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() =>
           from(
@@ -298,7 +298,6 @@ export const useOptimisticTransaction = (): {
         ),
         map((transactionState: (TransactionState & { key: string }) | null) => {
           if (transactionState) {
-            console.log("update request", transactionState);
             if (transactionState.hasFailure) {
               removePendingTransaction(transactionState.key);
               updateTransactionRequest(transactionState.key, {
@@ -306,9 +305,19 @@ export const useOptimisticTransaction = (): {
                 hasFailure: true,
                 isLoading: false
               });
+              events.transactionEnded({
+                id: transactionState.key,
+                action: "",
+                hasFailure: true
+              });
             }
             if (!transactionState.hasPending) {
               removePendingTransaction(transactionState.key);
+              events.transactionEnded({
+                id: transactionState.key,
+                action: "",
+                hasFailure: false
+              });
               updateTransactionRequest(transactionState.key, {
                 status: TransactionStateEnum.SUCCESS,
                 hasFailure: false,
@@ -332,44 +341,4 @@ export const useOptimisticTransaction = (): {
   ]);
 
   return { createTransaction, transactionRequests, pendingTransactionRequests };
-};
-
-// update status to form or where the request started
-export const useCreateRequest = (): {
-  status: TransactionStatus;
-  createRequest: (
-    promise: Promise<ContractTransaction[] | ContractTransaction>,
-    ga: { action: string; label: string }
-  ) => void;
-} => {
-  const { createTransaction, transactionRequests, pendingTransactionRequests } =
-    useOptimisticTransaction();
-  const [requestId, setRequestId] = useState<string>();
-
-  const createRequest = useCallback(
-    (promise: Promise<ContractTransaction[] | ContractTransaction>, ga) => {
-      const id = createTransaction(promise, ga);
-      setRequestId(id);
-    },
-    [createTransaction]
-  );
-
-  const status = useMemo(() => {
-    if (pendingTransactionRequests.length === 0)
-      return {
-        isLoading: true,
-        hasFailure: false,
-        status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-      };
-
-    const request = requestId ? transactionRequests[requestId] : null;
-    return (
-      request?.transactionStatus || {
-        isLoading: true,
-        hasFailure: false,
-        status: TransactionStateEnum.WAITING_FOR_SIGNATURE
-      }
-    );
-  }, [pendingTransactionRequests, requestId, transactionRequests]);
-  return { createRequest, status };
 };

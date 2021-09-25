@@ -11,6 +11,11 @@ import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { NetworkName } from "../../types";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
 
 export type CancellablePromise<T> = {
   promise: Promise<T>;
@@ -39,7 +44,17 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     }, []),
     shallow
   );
-
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingStopRentals =
+        state.pendingTransactions[SmartContractEventType.STOP_LEND];
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.START_LEND];
+      // refetch will change when you start renting goes from non-empty array to empty array
+      return pendingLendings.length === 0 || pendingStopRentals.length === 0;
+    }, []),
+    shallow
+  );
   const previousAddress = usePrevious(currentAddress);
   const addNfts = useNftsStore((state) => state.addNfts);
   const setAmount = useNftsStore((state) => state.setAmount);
@@ -141,22 +156,13 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       }
       return usersNfts;
     },
-    [
-      E1155,
-      E721,
-      E721B,
-      E1155B,
-      isLoading,
-      devNfts,
-      previousAddress,
-      network,
-      addNfts,
-      setAmount
-    ]
+    [E1155, E721, E721B, E1155B, setAmount]
   );
 
   useEffect(() => {
-    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+    // stupid way to force refetch
+    const start = refetchAfterOperation ? 0 : 0;
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
           if (!signer) return EMPTY;
@@ -182,7 +188,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, addNfts]);
+  }, [signer, currentAddress, addNfts, network, fetchDevNfts, refetchAfterOperation]);
 
   // reset on wallet change
   useEffect(() => {

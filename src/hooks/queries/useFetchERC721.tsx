@@ -8,6 +8,12 @@ import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { NetworkName, NftToken } from "../../types";
 import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
 import { usePrevious } from "../misc/usePrevious";
+import {
+  EventTrackedTransactionStateManager,
+  SmartContractEventType,
+  useEventTrackedTransactionState
+} from "../misc/useEventTrackedTransactions";
+import shallow from "zustand/shallow";
 
 const fetchERC721 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC721
@@ -53,7 +59,17 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const previousAddress = usePrevious(currentAddress);
   const { signer, network } = useWallet();
   const [isLoading, setLoading] = useState(false);
-
+  const refetchAfterOperation = useEventTrackedTransactionState(
+    useCallback((state: EventTrackedTransactionStateManager) => {
+      const pendingStopRentals =
+        state.pendingTransactions[SmartContractEventType.STOP_LEND];
+      const pendingLendings =
+        state.pendingTransactions[SmartContractEventType.START_LEND];
+      // refetch will change when you start renting goes from non-empty array to empty array
+      return pendingLendings.length === 0 || pendingStopRentals.length === 0;
+    }, []),
+    shallow
+  );
   const ERC721 = useNftsStore(
     useCallback((state) => {
       return state.external_erc721s.map((i) => {
@@ -64,7 +80,9 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
   const addNfts = useNftsStore((state) => state.addNfts);
 
   useEffect(() => {
-    const subscription = timer(0, 30 * SECOND_IN_MILLISECONDS)
+    // stupid way to force refetch
+    const start = refetchAfterOperation ? 0 : 0;
+    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
       .pipe(
         switchMap(() => {
           if (!signer) return EMPTY;
@@ -86,12 +104,19 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, setLoading, addNfts]);
+  }, [
+    signer,
+    currentAddress,
+    setLoading,
+    addNfts,
+    refetchAfterOperation,
+    network
+  ]);
 
   // reset on wallet change
   useEffect(() => {
     addNfts([], OWNED_NFT_TYPE.EXTERNAL_ERC721);
   }, [currentAddress, previousAddress, addNfts]);
-  
+
   return { ERC721, isLoading };
 };
