@@ -35,8 +35,8 @@ export const useUserRenting = (): {
     shallow
   );
   const [isLoading, setLoading] = useState(false);
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const addRentings = useRentingStore((state) => state.addRentings);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const addRentings = useRentingStore(useCallback((state) => state.addRentings, []));
   const renting = useRentingStore(
     useCallback((state) => state.rentings, []),
     shallow
@@ -45,7 +45,7 @@ export const useUserRenting = (): {
   const fetchRenting = useCallback(() => {
     if (!currentAddress || !signer) return EMPTY;
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      if (renting && Object.keys(renting).length > 0) addRentings([]);
+      addRentings([]);
       return EMPTY;
     }
     setLoading(true);
@@ -93,7 +93,7 @@ export const useUserRenting = (): {
       })
     );
     return fetchRequest;
-  }, [currentAddress, signer, network, renting, addRentings, addNfts]);
+  }, [currentAddress, signer, network, addRentings, addNfts]);
 
   useEffect(() => {
     const start = refetchAfterOperation ? 0 : 0;
@@ -103,7 +103,8 @@ export const useUserRenting = (): {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchRenting, currentAddress, refetchAfterOperation]);
+  }, [fetchRenting, refetchAfterOperation]);
+
 
   // reset on wallet change
   useEffect(() => {
