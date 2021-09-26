@@ -84,7 +84,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const cb: ReactEventOnClickType = useCallback(
     (e: React.MouseEvent<unknown>) => {
       if (disabled) return;
-      console.log(e);
       // stop propagation is not working, manually disable checkbox toggling
       if (rest.hasAction) {
         rest.onClick(e);
@@ -95,7 +94,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const onChange: ReactEventOnChangeType = useCallback(
     (e: React.ChangeEvent<unknown>) => {
       if (disabled) return;
-      console.log("oncheckboxchange");
       onCheckboxChange(e);
     },
     [disabled, onCheckboxChange]

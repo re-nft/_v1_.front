@@ -9,7 +9,12 @@ import {
   LendInputProps
 } from "./lend-types";
 import { Transition } from "@headlessui/react";
-import { useForm, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  useFieldArray,
+  UseFormRegister,
+  FormState
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./lend-validation";
 import { Button } from "../../common/button";
@@ -62,7 +67,7 @@ export const LendForm: React.FC<LendFormProps> = ({
     formState: { isSubmitting, isValid },
     formState
   } = useForm<FormProps>({
-    defaultValues,
+    defaultValues: { ...defaultValues },
     mode: "onChange",
     shouldFocusError: true,
     resolver: yupResolver(validationSchema)
@@ -85,6 +90,13 @@ export const LendForm: React.FC<LendFormProps> = ({
     () => status.status === TransactionStateEnum.SUCCESS,
     [status]
   );
+  const noItems = useMemo(() => {
+    return (
+      controlledFields.length === 0 ||
+      // stupid bug with removal
+      (controlledFields.length === 1 && !controlledFields[0].nft)
+    );
+  }, [controlledFields]);
   return (
     <div>
       <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">
@@ -99,70 +111,123 @@ export const LendForm: React.FC<LendFormProps> = ({
             NFTs in your lending cart
           </h2>
           <ul role="list" className="flex flex-col space-y-8 ">
-            {defaultValues.inputs.map((item: LendInputProps) => {
-              // render the initial values so transition can be shown
-              const index = controlledFields.findIndex(
-                (v: LendInputProps) => v.nft.nId === item.nft.nId
-              );
-              const show = index >= 0;
-              return (
-                <Transition
-                  show={show}
-                  as={Fragment}
-                  enter="transition-opacity ease-linear duration-300"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="transition-opacity ease-linear duration-300"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                  key={item.nft.nId}
-                >
-                  <LendItem
-                    key={controlledFields[index].id}
-                    lendingInput={controlledFields[index]}
-                    index={index}
+            {noItems && (
+              <div className="flex justify-center items-center">
+                No item is selected!
+              </div>
+            )}
+            {!noItems &&
+              defaultValues.inputs.map((item: LendInputProps) => {
+                return (
+                  <TransitionLendItem
+                    key={item.nft.id}
                     register={register}
+                    item={item}
+                    controlledFields={controlledFields}
+                    remove={remove}
                     formState={formState}
-                    disabled={isSubmitting || formSubmittedSuccessfully}
-                    removeFromCart={remove}
-                  ></LendItem>
-                </Transition>
-              );
-            })}
+                    isSubmitting={isSubmitting}
+                    formSubmittedSuccessfully={formSubmittedSuccessfully}
+                  />
+                );
+              })}
           </ul>
-          <div className="py-3 flex flex-auto items-end justify-center">
-            {!isApproved && !isSubmitting && (
-              <TransactionWrapper
-                isLoading={approvalStatus.isLoading}
-                status={approvalStatus.status}
-                transactionHashes={approvalStatus.transactionHash}
-              >
-                <Button
-                  description="Approve all"
-                  onClick={handleApproveAll}
-                  disabled={approvalStatus.isLoading}
-                />
-              </TransactionWrapper>
-            )}
-            {(isApproved || isSubmitting) && (
-              <TransactionWrapper
-                isLoading={isSubmitting || status.isLoading}
-                status={status.status}
-                transactionHashes={status.transactionHash}
-                closeWindow={onClose}
-              >
-                <Button
-                  onClick={handleSubmit(onSubmit)}
-                  description={ownedNfts.length > 1 ? "Lend all" : "Lend"}
-                  disabled={
-                    !isValid || isSubmitting || formSubmittedSuccessfully
-                  }
-                />
-              </TransactionWrapper>
-            )}
-          </div>
+          {!noItems && (
+            <div className="py-3 flex flex-auto items-end justify-center">
+              {!isApproved && !isSubmitting && (
+                <TransactionWrapper
+                  isLoading={approvalStatus.isLoading}
+                  status={approvalStatus.status}
+                  transactionHashes={approvalStatus.transactionHash}
+                >
+                  <Button
+                    description="Approve all"
+                    onClick={handleApproveAll}
+                    disabled={approvalStatus.isLoading}
+                  />
+                </TransactionWrapper>
+              )}
+              {(isApproved || isSubmitting) && (
+                <TransactionWrapper
+                  isLoading={isSubmitting || status.isLoading}
+                  status={status.status}
+                  transactionHashes={status.transactionHash}
+                  closeWindow={onClose}
+                >
+                  <Button
+                    onClick={handleSubmit(onSubmit)}
+                    description={ownedNfts.length > 1 ? "Lend all" : "Lend"}
+                    disabled={
+                      !isValid || isSubmitting || formSubmittedSuccessfully
+                    }
+                  />
+                </TransactionWrapper>
+              )}
+            </div>
+          )}
         </section>
       </form>
     </div>
+  );
+};
+
+const TransitionLendItem: React.FC<{
+  item: LendInputProps;
+  controlledFields: LendInputProps[];
+  remove: (index: number) => void;
+  register: UseFormRegister<FormProps>;
+  formState: FormState<FormProps>;
+  formSubmittedSuccessfully: boolean;
+  isSubmitting: boolean;
+}> = ({
+  item,
+  controlledFields,
+  formSubmittedSuccessfully,
+  register,
+  remove,
+  isSubmitting,
+  formState
+}) => {
+  // render the initial values so transition can be shown
+  const index = useMemo(
+    () =>
+      controlledFields.findIndex((v: LendInputProps) => {
+        if (v === null || !v.nft) return -1;
+        return v.nft.nId === item.nft.nId;
+      }),
+    [controlledFields, item.nft.nId]
+  );
+  const show = useMemo(() => {
+    const controlledItem = controlledFields[index];
+    return Boolean(controlledItem && controlledItem.nft && index >= 0);
+  }, [controlledFields, index]);
+
+  // there is some bug here
+  const value = useMemo(() => {
+    const controlledItem = controlledFields[index];
+    // bug with removal
+    return controlledItem && controlledItem.nft ? controlledItem : item;
+  }, [controlledFields, index, item]);
+
+  return (
+    <Transition
+      show={show}
+      as={Fragment}
+      enter="transition-opacity ease-linear duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity ease-linear duration-300"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+    >
+      <LendItem
+        lendingInput={value}
+        index={index}
+        register={register}
+        formState={formState}
+        disabled={isSubmitting || formSubmittedSuccessfully}
+        removeFromCart={remove}
+      ></LendItem>
+    </Transition>
   );
 };

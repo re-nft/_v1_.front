@@ -58,14 +58,12 @@ const ItemsRenderer: React.FC<{
 }> = ({ currentPage }) => {
   const {
     checkedItems,
-    handleReset: handleBatchReset,
     onCheckboxChange
   } = useBatchItems();
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);
-    handleBatchReset();
-  }, [handleBatchReset, setOpenBatchModel]);
+  }, [setOpenBatchModel]);
 
   const handleBatchModalOpen = useCallback(
     () => () => {

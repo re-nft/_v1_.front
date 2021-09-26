@@ -69,15 +69,13 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
 }) => {
   const {
     checkedItems,
-    handleReset: handleBatchReset,
     onCheckboxChange
   } = useBatchItems();
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
-    handleBatchReset();
-  }, [handleBatchReset]);
+  }, []);
 
   const handleReturnNft = useCallback(
     (nft) => () => {

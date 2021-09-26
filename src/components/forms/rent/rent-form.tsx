@@ -1,9 +1,4 @@
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo
-} from "react";
+import React, { Fragment, useCallback, useEffect, useMemo } from "react";
 import { TransactionStateEnum } from "../../../types";
 import {
   StartRentNft,
@@ -88,7 +83,13 @@ export const RentForm: React.FC<LendFormProps> = ({
     () => status.status === TransactionStateEnum.SUCCESS,
     [status]
   );
-
+  const noItems = useMemo(() => {
+    return (
+      controlledFields.length === 0 ||
+      // stupid bug with removal
+      (controlledFields.length === 1 && !controlledFields[0].id)
+    );
+  }, [controlledFields]);
   return (
     <div>
       <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">
@@ -104,71 +105,81 @@ export const RentForm: React.FC<LendFormProps> = ({
             NFTs in your renting cart
           </h2>
           <ul role="list" className="flex flex-col space-y-8  ">
-            {defaultValues.inputs.map((item) => {
-              // render the initial values so transition can be shown
-              const index = controlledFields.findIndex((v) => v.id === item.id);
-              const show = index >= 0;
-              return (
-                <Transition
-                  show={show}
-                  as={Fragment}
-                  enter="transition-opacity ease-linear duration-300"
-                  enterFrom="opacity-0"
-                  enterTo="opacity-100"
-                  leave="transition-opacity ease-linear duration-300"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                  key={item.id}
-                >
-                  <RentItem
+            {noItems && (
+              <div className="flex justify-center items-center">
+                No item is selected!
+              </div>
+            )}
+            {!noItems &&
+              defaultValues.inputs.map((item) => {
+                // render the initial values so transition can be shown
+                const index = controlledFields.findIndex(
+                  (v) => v.id === item.id
+                );
+                const show = index >= 0;
+                return (
+                  <Transition
+                    show={show}
+                    as={Fragment}
+                    enter="transition-opacity ease-linear duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="transition-opacity ease-linear duration-300"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
                     key={item.id}
-                    item={controlledFields[index]}
-                    formState={formState}
-                    register={register}
-                    removeFromCart={remove}
-                    index={index}
-                    disabled={formSubmittedSuccessfully}
-                  ></RentItem>
-                </Transition>
-              );
-            })}
+                  >
+                    <RentItem
+                      key={item.id}
+                      item={controlledFields[index] || item}
+                      formState={formState}
+                      register={register}
+                      removeFromCart={remove}
+                      index={index}
+                      disabled={formSubmittedSuccessfully}
+                    ></RentItem>
+                  </Transition>
+                );
+              })}
 
-            <div className="py-3 flex flex-auto items-end justify-center">
-              {!isApproved && !isSubmitting && (
-                <TransactionWrapper
-                  isLoading={approvalStatus.isLoading}
-                  transactionHashes={approvalStatus.transactionHash}
-                  status={TransactionStateEnum.PENDING}
-                >
-                  <Button
-                    description="Approve Payment tokens"
-                    onClick={handleApproveAll}
-                    disabled={approvalStatus.isLoading || isSubmitting}
-                  />
-                </TransactionWrapper>
-              )}
-              {(isApproved || isSubmitting) && (
-                <TransactionWrapper
-                  isLoading={isSubmitting || status.isLoading}
-                  status={status.status}
-                  closeWindow={onClose}
-                  transactionHashes={status.transactionHash}
-                >
-                  <Button
-                    description={
-                      selectedToRent.length > 1 ? "Rent all" : "Rent"
-                    }
-                    onClick={handleSubmit(onSubmit)}
-                    disabled={
-                      !isValid ||
-                      !isApproved ||
-                      isSubmitting ||
-                      formSubmittedSuccessfully
-                    }
-                  />
-                </TransactionWrapper>
-              )}
-            </div>
+            {!noItems && (
+              <div className="py-3 flex flex-auto items-end justify-center">
+                {!isApproved && !isSubmitting && (
+                  <TransactionWrapper
+                    isLoading={approvalStatus.isLoading}
+                    transactionHashes={approvalStatus.transactionHash}
+                    status={TransactionStateEnum.PENDING}
+                  >
+                    <Button
+                      description="Approve Payment tokens"
+                      onClick={handleApproveAll}
+                      disabled={approvalStatus.isLoading || isSubmitting}
+                    />
+                  </TransactionWrapper>
+                )}
+                {(isApproved || isSubmitting) && (
+                  <TransactionWrapper
+                    isLoading={isSubmitting || status.isLoading}
+                    status={status.status}
+                    closeWindow={onClose}
+                    transactionHashes={status.transactionHash}
+                  >
+                    <Button
+                      description={
+                        selectedToRent.length > 1 ? "Rent all" : "Rent"
+                      }
+                      onClick={handleSubmit(onSubmit)}
+                      disabled={
+                        !isValid ||
+                        !isApproved ||
+                        isSubmitting ||
+                        formSubmittedSuccessfully
+                      }
+                    />
+                  </TransactionWrapper>
+                )}
+              </div>
+            )}
           </ul>
         </section>
       </form>
