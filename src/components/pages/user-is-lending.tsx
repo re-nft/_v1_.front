@@ -97,7 +97,7 @@ const ItemsRenderer: React.FC<{
     },
     [onCheckboxChange]
   );
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft) => {
       return () => {
         onCheckboxChange(nft);
@@ -121,7 +121,7 @@ const ItemsRenderer: React.FC<{
             show={lending.show}
             key={lending.id}
             checkedItems={checkedItems}
-            onCheckboxChange={checkBoxChangeWrapped(lending)}
+            onCheckboxChange={onItemCheck(lending)}
             handleClickNft={handleClickNft}
           />
         ))}

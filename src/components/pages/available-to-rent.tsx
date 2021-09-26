@@ -12,13 +12,13 @@ import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
 const RentCatalogueItem: React.FC<{
   checkedItems: string[];
   lending: Lending;
-  checkBoxChangeWrapped: (lending: Lending) => () => void;
+  onItemCheck: (lending: Lending) => () => void;
   handleBatchModalOpen: (lending: Lending) => () => void;
   show: boolean;
 }> = ({
   checkedItems,
   lending,
-  checkBoxChangeWrapped,
+  onItemCheck,
   handleBatchModalOpen,
   show
 }) => {
@@ -41,7 +41,7 @@ const RentCatalogueItem: React.FC<{
       nId={lending.nId}
       uniqueId={lending.id}
       checked={checked}
-      onCheckboxChange={checkBoxChangeWrapped(lending)}
+      onCheckboxChange={onItemCheck(lending)}
       hasAction
       disabled={userLender}
       show={show}
@@ -72,7 +72,7 @@ const ItemsRenderer: React.FC<{
     [setOpenBatchModel]
   );
 
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft: Lending) => () => {
       onCheckboxChange(nft);
     },
@@ -93,7 +93,7 @@ const ItemsRenderer: React.FC<{
             show={lending.show}
             lending={lending as Lending}
             checkedItems={checkedItems}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            onItemCheck={onItemCheck}
             handleBatchModalOpen={handleBatchModalOpen}
           />
         ))}

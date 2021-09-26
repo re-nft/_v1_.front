@@ -9,15 +9,13 @@ import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useWallet } from "../hooks/store/useWallet";
 
-
-
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
   nft: Nft;
-  checkBoxChangeWrapped: (nft: Nft) => () => void;
+  onItemCheck: (nft: Nft) => () => void;
   handleStartLend: () => void;
   show: boolean;
-}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend, show }) => {
+}> = ({ checkedItems, nft, onItemCheck, handleStartLend, show }) => {
   //TODO:eniko optimize this
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
@@ -33,7 +31,7 @@ const LendCatalagoueItem: React.FC<{
       nId={nft.nId}
       uniqueId={nft.nId}
       checked={checked}
-      onCheckboxChange={checkBoxChangeWrapped(nft)}
+      onCheckboxChange={onItemCheck(nft)}
       hasAction
       buttonTitle={checkedMoreThanOne && checked ? "Lend all" : "Lend"}
       onClick={handleStartLend}
@@ -54,7 +52,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft) => {
       return () => {
         onCheckboxChange(nft);
@@ -79,7 +77,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
             show={nft.show}
             key={nft.id}
             checkedItems={checkedItems}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
+            onItemCheck={onItemCheck}
             handleStartLend={handleBatchModalOpen}
           />
         ))}

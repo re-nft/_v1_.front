@@ -85,7 +85,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
     [onCheckboxChange]
   );
 
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft) => {
       return () => {
         onCheckboxChange(nft)
@@ -109,7 +109,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
             key={renting.id}
             show={renting.show}
             checkedItems={checkedItems}
-            onCheckboxChange={checkBoxChangeWrapped(renting)}
+            onCheckboxChange={onItemCheck(renting)}
             handleReturnNft={handleReturnNft}
           />
         ))}

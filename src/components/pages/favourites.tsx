@@ -25,7 +25,7 @@ export const MyFavorites: React.FC = () => {
     });
   }, [allAvailableToRent, userData]);
 
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft) => {
       return () => {
         onCheckboxChange(nft);
@@ -57,7 +57,7 @@ export const MyFavorites: React.FC = () => {
                     // use null, no need for tracking
                     uniqueId=""
                     isAlreadyFavourited
-                    onCheckboxChange={checkBoxChangeWrapped(nft)}
+                    onCheckboxChange={onItemCheck(nft)}
                   ></CatalogueItem>
                 )
               )}
