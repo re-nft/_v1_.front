@@ -9,6 +9,8 @@ import { SECOND_IN_MILLISECONDS } from "../../consts";
 import create from "zustand";
 import produce from "immer";
 import shallow from "zustand/shallow";
+import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { usePrevious } from "../misc/usePrevious";
 
 type GAAction = { action: string; label: string; id: string; err?: unknown };
 const events = {
@@ -134,6 +136,7 @@ export type EventTrackedTransactionStateManager = {
   updateTransactionRequest: (key: string, status: TransactionStatus) => void;
   removePendingTransaction: (keys: string) => void;
   addToPendingTransaction: (keys: string) => void;
+  resetState: () => void;
 };
 export const useEventTrackedTransactionState =
   create<EventTrackedTransactionStateManager>((set) => ({
@@ -214,6 +217,23 @@ export const useEventTrackedTransactionState =
             state.uiPendingTransactionState[id] = TransactionStateEnum.PENDING;
           });
         })
+      ),
+    resetState: () =>
+      set(
+        produce((state: EventTrackedTransactionStateManager) => {
+          state.transactionRequests = {};
+          state.pendingTransactionRequests = [];
+          state.uiPendingTransactionState = {};
+          state.pendingTransactions = {
+            [SmartContractEventType.APPROVE_NFT]: [],
+            [SmartContractEventType.APPROVE_PAYMENT_TOKEN]: [],
+            [SmartContractEventType.CLAIM]: [],
+            [SmartContractEventType.RETURN_RENTAL]: [],
+            [SmartContractEventType.START_LEND]: [],
+            [SmartContractEventType.START_RENT]: [],
+            [SmartContractEventType.STOP_LEND]: []
+          };
+        })
       )
   }));
 
@@ -229,8 +249,11 @@ export const useEventTrackedTransactionManager = (): {
   transactionRequests: TransactionRequests;
   pendingTransactionRequests: string[];
 } => {
+  //TODO:eniko snackprovider is not showing up
   const { setHash, transactions } = useTransactions();
   const { setError } = useSnackProvider();
+  const currentAddress = useCurrentAddress();
+  const previousAddress = usePrevious(currentAddress);
   // submitted request which we track and fire events on
   const pendingTransactionRequests = useEventTrackedTransactionState(
     useCallback((state) => state.pendingTransactionRequests, []),
@@ -251,6 +274,9 @@ export const useEventTrackedTransactionManager = (): {
   );
   const addTransactionRequest = useEventTrackedTransactionState(
     useCallback((state) => state.addTransactionRequest, [])
+  );
+  const resetState = useEventTrackedTransactionState(
+    useCallback((state) => state.resetState, [])
   );
   const createTransaction = useCallback(
     (
@@ -365,6 +391,12 @@ export const useEventTrackedTransactionManager = (): {
     removePendingTransaction,
     updateTransactionRequest
   ]);
+
+  useEffect(() => {
+    if (currentAddress !== previousAddress) {
+      resetState();
+    }
+  }, [currentAddress, previousAddress, resetState]);
 
   return { createTransaction, transactionRequests, pendingTransactionRequests };
 };
