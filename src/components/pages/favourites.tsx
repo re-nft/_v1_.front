@@ -14,7 +14,7 @@ export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =
     useAllAvailableForRent();
   const { userData, isLoading: userDataIsLoading } = useUserData();
-  const { onCheckboxChange } = useBatchItems();
+  const { onCheckboxChange } = useBatchItems('favorites');
 
   const favorites = useMemo(() => {
     if (!allAvailableToRent || !userData || !userData.favorites) return [];

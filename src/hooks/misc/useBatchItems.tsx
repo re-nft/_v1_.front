@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
-
+import produce from "immer";
+import { useCallback } from "react";
+import create from "zustand";
+import { devtools } from "zustand/middleware";
+import shallow from "zustand/shallow";
 import { Nft, Lending, Renting } from "../../types/classes";
-import { THROWS, UniqueID } from "../../utils";
 
 export type BatchContextType = {
   // nftAddress::tokenId::lendingId
@@ -11,8 +13,28 @@ export type BatchContextType = {
   onCheckboxChange(item: Nft | Lending | Renting): void;
 };
 
-export const useBatchItems: () => BatchContextType = () => {
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+export const useBatchItemsState = create<{
+  values: Record<string, string[]>;
+  setValues: (key: string, values: string[]) => void;
+}>(
+  devtools((set) => ({
+    values: {},
+    setValues: (key: string, values: string[]) =>
+      set(
+        produce((state) => {
+          state.values[key] = values;
+        })
+      )
+  }))
+);
+export const useBatchItems: (key: string) => BatchContextType = (key) => {
+  const checkedItems = useBatchItemsState(
+    useCallback((state) => state.values[key], [key]),
+    shallow
+  );
+  const setCheckedItems = useBatchItemsState(
+    useCallback((state) => state.setValues, [])
+  );
 
   const handleReset = useCallback(
     (items: string[]) => {
@@ -21,17 +43,16 @@ export const useBatchItems: () => BatchContextType = () => {
         items.forEach((i) => {
           set.delete(i);
         });
-        setCheckedItems(Array.from(set));
-      } else if (Object.keys(checkedItems).length > 0)
-        setCheckedItems([]);
+        setCheckedItems(key, Array.from(set));
+      } else if (Object.keys(checkedItems).length > 0) setCheckedItems(key, []);
     },
-    [checkedItems]
+    [checkedItems, key, setCheckedItems]
   );
 
   const onCheckboxChange: BatchContextType["onCheckboxChange"] = useCallback(
     (item) => {
       const uniqueID = item.id;
-      const set = new Set(checkedItems)
+      const set = new Set(checkedItems);
       // if contained in prev, remove
       if (set.has(uniqueID)) {
         set.delete(uniqueID);
@@ -39,9 +60,9 @@ export const useBatchItems: () => BatchContextType = () => {
       } else {
         set.add(uniqueID);
       }
-      setCheckedItems(Array.from(set));
+      setCheckedItems(key, Array.from(set));
     },
-    [checkedItems]
+    [checkedItems, key, setCheckedItems]
   );
   return {
     checkedItems,

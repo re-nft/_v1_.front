@@ -59,7 +59,7 @@ const ItemsRenderer: React.FC<{
   const {
     checkedItems,
     onCheckboxChange
-  } = useBatchItems();
+  } = useBatchItems('available-to-rent');
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);

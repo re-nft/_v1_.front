@@ -70,7 +70,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
   const {
     checkedItems,
     onCheckboxChange
-  } = useBatchItems();
+  } = useBatchItems('user-is-renting');
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {

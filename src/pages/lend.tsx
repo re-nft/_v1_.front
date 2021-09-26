@@ -45,7 +45,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
   currentPage
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, onCheckboxChange } = useBatchItems();
+  const { checkedItems, onCheckboxChange } = useBatchItems('lend');
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
