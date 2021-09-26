@@ -6,7 +6,7 @@ import { useSDK } from "./useSDK";
 import {
   SmartContractEventType,
   TransactionStatus,
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 import { useCreateRequest } from "../store/useCreateRequest";
 
 export const useReturnIt = (): {

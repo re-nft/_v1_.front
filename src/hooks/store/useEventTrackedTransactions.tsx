@@ -128,7 +128,7 @@ export type EventTrackedTransactionStateManager = {
   pendingTransactionRequests: string[];
   // for tracking Lending/renting/nft state changes for UI
   uiPendingTransactionState: {
-    [uniqueId: string]: TransactionStateEnum;
+    [uniqueId: string]: TransactionStateEnum | null;
   };
   addTransactionRequest: (key: string, request: TransactionRequest) => void;
   updateTransactionRequest: (key: string, status: TransactionStatus) => void;
@@ -199,7 +199,7 @@ export const useEventTrackedTransactionState =
           state.pendingTransactionRequests =
             state.pendingTransactionRequests.filter((id: string) => id !== key);
           event.ids.forEach((id) => {
-            delete state.uiPendingTransactionState[id];
+            state.uiPendingTransactionState[id] = null;
           });
         })
       ),

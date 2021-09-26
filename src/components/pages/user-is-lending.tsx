@@ -154,7 +154,7 @@ export const UserIsLending: React.FC = () => {
       <div className="mt- px-8">
         <h2>
           <span sr-only="Lending"></span>
-          <img src="/assets/Lending-headline.svg" className="h-12" />
+          <img src="/assets/Lending-Headline.svg" className="h-12" />
         </h2>
         <h3 className="text-lg">
           Here you will find he NFTs that you are lending.

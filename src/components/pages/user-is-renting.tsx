@@ -137,7 +137,7 @@ export const UserIsRenting: React.FC = () => {
       <div className="py-4 px-8">
         <h2 className="">
           <span sr-only="Renting"></span>
-          <img src="/assets/Renting-headline.svg" className="h-12" />
+          <img src="/assets/Renting-Headline.svg" className="h-12" />
         </h2>
 
         <h3 className="text-lg">
