@@ -8,11 +8,8 @@ import { LendSearchLayout } from "../components/layouts/lend-search-layout";
 import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useWallet } from "../hooks/store/useWallet";
-import {
-  SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../hooks/store/useEventTrackedTransactions";
-import shallow from "zustand/shallow";
+
+
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
@@ -25,8 +22,8 @@ const LendCatalagoueItem: React.FC<{
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
     return set.has(nft.nId);
-  }, [checkedItems, nft.nId])
-    const checkedMoreThanOne = useMemo(() => {
+  }, [checkedItems, nft.nId]);
+  const checkedMoreThanOne = useMemo(() => {
     return checkedItems.length > 1;
   }, [checkedItems]);
 
@@ -48,11 +45,10 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
   currentPage
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, handleReset, onCheckboxChange } = useBatchItems();
+  const { checkedItems, onCheckboxChange } = useBatchItems();
   const handleClose = useCallback(() => {
     setModalOpen(false);
-    handleReset();
-  }, [setModalOpen, handleReset]);
+  }, [setModalOpen]);
 
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);

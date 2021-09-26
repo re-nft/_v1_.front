@@ -14,7 +14,28 @@ import { Button } from "../../common/button";
 import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useLendingStore } from "../../../hooks/store/useNftStore";
+import { devtools } from "zustand/middleware";
+import create from "zustand";
+import produce from "immer";
+import { Lending } from "../../../types/classes";
+import shallow from "zustand/shallow";
 
+export const useRentFormState = create<{
+  values: Record<string, Lending>;
+  setValues: (values: Lending[]) => void;
+}>(
+  devtools((set) => ({
+    values: {},
+    setValues: (values: Lending[]) =>
+      set(
+        produce((state) => {
+          values.forEach((value) => {
+            state.values[value.id] = { ...value };
+          });
+        })
+      )
+  }))
+);
 export const RentForm: React.FC<LendFormProps> = ({
   checkedItems,
   onClose
@@ -26,13 +47,23 @@ export const RentForm: React.FC<LendFormProps> = ({
     status: approvalStatus
   } = useRentApproval();
   const { startRent: handleSave, status } = useStartRent();
-
+  const setValues = useRentFormState(
+    useCallback((state) => state.setValues, [])
+  );
+  const previousValues = useRentFormState(
+    useCallback((state) => state.values, []),
+    shallow
+  );
   const selectedToRent = useLendingStore(
     useCallback(
       (state) => {
-        return checkedItems.map((i) => state.lendings[i]);
+        return checkedItems.map((i) => {
+          const lending = state.lendings[i];
+          const previousFormValues = previousValues[lending.id];
+          return { ...lending, ...previousFormValues };
+        });
       },
-      [checkedItems]
+      [checkedItems, previousValues]
     )
   );
   useEffect(() => {
@@ -90,6 +121,14 @@ export const RentForm: React.FC<LendFormProps> = ({
       (controlledFields.length === 1 && !controlledFields[0].id)
     );
   }, [controlledFields]);
+
+  useEffect(() => {
+    const subscription = watch((values: { inputs: Lending[] }) => {
+      setValues(values.inputs);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValues]);
+
   return (
     <div>
       <h1 className="text-xl font-extrabold text-center tracking-tight text-gray-900 sm:text-2xl">

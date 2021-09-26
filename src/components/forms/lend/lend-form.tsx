@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useCallback } from "react";
+import React, { Fragment, useMemo, useCallback, useEffect } from "react";
 import { LendItem } from "./lend-item";
 import { TransactionWrapper } from "../../transaction-wrapper";
 import { TransactionStateEnum } from "../../../types";
@@ -21,12 +21,40 @@ import { Button } from "../../common/button";
 import { useStartLend } from "../../../hooks/contract/useStartLend";
 import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
 import { useNftsStore } from "../../../hooks/store/useNftStore";
+import { devtools } from "zustand/middleware";
+import create from "zustand";
+import produce from "immer";
+import shallow from "zustand/shallow";
+
+export const useLendFormState = create<{
+  values: Record<string, LendInputProps>;
+  setValues: (values: LendInputProps[]) => void;
+}>(
+  devtools((set) => ({
+    values: {},
+    setValues: (values: LendInputProps[]) =>
+      set(
+        produce((state) => {
+          values.forEach((value) => {
+            if (value.nft.id) state.values[value.nft.id] = { ...value };
+          });
+        })
+      )
+  }))
+);
 
 export const LendForm: React.FC<LendFormProps> = ({
   checkedItems,
   onClose
 }) => {
   const { status, startLend } = useStartLend();
+  const setValues = useLendFormState(
+    useCallback((state) => state.setValues, [])
+  );
+  const previousValues = useLendFormState(
+    useCallback((state) => state.values, []),
+    shallow
+  );
   const ownedNfts = useNftsStore(
     useCallback(
       (state) => {
@@ -47,16 +75,20 @@ export const LendForm: React.FC<LendFormProps> = ({
     () => ({
       inputs: ownedNfts.map<LendInputProps>((nft) => {
         const amount = amounts.get(nft.nId);
-        return {
-          tokenId: nft.tokenId,
-          nft: nft,
-          lendAmount: amount || 1,
-          amount: amount?.toString() || "1",
-          nftAddress: nft.nftAddress
-        };
+        const previousValue: LendInputProps | null = previousValues[nft.nId];
+        return Object.assign(
+          {
+            tokenId: nft.tokenId,
+            nft: nft,
+            lendAmount: amount || 1,
+            amount: amount?.toString() || "1",
+            nftAddress: nft.nftAddress
+          },
+          previousValue
+        );
       })
     }),
-    [ownedNfts, amounts]
+    [ownedNfts, amounts, previousValues]
   );
 
   const {
@@ -83,6 +115,13 @@ export const LendForm: React.FC<LendFormProps> = ({
       ...watchFieldArray[index]
     };
   });
+  useEffect(() => {
+    const subscription = watch((values: { inputs: LendInputProps[] }) => {
+      setValues(values.inputs);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setValues]);
+
   const onSubmit = (values: FormProps) => {
     startLend(values.inputs as LendInputDefined[]);
   };

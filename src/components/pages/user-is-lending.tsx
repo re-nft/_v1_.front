@@ -14,7 +14,6 @@ import { PaymentToken } from "@renft/sdk";
 import { useIsClaimable } from "../../hooks/misc/useIsClaimable";
 import { formatCollateral } from "../../utils";
 
-
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
   checkedItems: string[];
@@ -38,10 +37,11 @@ const LendingCatalogueItem: React.FC<{
     lending.rentingId,
     lending.collateralClaimed
   );
-  const buttonTitle = useMemo(()=> {
-    if (isClaimable) return checkedMoreThanOne && checked ? "Claim all" : "Claim";
+  const buttonTitle = useMemo(() => {
+    if (isClaimable)
+      return checkedMoreThanOne && checked ? "Claim all" : "Claim";
     return checkedMoreThanOne && checked ? "Stop lend all" : "Stop lend";
-  }, [isClaimable, checkedMoreThanOne, checked])
+  }, [isClaimable, checkedMoreThanOne, checked]);
 
   return (
     <CatalogueItem
@@ -79,21 +79,16 @@ const LendingCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = ({
-  currentPage
-}) => {
-  const {
-    checkedItems,
-    handleReset: batchHandleReset,
-    onCheckboxChange
-  } = useBatchItems();
+const ItemsRenderer: React.FC<{
+  currentPage: (Lending & { show: boolean })[];
+}> = ({ currentPage }) => {
+  const { checkedItems, onCheckboxChange } = useBatchItems();
 
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
-    batchHandleReset();
-  }, [batchHandleReset]);
+  }, []);
 
   const handleClickNft = useCallback(
     (nft: Lending) => {
@@ -105,7 +100,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = 
   const checkBoxChangeWrapped = useCallback(
     (nft) => {
       return () => {
-        onCheckboxChange(nft)
+        onCheckboxChange(nft);
       };
     },
     [onCheckboxChange]
@@ -120,7 +115,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Lending & {show: boolean})[] }> = 
         />
       )}
       <ItemWrapper>
-        {currentPage.map((lending: (Lending & {show: boolean})) => (
+        {currentPage.map((lending: Lending & { show: boolean }) => (
           <LendingCatalogueItem
             lending={lending}
             show={lending.show}
