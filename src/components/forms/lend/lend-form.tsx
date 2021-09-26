@@ -146,7 +146,7 @@ export const LendForm: React.FC<LendFormProps> = ({
             )}
             {(isApproved || isSubmitting) && (
               <TransactionWrapper
-                isLoading={isSubmitting}
+                isLoading={isSubmitting || status.isLoading}
                 status={status.status}
                 transactionHashes={status.transactionHash}
                 closeWindow={onClose}

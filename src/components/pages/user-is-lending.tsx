@@ -47,6 +47,7 @@ const LendingCatalogueItem: React.FC<{
     <CatalogueItem
       checked={checked}
       nId={lending.nId}
+      uniqueId={lending.id}
       onCheckboxChange={onCheckboxChange}
       disabled={hasRenting}
       hasAction

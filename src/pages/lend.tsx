@@ -21,32 +21,20 @@ const LendCatalagoueItem: React.FC<{
   handleStartLend: () => void;
   show: boolean;
 }> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend, show }) => {
+  //TODO:eniko optimize this
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
     return set.has(nft.nId);
   }, [checkedItems, nft.nId])
-  //TODO:eniko optimize
-  const hasPending = useEventTrackedTransactionState(
-    useCallback(
-      (state) => {
-        const pending =
-          state.pendingTransactions[SmartContractEventType.START_LEND];
-        return new Set(pending).has(nft.nId);
-      },
-      [nft.nId]
-    ),
-    shallow
-  );
-
-  const checkedMoreThanOne = useMemo(() => {
+    const checkedMoreThanOne = useMemo(() => {
     return checkedItems.length > 1;
   }, [checkedItems]);
 
   return (
     <CatalogueItem
-      hasPending={hasPending}
       show={show}
       nId={nft.nId}
+      uniqueId={nft.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(nft)}
       hasAction

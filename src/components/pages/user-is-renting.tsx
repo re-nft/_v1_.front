@@ -38,6 +38,7 @@ const RentingCatalogueItem: React.FC<{
   return (
     <CatalogueItem
       nId={renting.nId}
+      uniqueId={renting.id}
       checked={checked}
       disabled={isExpired}
       onCheckboxChange={onCheckboxChange}

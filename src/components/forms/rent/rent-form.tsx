@@ -149,7 +149,7 @@ export const RentForm: React.FC<LendFormProps> = ({
               )}
               {(isApproved || isSubmitting) && (
                 <TransactionWrapper
-                  isLoading={isSubmitting}
+                  isLoading={isSubmitting || status.isLoading}
                   status={status.status}
                   closeWindow={onClose}
                   transactionHashes={status.transactionHash}

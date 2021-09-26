@@ -6,7 +6,7 @@ import { MAX_UINT256 } from "../../consts";
 import createDebugger from "debug";
 import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
-import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
+import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";

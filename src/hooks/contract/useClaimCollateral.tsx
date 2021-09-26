@@ -4,7 +4,7 @@ import { Lending } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
-import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
+import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
 import {
   useCreateRequest
 } from "../store/useCreateRequest";

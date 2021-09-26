@@ -5,7 +5,7 @@ import { useSDK } from "./useSDK";
 import {
   SmartContractEventType,
   TransactionStatus
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 import { sortNfts } from "../../utils";
 import { LendInputDefined } from "../../components/forms/lend/lend-types";
 import {  useCreateRequest } from "../store/useCreateRequest";

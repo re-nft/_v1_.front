@@ -10,6 +10,7 @@ import { CatalogueActions } from "./catalogue-actions";
 import { useWallet } from "../../hooks/store/useWallet";
 import { Button } from "../common/button";
 import { useNftsStore } from "../../hooks/store/useNftStore";
+import { useEventTrackedTransactionState } from "../../hooks/store/useEventTrackedTransactions";
 import {
   ReactEventOnChangeType,
   ReactEventOnClickType,
@@ -20,13 +21,15 @@ import { classNames } from "../../utils";
 import { PendingTransactionsLoader } from "../pending-transactions-loader";
 
 type CatalougeItemBaseProps = {
+  // nftId
   nId: string;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
   onCheckboxChange: ReactEventOnChangeType;
   disabled?: boolean;
   show: boolean;
-  hasPending: boolean;
+  // lending/renting uniqueId, nftId if not lended yet
+  uniqueId: string;
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
   onClick: ReactEventOnClickType;
@@ -45,7 +48,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   children,
   disabled,
   show,
-  hasPending,
+  uniqueId,
   ...rest
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
@@ -65,11 +68,20 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }, [meta]);
 
   const { name, image, description, openseaLink } = meta;
+  const pendingStatus = useEventTrackedTransactionState(
+    useCallback(
+      (state) => {
+        return state.uiPendingTransactionState[uniqueId];
+      },
+      [uniqueId]
+    ),
+    shallow
+  );
 
   const knownContract = useMemo(() => {
     return (
       nft.nftAddress.toLowerCase() ===
-      "0x0db8c099b426677f575d512874d45a767e9acc3c"
+        "0x0db8c099b426677f575d512874d45a767e9acc3c"
     );
   }, [nft.nftAddress]);
 
@@ -92,58 +104,56 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
   return (
     <Transition
-      show={show}
-      as="div"
-      enter="transition-opacity ease-linear duration-300"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity ease-linear duration-300"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-      key={nft.id}
-      className={classNames(
-        disabled && "cursor-not-allowed",
-        !disabled && "hover:shadow-rn-one",
-        checked && "shadow-rn-one border-4",
-        "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
-      )}
-      onClick={onChange}
+    show={show}
+    as="div"
+    enter="transition-opacity ease-linear duration-300"
+    enterFrom="opacity-0"
+    enterTo="opacity-100"
+    leave="transition-opacity ease-linear duration-300"
+    leaveFrom="opacity-100"
+    leaveTo="opacity-0"
+    key={nft.id}
+    className={classNames(
+      disabled && "cursor-not-allowed",
+      !disabled && "hover:shadow-rn-one",
+      checked && "shadow-rn-one border-4",
+      "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
+    )}
+    onClick={onChange}
     >
-      {!imageIsReady && <Skeleton />}
-      {imageIsReady && (
+    {!imageIsReady && <Skeleton />}
+    {imageIsReady && (
+      <>
         <>
-          <>
-            <div className="flex justify-center space-x-2">
-              <CatalogueActions
-                nftAddress={nft.nftAddress}
-                tokenId={nft.tokenId}
-                disabled={disabled || !signer}
-                checked={!!checked}
-                onCheckboxChange={onCheckboxChange}
+          <div className="flex justify-center space-x-2">
+            <CatalogueActions
+              nftAddress={nft.nftAddress}
+              tokenId={nft.tokenId}
+              disabled={disabled || !signer}
+              checked={!!checked}
+              onCheckboxChange={onCheckboxChange}
+            />
+          </div>
+          <div className="relative">
+            <CatalogueItemDisplay image={image} description={description} />
+            <div className="absolute inset-0  flex items-center text-center justify-center">
+              <PendingTransactionsLoader
+                status={pendingStatus}
               />
             </div>
-            <div className="relative">
-              <CatalogueItemDisplay image={image} description={description} />
-              <div className="absolute inset-0  flex items-center text-center justify-center">
-                {hasPending && (
-                  <PendingTransactionsLoader
-                    status={TransactionStateEnum.PENDING}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center">
-              <p className="flex-initial">{name}</p>
-              <div className="flex flex-auto flex-row">
-                {knownContract && (
-                  <a
-                    className="flex-initial p-2"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <img
-                      src="/assets/nft-verified.png"
-                      className="nft__icon small"
+          </div>
+          <div className="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center">
+            <p className="flex-initial">{name}</p>
+            <div className="flex flex-auto flex-row">
+              {knownContract && (
+                <a
+                  className="flex-initial p-2"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <img
+                    src="/assets/nft-verified.png"
+                    className="nft__icon small"
                     />
                   </a>
                 )}

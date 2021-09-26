@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
-import { SmartContractEventType, TransactionStatus } from "../misc/useEventTrackedTransactions";
+import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
 import { Lending } from "../../types/classes";
 import {
   useCreateRequest

@@ -1,7 +1,7 @@
 import {
   SmartContractEventType,
   TransactionStatus
-} from "../misc/useEventTrackedTransactions";
+} from "../store/useEventTrackedTransactions";
 import { from, map } from "rxjs";
 import { Nft } from "../../types/classes";
 import { useCallback, useEffect, useState } from "react";

@@ -54,6 +54,8 @@ export const MyFavorites: React.FC = () => {
                     show={nft.show}
                     key={nft.id}
                     nId={nft.nId}
+                    // use null, no need for tracking
+                    uniqueId=""
                     isAlreadyFavourited
                     onCheckboxChange={checkBoxChangeWrapped(nft)}
                   ></CatalogueItem>

@@ -39,6 +39,7 @@ const RentCatalogueItem: React.FC<{
   return (
     <CatalogueItem
       nId={lending.nId}
+      uniqueId={lending.nId}
       checked={checked}
       onCheckboxChange={checkBoxChangeWrapped(lending)}
       hasAction

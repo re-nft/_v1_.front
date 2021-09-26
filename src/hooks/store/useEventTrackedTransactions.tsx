@@ -20,6 +20,7 @@ const events = {
     });
   },
   error: (ga: GAAction) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = ga.err as any;
     ReactGA.event({
       category: "Contract interaction",
@@ -66,6 +67,7 @@ const mapTransactions = (
 ) => {
   const { action, id } = ga;
   if (!transactions) {
+    // user denied transaction signature
     return {
       hasFailure: true,
       isLoading: false,
@@ -122,7 +124,12 @@ export enum SmartContractEventType {
 export type EventTrackedTransactionStateManager = {
   pendingTransactions: Record<SmartContractEventType, string[]>;
   transactionRequests: Record<string, TransactionRequest>;
+  // for checking and updating state and fire GA
   pendingTransactionRequests: string[];
+  // for tracking Lending/renting/nft state changes for UI
+  uiPendingTransactionState: {
+    [uniqueId: string]: TransactionStateEnum;
+  };
   addTransactionRequest: (key: string, request: TransactionRequest) => void;
   updateTransactionRequest: (key: string, status: TransactionStatus) => void;
   removePendingTransaction: (keys: string) => void;
@@ -134,6 +141,8 @@ export const useEventTrackedTransactionState =
     transactionRequests: {},
     //these are the submitted transactions to blockchain
     pendingTransactionRequests: [],
+    // use Record structure for pending transaction
+    uiPendingTransactionState: {},
     pendingTransactions: {
       [SmartContractEventType.APPROVE_NFT]: [],
       [SmartContractEventType.APPROVE_PAYMENT_TOKEN]: [],
@@ -153,6 +162,10 @@ export const useEventTrackedTransactionState =
               ...state.pendingTransactions[request.event.type]
             ])
           );
+          request.event.ids.forEach((id) => {
+            state.uiPendingTransactionState[id] =
+              TransactionStateEnum.WAITING_FOR_SIGNATURE;
+          });
         })
       ),
     updateTransactionRequest: (
@@ -169,6 +182,10 @@ export const useEventTrackedTransactionState =
             transactionStatus.transactionHash;
           state.transactionRequests[key].transactionStatus.status =
             transactionStatus.status;
+          const request = state.transactionRequests[key];
+          request.event.ids.forEach((id) => {
+            state.uiPendingTransactionState[id] = transactionStatus.status;
+          });
         })
       ),
     removePendingTransaction: (key: string) =>
@@ -181,6 +198,9 @@ export const useEventTrackedTransactionState =
           ].filter((i) => !set.has(i));
           state.pendingTransactionRequests =
             state.pendingTransactionRequests.filter((id: string) => id !== key);
+          event.ids.forEach((id) => {
+            delete state.uiPendingTransactionState[id];
+          });
         })
       ),
     addToPendingTransaction: (key: string) =>
@@ -189,6 +209,10 @@ export const useEventTrackedTransactionState =
           state.pendingTransactionRequests = Array.from(
             new Set([...state.pendingTransactionRequests, key])
           );
+          const request = state.transactionRequests[key];
+          request.event.ids.forEach((id) => {
+            state.uiPendingTransactionState[id] = TransactionStateEnum.PENDING;
+          });
         })
       )
   }));
@@ -307,6 +331,7 @@ export const useEventTrackedTransactionManager = (): {
               });
               events.transactionEnded({
                 id: transactionState.key,
+                //TODO:eniko action
                 action: "",
                 hasFailure: true
               });
@@ -315,6 +340,7 @@ export const useEventTrackedTransactionManager = (): {
               removePendingTransaction(transactionState.key);
               events.transactionEnded({
                 id: transactionState.key,
+                //TODO:eniko action
                 action: "",
                 hasFailure: false
               });

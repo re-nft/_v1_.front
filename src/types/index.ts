@@ -6,13 +6,13 @@ export type URI = string;
 
 
 export enum TransactionStateEnum {
-  FAILED = 0,
-  SUCCESS = 1,
-  PENDING = 2,
+  FAILED = 1,
+  SUCCESS,
+  PENDING,
   // transaction is not submitted yet, user has to click on approve button
-  WAITING_FOR_SIGNATURE=3,
-  NOT_STARTED=4,
-  DENIED_SIGNATURE=5
+  WAITING_FOR_SIGNATURE,
+  NOT_STARTED,
+  DENIED_SIGNATURE
 }
 
 export enum NetworkName {
