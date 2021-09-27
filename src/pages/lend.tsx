@@ -12,7 +12,7 @@ import { useWallet } from "../hooks/store/useWallet";
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
   nft: Nft;
-  onItemCheck: (nft: Nft) => () => void;
+  onItemCheck: () => void;
   handleStartLend: () => void;
   show: boolean;
 }> = ({ checkedItems, nft, onItemCheck, handleStartLend, show }) => {
@@ -22,7 +22,7 @@ const LendCatalagoueItem: React.FC<{
     return set.has(nft.nId);
   }, [checkedItems, nft.nId]);
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.length > 1;
+    return checkedItems && checkedItems.length > 1;
   }, [checkedItems]);
 
   return (
@@ -31,7 +31,7 @@ const LendCatalagoueItem: React.FC<{
       nId={nft.nId}
       uniqueId={nft.nId}
       checked={checked}
-      onCheckboxChange={onItemCheck(nft)}
+      onCheckboxChange={onItemCheck}
       hasAction
       buttonTitle={checkedMoreThanOne && checked ? "Lend all" : "Lend"}
       onClick={handleStartLend}
@@ -77,7 +77,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
             show={nft.show}
             key={nft.id}
             checkedItems={checkedItems}
-            onItemCheck={onItemCheck}
+            onItemCheck={onItemCheck(nft)}
             handleStartLend={handleBatchModalOpen}
           />
         ))}

@@ -83,6 +83,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
 
   const cb: ReactEventOnClickType = useCallback(
     (e: React.MouseEvent<unknown>) => {
+      e.stopPropagation();
+      e.preventDefault();
       if (disabled) return;
       // stop propagation is not working, manually disable checkbox toggling
       if (rest.hasAction) {
@@ -98,7 +100,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     },
     [disabled, onCheckboxChange]
   );
-
   return (
     <Transition
       show={show}

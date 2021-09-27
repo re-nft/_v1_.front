@@ -24,7 +24,7 @@ const RentCatalogueItem: React.FC<{
 }) => {
   const currentAddress = useCurrentAddress();
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.length > 1;
+    return checkedItems && checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
     const set = new Set(checkedItems);

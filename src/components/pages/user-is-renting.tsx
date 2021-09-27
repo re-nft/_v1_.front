@@ -24,7 +24,7 @@ const RentingCatalogueItem: React.FC<{
   const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.length > 1;
+    return checkedItems && checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
     const set = new Set(checkedItems)
@@ -78,11 +78,10 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
   }, []);
 
   const handleReturnNft = useCallback(
-    (nft) => () => {
-      onCheckboxChange(nft);
+    () => () => {
       setModalOpen(true);
     },
-    [onCheckboxChange]
+    []
   );
 
   const onItemCheck = useCallback(

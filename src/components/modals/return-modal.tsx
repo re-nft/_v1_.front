@@ -63,7 +63,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
             >
               <Button
                 description={
-                  checkedItems.length > 1 ? "Return All NFTs" : "Return NFT"
+                  checkedItems && checkedItems.length > 1 ? "Return All NFTs" : "Return NFT"
                 }
                 disabled={approvalStatus.isLoading || !isApproved}
                 onClick={handleReturnNft}

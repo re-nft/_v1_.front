@@ -26,7 +26,7 @@ const LendingCatalogueItem: React.FC<{
     handleClickNft(lending);
   }, [lending, handleClickNft]);
   const checkedMoreThanOne = useMemo(() => {
-    return checkedItems.length;
+    return checkedItems && checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
     const set = new Set(checkedItems);
@@ -91,11 +91,10 @@ const ItemsRenderer: React.FC<{
   }, []);
 
   const handleClickNft = useCallback(
-    (nft: Lending) => {
-      onCheckboxChange(nft);
+    () => {
       setModalOpen(true);
     },
-    [onCheckboxChange]
+    []
   );
   const onItemCheck = useCallback(
     (nft) => {
