@@ -3,8 +3,6 @@ import { Nft } from "../contexts/graph/classes";
 import CatalogueLoader from "./catalogue-loader";
 import Pagination from "./common/pagination";
 import { useFetchMeta } from "../hooks/useMetaState";
-import { delay, EMPTY, from, of, switchMap } from "rxjs";
-import { arrayify } from "@ethersproject/bytes";
 
 const defaultSate = {
   pageItems: [],
@@ -110,27 +108,6 @@ export const PaginationList = <T extends Nft>({
   useEffect(() => {
     if (isLoading) return;
     fetchMeta(pageItems);
-    // const arr: T[][] = [];
-    // const length = Math.ceil(pageItems.length / PAGE_SIZE);
-    // for (let i = 0; i < length; i++) {
-    //   arr.push(pageItems.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1));
-    // }
-    // if(!arr) return;
-    // if(!arr[0]) return;
-    // if(arr[0].length === 0) return;
-    // const subscription = arr.reduce((acc, currentValue, index)=>{
-    //   if(index === 0) return acc;
-    //   acc.pipe(
-    //     delay(2000),
-    //     switchMap(() => {
-    //       console.log(Date.now(), 'fetch')
-    //       return of(fetchMeta(currentValue))})
-    //   )
-    //   return acc;
-    // }, of(fetchMeta(arr[0]))).subscribe()
-    // return () => {
-    //   subscription?.unsubscribe();
-    // };
   }, [pageItems, isLoading, fetchMeta]);
 
   if (isLoading && currentPage.length === 0) {
