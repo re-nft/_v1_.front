@@ -66,6 +66,7 @@ export interface ILending {
   collateralClaimed: boolean;
   isERC721: boolean;
   renting?: IRenting;
+  lentAt: number;
 }
 
 export type LendingRaw = {
@@ -81,6 +82,7 @@ export type LendingRaw = {
   collateralClaimed: boolean;
   isERC721: boolean;
   renting: RentingRaw;
+  lentAt: number;
 };
 
 export interface IRenting {

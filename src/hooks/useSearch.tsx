@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
-import { Lending, Nft } from "../contexts/graph/classes";
+import { Lending, Nft, Renting } from "../contexts/graph/classes";
 import { PaymentToken } from "@renft/sdk";
 import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
@@ -26,7 +26,7 @@ export const useSearchNfts = create<NftSearchState>(
         produce((state) => {
           state.nfts = nfts.map((n) => n.nId);
         })
-      ),
+      )
   }))
 );
 
@@ -62,6 +62,16 @@ export const sortByCollateral =
     return dir !== "desc" ? result : result * -1;
   };
 
+export const sortByLentAt =
+  <T extends Lending | Renting>(dir: "asc" | "desc" = "asc") =>
+  (
+    a: T & { priceInUSD: number; collateralInUSD: number },
+    b: T & { priceInUSD: number; collateralInUSD: number }
+  ) => {
+    const result = compare(a.lending?.lentAt || Date.now(), b.lending?.lentAt || Date.now());
+    return dir !== "desc" ? result : result * -1;
+  };
+
 export const sortByDuration =
   (dir: "asc" | "desc" = "asc") =>
   (a: Lending, b: Lending) => {
@@ -92,7 +102,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
   const router = useRouter();
 
   const categories = useMemo(() => {
-    return keys.reduce((acc, id) => {
+    const arr = keys.reduce((acc, id) => {
       const meta = metas[id];
       if (meta.collection) {
         const collectionName = metas[id].collection?.name || NO_COLLECTION;
@@ -106,6 +116,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       }
       return acc;
     }, new Map<string, Set<string>>());
+    return arr;
   }, [keys, metas]);
 
   const filterItems = useCallback(
@@ -143,6 +154,16 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         case "lc":
           items.sort(sortByCollateral());
           return items;
+        case "ori": {
+          // @ts-ignore
+          items.sort(sortByLentAt());
+          return items;
+        }
+        case "lri": {
+          // @ts-ignore
+          items.sort(sortByLentAt("desc"));
+          return items;
+        }
         default:
           return items;
       }
@@ -173,7 +194,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
         : 1,
       collateralInUSD: isLending(r)
         ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
-        : 1,
+        : 1
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -216,7 +237,7 @@ export const useSearchOptions = (): CategoryOptions[] => {
           arr.push({
             value: meta.collection.name,
             label: meta.collection.name,
-            imageUrl: meta.collection.imageUrl,
+            imageUrl: meta.collection.imageUrl
           });
         }
       } else {
@@ -236,6 +257,8 @@ export const useSortOptions = (): CategoryOptions[] => {
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
       { label: "Lowest Collateral", value: "lc", imageUrl: "" },
+      { label: "Latest rent items", value: "lri", imageUrl: "" },
+      { label: "Oldest rent items", value: "ori", imageUrl: "" }
     ];
   }, []);
 };

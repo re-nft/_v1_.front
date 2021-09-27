@@ -1,6 +1,5 @@
 import React, { useContext, useMemo, useCallback } from "react";
 import { Nft } from "../../contexts/graph/classes";
-import { nftId } from "../../services/firebase";
 import { CatalogueItemRow } from "./catalogue-item-row";
 import { Checkbox } from "../common/checkbox";
 import UserContext from "../../contexts/UserProvider";
@@ -26,7 +25,7 @@ const onElementAppear = (el: HTMLElement, index: number) =>
     onUpdate: (val) => {
       el.style.opacity = val.toString();
     },
-    delay: index * 50,
+    delay: index * 50
   });
 
 const onExit =
@@ -40,7 +39,7 @@ const onExit =
         })`;
       },
       delay: index * 50,
-      onComplete: removeElement,
+      onComplete: removeElement
     });
 
     return () => {
@@ -54,7 +53,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   checked,
   onCheckboxChange,
   children,
-  disabled,
+  disabled
 }) => {
   const { signer } = useContext(UserContext);
   const meta = useNftMetaState(
@@ -75,7 +74,11 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const { name, image, description, openseaLink } = meta;
 
   const isRentPage = useMemo(() => {
-    return pathname === "/" || pathname.includes("/rent");
+    return (
+      pathname === "/" ||
+      pathname.includes("/rent") ||
+      pathname === "/user-is-lending"
+    );
   }, [pathname]);
 
   const shouldFlip = useCallback((prev, current) => {

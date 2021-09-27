@@ -3,12 +3,14 @@ import { Nft } from "../contexts/graph/classes";
 import CatalogueLoader from "./catalogue-loader";
 import Pagination from "./common/pagination";
 import { useFetchMeta } from "../hooks/useMetaState";
+import { delay, EMPTY, from, of, switchMap } from "rxjs";
+import { arrayify } from "@ethersproject/bytes";
 
 const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1,
+  totalPages: 1
 };
 
 type State<T> = {
@@ -24,7 +26,7 @@ export const PaginationList = <T extends Nft>({
   nfts,
   ItemsRenderer,
   isLoading,
-  emptyResultMessage,
+  emptyResultMessage
 }: {
   nfts: T[] | T[];
   isLoading: boolean;
@@ -59,7 +61,7 @@ export const PaginationList = <T extends Nft>({
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage,
+        currentPage
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -85,7 +87,7 @@ export const PaginationList = <T extends Nft>({
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems),
+        currentPage: getCurrentPage(1, totalPages, newItems)
       });
     },
     [getCurrentPage]
@@ -104,10 +106,32 @@ export const PaginationList = <T extends Nft>({
   }, [nfts, onPageControllerInit, isLoading]);
 
   // Fetch meta state
+  // have to fetch all elements for search
   useEffect(() => {
     if (isLoading) return;
-    fetchMeta(currentPage);
-  }, [currentPage, isLoading, fetchMeta]);
+    fetchMeta(pageItems);
+    // const arr: T[][] = [];
+    // const length = Math.ceil(pageItems.length / PAGE_SIZE);
+    // for (let i = 0; i < length; i++) {
+    //   arr.push(pageItems.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1));
+    // }
+    // if(!arr) return;
+    // if(!arr[0]) return;
+    // if(arr[0].length === 0) return;
+    // const subscription = arr.reduce((acc, currentValue, index)=>{
+    //   if(index === 0) return acc;
+    //   acc.pipe(
+    //     delay(2000),
+    //     switchMap(() => {
+    //       console.log(Date.now(), 'fetch')
+    //       return of(fetchMeta(currentValue))})
+    //   )
+    //   return acc;
+    // }, of(fetchMeta(arr[0]))).subscribe()
+    // return () => {
+    //   subscription?.unsubscribe();
+    // };
+  }, [pageItems, isLoading, fetchMeta]);
 
   if (isLoading && currentPage.length === 0) {
     return <CatalogueLoader />;
