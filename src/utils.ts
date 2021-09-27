@@ -217,14 +217,6 @@ export const getDistinctItems = <
   return distinctItems;
 };
 
-export const nftReturnIsExpired = (rent: Renting): boolean => {
-  const isExpired =
-    add(new Date(rent.rentedAt * 1000), {
-      days: rent.rentDuration
-    }).valueOf() < Date.now();
-  return isExpired;
-};
-
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,

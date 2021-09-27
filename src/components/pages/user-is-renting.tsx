@@ -21,7 +21,6 @@ const RentingCatalogueItem: React.FC<{
   handleReturnNft: (renting: Renting) => () => void;
   show: boolean
 }> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft, show }) => {
-  const isExpired = nftReturnIsExpired(renting);
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
     return checkedItems && checkedItems.length > 1;
@@ -32,6 +31,7 @@ const RentingCatalogueItem: React.FC<{
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {
+    console.log(renting.rentedAt * 1000 < blockTimeStamp)
     return renting.rentedAt * 1000 < blockTimeStamp;
   }, [blockTimeStamp, renting.rentedAt]);
 
@@ -40,7 +40,7 @@ const RentingCatalogueItem: React.FC<{
       nId={renting.nId}
       uniqueId={renting.id}
       checked={checked}
-      disabled={isExpired}
+      disabled={expired}
       onCheckboxChange={onCheckboxChange}
       hasAction
       show={show}
