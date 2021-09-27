@@ -49,6 +49,7 @@
     "@metamask/detect-provider": "1.2.0",
     "@next/bundle-analyzer": "11.0.1",
     "@types/bl": "5.0.1",
+    "@types/debug": "^4.1.7",
     "@types/diff": "^5.0.0",
     "@types/ngprogress": "^1.0.29",
     "@types/react": "17.0.6",
