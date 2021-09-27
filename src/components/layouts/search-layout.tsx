@@ -22,6 +22,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
         {!hideDevMenu && <DevMenu />}
 
         {children}
+        <SnackAlert/>
       </div>
     );
 
@@ -76,7 +77,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
       </div>
       {children}
       <div className="flex-1">
-        <SnackAlert></SnackAlert>
+        <SnackAlert/>
       </div>
     </div>
   );

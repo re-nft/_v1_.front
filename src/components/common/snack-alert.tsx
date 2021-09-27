@@ -7,12 +7,32 @@ import ExclamationIcon from "@heroicons/react/outline/ExclamationIcon";
 import XIcon from "@heroicons/react/solid/XIcon";
 import { useSnackProvider } from "../../hooks/store/useSnackProvider";
 
+const SnackIcons: React.FC<{
+  type: ErrorType;
+}> = ({ type }) => {
+  return (
+    <div className="flex-shrink-0">
+      {type === "info" && (
+        <InformationCircleIcon
+          className="h-6 w-6 text-blue-400"
+          aria-hidden="true"
+        />
+      )}
+      {type === "success" && (
+        <CheckCircleIcon className="h-6 w-6 text-rn-green" aria-hidden="true" />
+      )}
+      {type === "warning" && (
+        <ExclamationIcon className="h-6 w-6 text-rn-red" aria-hidden="true" />
+      )}
+    </div>
+  );
+};
 export const SnackAlert: React.FC = () => {
   const {
     hideError: closeAlert,
     errorIsShown: open,
     message,
-    type,
+    type
   } = useSnackProvider();
 
   return (
@@ -36,32 +56,15 @@ export const SnackAlert: React.FC = () => {
           <div className="max-w-sm w-full bg-white pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden shadow-rn-one-purple border-4 border-rn-purple z-30 relative">
             <div className="p-2">
               <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  {type === "info" && (
-                    <InformationCircleIcon
-                      className="h-6 w-6 text-blue-400"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {type === "success" && (
-                    <CheckCircleIcon
-                      className="h-6 w-6 text-rn-green"
-                      aria-hidden="true"
-                    />
-                  )}
-                  {type === "warning" && (
-                    <ExclamationIcon
-                      className="h-6 w-6 text-rn-red"
-                      aria-hidden="true"
-                    />
-                  )}
-                </div>
-                <div className="ml-3 w-0 flex-1 pt-0.5">
+                <SnackIcons type={type} />
+                <div className="w-0 flex-1 pt-0.5 text-center">
                   {/* <p className="text-sm font-medium text-rn-purple-dark">{type}</p> */}
                   <p className="mt-1 text-base text-rn-purple uppercase">
                     {message}
                   </p>
                 </div>
+                <SnackIcons type={type} />
+
                 <div className="ml-4 flex-shrink-0 flex">
                   <button
                     className="bg-white  inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

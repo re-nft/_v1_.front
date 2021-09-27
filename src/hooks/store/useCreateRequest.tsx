@@ -40,7 +40,7 @@ export const useCreateRequest = (): {
     const request: TransactionRequest | null = requestId
       ? transactionRequests[requestId]
       : null;
-    if (request === null) {
+    if (request === null || request === undefined) {
       return {
         isLoading: false,
         hasFailure: false,
