@@ -138,7 +138,7 @@ export const UserIsRenting: React.FC = () => {
         </h2>
 
         <h3 className="text-lg">
-          Here you will find The NFTs That you are renting.
+          Here you will find the NFTs That you are renting.
         </h3>
       </div>
       <PaginationList
