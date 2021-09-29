@@ -46,3 +46,11 @@ cypress/videos
 
 #disable yarn on this branch
 .yarn.lock
+# Sentry
+.sentryclirc
+
+# Sentry
+.sentryclirc
+
+# Sentry
+.sentryclirc
