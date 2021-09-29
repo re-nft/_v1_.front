@@ -72,6 +72,7 @@ export const LendingRow: React.FC<{
     if(!isExpired) return rentedOutMsg;
     return stopLendMsg; 
   }, [hasRenting, isExpired]);
+
   return (
     <Tr onClick={onRowClick}>
       <Td className="action-column">
