@@ -62,10 +62,9 @@ export const LendingRow: React.FC<{
       ? "The item is already claimed"
       : "The item rental is not expired yet."
     : "No one rented the item as so far.";
-  const lendTooltip = (hasRenting && !isExpired) || !hasRenting
+  const lendTooltip = (hasRenting && !isExpired)
     ? "The item is rented out. You have to wait until the renter returns the item."
     : "Click to stop lending this item.";
-  
   return (
     <Tr onClick={onRowClick}>
       <Td className="action-column">
@@ -101,7 +100,7 @@ export const LendingRow: React.FC<{
           <span>
             <Button
               onClick={handleClickLend}
-              disabled={checked || !lend.lending.rentClaimed}
+              disabled={checked || (!lend.lending.rentClaimed && hasRenting)}
               description="Stop lend"
             />
           </span>
