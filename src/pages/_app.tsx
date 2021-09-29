@@ -24,7 +24,7 @@ if (typeof window !== "undefined") {
     gaOptions: {
       siteSpeedSampleRate: 100,
     },
-    testMode: window.location.hostname !== "dapp.renft.io",
+    testMode: window.location.hostname !== "animetas.renft.io",
   });
 }
 
