@@ -138,6 +138,6 @@ export const useTransactionWrapper = (): ((
         ).pipe(map(mapTransactions(setHash, {action, id})), mergeAll())
       ]).pipe(mergeAll());
     },
-    [setHash]
+    [setError, setHash]
   );
 };

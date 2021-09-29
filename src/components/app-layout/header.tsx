@@ -18,6 +18,7 @@ export const Header: React.FC = () => {
     return typeof window === "undefined"
       ? false
       : !(window?.web3 || window?.ethereum);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeof window]);
 
   useEffect(() => {
