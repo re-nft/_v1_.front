@@ -107,11 +107,11 @@ export const CategorySelect: React.FC<{
       const value = option?.value;
       setValue(value);
     },
-    [options, setValue]
+    [setValue]
   );
 
   return (
-    //@ts-ignore
+    //@ts-ignoret
     <Select
       isClearable
       isSearchable={false}

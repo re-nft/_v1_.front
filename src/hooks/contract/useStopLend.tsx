@@ -49,6 +49,6 @@ export const useStopLend = (): ((
         `,
       });
     },
-    [sdk]
+    [sdk, transactionWrapper]
   );
 };
