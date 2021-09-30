@@ -45,7 +45,7 @@ export const DashboardBatch: React.FC<{
     const isExpired = (renting: IRenting | null) =>
       renting ? nftReturnIsExpired(renting) : false;
     return checkedLendingItems.filter(
-      (v) => !v.renting || isExpired(v.renting)
+      (v) => !v.renting || (isExpired(v.renting) && v.renting.expired)
     );
   }, [checkedLendingItems]);
   return (

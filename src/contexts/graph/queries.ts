@@ -59,6 +59,7 @@ export const queryAllLendingRenft = `
         renterAddress
         rentDuration
         rentedAt
+        expired
       }
     }
   }
@@ -83,6 +84,7 @@ export const queryUserLendingRenft = (user: string): string => {
           renterAddress
           rentDuration
           rentedAt
+          expired
         }
       }
     }
@@ -97,6 +99,7 @@ export const queryUserRentingRenft = (user: string): string => {
         renterAddress
         rentDuration
         rentedAt
+        expired
         lending {
           id
           nftAddress

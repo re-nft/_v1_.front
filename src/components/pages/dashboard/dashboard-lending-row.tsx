@@ -28,15 +28,12 @@ export const LendingRow: React.FC<{
 }) => {
   const lending = lend.lending;
   const blockTimeStamp = useContext(TimestampContext);
-  const claimable = useMemo(
-    () =>
-      !!(
-        lend.renting &&
-        isClaimable(lend.renting, blockTimeStamp) &&
-        !lend.lending.rentClaimed
-      ),
-    [lend, blockTimeStamp]
-  );
+  const claimable = useMemo(() => {
+    if (!lend.renting) return false;
+    // if it is expired than it is already claimed
+    if (lend.renting.expired) return false;
+    return isClaimable(lend.renting, blockTimeStamp);
+  }, [lend, blockTimeStamp]);
 
   const handleClaim = useCallback(() => {
     if (!claimable) return;
@@ -60,18 +57,20 @@ export const LendingRow: React.FC<{
 
   const claimTooltip = claimable
     ? "The NFT renting period is over. Click to claim your collateral."
-    : hasRenting
-    ? lend.lending.rentClaimed
+    : lend.renting
+    ? lend.renting.expired
       ? "The item is already claimed"
       : "The item rental is not expired yet."
     : "No one rented the item as so far.";
   const lendTooltip = useMemo(() => {
     const stopLendMsg = "Click to stop lending this item.";
-    const rentedOutMsg = "The item is rented out. You have to wait until the renter returns the item."
-    if(!hasRenting) return stopLendMsg;
-    if(!isExpired) return rentedOutMsg;
-    return stopLendMsg; 
-  }, [hasRenting, isExpired]);
+    const rentedOutMsg =
+      "The item is rented out. You have to wait until the renter returns the item.";
+    if (!hasRenting) return stopLendMsg;
+    if (!isExpired) return rentedOutMsg;
+    if (claimable) return "Please claim first.";
+    return stopLendMsg;
+  }, [hasRenting, isExpired, claimable]);
 
   return (
     <Tr onClick={onRowClick}>
@@ -79,7 +78,7 @@ export const LendingRow: React.FC<{
         <Checkbox
           onChange={checkBoxChangeWrapped(lend)}
           checked={checked}
-          disabled={(hasRenting && !isExpired) && !claimable}
+          disabled={hasRenting && !isExpired && !claimable}
         />
       </Td>
       <Td className="column">
@@ -108,7 +107,7 @@ export const LendingRow: React.FC<{
           <span>
             <Button
               onClick={handleClickLend}
-              disabled={checked || (!isExpired && hasRenting)}
+              disabled={checked || (!isExpired && hasRenting) || claimable}
               description="Stop lend"
             />
           </span>

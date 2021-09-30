@@ -89,6 +89,7 @@ export interface IRenting {
   rentedAt: number;
   lendingId: string;
   lending: ILending;
+  expired: boolean;
 }
 
 export type RentingRaw = {
@@ -98,6 +99,7 @@ export type RentingRaw = {
   rentedAt: string;
   lendingId: string;
   lending: LendingRaw;
+  expired: boolean;
 };
 
 export type NftRaw = {
