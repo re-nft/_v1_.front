@@ -132,7 +132,7 @@ export const useBatchItems: () => BatchContextType = () => {
       (l) =>
         l.renting &&
         claimable(l.renting, blockTimeStamp) &&
-        !l.lending.rentClaimed
+        !l.renting.expired
     );
   }, [blockTimeStamp, checkedLendingItems, claimable]);
 

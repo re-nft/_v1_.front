@@ -34,5 +34,6 @@ export const parseRenting = (
     rentedAt: Number(renting.rentedAt),
     lendingId: parsedLending.id,
     lending: parsedLending,
+    expired: renting.expired
   };
 };
