@@ -135,7 +135,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
     <>
       {isLoading && <div className='absolute inset-0 bottom-0'><CatalogueLoader /></div>}
       {currentPage.length === 0 ? (
-        <div className="text-center text-base text-white font-display py-32 leading-tight">
+        <div className="text-center text-base text-white font-display py-32 leading-tight" data-testid="empty-message">
           {emptyResultMessage}
         </div>
       ) : (
