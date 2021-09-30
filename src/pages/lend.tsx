@@ -1,64 +1,58 @@
-import React, { useState, useCallback, useContext } from "react";
-import { Lending, Nft, Renting } from "../contexts/graph/classes";
-import BatchLendModal from "../modals/batch-lend";
+import React, { useState, useCallback, useMemo } from "react";
+import { Nft } from "../types/classes";
+import BatchLendModal from "../components/modals/batch-lend";
 import { CatalogueItem } from "../components/catalogue-item";
-import ActionButton from "../components/common/action-button";
-import BatchBar from "../components/batch-bar";
-import { useBatchItems } from "../hooks/useBatchItems";
-import { useAllAvailableToLend } from "../hooks/useAllAvailableToLend";
-import UserContext from "../contexts/UserProvider";
-import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
-import { PaginationList } from "../components/pagination-list";
-import { UniqueID } from "../utils";
+import { useBatchItems } from "../hooks/misc/useBatchItems";
+import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
+import { LendSearchLayout } from "../components/layouts/lend-search-layout";
+import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
-import { useSearch } from "../hooks/useSearch";
+import { useWallet } from "../hooks/store/useWallet";
 
 const LendCatalagoueItem: React.FC<{
-  checkedItems: Record<UniqueID, Nft | Lending | Renting>;
+  checkedItems: string[];
   nft: Nft;
-  checkBoxChangeWrapped: (nft: Nft) => () => void;
-  handleStartLend: (nft: Nft) => () => void;
-}> = ({ checkedItems, nft, checkBoxChangeWrapped, handleStartLend }) => {
-  const checked = !!checkedItems[nft.id];
+  onItemCheck: () => void;
+  handleStartLend: () => void;
+  show: boolean;
+}> = ({ checkedItems, nft, onItemCheck, handleStartLend, show }) => {
+  //TODO:eniko optimize this
+  const checked = useMemo(() => {
+    const set = new Set(checkedItems);
+    return set.has(nft.nId);
+  }, [checkedItems, nft.nId]);
+  const checkedMoreThanOne = useMemo(() => {
+    return checkedItems && checkedItems.length > 1;
+  }, [checkedItems]);
 
   return (
     <CatalogueItem
-      nft={nft}
+      show={show}
+      nId={nft.nId}
+      uniqueId={nft.nId}
       checked={checked}
-      onCheckboxChange={checkBoxChangeWrapped(nft)}
-    >
-      <ActionButton<Nft>
-        nft={nft}
-        title="Lend now"
-        onClick={handleStartLend(nft)}
-        disabled={checked}
-      />
-    </CatalogueItem>
+      onCheckboxChange={onItemCheck}
+      hasAction
+      buttonTitle={checkedMoreThanOne && checked ? "Lend all" : "Lend"}
+      onClick={handleStartLend}
+    />
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
+const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
+  currentPage
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, handleReset, onCheckboxChange, checkedNftItems } =
-    useBatchItems();
+  const { checkedItems, onCheckboxChange } = useBatchItems('lend');
   const handleClose = useCallback(() => {
     setModalOpen(false);
-    handleReset();
-  }, [setModalOpen, handleReset]);
-
-  const handleStartLend = useCallback(
-    (nft: Nft) => () => {
-      onCheckboxChange(nft);
-      setModalOpen(true);
-    },
-    [setModalOpen, onCheckboxChange]
-  );
+  }, [setModalOpen]);
 
   const handleBatchModalOpen = useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const checkBoxChangeWrapped = useCallback(
+  const onItemCheck = useCallback(
     (nft) => {
       return () => {
         onCheckboxChange(nft);
@@ -71,58 +65,50 @@ const ItemsRenderer: React.FC<{ currentPage: Nft[] }> = ({ currentPage }) => {
     <div>
       {modalOpen && (
         <BatchLendModal
-          nfts={checkedNftItems}
+          checkedItems={checkedItems}
           open={modalOpen}
           onClose={handleClose}
         />
       )}
-      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
-        {currentPage.map((nft: Nft) => (
+      <ItemWrapper>
+        {currentPage.map((nft: Nft & { show: boolean }) => (
           <LendCatalagoueItem
             nft={nft}
+            show={nft.show}
             key={nft.id}
             checkedItems={checkedItems}
-            checkBoxChangeWrapped={checkBoxChangeWrapped}
-            handleStartLend={handleStartLend}
+            onItemCheck={onItemCheck(nft)}
+            handleStartLend={handleBatchModalOpen}
           />
         ))}
       </ItemWrapper>
-      {checkedNftItems.length > 0 && (
-        <BatchBar
-          title={`Selected ${checkedNftItems.length} items`}
-          actionTitle="Lend All"
-          onCancel={handleReset}
-          onClick={handleBatchModalOpen}
-        />
-      )}
     </div>
   );
 };
 
 const Lendings: React.FC = () => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
-  const items = useSearch(allAvailableToLend);
 
   if (!signer) {
     return (
-      <LendSwitchWrapper>
-        <div className="center content__message">
+      <LendSearchLayout>
+        <div className="text-center text-lg text-white font-display py-32 leading-tight">
           Please connect your wallet!
         </div>
-      </LendSwitchWrapper>
+      </LendSearchLayout>
     );
   }
 
   return (
-    <LendSwitchWrapper>
+    <LendSearchLayout>
       <PaginationList
-        nfts={items}
+        nfts={allAvailableToLend}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You don't have any NFTs to lend"
       />
-    </LendSwitchWrapper>
+    </LendSearchLayout>
   );
 };
 

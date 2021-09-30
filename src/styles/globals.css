@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+
+.skeleton {
+  height: 510px;
+  width: 250px;
+  z-index: 11;
+}
+.skeleton-item {
+  background: rgb(243, 243, 243);
+  margin: 6px auto;
+  background-image: linear-gradient(90deg, #ddd 0px, #e8e8e8 40px, #ddd 80px);
+  z-index: 0;
+  background-size: 250px;
+  animation: skeletonAnim 1s infinite linear;
+}
+.skeleton-item.control {
+  width: 90%;
+  height: 32px;
+}
+.skeleton-item.img {
+  width: 90%;
+  height: 200px;
+}
+.skeleton-item.meta-line {
+  width: 90%;
+  height: 22px;
+}
+
+.skeleton-item.btn {
+  width: 60%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  height: 40px;
+}
+
+.checkbox:hover > .checkmark.unchecked {
+  @apply bg-rn-orange shadow-rn-drop-orange;
+}

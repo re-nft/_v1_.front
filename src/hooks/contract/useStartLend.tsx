@@ -3,24 +3,25 @@ import { BigNumber } from "ethers";
 import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
-  TransactionStatus,
-  useTransactionWrapper,
-} from "../useTransactionWrapper";
-import { EMPTY, Observable } from "rxjs";
-import { LendInputDefined } from "../../forms/lend-form";
+  SmartContractEventType,
+  TransactionStatus
+} from "../store/useEventTrackedTransactions";
 import { sortNfts } from "../../utils";
+import { LendInputDefined } from "../../components/forms/lend/lend-types";
+import {  useCreateRequest } from "../store/useCreateRequest";
 
 const debug = createDebugger("app:contract");
 
-export const useStartLend = (): ((
-  lendingInputs: LendInputDefined[]
-) => Observable<TransactionStatus>) => {
+export const useStartLend = (): {
+  startLend: (lendingInputs: LendInputDefined[]) => void;
+  status: TransactionStatus;
+} => {
   const sdk = useSDK();
-  const transactionWrapper = useTransactionWrapper();
+  const { createRequest, status } = useCreateRequest();
 
   const startLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
-      if (!sdk) return EMPTY;
+      if (!sdk) return false;
 
       const amounts: number[] = [];
       const maxRentDurations: number[] = [];
@@ -40,8 +41,8 @@ export const useStartLend = (): ((
         nftPrice.push(item.nftPrice);
         pmtTokens.push(item.pmToken);
       });
-      sortedNfts.forEach(({ address, tokenId }) => {
-        addresses.push(address);
+      sortedNfts.forEach(({ nftAddress, tokenId }) => {
+        addresses.push(nftAddress);
         tokenIds.push(BigNumber.from(tokenId));
       });
       debug("addresses", addresses);
@@ -52,7 +53,7 @@ export const useStartLend = (): ((
       debug("nftPrice", nftPrice);
       debug("tokens", pmtTokens);
 
-      return transactionWrapper(
+      createRequest(
         sdk.lend(
           addresses,
           tokenIds,
@@ -72,11 +73,16 @@ export const useStartLend = (): ((
         dailyRentPrices: ${dailyRentPrices}
         nftPrice: ${nftPrice}
         tokens: ${pmtTokens}
-        `,
+        `
+        },
+        {
+          ids: lendingInputs.map((l) => l.nft.id),
+          type: SmartContractEventType.START_LEND
         }
       );
     },
-    [sdk, transactionWrapper]
+    [sdk, createRequest]
   );
-  return startLend;
+
+  return { startLend, status };
 };

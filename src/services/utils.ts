@@ -1,4 +1,4 @@
-import { Nft } from "../contexts/graph/classes";
+import { Nft } from "../types/classes";
 
 // https://ipfs.github.io/public-gateway-checker/gateways.json
 export const IPFSGateway = "https://ipfs.io/ipfs/";

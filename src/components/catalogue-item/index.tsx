@@ -1,61 +1,54 @@
-import React, { useContext, useMemo, useCallback } from "react";
-import { Nft } from "../../contexts/graph/classes";
+import React, { useMemo, useCallback } from "react";
 import { CatalogueItemRow } from "./catalogue-item-row";
-import { Checkbox } from "../common/checkbox";
-import UserContext from "../../contexts/UserProvider";
 import { Skeleton } from "./skeleton";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
 
-import { useRouter } from "next/router";
-import { useNftMetaState } from "../../hooks/useMetaState";
+import { useNftMetaState } from "../../hooks/store/useMetaState";
 import shallow from "zustand/shallow";
-import { Flipped, spring } from "react-flip-toolkit";
-import { CopyLink } from "../copy-link";
+import { ShortenPopover } from "../common/shorten-popover";
+import { CatalogueActions } from "./catalogue-actions";
+import { useWallet } from "../../hooks/store/useWallet";
+import { Button } from "../common/button";
+import { useNftsStore } from "../../hooks/store/useNftStore";
+import { useEventTrackedTransactionState } from "../../hooks/store/useEventTrackedTransactions";
+import { ReactEventOnChangeType, ReactEventOnClickType } from "../../types";
+import { Transition } from "@headlessui/react";
+import { classNames } from "../../utils";
+import { PendingTransactionsLoader } from "../pending-transactions-loader";
 
-export type CatalogueItemProps = {
-  nft: Nft;
+type CatalougeItemBaseProps = {
+  // nftId
+  nId: string;
   checked?: boolean;
   isAlreadyFavourited?: boolean;
-  onCheckboxChange: () => void;
+  onCheckboxChange: ReactEventOnChangeType;
   disabled?: boolean;
+  show: boolean;
+  // lending/renting uniqueId, nftId if not lended yet
+  uniqueId: string;
+};
+type CatalogueItemWithAction = CatalougeItemBaseProps & {
+  onClick: ReactEventOnClickType;
+  buttonTitle: string;
+  hasAction: true;
 };
 
-const onElementAppear = (el: HTMLElement, index: number) =>
-  spring({
-    onUpdate: (val) => {
-      el.style.opacity = val.toString();
-    },
-    delay: index * 50,
-  });
-
-const onExit =
-  (type: "grid" | "list") =>
-  (el: HTMLElement, index: number, removeElement: () => void) => {
-    spring({
-      config: { overshootClamping: true },
-      onUpdate: (val) => {
-        el.style.transform = `scale${type === "grid" ? "X" : "Y"}(${
-          1 - Number(val)
-        })`;
-      },
-      delay: index * 50,
-      onComplete: removeElement,
-    });
-
-    return () => {
-      el.style.opacity = "";
-      removeElement();
-    };
-  };
+export type CatalogueItemProps =
+  | CatalogueItemWithAction
+  | (CatalougeItemBaseProps & { hasAction?: false });
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
-  nft,
+  nId,
   checked,
   onCheckboxChange,
   children,
   disabled,
+  show,
+  uniqueId,
+  ...rest
 }) => {
-  const { signer } = useContext(UserContext);
+  const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
+  const { signer } = useWallet();
   const meta = useNftMetaState(
     useCallback(
       (state) => {
@@ -66,141 +59,155 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     shallow
   );
 
-  const { pathname } = useRouter();
   const imageIsReady = useMemo(() => {
     return meta && !meta.loading;
   }, [meta]);
 
   const { name, image, description, openseaLink } = meta;
-
-  const isRentPage = useMemo(() => {
-    return pathname === "/" || pathname.includes("/rent");
-  }, [pathname]);
-
-  const shouldFlip = useCallback((prev, current) => {
-    if (prev.type !== current.type) {
-      return true;
-    }
-    return false;
-  }, []);
+  const pendingStatus = useEventTrackedTransactionState(
+    useCallback(
+      (state) => {
+        return state.uiPendingTransactionState[uniqueId];
+      },
+      [uniqueId]
+    ),
+    shallow
+  );
 
   const knownContract = useMemo(() => {
     return (
-      nft.address.toLowerCase() === "0x0db8c099b426677f575d512874d45a767e9acc3c"
+      nft.nftAddress.toLowerCase() ===
+      "0x0db8c099b426677f575d512874d45a767e9acc3c"
     );
-  }, [nft.address]);
+  }, [nft.nftAddress]);
 
+  const cb: ReactEventOnClickType = useCallback(
+    (e: React.MouseEvent<unknown>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (disabled) return;
+      // stop propagation is not working, manually disable checkbox toggling
+      if (rest.hasAction) {
+        rest.onClick(e);
+      }
+    },
+    [rest, disabled]
+  );
+  const onChange: ReactEventOnChangeType = useCallback(
+    (e: React.ChangeEvent<unknown>) => {
+      if (disabled) return;
+      onCheckboxChange(e);
+    },
+    [disabled, onCheckboxChange]
+  );
   return (
-    <Flipped
+    <Transition
+      show={show}
+      as="div"
+      enter="transition-opacity ease-linear duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity ease-linear duration-300"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
       key={nft.id}
-      flipId={nft.id}
-      onAppear={onElementAppear}
-      onExit={onExit("grid")}
-      stagger={true}
+      className={classNames(
+        disabled && "cursor-not-allowed",
+        !disabled && "hover:shadow-rn-one",
+        checked && "shadow-rn-one border-4",
+        "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
+      )}
     >
-      <div
-        className={`nft ${checked ? "checked" : ""} ${
-          nft.isERC721 ? "nft__erc721" : "nft__erc1155"
-        }`}
-        key={nft.tokenId}
-        data-item-id={nft.tokenId}
-      >
-        {!imageIsReady && <Skeleton />}
-        {imageIsReady && (
-          <>
-            <Flipped
-              flipId={`${nft.id}-content`}
-              translate
-              shouldFlip={shouldFlip}
-              delayUntil={nft.id}
-            >
-              <>
-                <div className="nft__overlay">
-                  <a
-                    className="nft__link"
-                    target="_blank"
-                    rel="noreferrer"
-                    href={`https://rarible.com/token/${nft.address}:${nft.tokenId}`}
-                  >
-                    <img src="/assets/rarible.png" className="nft__icon" />
-                  </a>
-                  {openseaLink && (
+      {!imageIsReady && <Skeleton />}
+      {imageIsReady && (
+        <>
+          <div onClick={onChange}>
+            <>
+              <div className="flex justify-center space-x-2">
+                <CatalogueActions
+                  nftAddress={nft.nftAddress}
+                  tokenId={nft.tokenId}
+                  disabled={disabled || !signer}
+                  checked={!!checked}
+                  onCheckboxChange={onCheckboxChange}
+                />
+              </div>
+              <div className="relative">
+                <CatalogueItemDisplay image={image} description={description} />
+                <div className="absolute inset-0  flex items-center text-center justify-center">
+                  <PendingTransactionsLoader status={pendingStatus} />
+                </div>
+              </div>
+              <div className="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center">
+                <p className="flex-initial">{name}</p>
+                <div className="flex flex-auto flex-row">
+                  {knownContract && (
                     <a
-                      className="nft__link"
+                      className="flex-initial p-2"
                       target="_blank"
                       rel="noreferrer"
-                      href={openseaLink}
                     >
-                      <img src="/assets/opensea.png" className="nft__icon" />
-                    </a>
-                  )}
-                  {/* <CatalogueActions
-              address={nft.address}
-              tokenId={nft.tokenId}
-              id={id}
-              isAlreadyFavourited={!!isAlreadyFavourited}
-            /> */}
-                  <div className="spacer" />
-                  <Checkbox
-                    checked={!!checked}
-                    onChange={onCheckboxChange}
-                    disabled={disabled || !signer}
-                  ></Checkbox>
-                </div>
-                <div className="nft__image">
-                  <CatalogueItemDisplay
-                    image={image}
-                    description={description}
-                  />
-                </div>
-                <div className="nft__name">
-                  {name}
-                  {knownContract && (
-                    <a className="nft__link" target="_blank" rel="noreferrer">
                       <img
                         src="/assets/nft-verified.png"
                         className="nft__icon small"
                       />
                     </a>
                   )}
-                  {isRentPage && (
-                    <CopyLink address={nft.address} tokenId={nft.tokenId} />
-                  )}
                 </div>
-              </>
-            </Flipped>
-            <Flipped
-              flipId={`${nft.id}-button`}
-              shouldFlip={shouldFlip}
-              delayUntil={nft.id}
-            >
-              <>
-                <CatalogueItemRow
-                  text="Address"
-                  value={
-                    <a
-                      href={`https://etherscan.io/address/${nft.address}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {nft.address}
-                    </a>
-                  }
-                />
-                <CatalogueItemRow text="Token id" value={nft.tokenId} />
-                <CatalogueItemRow
-                  text="Standard"
-                  value={nft.isERC721 ? "721" : "1155"}
-                />
+              </div>
+            </>
+            <div className="px-2 flex flex-auto flex-col text-black">
+              <CatalogueItemRow
+                text="NFT Address"
+                value={<ShortenPopover longString={nft.nftAddress} />}
+              />
+              <CatalogueItemRow
+                text="Token id"
+                value={<ShortenPopover longString={nft.tokenId} />}
+              />
+              <CatalogueItemRow
+                text="Standard"
+                value={nft.isERC721 ? "721" : "1155"}
+              />
 
-                {children}
-                {/* <CatalogueItemRow text="priceInUSD" value={nft.priceInUSD} /> */}
-                {/* <CatalogueItemRow text="collateralInUSD" value={nft.collateralInUSD} /> */}
-              </>
-            </Flipped>
-          </>
-        )}
-      </div>
-    </Flipped>
+              {children}
+            </div>
+          </div>
+          {/* this is here because event  */}
+          <div className="py-3 flex flex-auto space-between px-2">
+            <div className="flex-1">
+              <a
+                className="flex-initial"
+                target="_blank"
+                rel="noreferrer"
+                href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
+              >
+                <img src="/assets/rarible.png" className="nft__icon" />
+              </a>
+              {openseaLink && (
+                <a
+                  className="flex-initial"
+                  target="_blank"
+                  rel="noreferrer"
+                  href={openseaLink}
+                >
+                  <img src="/assets/opensea.png" className="nft__icon" />
+                </a>
+              )}
+            </div>
+
+            {rest.hasAction && (
+              <div className="flex-1 flex justify-end pr-2">
+                <Button
+                  onClick={cb}
+                  description={rest.buttonTitle}
+                  disabled={disabled || !checked || !signer}
+                />
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </Transition>
   );
 };

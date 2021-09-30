@@ -1,10 +1,12 @@
 import React from "react";
+import { Button } from "./button";
 
 type ActionButtonProps<T> = {
   nft: T;
   title: string;
   onClick: (nft: T) => void;
   disabled?: boolean;
+  type?: 'submit'
 };
 
 /* eslint-disable-next-line */
@@ -12,16 +14,12 @@ const ActionButton = <T extends {}>(props: ActionButtonProps<T>) => {
   const onClickHandler = (): void => props.onClick(props.nft);
 
   return (
-    <div className="nft__control">
-      <button
-        className={`nft__button ${props.disabled ? "disabled" : ""}`}
-        onClick={onClickHandler}
-        disabled={props.disabled}
-        type="button"
-      >
-        {props.title}
-      </button>
-    </div>
+    <Button
+      onClick={onClickHandler}
+      disabled={props.disabled}
+      description={props.title}
+      type={props.type}
+    />
   );
 };
 

@@ -1,9 +1,8 @@
-import { SvgIcon } from "@material-ui/core";
 import React from "react";
 
 export const CheckIcon: React.FC = (props) => {
   return (
-    <SvgIcon viewBox="0 0 32 32" {...props}>
+    <svg viewBox="0 0 32 32" {...props}>
       <g id="Layer_2" data-name="Layer 2">
         <g id="Layer_1-2" data-name="Layer 1">
           <rect fill={"#36cba5"} width="25" height="25" className="front" />
@@ -19,13 +18,13 @@ export const CheckIcon: React.FC = (props) => {
           />
         </g>
       </g>
-    </SvgIcon>
+    </svg>
   );
 };
 
 export const CheckedIcon: React.FC = (props) => {
   return (
-    <SvgIcon viewBox="0 0 32 32" {...props}>
+    <svg viewBox="0 0 32 32" {...props}>
       <g id="Layer_2" data-name="Layer 2">
         <g id="Layer_1-2" data-name="Layer 1">
           <rect fill={"#fc9706"} width="25" height="25" />
@@ -33,6 +32,6 @@ export const CheckedIcon: React.FC = (props) => {
           <polygon fill={"#DF732C"} points="32 6.74 32 32 25 25 25 0 32 6.74" />
         </g>
       </g>
-    </SvgIcon>
+    </svg>
   );
 };

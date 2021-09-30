@@ -1,19 +1,21 @@
-import "../style/index.scss";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
+import "../styles/globals.css";
+import "../styles/loader.css";
+import "../styles/nprogress.css";
+import "../styles/video-react.css";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { StateProvider } from "../contexts/StateProvider";
-import AppLayout from "../components/app-layout";
+import { AppLayout } from "../components/layouts/app-layout";
 import type { AppProps } from "next/app";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
 import "../scripts/wdyr";
-
 //@ts-ignore
 import NProgress from "nprogress";
 import { NetworkName } from "../types";
+
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 if (typeof window !== "undefined") {
   ReactGA.initialize(process.env.NEXT_PUBLIC_GA_ID || "", {
@@ -22,9 +24,9 @@ if (typeof window !== "undefined") {
     //   ? window.location.hostname !== "dapp.renft.io"
     //   : true,
     gaOptions: {
-      siteSpeedSampleRate: 100,
+      siteSpeedSampleRate: 100
     },
-    testMode: window.location.hostname !== "dapp.renft.io",
+    testMode: window.location.hostname !== "dapp.renft.io"
   });
 }
 
@@ -37,7 +39,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    const handleStart = (url: string) => {
+    const handleStart = () => {
       NProgress.start();
     };
     const handleStop = () => {
@@ -86,13 +88,9 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
 
-      <StateProvider>
-        <ThemeProvider theme={theme}>
-          <AppLayout>
-            <Component {...pageProps} />
-          </AppLayout>
-        </ThemeProvider>
-      </StateProvider>
+      <AppLayout>
+        <Component {...pageProps} />
+      </AppLayout>
     </>
   );
 };

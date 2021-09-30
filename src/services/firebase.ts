@@ -1,13 +1,9 @@
 import { Address } from "../types";
-import { UserData, UsersVote } from "../contexts/graph/types";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
+import { UserData, UsersVote } from "../types";
 import firebase from "../firebase/clientApp";
+import { getUniqueID } from "../utils";
 
 const database = firebase.database();
-
-export const nftId = (nftAddress: Address, tokenId: string): string => {
-  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}`;
-};
 
 // Defaul user data
 const newUserData = {
@@ -81,7 +77,7 @@ export const addOrRemoveUserFavorite = async (
   nftAddress: Address,
   tokenId: string
 ): Promise<boolean> => {
-  const id = nftId(nftAddress, tokenId);
+  const id = getUniqueID(nftAddress, tokenId);
   const userRef = database.ref("users/" + currentAddress + "/favorites/" + id);
   return new Promise((resolve, reject) => {
     userRef
@@ -120,7 +116,7 @@ export const getNftVote = async (
   nftAddress: Address,
   tokenId: string
 ): Promise<UsersVote> => {
-  const id = nftId(nftAddress, tokenId);
+  const id = getUniqueID(nftAddress, tokenId);
   return new Promise((resolve, reject) => {
     database
       .ref("vote/" + id + "/")
@@ -138,7 +134,7 @@ export const upvoteOrDownvote = async (
   tokenId: string,
   vote: number
 ): Promise<void> => {
-  const id = nftId(nftAddress, tokenId);
+  const id = getUniqueID(nftAddress, tokenId);
   const voteUserRef = database.ref("vote/" + id + "/" + currentAddress);
   return new Promise((resolve, reject) => {
     voteUserRef

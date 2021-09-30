@@ -1,4 +1,3 @@
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 
 const MILISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -16,7 +15,7 @@ export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const time = endTime - moment().toDate().getTime();
+      const time = endTime - Date.now();
       const days = time / MILISECONDS_IN_DAY;
       const hours = (time % MILISECONDS_IN_DAY) / MILISECONDS_IN_HOUR;
       const minutes = (time % MILISECONDS_IN_HOUR) / MILISECONDS_IN_MINUTE;
@@ -37,17 +36,11 @@ export const CountDown: React.FC<{ endTime: number }> = ({ endTime }) => {
     return <div>Expired!</div>;
   }
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyItems: "flex-end",
-        alignContent: "center",
-      }}
-    >
-      <span style={{ display: "flex" }}>{days}d&nbsp;</span>
-      <span style={{ display: "flex" }}>{hours}h&nbsp;</span>
-      <span style={{ display: "flex" }}>{minutes}m&nbsp;</span>
-      <span style={{ display: "flex" }}>{seconds}s</span>
+    <div className="flex items-end content-center">
+      <span className="flex">{days}d&nbsp;</span>
+      <span className="flex">{hours}h&nbsp;</span>
+      <span className="flex">{minutes}m&nbsp;</span>
+      <span className="flex">{seconds}s</span>
     </div>
   );
 };

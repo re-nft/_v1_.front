@@ -1,4 +1,3 @@
-import { InputAdornment } from "@material-ui/core";
 import React, {
   useCallback,
   useState,
@@ -6,7 +5,8 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import PaginationTextField from "./pagination-textfield";
+import { ClientOnlyPortal } from "../client-only-portal";
+import { Button } from "./button";
 
 type PaginationProps = {
   currentPageNumber: number;
@@ -85,59 +85,50 @@ const Pagination: React.FC<PaginationProps> = ({
   if (totalPages < 2) return null;
 
   return (
-    <>
-      <ul className="pagination">
-        <li>
-          <button
-            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
-            onClick={onSetFirstPage}
-          >
-            {`<<`}
-          </button>
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isFirstPage ? "disabled" : ""}`}
-            onClick={onSetPrevPage}
-          >
-            {`<`}
-          </button>
-        </li>
-        <li className="page-count">
-          <PaginationTextField
-            id="standard-basic"
-            label="Page number"
-            type="string"
-            size="small"
-            onChange={onChange}
-            value={shadowPageNumber}
-            error={!!error}
-            helperText={error}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">/{totalPages}</InputAdornment>
-              ),
-            }}
-          />
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isLastpage ? "disabled" : ""}`}
-            onClick={onSetNextPage}
-          >
-            {`>`}
-          </button>
-        </li>
-        <li>
-          <button
-            className={`nft__button ${isLastpage ? "disabled" : ""}`}
-            onClick={onSetLastPage}
-          >
-            {`>>`}
-          </button>
-        </li>
-      </ul>
-    </>
+    <ClientOnlyPortal selector="#pagination">
+      <div className="py-3 flex items-center justify-center space-x-2">
+        <Button
+          onClick={onSetFirstPage}
+          description="<<"
+          disabled={isFirstPage}
+        ></Button>
+        <Button
+          onClick={onSetPrevPage}
+          description="<"
+          disabled={isFirstPage}
+        ></Button>
+        <div className="flex flex-col">
+          <label
+            htmlFor="pagenumber"
+            sr-only="Page number"
+            className="block text-sm font-medium text-gray-700"
+          ></label>
+          <div className="relative pr-2 py-4">
+            <input
+              type="string"
+              name="pagenumber"
+              onChange={onChange}
+              value={shadowPageNumber}
+              className="focus:ring-indigo-500 text-rn-purple bg-transparent border-transparent text-4xl w-8 text-right"
+            />
+            <span className="h-full bg-transparent text-rn-purple text-4xl">
+              /{totalPages}
+            </span>
+          </div>
+          <div>{error}</div>
+        </div>
+        <Button
+          onClick={onSetNextPage}
+          description=">"
+          disabled={isLastpage}
+        ></Button>
+        <Button
+          onClick={onSetLastPage}
+          description=">>"
+          disabled={isLastpage}
+        ></Button>
+      </div>
+    </ClientOnlyPortal>
   );
 };
 

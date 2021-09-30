@@ -1,43 +1,52 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { EMPTY, Observable } from "rxjs";
-import { Renting } from "../../contexts/graph/classes";
+import { Renting } from "../../types/classes";
 import { sortNfts } from "../../utils";
 import { useSDK } from "./useSDK";
 import {
+  SmartContractEventType,
   TransactionStatus,
-  useTransactionWrapper,
-} from "../useTransactionWrapper";
+} from "../store/useEventTrackedTransactions";
+import { useCreateRequest } from "../store/useCreateRequest";
 
-export const useReturnIt = (): ((
-  nfts: Renting[]
-) => Observable<TransactionStatus>) => {
+export const useReturnIt = (): {
+  returnIt: (rentings: Renting[]) => void;
+  status: TransactionStatus;
+} => {
   const sdk = useSDK();
-  const transactionWrapper = useTransactionWrapper();
+  const { createRequest, status } = useCreateRequest();
 
-  return useCallback(
-    (nfts: Renting[]) => {
-      if (!sdk) return EMPTY;
-      if (nfts.length < 1) return EMPTY;
-      const sortedNfts = nfts.sort(sortNfts);
-      return transactionWrapper(
+  const returnIt = useCallback(
+    (rentings: Renting[]) => {
+      if (!sdk) return false;
+      if (rentings.length < 1) return false;
+      const sortedNfts = rentings.sort(sortNfts);
+      createRequest(
         sdk.returnIt(
-          sortedNfts.map((nft) => nft.address),
-          sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-          sortedNfts.map((nft) => BigNumber.from(nft.renting.lendingId))
+          sortedNfts.map((renting) => renting.nftAddress),
+          sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),
+          sortedNfts.map((renting) => BigNumber.from(renting.lendingId))
         ),
         {
           action: "Return nft",
           label: `
-          addresses: ${sortedNfts.map((nft) => nft.address)}
-          tokenIds: ${sortedNfts.map((nft) => BigNumber.from(nft.tokenId))}
-          lendingIds: ${sortedNfts.map((nft) =>
-            BigNumber.from(nft.renting.lendingId)
+          addresses: ${sortedNfts.map((renting) => renting.nftAddress)}
+          tokenIds: ${sortedNfts.map((renting) =>
+            BigNumber.from(renting.tokenId)
           )}
-        `,
+          lendingIds: ${sortedNfts.map((renting) =>
+            BigNumber.from(renting.lendingId)
+          )}
+        `
+        },
+        {
+          ids: rentings.map((l) => l.id),
+          type: SmartContractEventType.RETURN_RENTAL
         }
+
       );
     },
-    [sdk, transactionWrapper]
+    [sdk, createRequest]
   );
+  return { returnIt, status };
 };

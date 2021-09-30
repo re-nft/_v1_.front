@@ -8,3 +8,5 @@ src/contracts
 babel.config.js
 next.config.js
 src/scripts/wdyr.js
+postcss.config.js
+tailwind.config.js

@@ -1,11 +1,11 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { ReNFT } from "@renft/sdk";
 
-import UserContext from "../../contexts/UserProvider";
 import { useContractAddress } from "./useContractAddress";
+import { useWallet } from "../store/useWallet";
 
 export const useSDK = (): ReNFT | undefined => {
-  const { signer } = useContext(UserContext);
+  const { signer } = useWallet();
   const contractAddress = useContractAddress();
 
   const renft = useMemo(() => {

@@ -26,6 +26,7 @@
     "react-hooks/exhaustive-deps": "error",
     "react/prop-types": "off",
     "unused-imports/no-unused-imports": "warn",
+    "react/react-in-jsx-scope": "off",
     "unused-imports/no-unused-vars": [
       "warn",
       {

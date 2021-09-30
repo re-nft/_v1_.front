@@ -2,17 +2,17 @@ import React from "react";
 
 export const InstallMetamask: React.FC = () => {
   return (
-    <div id="installMetaMask" className="cjAFRf web3modal-provider-wrapper">
+    <div id="installMetaMask" >
       <a
         href="https://metamask.io/"
         target="_blank"
-        className="cjAFRf web3modal-provider-container"
         rel="noreferrer"
+        className="flex justify-center items-center flex-col -mt-8 font-display text-xs uppercase"
       >
-        <div className="jMhaxE web3modal-provider-icon">
-          <img src="/metamask.svg" alt="MetaMask" width="32px" height="32px" />
+        <div className="flex-1">
+          <img src="/metamask.svg" alt="MetaMask" className='h-8 w-8'/>
         </div>
-        <div className="bktcUM sc-web3modal-provider-name mt-0">
+        <div className="flex-1">
           Install MetaMask
         </div>
       </a>

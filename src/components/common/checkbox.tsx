@@ -1,45 +1,52 @@
-import { Checkbox as CheckboxMaterial } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import React from "react";
-import { CheckedIcon, CheckIcon } from "./checkbox-icon";
+import React, { useCallback } from "react";
+import { ReactEventOnChangeType } from "../../types";
+import { classNames } from "../../utils";
 
 type CheckboxProps = {
-  onChange: () => void;
+  onChange: ReactEventOnChangeType;
   checked: boolean;
   disabled?: boolean;
+  label: string;
+  srOnly?: boolean;
+  ariaLabel: string;
 };
-const style = {
-  root: {
-    padding: "0",
-    width: "32px",
-    height: "32px",
-    "& input:disabled + .MuiSvgIcon-root": {
-      "& .front": {
-        fill: "#9CA3AF",
-      },
-      "& .shadow": {
-        fill: "#4B5563",
-      },
-    },
-  },
-};
-const StyledCheckbox = withStyles(style)(CheckboxMaterial);
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
   onChange,
   disabled,
+  label,
+  srOnly = true,
+  ariaLabel
 }) => {
+  const cb: ReactEventOnChangeType = useCallback(
+    (e: React.ChangeEvent<unknown>) => {
+      if (disabled) return;
+      onChange(e);
+    },
+    [onChange, disabled]
+  );
   return (
-    <StyledCheckbox
-      checked={checked}
-      checkedIcon={<CheckedIcon />}
-      icon={<CheckIcon />}
-      onChange={onChange}
-      disableRipple
-      disabled={disabled}
-      size="medium"
-    />
+    <>
+      <div className="flex items-center h-5">
+        <input
+          aria-describedby={ariaLabel}
+          type="checkbox"
+          checked={checked}
+          onChange={cb}
+          disabled={disabled}
+          className={classNames(
+            disabled && "cursor-not-allowed border-gray-300",
+            "focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+          )}
+        />
+      </div>
+      <div className={srOnly ? "sr-only ml-3 text-sm" : "ml-3 text-sm"}>
+        <label htmlFor="comments" className="font-medium text-gray-700">
+          {label}
+        </label>
+      </div>
+    </>
   );
 };
 

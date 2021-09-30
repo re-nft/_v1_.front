@@ -13,3 +13,5 @@ export const RENFT_SUBGRAPH_ID_SEPARATOR = "::";
 export const IS_PROD = process.env["NODE_ENV"]?.toLowerCase() === "production";
 
 export const NO_COLLECTION = "No collection";
+
+export const NUMBER_REGEX = /^([1-9][0-9]{0,3}(\.[0-9])?)|([0-9]{1,4}\.(([0-9]{3}[1-9])|([1-9][0-9]{3})|([0-9][1-9][0-9]{2})|([0-9]{2}[1-9][0-9])))$/

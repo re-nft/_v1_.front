@@ -1,6 +1,5 @@
-import { NftTokenMeta } from "../contexts/graph/types";
-import { Nft } from "../contexts/graph/classes";
-import fetch from "cross-fetch";
+import { NftTokenMeta } from "../types";
+import { Nft } from "../types/classes";
 import {
   arrayToURI,
   buildStaticIPFS_URL,
@@ -136,7 +135,7 @@ async function fetchWithTimeout(
 export const fetchNFTFromOtherSource = async (
   nft: Nft
 ): Promise<NftTokenMeta | NftError> => {
-  const key = getUniqueID(nft.address, nft.tokenId);
+  const key = getUniqueID(nft.nftAddress, nft.tokenId);
   const tokenURI = await normalizeTokenUri(nft);
 
   if (nft.mediaURI) return { image: nft.mediaURI, nId: key };
@@ -227,7 +226,7 @@ export const fetchNFTsFromOpenSea = async (
       });
     })
     .catch((e) => {
-      console.log(e);
+      //TODO add logging
       return [];
     });
 };

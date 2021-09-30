@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SECOND_IN_MILLISECONDS } from "../consts";
-import UserContext from "../contexts/UserProvider";
-import { useDebounce } from "../hooks/useDebounce";
+import { useDebounce } from "../hooks/misc/useDebounce";
+import { useWallet } from "../hooks/store/useWallet";
 import { NetworkName, TransactionHash, TransactionStateEnum } from "../types";
-
-const IMAGE_PENDING = "/assets/loading-pending.gif";
-const IMAGE_SUCCESS = "/assets/loading-success.png";
-const IMAGE_FAILURE = "/assets/loading-failed.png";
+import {
+  PendingTransactionsLoader
+} from "./pending-transactions-loader";
 
 export const TransactionWrapper: React.FC<{
   isLoading: boolean;
@@ -14,19 +13,10 @@ export const TransactionWrapper: React.FC<{
   status: TransactionStateEnum;
   closeWindow?: () => void | undefined;
 }> = ({ isLoading, children, transactionHashes, status, closeWindow }) => {
-  const { network } = useContext(UserContext);
+  const { network } = useWallet();
   const transactionLoading = useDebounce(isLoading, 2 * SECOND_IN_MILLISECONDS);
   const [showMessage, setShowMessage] = useState(false);
-  const imageSource = useMemo(() => {
-    switch (status) {
-      case TransactionStateEnum.FAILED:
-        return IMAGE_FAILURE;
-      case TransactionStateEnum.SUCCESS:
-        return IMAGE_SUCCESS;
-      case TransactionStateEnum.PENDING:
-        return IMAGE_PENDING;
-    }
-  }, [status]);
+
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (isLoading) return;
@@ -58,13 +48,13 @@ export const TransactionWrapper: React.FC<{
   return (
     <>
       {transactionLoading ? (
-        <div style={{ display: "block" }} data-cy="transaction-loading">
-          <img src={imageSource}></img>
+        <div className="block text-center" data-cy="transaction-loading">
+          <PendingTransactionsLoader status={status} />
           {transactionHashes?.map((hash) => {
             return (
               <a
                 key={hash}
-                style={{ fontSize: "24px", display: "block" }}
+                className="text-xl block"
                 href={`${etherScanUrl}/${hash}`}
                 target="_blank"
                 rel="noreferrer"
@@ -76,7 +66,11 @@ export const TransactionWrapper: React.FC<{
         </div>
       ) : (
         <div>
-          {showMessage ? <img src={imageSource}></img> : <>{children}</>}
+          {showMessage ? (
+            <PendingTransactionsLoader status={status} />
+          ) : (
+            <>{children}</>
+          )}
         </div>
       )}
     </>

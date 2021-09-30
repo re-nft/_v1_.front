@@ -1,46 +1,45 @@
 import { useCallback } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useSDK } from "./useSDK";
+import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
+import { Lending } from "../../types/classes";
 import {
-  TransactionStatus,
-  useTransactionWrapper,
-} from "../useTransactionWrapper";
-import { EMPTY, Observable } from "rxjs";
+  useCreateRequest
+} from "../store/useCreateRequest";
 
-export const useStopLend = (): ((
-  nfts: {
-    address: string;
-    tokenId: string;
-    lendingId: string;
-  }[]
-) => Observable<TransactionStatus>) => {
-  const transactionWrapper = useTransactionWrapper();
+export const useStopLend = (): {
+  stopLend: (lendings: Lending[]) => void;
+  status: TransactionStatus;
+} => {
+  const { createRequest, status } = useCreateRequest();
 
   const sdk = useSDK();
 
-  return useCallback(
-    (
-      nfts: {
-        address: string;
-        tokenId: string;
-        lendingId: string;
-      }[]
-    ) => {
-      if (!sdk) return EMPTY;
+  const stopLend = useCallback(
+    (lendings: Lending[]) => {
+      if (!sdk) return false;
       const arr: [string[], BigNumber[], BigNumber[]] = [
-        nfts.map((nft) => nft.address),
-        nfts.map((nft) => BigNumber.from(nft.tokenId)),
-        nfts.map((nft) => BigNumber.from(nft.lendingId)),
+        lendings.map((lending) => lending.nftAddress),
+        lendings.map((lending) => BigNumber.from(lending.tokenId)),
+        lendings.map((lending) => BigNumber.from(lending.id))
       ];
-      return transactionWrapper(sdk.stopLending(...arr), {
-        action: "return nft",
-        label: `
-          addresses: ${nfts.map((nft) => nft.address)}
-          tokenId: ${nfts.map((nft) => BigNumber.from(nft.tokenId))}
-          lendingId: ${nfts.map((nft) => BigNumber.from(nft.lendingId))}
-        `,
-      });
+      createRequest(
+        sdk.stopLending(...arr),
+        {
+          action: "return nft",
+          label: `
+          addresses: ${lendings.map((lending) => lending.nftAddress)}
+          tokenId: ${lendings.map((lending) => BigNumber.from(lending.tokenId))}
+          lendingId: ${lendings.map((lending) => BigNumber.from(lending.id))}
+        `
+        },
+        {
+          ids: lendings.map((l) => l.id),
+          type: SmartContractEventType.STOP_LEND
+        }
+      );
     },
-    [sdk, transactionWrapper]
+    [sdk, createRequest]
   );
+  return { stopLend, status };
 };
