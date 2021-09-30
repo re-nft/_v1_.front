@@ -48,3 +48,4 @@ cypress/videos
 .yarn.lock
 # Sentry
 .sentryclirc
+
