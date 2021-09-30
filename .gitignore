@@ -44,3 +44,6 @@ cypress/videos
 # local env files
 # vercel
 .vercel
+
+# sentry 
+.sentryclirc
