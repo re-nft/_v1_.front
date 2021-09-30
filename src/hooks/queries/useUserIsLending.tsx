@@ -1,9 +1,9 @@
-import { Lending, Nft } from "../../types/classes";
+import { Lending, Nft, Renting } from "../../types/classes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePrevious } from "../misc/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../../consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
-import { timeItAsync } from "../../utils";
+import { parseLending, timeItAsync } from "../../utils";
 import { LendingRaw } from "../../types";
 import request from "graphql-request";
 import { queryUserLendingRenft } from "../../services/queries";
@@ -12,7 +12,8 @@ import { useCurrentAddress } from "../misc/useCurrentAddress";
 import {
   NFTRentType,
   useLendingStore,
-  useNftsStore
+  useNftsStore,
+  useRentingStore
 } from "../store/useNftStore";
 import shallow from "zustand/shallow";
 import {
@@ -47,8 +48,13 @@ export const useUserIsLending = (): {
     shallow
   );
 
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const addLendings = useLendingStore((state) => state.addLendings);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const addLendings = useLendingStore(
+    useCallback((state) => state.addLendings, [])
+  );
+  const addRentings = useRentingStore(
+    useCallback((state) => state.addRentings, [])
+  );
   const lendings = useLendingStore(
     useCallback((state) => state.lendings, []),
     shallow
@@ -117,11 +123,28 @@ export const useUserIsLending = (): {
           lendings.map((r) => new Lending(r)),
           NFTRentType.USER_IS_LENDING
         );
+        addRentings(
+          lendings
+            .filter((r) => r.renting)
+            .map(
+              (r: LendingRaw) =>
+                new Renting(r.tokenId, r.nftAddress, parseLending(r), r.renting)
+            ),
+          NFTRentType.USER_IS_LENDING
+        );
         setLoading(false);
       })
     );
     return fetchRequest;
-  }, [signer, network, userIsLendingIds, addLendings, currentAddress, addNfts]);
+  }, [
+    signer,
+    network,
+    userIsLendingIds,
+    addLendings,
+    currentAddress,
+    addNfts,
+    addRentings
+  ]);
 
   useEffect(() => {
     // stupid way to force refetch

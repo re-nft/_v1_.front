@@ -66,7 +66,6 @@ class Lending {
   paymentToken: PaymentToken;
   collateralClaimed: boolean;
   isERC721: boolean;
-  duration?: string;
   hasRenting: boolean;
   renterAddress: string;
 
@@ -86,7 +85,6 @@ class Lending {
     this.paymentToken = lending.paymentToken;
     this.collateralClaimed = lending.collateralClaimed;
     this.isERC721 = lending.collateralClaimed;
-    this.duration = this.duration
     this.hasRenting = !!lendingRaw.renting
     this.rentingId = lendingRaw.renting?.id
     this.renterAddress = lendingRaw.renting?.renterAddress || ""

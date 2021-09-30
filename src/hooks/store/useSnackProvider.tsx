@@ -80,6 +80,7 @@ export const useSnackProvider = (): {
           "Insufficient fund. Please check your balance.",
         ],
         ["Transaction is not successful!", "Transaction is not successful!"],
+        ["Transaction is success!", "Transaction is success!"],
         [
           "User denied transaction signature.",
           "User denied transaction signature.",

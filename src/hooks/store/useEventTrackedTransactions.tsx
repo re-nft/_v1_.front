@@ -249,7 +249,6 @@ export const useEventTrackedTransactionManager = (): {
   transactionRequests: TransactionRequests;
   pendingTransactionRequests: string[];
 } => {
-  //TODO:eniko snackprovider is not showing up
   const { setHash, transactions } = useTransactions();
   const { setError } = useSnackProvider();
   const currentAddress = useCurrentAddress();

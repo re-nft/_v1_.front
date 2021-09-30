@@ -8,7 +8,11 @@ import { fetchUserRenting, FetchUserRentingReturn } from "../../services/graph";
 import { parseLending } from "../../utils";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useNftsStore, useRentingStore } from "../store/useNftStore";
+import {
+  NFTRentType,
+  useNftsStore,
+  useRentingStore
+} from "../store/useNftStore";
 import { usePrevious } from "../misc/usePrevious";
 import {
   EventTrackedTransactionStateManager,
@@ -36,16 +40,18 @@ export const useUserRenting = (): {
   );
   const [isLoading, setLoading] = useState(false);
   const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
-  const addRentings = useRentingStore(useCallback((state) => state.addRentings, []));
+  const addRentings = useRentingStore(
+    useCallback((state) => state.addRentings, [])
+  );
   const renting = useRentingStore(
-    useCallback((state) => state.rentings, []),
+    useCallback((state) => state.userRenting, []),
     shallow
   );
 
   const fetchRenting = useCallback(() => {
     if (!currentAddress || !signer) return EMPTY;
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) {
-      addRentings([]);
+      addRentings([], NFTRentType.USER_IS_RENTING);
       return EMPTY;
     }
     setLoading(true);
@@ -56,14 +62,14 @@ export const useUserRenting = (): {
         if (usersRenting) {
           const { users } = usersRenting;
           if (!users || users.length < 1) {
-            addRentings([]);
+            addRentings([], NFTRentType.USER_IS_RENTING);
             setLoading(false);
             return EMPTY;
           }
           const firstMatch = users[0];
           const { renting: r } = firstMatch;
           if (!r || r.length < 1) {
-            addRentings([]);
+            addRentings([], NFTRentType.USER_IS_RENTING);
             return EMPTY;
           }
           const nfts = r.map(
@@ -87,7 +93,7 @@ export const useUserRenting = (): {
                   r
                 )
             );
-          addRentings(_renting);
+          addRentings(_renting, NFTRentType.USER_IS_RENTING);
           setLoading(false);
         }
       })
@@ -105,10 +111,9 @@ export const useUserRenting = (): {
     };
   }, [fetchRenting, refetchAfterOperation]);
 
-
   // reset on wallet change
   useEffect(() => {
-    addRentings([]);
+    addRentings([], NFTRentType.USER_IS_RENTING);
   }, [currentAddress, previousAddress, addRentings]);
   return { renting, isLoading };
 };

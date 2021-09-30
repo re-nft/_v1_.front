@@ -11,8 +11,12 @@ import { useUserIsLending } from "../../hooks/queries/useUserIsLending";
 import { useWallet } from "../../hooks/store/useWallet";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
 import { PaymentToken } from "@renft/sdk";
-import { useIsClaimable } from "../../hooks/misc/useIsClaimable";
+import { isClaimable, useIsClaimable } from "../../hooks/misc/useIsClaimable";
 import { formatCollateral } from "../../utils";
+import ClaimModal from "../modals/claim-modal";
+import { useTimestamp } from "../../hooks/misc/useTimestamp";
+import { useLendingStore, useRentingStore } from "../../hooks/store/useNftStore";
+import shallow from "zustand/shallow";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -49,7 +53,7 @@ const LendingCatalogueItem: React.FC<{
       nId={lending.nId}
       uniqueId={lending.id}
       onCheckboxChange={onCheckboxChange}
-      disabled={hasRenting}
+      disabled={hasRenting && !isClaimable}
       hasAction
       show={show}
       buttonTitle={buttonTitle}
@@ -82,20 +86,55 @@ const LendingCatalogueItem: React.FC<{
 const ItemsRenderer: React.FC<{
   currentPage: (Lending & { show: boolean })[];
 }> = ({ currentPage }) => {
-  const { checkedItems, onCheckboxChange } = useBatchItems('user-is-lending');
+  const { checkedItems, onCheckboxChange } = useBatchItems("user-is-lending");
 
   const [modalOpen, setModalOpen] = useState(false);
+  const [claimModal, setClaimModalOpen] = useState(false);
 
+  const blockTimeStamp = useTimestamp();
+  const rentings = useRentingStore(
+    useCallback(
+      (state) => state.rentings,
+      []
+    ),
+    shallow
+  );
+  const lendings = useLendingStore(
+    useCallback(
+      (state) => state.lendings,
+      []
+    ),
+    shallow
+  );
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
   }, []);
 
-  const handleClickNft = useCallback(
-    () => {
-      setModalOpen(true);
-    },
-    []
-  );
+  const [claimableCheckedItems, nonClaimableCheckedItems] = useMemo(()=>{
+    const claimableItems: string[] = [];
+    const nonclaimable: string[] = [];
+    checkedItems.forEach((id)=>{
+      const lending = lendings[id];
+      if(!lending) return;
+      const claimable = isClaimable(
+        blockTimeStamp,
+        lending.collateralClaimed,
+        lending.rentingId ? rentings[lending?.rentingId] : null
+      );
+      if(claimable) claimableItems.push(id)
+      else nonclaimable.push(id)
+    })
+    return [claimableItems, nonclaimable]
+  }, [checkedItems, lendings, blockTimeStamp, rentings])
+
+
+  const handleClaimCloseModal = useCallback(() => {
+    setClaimModalOpen(false);
+  }, []);
+
+  const handleClickNft = useCallback(() => {
+    setModalOpen(true);
+  }, []);
   const onItemCheck = useCallback(
     (nft) => {
       return () => {
@@ -110,7 +149,14 @@ const ItemsRenderer: React.FC<{
         <StopLendModal
           open={modalOpen}
           onClose={handleCloseModal}
-          checkedItems={checkedItems}
+          checkedItems={nonClaimableCheckedItems}
+        />
+      )}
+      {claimModal && (
+        <ClaimModal
+          open={modalOpen}
+          onClose={handleClaimCloseModal}
+          checkedItems={claimableCheckedItems}
         />
       )}
       <ItemWrapper>

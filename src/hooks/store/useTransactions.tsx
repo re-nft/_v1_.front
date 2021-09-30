@@ -98,7 +98,7 @@ const useTransactionState = create<{
 // simple transaction manager
 export const useTransactions = (): {
   setHash: (h: TransactionHash | TransactionHash[]) => string | false;
-  transactions: Record<string, TransactionState>
+  transactions: Record<string, TransactionState>;
 } => {
   const { web3Provider: provider } = useWallet();
   const transactions = useTransactionState(
@@ -118,28 +118,27 @@ export const useTransactions = (): {
   );
   const { setError } = useSnackProvider();
 
-
   const transactionSucceeded =
-    (state: TransactionStateEnum) =>
-      (receipt: TransactionReceipt | null) => {
-        if (!receipt) return false;
-        const status = receipt.status;
-        if (!status) return false;
-        return TransactionStateEnum[status] === TransactionStateEnum[state];
-      };
+    (state: TransactionStateEnum) => (receipt: TransactionReceipt | null) => {
+      if (!receipt) return false;
+      const status = receipt.status;
+      if (!status) return false;
+      return TransactionStateEnum[status] === TransactionStateEnum[state];
+    };
   const getTransactionsStatus = useCallback(
     (receipts: (TransactionReceipt | null)[] | undefined) => {
       if (!receipts) return [true, false];
       if (receipts && receipts.length < 1) return [true, false];
 
       const hasFailure =
-        receipts.filter(transactionSucceeded(TransactionStateEnum.FAILED))
+        receipts.filter(transactionSucceeded(TransactionStateEnum.FAILED - 1))
           .length > 0;
       const hasPending =
-        receipts.filter(transactionSucceeded(TransactionStateEnum.PENDING))
+        receipts.filter(transactionSucceeded(TransactionStateEnum.PENDING - 1))
           .length > 0;
       // TODO this is where state management will come in to make this easy
       if (hasFailure) setError("Transaction is not successful!", "warning");
+      if (!hasFailure && !hasPending) setError("Transaction is success!", "success");
       return [hasFailure, hasPending];
     },
     [setError]
@@ -169,7 +168,6 @@ export const useTransactions = (): {
             hasFailure,
             hasPending
           });
-          if (hasFailure) setError("Transaction is not successful!", "warning");
           return {
             key,
             hasFailure,
@@ -197,14 +195,7 @@ export const useTransactions = (): {
       addTransactionId(key);
       return key;
     },
-    [
-      getTransactionsStatus,
-      provider,
-      setError,
-      transactions,
-      setTransactions,
-      addTransactionId
-    ]
+    [provider, setTransactions, addTransactionId]
   );
   useEffect(() => {
     const subscription = from(pendingTransactions.map((t) => getHashStatus(t)))
@@ -222,6 +213,6 @@ export const useTransactions = (): {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [pendingTransactions]);
+  }, [getHashStatus, pendingTransactions, removeTransactionId]);
   return { setHash, transactions };
 };

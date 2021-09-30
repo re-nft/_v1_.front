@@ -5,7 +5,8 @@ import produce from "immer";
 
 export enum NFTRentType {
   USER_IS_LENDING,
-  ALL_AVAILABLE_TO_RENT
+  ALL_AVAILABLE_TO_RENT,
+  USER_IS_RENTING
 }
 export enum OWNED_NFT_TYPE {
   DEV_NFT = 1,
@@ -62,8 +63,8 @@ export const useNftsStore = create<NftMetaState>(
             });
             if (ownedNftType) {
               const ids = nfts.map((i) => i.nId);
-              const set = new Set(...state.ownedNfts, ...ids)
-              state.ownedNfts = Array.from(set)
+              const set = new Set(...state.ownedNfts, ...ids);
+              state.ownedNfts = Array.from(set);
               switch (ownedNftType) {
                 case OWNED_NFT_TYPE.DEV_NFT: {
                   state.dev_nfts = ids;
@@ -75,7 +76,7 @@ export const useNftsStore = create<NftMetaState>(
                 }
                 case OWNED_NFT_TYPE.EXTERNAL_ERC721: {
                   state.external_erc721s = ids;
-                  ids.forEach((id) => state.amounts.set(id, 1))
+                  ids.forEach((id) => state.amounts.set(id, 1));
                   return;
                 }
               }
@@ -128,18 +129,25 @@ export const useLendingStore = create<LendingState>(
   )
 );
 type RentingState = {
-  rentings: [];
-  addRentings: (nfts: Renting[]) => void;
+  userRenting: Renting[];
+  rentings: Record<string, Renting>;
+  addRentings: (nfts: Renting[], type: NFTRentType) => void;
 };
 // delete previous rentings, as only user rentings are stored here
 export const useRentingStore = create<RentingState>(
   devtools(
     (set) => ({
-      rentings: [],
-      addRentings: (rentings: Renting[]) =>
+      userRenting: [],
+      rentings: {},
+      addRentings: (rentings: Renting[], type: NFTRentType) =>
         set(
-          produce((state) => {
-            state.rentings = rentings;
+          produce((state: RentingState) => {
+            if (type === NFTRentType.USER_IS_RENTING)
+              state.userRenting = rentings;
+            else if (type === NFTRentType.USER_IS_LENDING)
+              rentings.map((renting) => {
+                state.rentings[renting.id] = renting;
+              })  
           })
         )
     }),

@@ -24,7 +24,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
     useCallback(
       (state) => {
         const set = new Set(checkedItems)
-        return state.rentings.filter((r: Renting) => set.has(r.id));
+        return state.userRenting.filter((r: Renting) => set.has(r.id));
       },
       [checkedItems]
     )

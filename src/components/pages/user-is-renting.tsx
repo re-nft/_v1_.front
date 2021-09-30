@@ -4,7 +4,7 @@ import { Renting } from "../../types/classes";
 import { CatalogueItem } from "../catalogue-item";
 import ReturnModal from "../modals/return-modal";
 import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { formatCollateral, nftReturnIsExpired } from "../../utils";
+import { formatCollateral } from "../../utils";
 import { PaymentToken } from "@renft/sdk";
 import { RentSearchLayout } from "../layouts/rent-search-layout";
 import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
@@ -31,7 +31,6 @@ const RentingCatalogueItem: React.FC<{
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {
-    console.log(renting.rentedAt * 1000 < blockTimeStamp)
     return renting.rentedAt * 1000 < blockTimeStamp;
   }, [blockTimeStamp, renting.rentedAt]);
 

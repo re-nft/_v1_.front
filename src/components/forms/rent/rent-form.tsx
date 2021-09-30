@@ -54,13 +54,13 @@ export const RentForm: React.FC<LendFormProps> = ({
     useCallback((state) => state.values, []),
     shallow
   );
-  const selectedToRent = useLendingStore(
+  const selectedToRent: (Lending & { duration: string })[] = useLendingStore(
     useCallback(
       (state) => {
         return checkedItems.map((i) => {
           const lending = state.lendings[i];
           const previousFormValues = previousValues[lending.id];
-          return { ...lending, ...previousFormValues };
+          return { ...lending, duration: "", ...previousFormValues };
         });
       },
       [checkedItems, previousValues]
@@ -99,15 +99,17 @@ export const RentForm: React.FC<LendFormProps> = ({
   });
   const onSubmit = (values: FormProps) => {
     handleSave(
-      values.inputs.map<StartRentNft>((lending) => ({
-        address: lending.nftAddress,
-        tokenId: lending.tokenId,
-        amount: lending.lentAmount,
-        lendingId: lending.id,
-        rentDuration: lending.duration || "",
-        paymentToken: lending.paymentToken,
-        isERC721: lending.isERC721
-      }))
+      values.inputs.map<StartRentNft>(
+        (lending: Lending & { duration: string }) => ({
+          address: lending.nftAddress,
+          tokenId: lending.tokenId,
+          amount: lending.lentAmount,
+          lendingId: lending.id,
+          rentDuration: lending.duration,
+          paymentToken: lending.paymentToken,
+          isERC721: lending.isERC721
+        })
+      )
     );
   };
   const formSubmittedSuccessfully = useMemo(
