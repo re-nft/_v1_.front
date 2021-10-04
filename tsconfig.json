@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": "src/",
+    "paths": {
+      "renft-front/components/*": ["components/*"],
+      "renft-front/hooks/*": ["hooks/*"],
+      "renft-front/contracts/*": ["contracts/*"],
+      "renft-front/services/*": ["services/*"],
+      "renft-front/utils/*": ["utils/*"],
+      "renft-front/utils": ["utils/index.ts"]
+    },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

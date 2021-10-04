@@ -1,15 +1,14 @@
 import { ethers, providers } from "ethers";
-import { ERC721 } from "./types/typechain/ERC721";
-import { ERC1155 } from "./types/typechain/ERC1155";
-import { ERC20 } from "./types/typechain/ERC20";
+import { ERC721 } from "../types/typechain/ERC721";
+import { ERC1155 } from "../types/typechain/ERC1155";
+import { ERC20 } from "../types/typechain/ERC20";
 import createDebugger from "debug";
-import { Lending, Renting } from "./types/classes";
+import { Lending } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { ERC1155__factory } from "./contracts/ERC1155__factory";
-import { ERC721__factory } from "./contracts/ERC721__factory";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
-import add from "date-fns/add";
+import { ERC1155__factory } from "renft-front/contracts/ERC1155__factory";
+import { ERC721__factory } from "renft-front/contracts/ERC721__factory";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
 
 import { unpackPrice } from "@renft/sdk";
 import {
@@ -18,7 +17,7 @@ import {
   IRenting,
   LendingRaw,
   RentingRaw
-} from "./types";
+} from "../types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -238,13 +237,13 @@ export const sortNfts = (
 
 export const filterClaimed =
   (showClaimed: boolean) =>
-  (l: Lending): boolean => {
-    if (showClaimed) {
-      return l.collateralClaimed;
-    } else {
-      return !l.collateralClaimed;
-    }
-  };
+    (l: Lending): boolean => {
+      if (showClaimed) {
+        return l.collateralClaimed;
+      } else {
+        return !l.collateralClaimed;
+      }
+    };
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
 // for example supporting 721 and 1155 standard at the same time
@@ -291,9 +290,8 @@ export const getUniqueID = (
   tokenId: string,
   lendingId?: string
 ): UniqueID => {
-  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
-    lendingId ?? 0
-  }`;
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${lendingId ?? 0
+    }`;
 };
 
 export function classNames(...classes: unknown[]): string {

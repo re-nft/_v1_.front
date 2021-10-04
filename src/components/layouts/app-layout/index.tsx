@@ -5,7 +5,7 @@ import XIcon from "@heroicons/react/outline/XIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Footer } from "./footer";
-import { Connect } from "./connect";
+import { WalletConnect } from "./wallet-connect";
 import { classNames } from "../../../utils";
 
 const navigation = [
@@ -93,7 +93,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex flex-shrink-0 lg:items-center lg:w-64 lg:justify-self-end lg:justify-end">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <Connect menuButton />
+                    <WalletConnect menuButton />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -113,8 +113,8 @@ export const AppLayout: React.FC = ({ children }) => {
                                     item.disabled
                                       ? "text-gray-400 cursor-not-allowed"
                                       : active
-                                      ? "text-white bg-black"
-                                      : "text-black hover:bg-black hover:text-white",
+                                        ? "text-white bg-black"
+                                        : "text-black hover:bg-black hover:text-white",
                                     "cursor-default select-none relative block p-2"
                                   )}
                                 >
@@ -131,7 +131,7 @@ export const AppLayout: React.FC = ({ children }) => {
               </div>
               <div className="lg:hidden flex justify-end md:justify-none items-center">
                 <div className="flex-shrink-0">
-                  <Connect />
+                  <WalletConnect />
                 </div>
               </div>
             </div>

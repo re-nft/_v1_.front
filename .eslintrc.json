@@ -2,7 +2,13 @@
   "root": true,
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true,
+    "node": true
+  },
+  "globals": {
+    "process": true,
+    "ethereum": true
   },
   "extends": [
     "eslint:recommended",
@@ -19,7 +25,13 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "@typescript-eslint", "react-hooks", "unused-imports", "testing-library"],
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "react-hooks",
+    "unused-imports",
+    "testing-library"
+  ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/ban-ts-comment": "off",

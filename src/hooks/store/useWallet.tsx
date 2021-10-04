@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useCallback } from "react";
 import { ethers, Signer } from "ethers";
+import { Web3Provider, ExternalProvider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
 import { THROWS } from "../../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
@@ -9,21 +10,18 @@ import ReactGA from "react-ga";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import {
-  ExternalProvider
-} from "@ethersproject/providers";
 
 type WalletContextType = {
   address: string;
   permissions: unknown[];
-  connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
+  connect: () => Promise<Web3Provider | undefined> | void;
   signer: Signer | undefined;
-  web3Provider: ethers.providers.Web3Provider | undefined;
+  web3Provider: Web3Provider | undefined;
   network: string;
   provider: unknown;
   setProvider: (p: unknown) => void;
   setNetworkName: (str: string) => void;
-  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) => void;
+  setWeb3Provider: (p: Web3Provider | undefined) => void;
   setAddress: (address: string) => void;
   setSigner: (s: Signer | undefined) => void;
   setPermissions: (str: unknown[]) => void;
@@ -67,7 +65,7 @@ const useWalletState = create<WalletContextType>((set) => ({
         state.permissions = n;
       })
     ),
-  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) =>
+  setWeb3Provider: (p: Web3Provider | undefined) =>
     set(
       produce((state) => {
         state.web3Provider = p;
@@ -79,7 +77,7 @@ export const useWallet = (): {
   connect: () => void;
   signer: ethers.Signer | undefined;
   address: string;
-  web3Provider: ethers.providers.Web3Provider | undefined;
+  web3Provider: Web3Provider | undefined;
   network: string;
 } => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
@@ -130,7 +128,7 @@ export const useWallet = (): {
 
   const initState = useCallback(
     async (provider: unknown) => {
-      const web3p = new ethers.providers.Web3Provider(
+      const web3p = new Web3Provider(
         provider as ExternalProvider
       );
       const network = await web3p?.getNetwork();
@@ -155,8 +153,10 @@ export const useWallet = (): {
 
   const connect = useCallback(
     (manual: boolean) => {
-      if (!web3Modal) return EMPTY;
-      if (!(!!manual || (permissions.length > 0 && !signer))) return EMPTY;
+      if (web3Modal == null) return EMPTY;
+      const noSigner = signer == null;
+      const connectedBefore = permissions.length > 0 && noSigner;
+      if(!connectedBefore) return EMPTY
       // only reconnect if we have permissions or
       // user manually connected through action
       return from(
@@ -178,7 +178,9 @@ export const useWallet = (): {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    if (!hasWindow || !window.ethereum) return EMPTY;
+    if(typeof window === 'undefined') return EMPTY;
+    if (window.ethereum == null) return EMPTY;
+    if (window.ethereum.request == null) return EMPTY;
     return from<Promise<string[]>>(
       new Promise((resolve) => {
         window.ethereum
