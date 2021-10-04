@@ -7,6 +7,7 @@ import { TransactionStateEnum } from "../types";
 import { SnackAlertContext } from "../contexts/SnackProvider";
 import ReactGA from "react-ga";
 import { nanoid } from 'nanoid'
+import * as Sentry from "@sentry/nextjs";
 
 export interface TransactionStatus {
   hasFailure?: boolean;
@@ -132,12 +133,13 @@ export const useTransactionWrapper = (): ((
               action: `Error action:${action}`,
               label: `uniqueId:${id} ${err.message}`,
             });
+            Sentry.captureMessage(`Error action: ${action} ${err.message}`)
             setError(err.message, "warning");
             return null;
           })
         ).pipe(map(mapTransactions(setHash, {action, id})), mergeAll())
       ]).pipe(mergeAll());
     },
-    [setHash]
+    [setError, setHash]
   );
 };

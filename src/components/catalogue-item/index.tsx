@@ -9,7 +9,6 @@ import { CatalogueItemDisplay } from "./catalogue-item-display";
 import { useRouter } from "next/router";
 import { useNftMetaState } from "../../hooks/useMetaState";
 import shallow from "zustand/shallow";
-import { Flipped, spring } from "react-flip-toolkit";
 import { CopyLink } from "../copy-link";
 
 export type CatalogueItemProps = {
@@ -19,34 +18,6 @@ export type CatalogueItemProps = {
   onCheckboxChange: () => void;
   disabled?: boolean;
 };
-
-const onElementAppear = (el: HTMLElement, index: number) =>
-  spring({
-    onUpdate: (val) => {
-      el.style.opacity = val.toString();
-    },
-    delay: index * 50
-  });
-
-const onExit =
-  (type: "grid" | "list") =>
-  (el: HTMLElement, index: number, removeElement: () => void) => {
-    spring({
-      config: { overshootClamping: true },
-      onUpdate: (val) => {
-        el.style.transform = `scale${type === "grid" ? "X" : "Y"}(${
-          1 - Number(val)
-        })`;
-      },
-      delay: index * 50,
-      onComplete: removeElement
-    });
-
-    return () => {
-      el.style.opacity = "";
-      removeElement();
-    };
-  };
 
 export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   nft,
@@ -80,14 +51,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       pathname === "/user-is-lending"
     );
   }, [pathname]);
-
-  const shouldFlip = useCallback((prev, current) => {
-    if (prev.type !== current.type) {
-      return true;
-    }
-    return false;
-  }, []);
-
+  
   const knownContract = useMemo(() => {
     return (
       nft.address.toLowerCase() === "0x0db8c099b426677f575d512874d45a767e9acc3c"
@@ -95,13 +59,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   }, [nft.address]);
 
   return (
-    <Flipped
-      key={nft.id}
-      flipId={nft.id}
-      onAppear={onElementAppear}
-      onExit={onExit("grid")}
-      stagger={true}
-    >
+    <div key={nft.id}>
       <div
         className={`nft ${checked ? "checked" : ""} ${
           nft.isERC721 ? "nft__erc721" : "nft__erc1155"
@@ -112,12 +70,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         {!imageIsReady && <Skeleton />}
         {imageIsReady && (
           <>
-            <Flipped
-              flipId={`${nft.id}-content`}
-              translate
-              shouldFlip={shouldFlip}
-              delayUntil={nft.id}
-            >
+            <div>
               <>
                 <div className="nft__overlay">
                   <a
@@ -172,12 +125,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                   )}
                 </div>
               </>
-            </Flipped>
-            <Flipped
-              flipId={`${nft.id}-button`}
-              shouldFlip={shouldFlip}
-              delayUntil={nft.id}
-            >
+            </div>
+            <div>
               <>
                 <CatalogueItemRow
                   text="Address"
@@ -201,10 +150,10 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 {/* <CatalogueItemRow text="priceInUSD" value={nft.priceInUSD} /> */}
                 {/* <CatalogueItemRow text="collateralInUSD" value={nft.collateralInUSD} /> */}
               </>
-            </Flipped>
+            </div>
           </>
         )}
       </div>
-    </Flipped>
+    </div>
   );
 };
