@@ -4,16 +4,18 @@ import { Lending, Renting, Nft } from "../contexts/graph/classes";
 import { CatalogueItem } from "../components/catalogue-item";
 import ActionButton from "../components/common/action-button";
 import BatchBar from "../components/batch-bar";
-import { useBatchItems } from "../hooks/useBatchItems";
+import { isClaimable, useBatchItems } from "../hooks/useBatchItems";
 import LendingFields from "../components/lending-fields";
 import { UserLendingContext } from "../contexts/UserLending";
 import UserContext from "../contexts/UserProvider";
 import { StopLendModal } from "../modals/stop-lend-modal";
 import { LendSwitchWrapper } from "../components/lend-switch-wrapper";
 import { PaginationList } from "../components/pagination-list";
-import { isLending, UniqueID } from "../utils";
+import { isLending, nftReturnIsExpired, UniqueID } from "../utils";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useSearch } from "../hooks/useSearch";
+import { TimestampContext } from "../contexts/TimestampProvider";
+import { Tooltip } from "@material-ui/core";
 
 const LendingCatalogueItem: React.FC<{
   nft: Lending;
@@ -22,6 +24,26 @@ const LendingCatalogueItem: React.FC<{
   handleClickNft: (nft: Lending) => void;
 }> = ({ nft, checkedItems, checkBoxChangeWrapped, handleClickNft }) => {
   const isChecked = !!checkedItems[nft.id];
+  const isExpired = useMemo(
+    () => (nft.renting ? nftReturnIsExpired(nft.renting) : false),
+    [nft.renting]
+  );
+  const blockTimeStamp = useContext(TimestampContext);
+  const claimable = useMemo(() => {
+    if (!nft.renting) return false;
+    // if it is expired than it is already claimed
+    if (nft.renting.expired) return false;
+    return isClaimable(nft.renting, blockTimeStamp);
+  }, [nft, blockTimeStamp]);
+  const lendTooltip = useMemo(() => {
+    const stopLendMsg = "Click to stop lending this item.";
+    const rentedOutMsg =
+      "The item is rented out. You have to wait until the renter returns the item.";
+    if (!nft.renting) return stopLendMsg;
+    if (!isExpired) return rentedOutMsg;
+    if (claimable) return "Please claim first.";
+    return stopLendMsg;
+  }, [nft, isExpired, claimable]);
   return (
     <CatalogueItem
       checked={isChecked}
@@ -29,24 +51,28 @@ const LendingCatalogueItem: React.FC<{
       onCheckboxChange={checkBoxChangeWrapped(nft)}
     >
       <LendingFields nft={nft} />
-      <ActionButton<Lending>
-        nft={nft}
-        disabled={isChecked || !nft.lending.rentClaimed}
-        title="Stop Lending"
-        onClick={handleClickNft}
-      />
+      <Tooltip title={lendTooltip} aria-label={lendTooltip} open>
+        <span>
+          <ActionButton<Lending>
+            nft={nft}
+            disabled={isChecked || (!isExpired && nft.renting) || claimable}
+            title="Stop Lending"
+            onClick={handleClickNft}
+          />
+        </span>
+      </Tooltip>
     </CatalogueItem>
   );
 };
 
 const ItemsRenderer: React.FC<{ currentPage: Lending[] }> = ({
-  currentPage,
+  currentPage
 }) => {
   const {
     checkedItems,
     handleReset: batchHandleReset,
     checkedLendingItems,
-    onCheckboxChange,
+    onCheckboxChange
   } = useBatchItems();
 
   const [modalOpen, setModalOpen] = useState(false);
