@@ -20,6 +20,7 @@ export const parseLending = (
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,
     renting: parsedRenting,
+    lentAt: Number(lending.lentAt)
   };
 };
 

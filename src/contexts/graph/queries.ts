@@ -55,6 +55,7 @@ export const queryAllLendingRenft = `
       paymentToken
       collateralClaimed
       isERC721
+      lentAt
       renting {
         id
         renterAddress
@@ -84,6 +85,7 @@ export const queryAllRentingRenft = `
         paymentToken
         collateralClaimed
         isERC721
+        lentAt
       }
     }
   }
@@ -105,6 +107,7 @@ export const queryAllRenft = (): string => {
         paymentToken
         collateralClaimed
         isERC721
+        lentAt
         renting {
           id
           renterAddress
@@ -145,6 +148,7 @@ export const queryUserRenft = (user: string): string => {
         lentAmount
         isERC721
         collateralClaimed
+        lentAt
         renting {
           id
         }
@@ -182,6 +186,7 @@ export const queryUserLendingRenft = (user: string): string => {
         maxRentDuration
         isERC721
         collateralClaimed
+        lentAt
         renting {
           id
           renterAddress
