@@ -15,6 +15,12 @@ export enum TransactionStateEnum {
   DENIED_SIGNATURE
 }
 
+// based on TransactionReceipt return value from ethers
+export enum TransactionReceiptStatus {
+  FAILURE = 0,
+  SUCCESS = 1
+}
+
 export enum NetworkName {
   mainnet = "mainnet", // this is called homestead
   ropsten = "ropsten",
@@ -159,14 +165,14 @@ export type CalculatedUserVote = {
   };
 };
 
-export type ReactEventOnBlurType  = {
+export type ReactEventOnBlurType = {
   (e: React.FocusEvent<unknown>): void | Promise<void | boolean>;
   <T = unknown>(fieldOrEvent: T): T extends string
     ? (e: unknown) => void | Promise<void | boolean>
     : void | Promise<void | boolean>;
 };
 
-export type ReactEventOnChangeType  = {
+export type ReactEventOnChangeType = {
   (e: React.ChangeEvent<unknown>): void | Promise<void | boolean>;
   <T = string | React.ChangeEvent<unknown>>(
     field: T
@@ -175,7 +181,7 @@ export type ReactEventOnChangeType  = {
     : (e: string | React.ChangeEvent<unknown>) => void | Promise<void | boolean>;
 };
 
-export type ReactEventOnClickType  = {
+export type ReactEventOnClickType = {
   (e: React.MouseEvent<unknown>): void | Promise<void | boolean>;
   <T = string | React.MouseEvent<unknown>>(
     field: T

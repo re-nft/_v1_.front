@@ -77,7 +77,6 @@ export const useUserRenting = (): {
               new Nft(
                 r.lending.nftAddress,
                 r.lending.tokenId,
-                r.lending.lentAmount,
                 r.lending.isERC721
               )
           );

@@ -23,7 +23,7 @@ export const useStopLend = (): {
         lendings.map((lending) => BigNumber.from(lending.tokenId)),
         lendings.map((lending) => BigNumber.from(lending.id))
       ];
-      createRequest(
+      createRequest(() =>
         sdk.stopLending(...arr),
         {
           action: "return nft",

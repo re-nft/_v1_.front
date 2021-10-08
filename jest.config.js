@@ -19,11 +19,16 @@ module.exports = {
 
     // Handle module aliases
     '^renft-front/components/(.*)$': '<rootDir>/src/components/$1',
+    '^renft-front/consts$': '<rootDir>/src/consts',
     '^renft-front/utils$': '<rootDir>/src/utils/index',
     '^renft-front/utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^renft-front/types$': '<rootDir>/src/types/index',
+    '^renft-front/types/(.*)$': '<rootDir>/src/types/$1',
     '^renft-front/services/(.*)$': '<rootDir>/src/services/$1',
     '^renft-front/hooks/(.*)$': '<rootDir>/src/hooks/$1',
     '^renft-front/contracts/(.*)$': '<rootDir>/src/contracts/$1',
+    '^__mocks__/(.*)$': '<rootDir>/src/__mocks__/$1',
+    '^__tests__/(.*)$': '<rootDir>/src/__tests__/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],

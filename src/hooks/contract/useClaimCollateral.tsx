@@ -43,7 +43,7 @@ export const useClaimcollateral = (): {
         "Claim modal lendingId ",
         sortedNfts.map((lending) => lending.id)
       );
-      createRequest(
+      createRequest(() => 
         sdk.claimCollateral(...params),
         {
           action: "claim",

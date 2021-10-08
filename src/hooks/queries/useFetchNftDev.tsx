@@ -51,7 +51,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       const pendingLendings =
         state.pendingTransactions[SmartContractEventType.START_LEND];
       // refetch will change when you start renting goes from non-empty array to empty array
-      return pendingLendings.length + pendingStopRentals.length ;
+      return pendingLendings.length + pendingStopRentals.length;
     }, []),
     shallow
   );
@@ -97,7 +97,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721.address, tokenId.toString(), "1", true));
+          usersNfts.push(new Nft(e721.address, tokenId.toString(), true));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -111,7 +111,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721b.address, tokenId.toString(), "1", true));
+          usersNfts.push(new Nft(e721b.address, tokenId.toString(), true));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -129,7 +129,6 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           const nft = new Nft(
             e1155.address,
             E1155IDs[i].toString(),
-            amountBalance[i].toString(),
             false
           );
           setAmount(nft.nId, Number(amountBalance[i].toString()));
@@ -147,7 +146,6 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
           const nft = new Nft(
             e1155b.address,
             E1155IDs[i].toString(),
-            amountBalance[i].toString(),
             false
           );
           setAmount(nft.nId, Number(amountBalance[i].toString()));

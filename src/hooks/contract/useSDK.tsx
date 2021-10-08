@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { ReNFT } from "@renft/sdk";
 
-import { useContractAddress } from "./useContractAddress";
-import { useWallet } from "../store/useWallet";
+import { useContractAddress } from "renft-front/hooks/contract/useContractAddress";
+import { useWallet } from "renft-front/hooks/store/useWallet";
 
 export const useSDK = (): ReNFT | undefined => {
   const { signer } = useWallet();

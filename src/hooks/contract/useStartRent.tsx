@@ -108,7 +108,7 @@ export const useRentApproval = (): {
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      createRequest(
+      createRequest(() => 
         Promise.all(
           approvals.map((approval) =>
             approval.approve(contractAddress, MAX_UINT256)
@@ -159,7 +159,7 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      createRequest(
+      createRequest(() =>
         sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
         {
           action: "rent",

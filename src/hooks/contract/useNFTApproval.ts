@@ -43,7 +43,7 @@ export function useNFTApproval(nfts: NFTApproval[]): {
       if (distinctItems.length < 1) return false;
       if (!signer) return false;
 
-      createRequest(
+      createRequest(() => 
         Promise.all(
           distinctItems.map((nft) => {
             return getContractWithSigner(

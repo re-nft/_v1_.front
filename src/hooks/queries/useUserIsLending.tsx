@@ -114,7 +114,6 @@ export const useUserIsLending = (): {
             new Nft(
               lendingRaw.nftAddress,
               lendingRaw.tokenId,
-              lendingRaw.lentAmount,
               lendingRaw.isERC721
             )
         );

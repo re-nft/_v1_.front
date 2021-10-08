@@ -21,7 +21,7 @@ export const useReturnIt = (): {
       if (!sdk) return false;
       if (rentings.length < 1) return false;
       const sortedNfts = rentings.sort(sortNfts);
-      createRequest(
+      createRequest(() => 
         sdk.returnIt(
           sortedNfts.map((renting) => renting.nftAddress),
           sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),

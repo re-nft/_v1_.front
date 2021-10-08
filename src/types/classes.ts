@@ -1,5 +1,5 @@
-import { getUniqueID, parseLending, parseRenting } from "../utils";
-import { LendingRaw, RentingRaw, ILending, IRenting, NftToken, Address, TokenId } from ".";
+import { getUniqueID, parseLending, parseRenting } from "renft-front/utils";
+import { LendingRaw, RentingRaw, ILending, NftToken, Address, TokenId } from ".";
 import { PaymentToken } from "@renft/sdk";
 
 export enum NftType {
@@ -33,7 +33,6 @@ class NftMetadata {
   constructor(
     nftAddress: Address,
     tokenId: string,
-    amount: string,
     isERC721: boolean,
     options?: NftOptions
   ) {
@@ -76,8 +75,8 @@ class Lending {
 
     const lending = parseLending(lendingRaw)
     this.nftAddress = lending.nftAddress;
-    this.tokenId= lending.tokenId;
-    this.lentAmount= lending.lentAmount
+    this.tokenId = lending.tokenId;
+    this.lentAmount = lending.lentAmount
     this.lenderAddress = lending.lenderAddress;
     this.maxRentDuration = lending.maxRentDuration;
     this.dailyRentPrice = lending.dailyRentPrice;
@@ -121,7 +120,7 @@ class Renting {
     this.isERC721 = lending.isERC721;
     this.lendingId = lending.id;
     this.id = rentingRaw.id;
-    const renting = parseRenting(rentingRaw, {...lending, renting: undefined});
+    const renting = parseRenting(rentingRaw, { ...lending, renting: undefined });
     this.renterAddress = renting.renterAddress;
     this.rentDuration = renting.rentDuration;
     this.rentedAt = renting.rentedAt;

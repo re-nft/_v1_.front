@@ -1,4 +1,5 @@
 
 module.exports = {
-    set: jest.fn()
+    set: jest.fn(),
+    event: jest.fn()
 }
