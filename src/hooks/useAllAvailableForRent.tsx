@@ -10,6 +10,7 @@ import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
 import create from "zustand";
+import * as Sentry from "@sentry/nextjs";
 
 export const fetchRentings = () => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -18,7 +19,8 @@ export const fetchRentings = () => {
   const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
   return from<Promise<{ lendings: LendingRaw[] }>>(
     timeItAsync("Pulled All ReNFT Lendings", async () =>
-      request(subgraphURI, queryAllLendingRenft).catch(() => {
+      request(subgraphURI, queryAllLendingRenft).catch((e) => {
+        Sentry.captureException(e);
         console.warn("could not pull all ReNFT lendings");
         return {};
       })
@@ -109,7 +111,7 @@ export const useAllAvailableForRent = () => {
     return () => {
       if (subscription) subscription.unsubscribe();
     };
-  }, [fetchRentings, currentAddress, setLoading, network]);
+  }, [currentAddress, setLoading, network, nfts, setNfts]);
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
