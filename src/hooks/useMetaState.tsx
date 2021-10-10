@@ -130,7 +130,7 @@ export const useFetchMeta = (): (items: Nft[]) => void => {
   useEffect(() => {
     const fetchReady = fetchReadyOpenSea;
     if (fetchReady.length < 1) return;
-    let fetch: Nft[] = [];
+    let fetch: Nft[] = fetchReady;
     // only fetch 20 items at a time
     // when fetched, this effect will retrigger with new arr ready to be fetched
     if(fetchReady.length > 20){
