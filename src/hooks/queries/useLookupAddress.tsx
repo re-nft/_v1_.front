@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAddress } from "@ethersproject/address";
-import { ethers } from "ethers";
+import { Web3Provider } from "@ethersproject/providers";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 
 const lookupAddress = async (
-  provider: ethers.providers.Web3Provider,
+  provider: Web3Provider,
   address: string
 ) => {
   try {

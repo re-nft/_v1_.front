@@ -19,7 +19,7 @@ const useCurrentAddressState = create<{
     ),
 })));
 
-export const useCurrentAddress = () => {
+export const useCurrentAddress = ():string => {
   const { address } = useWallet();
   const newAddress = useCurrentAddressState(
     useCallback((state) => state.address, []),

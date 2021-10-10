@@ -1,4 +1,4 @@
-import { ContractTransaction } from "ethers";
+import { ContractTransaction } from "@ethersproject/contracts";
 import { useCallback, useEffect } from "react";
 import { from, map, switchMap, timer } from "rxjs";
 import ReactGA from "react-ga";

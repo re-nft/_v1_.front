@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from "react";
-import { ethers, Signer } from "ethers";
+import {  Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider, ExternalProvider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
 import { THROWS } from "../../utils";
@@ -75,7 +75,7 @@ const useWalletState = create<WalletContextType>((set) => ({
 
 export const useWallet = (): {
   connect: () => void;
-  signer: ethers.Signer | undefined;
+  signer: Signer | undefined;
   address: string;
   web3Provider: Web3Provider | undefined;
   network: string;
@@ -205,16 +205,7 @@ export const useWallet = (): {
         return;
       })
     );
-  }, [
-    address,
-    network,
-    signer,
-    hasWindow,
-    setPermissions,
-    setAddress,
-    setSigner,
-    setNetworkName
-  ]);
+  }, [address, network, signer, setPermissions, setAddress, setSigner, setNetworkName]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)

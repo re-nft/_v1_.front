@@ -1,26 +1,27 @@
 import { useCallback, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
 import createDebugger from "debug";
 import { ERC20 } from "../../types/typechain/ERC20";
 import { useSDK } from "./useSDK";
-import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
+import {
+  SmartContractEventType,
+  TransactionStatus,
+} from "../store/useEventTrackedTransactions";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
 import { useWallet } from "../store/useWallet";
 import { useCurrentAddress } from "../misc/useCurrentAddress";
 import { Lending } from "../../types/classes";
-import {
-  useCreateRequest
-} from "../store/useCreateRequest";
+import { useCreateRequest } from "../store/useCreateRequest";
 
 const debug = createDebugger("app:contract:startRent");
 
 export type StartRentNft = {
-  address: string;
+  nftAddress: string;
   tokenId: string;
   lendingId: string;
   rentDuration: string;
@@ -60,7 +61,7 @@ export const useRentApproval = (): {
         lendingId: lending.id,
         rentDuration: "",
         paymentToken: lending.paymentToken,
-        isERC721: lending.isERC721
+        isERC721: lending.isERC721,
       }));
       const promiseTokenAddresses = getDistinctItems(nfts, "paymentToken")
         .map((nft) => nft.paymentToken)
@@ -108,17 +109,18 @@ export const useRentApproval = (): {
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {
-      createRequest(() => 
-        Promise.all(
-          approvals.map((approval) =>
-            approval.approve(contractAddress, MAX_UINT256)
-          )
-        ),
+      createRequest(
+        () =>
+          Promise.all(
+            approvals.map((approval) =>
+              approval.approve(contractAddress, MAX_UINT256)
+            )
+          ),
         { action: "Rent approve tokens", label: "" },
         {
           //todo:eniko
           ids: [],
-          type: SmartContractEventType.APPROVE_PAYMENT_TOKEN
+          type: SmartContractEventType.APPROVE_PAYMENT_TOKEN,
         }
       );
     }
@@ -128,7 +130,7 @@ export const useRentApproval = (): {
     status,
     checkApprovals,
     handleApproveAll,
-    isApproved
+    isApproved,
   };
 };
 
@@ -141,10 +143,12 @@ export const useStartRent = (): {
 
   const startRent = useCallback(
     (nfts: StartRentNft[]) => {
-      if (!sdk) return false;
+      if (!sdk) return;
+      if (nfts == null) return;
+      if (nfts.length < 1) return;
 
       const sortedNfts = nfts.sort(sortNfts);
-      const addresses = sortedNfts.map((nft) => nft.address);
+      const addresses = sortedNfts.map((nft) => nft.nftAddress);
       const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
       const rentDurations = sortedNfts.map((nft) => Number(nft.rentDuration));
@@ -159,8 +163,8 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
-      createRequest(() =>
-        sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
+      createRequest(
+        () => sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
         {
           action: "rent",
           label: `
@@ -168,11 +172,11 @@ export const useStartRent = (): {
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
           rentDurations: ${rentDurations}
-          `
+          `,
         },
         {
           ids: nfts.map((l) => l.lendingId),
-          type: SmartContractEventType.START_RENT
+          type: SmartContractEventType.START_RENT,
         }
       );
     },
@@ -180,6 +184,6 @@ export const useStartRent = (): {
   );
   return {
     status,
-    startRent
+    startRent,
   };
 };

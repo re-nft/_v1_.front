@@ -1,11 +1,13 @@
-import { ethers, providers } from "ethers";
 import { ERC721 } from "../types/typechain/ERC721";
 import { ERC1155 } from "../types/typechain/ERC1155";
 import { ERC20 } from "../types/typechain/ERC20";
 import createDebugger from "debug";
 import { Lending } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Contract } from "@ethersproject/contracts";
+import { getAddress } from "@ethersproject/address";
 import { ERC1155__factory } from "renft-front/contracts/ERC1155__factory";
 import { ERC721__factory } from "renft-front/contracts/ERC721__factory";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
@@ -16,7 +18,7 @@ import {
   ILendingWithoutCircularDeps,
   IRenting,
   LendingRaw,
-  RentingRaw
+  RentingRaw,
 } from "../types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
@@ -44,12 +46,12 @@ const e20abi = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  "event Transfer(address indexed from, address indexed to, uint amount)"
+  "event Transfer(address indexed from, address indexed to, uint amount)",
 ];
 
-export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
-  const erc20Contract = new ethers.Contract(
-    ethers.utils.getAddress(address),
+export const getE20 = (address: string, signer?: Signer): ERC20 => {
+  const erc20Contract = new Contract(
+    getAddress(address),
     e20abi,
     signer
   ) as ERC20;
@@ -58,7 +60,7 @@ export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
 
 export const getE721 = (
   address: string,
-  signer: ethers.Signer | JsonRpcProvider
+  signer: Signer | JsonRpcProvider
 ): ERC721 => {
   const erc721Contract = ERC721__factory.connect(address, signer);
   return erc721Contract;
@@ -66,7 +68,7 @@ export const getE721 = (
 
 export const getE1155 = (
   address: string,
-  signer: ethers.Signer | JsonRpcProvider
+  signer: Signer | JsonRpcProvider
 ): ERC1155 => {
   const erc1155Contract = ERC1155__factory.connect(address, signer);
   return erc1155Contract;
@@ -136,7 +138,7 @@ export const timeItAsync = async <T>(
 
 export const getContractWithSigner = async (
   tokenAddress: string,
-  signer: ethers.Signer,
+  signer: Signer,
   isERC721: boolean
 ): Promise<ERC721 | ERC1155> => {
   if (isERC721) {
@@ -183,14 +185,13 @@ export const toDataURLFromURL = (
       return "";
     });
 
-
 /**
  * Helps advance time on test blockhain to test claimcollateral and similar
  * @param seconds
  */
 export const advanceTime = async (seconds: number): Promise<void> => {
   try {
-    const provider = new providers.JsonRpcProvider("http://localhost:8545");
+    const provider = new JsonRpcProvider("http://localhost:8545");
     await provider.send("evm_increaseTime", [seconds]);
     await provider.send("evm_mine", []);
   } catch (e) {
@@ -219,7 +220,7 @@ export const getDistinctItems = <
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,
-  GREATER = 1
+  GREATER = 1,
 }
 export const sortNfts = (
   a: { tokenId: string; isERC721: boolean },
@@ -237,13 +238,13 @@ export const sortNfts = (
 
 export const filterClaimed =
   (showClaimed: boolean) =>
-    (l: Lending): boolean => {
-      if (showClaimed) {
-        return l.collateralClaimed;
-      } else {
-        return !l.collateralClaimed;
-      }
-    };
+  (l: Lending): boolean => {
+    if (showClaimed) {
+      return l.collateralClaimed;
+    } else {
+      return !l.collateralClaimed;
+    }
+  };
 
 // we define degenerate NFTs as the ones that support multiple interfaces all at the same time
 // for example supporting 721 and 1155 standard at the same time
@@ -252,14 +253,14 @@ export const filterClaimed =
 // TODO: multicall for all the NFTs, rather than individual reads
 export const isDegenerateNft = async (
   address: string,
-  provider: ethers.providers.Web3Provider | undefined
+  provider: Web3Provider | undefined
 ): Promise<boolean> => {
   if (!provider) return true;
 
   const abi165 = [
-    "supportsInterface(bytes4 interfaceID) external view returns (bool)"
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
   ];
-  const contract = new ethers.Contract(address, abi165, provider);
+  const contract = new Contract(address, abi165, provider);
   let isDegenerate = true;
 
   // https://ethereum.stackexchange.com/questions/82822/obtaining-erc721-interface-ids
@@ -290,8 +291,9 @@ export const getUniqueID = (
   tokenId: string,
   lendingId?: string
 ): UniqueID => {
-  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${lendingId ?? 0
-    }`;
+  return `${nftAddress}${RENFT_SUBGRAPH_ID_SEPARATOR}${tokenId}${RENFT_SUBGRAPH_ID_SEPARATOR}${
+    lendingId ?? 0
+  }`;
 };
 
 export function classNames(...classes: unknown[]): string {
@@ -304,17 +306,17 @@ export const parseLending = (
 ): ILending => {
   return {
     id: lending.id,
-    nftAddress: ethers.utils.getAddress(lending.nftAddress),
+    nftAddress: getAddress(lending.nftAddress),
     tokenId: lending.tokenId,
     lentAmount: lending.lentAmount,
-    lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
+    lenderAddress: getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice),
     nftPrice: unpackPrice(lending.nftPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
     collateralClaimed: Boolean(lending.collateralClaimed),
     isERC721: lending.isERC721,
-    renting: parsedRenting
+    renting: parsedRenting,
   };
 };
 
@@ -324,11 +326,11 @@ export const parseRenting = (
 ): IRenting => {
   return {
     id: renting.id,
-    renterAddress: ethers.utils.getAddress(renting.renterAddress),
+    renterAddress: getAddress(renting.renterAddress),
     rentDuration: Number(renting.rentDuration),
     rentedAt: Number(renting.rentedAt),
     lendingId: parsedLending.id,
-    lending: parsedLending
+    lending: parsedLending,
   };
 };
 

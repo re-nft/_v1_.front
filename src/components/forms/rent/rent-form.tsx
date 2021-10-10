@@ -101,7 +101,7 @@ export const RentForm: React.FC<LendFormProps> = ({
     handleSave(
       values.inputs.map<StartRentNft>(
         (lending: Lending & { duration: string }) => ({
-          address: lending.nftAddress,
+          nftAddress: lending.nftAddress,
           tokenId: lending.tokenId,
           amount: lending.lentAmount,
           lendingId: lending.id,

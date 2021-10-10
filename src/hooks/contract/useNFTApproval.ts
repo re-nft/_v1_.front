@@ -1,16 +1,16 @@
 import {
   SmartContractEventType,
-  TransactionStatus
-} from "../store/useEventTrackedTransactions";
+  TransactionStatus,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 import { from, map } from "rxjs";
-import { Nft } from "../../types/classes";
+import { Nft } from "renft-front/types/classes";
 import { useCallback, useEffect, useState } from "react";
-import { getContractWithSigner, getDistinctItems } from "../../utils";
-import { TransactionStateEnum } from "../../types";
-import { useContractAddress } from "./useContractAddress";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { useCreateRequest } from "../store/useCreateRequest";
+import { getContractWithSigner, getDistinctItems } from "renft-front/utils";
+import { TransactionStateEnum } from "renft-front/types";
+import { useContractAddress } from "renft-front/hooks/contract/useContractAddress";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { useCreateRequest } from "renft-front/hooks/store/useCreateRequest";
 
 type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId" | "id">;
 
@@ -43,27 +43,28 @@ export function useNFTApproval(nfts: NFTApproval[]): {
       if (distinctItems.length < 1) return false;
       if (!signer) return false;
 
-      createRequest(() => 
-        Promise.all(
-          distinctItems.map((nft) => {
-            return getContractWithSigner(
-              nft.nftAddress,
-              signer,
-              nft.isERC721
-            ).then((contract) => {
-              return contract.setApprovalForAll(contractAddress, true);
-            });
-          })
-        ),
+      createRequest(
+        () =>
+          Promise.all(
+            distinctItems.map((nft) => {
+              return getContractWithSigner(
+                nft.nftAddress,
+                signer,
+                nft.isERC721
+              ).then((contract) => {
+                return contract.setApprovalForAll(contractAddress, true);
+              });
+            })
+          ),
         {
           action: "nft approval",
           label: `${distinctItems
             .map((t) => `address: ${t.nftAddress} tokenId: ${t.tokenId}`)
-            .join(",")}`
+            .join(",")}`,
         },
         {
           ids: distinctItems.map((l) => l.id),
-          type: SmartContractEventType.APPROVE_NFT
+          type: SmartContractEventType.APPROVE_NFT,
         }
       );
     },
@@ -145,6 +146,6 @@ export function useNFTApproval(nfts: NFTApproval[]): {
     isApprovalForAll,
     isApproved,
     approvalStatus,
-    handleApproveAll
+    handleApproveAll,
   };
 }

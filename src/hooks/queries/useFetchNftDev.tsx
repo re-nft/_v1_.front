@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { BigNumber, Signer } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Signer } from "@ethersproject/abstract-signer";
 import { Nft } from "../../types/classes";
 import { usePrevious } from "../misc/usePrevious";
 import { useSmartContracts } from "../contract/useSmartContracts";

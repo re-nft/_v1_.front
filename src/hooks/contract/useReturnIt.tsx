@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { useCallback } from "react";
 import { Renting } from "../../types/classes";
 import { sortNfts } from "../../utils";
@@ -18,15 +18,17 @@ export const useReturnIt = (): {
 
   const returnIt = useCallback(
     (rentings: Renting[]) => {
-      if (!sdk) return false;
-      if (rentings.length < 1) return false;
+      if (!sdk) return;
+      if (rentings == null) return;
+      if (rentings.length < 1) return;
       const sortedNfts = rentings.sort(sortNfts);
-      createRequest(() => 
-        sdk.returnIt(
-          sortedNfts.map((renting) => renting.nftAddress),
-          sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),
-          sortedNfts.map((renting) => BigNumber.from(renting.lendingId))
-        ),
+      createRequest(
+        () =>
+          sdk.returnIt(
+            sortedNfts.map((renting) => renting.nftAddress),
+            sortedNfts.map((renting) => BigNumber.from(renting.tokenId)),
+            sortedNfts.map((renting) => BigNumber.from(renting.lendingId))
+          ),
         {
           action: "Return nft",
           label: `
@@ -37,13 +39,12 @@ export const useReturnIt = (): {
           lendingIds: ${sortedNfts.map((renting) =>
             BigNumber.from(renting.lendingId)
           )}
-        `
+        `,
         },
         {
           ids: rentings.map((l) => l.id),
-          type: SmartContractEventType.RETURN_RENTAL
+          type: SmartContractEventType.RETURN_RENTAL,
         }
-
       );
     },
     [sdk, createRequest]

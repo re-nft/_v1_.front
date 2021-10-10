@@ -1,14 +1,14 @@
 import { useCallback } from "react";
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 import createDebugger from "debug";
-import { useSDK } from "./useSDK";
+import { useSDK } from "renft-front/hooks/contract/useSDK";
 import {
   SmartContractEventType,
-  TransactionStatus
-} from "../store/useEventTrackedTransactions";
-import { sortNfts } from "../../utils";
-import { LendInputDefined } from "../../components/forms/lend/lend-types";
-import { useCreateRequest } from "../store/useCreateRequest";
+  TransactionStatus,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
+import { sortNfts } from "renft-front/utils";
+import { LendInputDefined } from "renft-front/components/forms/lend/lend-types";
+import { useCreateRequest } from "renft-front/hooks/store/useCreateRequest";
 
 const debug = createDebugger("app:contract");
 
@@ -36,7 +36,6 @@ const sortParams = (nfts: LendInputDefined[]) => {
     tokenIds.push(BigNumber.from(tokenId));
   });
 
-
   return {
     amounts,
     maxRentDurations,
@@ -44,10 +43,9 @@ const sortParams = (nfts: LendInputDefined[]) => {
     nftPrice,
     addresses,
     tokenIds,
-    pmtTokens
-  }
-
-}
+    pmtTokens,
+  };
+};
 
 const debugParams = (params: ReturnType<typeof sortParams>) => {
   debug("addresses", params.addresses);
@@ -57,7 +55,7 @@ const debugParams = (params: ReturnType<typeof sortParams>) => {
   debug("dailyRentPrices", params.dailyRentPrices);
   debug("nftPrice", params.nftPrice);
   debug("tokens", params.pmtTokens);
-}
+};
 
 const getGAParams = (params: ReturnType<typeof sortParams>) => {
   return {
@@ -70,9 +68,9 @@ const getGAParams = (params: ReturnType<typeof sortParams>) => {
         dailyRentPrices: ${params.dailyRentPrices}
         nftPrice: ${params.nftPrice}
         tokens: ${params.pmtTokens}
-        `
+        `,
   };
-}
+};
 
 export const useStartLend = (): {
   startLend: (lendingInputs: LendInputDefined[]) => void;
@@ -83,27 +81,29 @@ export const useStartLend = (): {
 
   const startLend = useCallback(
     (lendingInputs: LendInputDefined[]) => {
-      if (!sdk) return false;
-      if (lendingInputs.length < 1) return false;
-      const params = sortParams(lendingInputs)
+      if (!sdk) return;
+      if (lendingInputs.length < 1) return;
+      const params = sortParams(lendingInputs);
       const gaParams = getGAParams(params);
 
       //TODO:eniko move this into create request
-      debugParams(params)
+      debugParams(params);
 
-      createRequest(() => 
-        sdk.lend(
-          params.addresses,
-          params.tokenIds,
-          params.amounts,
-          params.maxRentDurations,
-          params.dailyRentPrices,
-          params.nftPrice,
-          params.pmtTokens
-        ), gaParams,
+      createRequest(
+        () =>
+          sdk.lend(
+            params.addresses,
+            params.tokenIds,
+            params.amounts,
+            params.maxRentDurations,
+            params.dailyRentPrices,
+            params.nftPrice,
+            params.pmtTokens
+          ),
+        gaParams,
         {
           ids: lendingInputs.map((l) => l.nft.id),
-          type: SmartContractEventType.START_LEND
+          type: SmartContractEventType.START_LEND,
         }
       );
     },

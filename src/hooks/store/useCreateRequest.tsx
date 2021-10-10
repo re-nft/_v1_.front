@@ -1,4 +1,4 @@
-import { ContractTransaction } from "ethers";
+import { ContractTransaction } from "@ethersproject/contracts";
 import { useCallback, useMemo, useState } from "react";
 import { TransactionStateEnum } from "renft-front/types";
 import {
