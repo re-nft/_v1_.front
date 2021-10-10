@@ -28,7 +28,7 @@
     "debug": "4.3.1",
     "@ethersproject/bignumber": "5.4.0",
     "@ethersproject/abstract-signer": "5.4.0",
-    "@ethersproject/addresses": "5.4.0",
+    "@ethersproject/address": "5.4.0",
     "@ethersproject/units": "5.4.0",
     "@ethersproject/providers": "5.4.0",
     "@ethersproject/contracts": "5.4.0",
@@ -127,18 +127,9 @@
     "@ethersproject/wordlists": "5.4.0"
   },
   "lint-staged": {
-    "*.js": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ],
-    "*.ts": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ],
-    "*.tsx": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ],
+    "*.js": ["eslint --cache --fix", "prettier --write"],
+    "*.ts": ["eslint --cache --fix", "prettier --write"],
+    "*.tsx": ["eslint --cache --fix", "prettier --write"],
     "*.json": "prettier --write"
   },
   "keywords": [
@@ -152,16 +143,10 @@
     "Fairlaunch"
   ],
   "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
+    "extends": ["react-app"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
