@@ -1,9 +1,10 @@
-import { MintNfts } from "../../dev/mint-nfts";
-import { MintTokens } from "../../dev/mint-token";
 
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import XIcon from "@heroicons/react/outline/XIcon";
+
+import { MintNfts } from "renft-front/components/dev/mint-nfts";
+import { MintTokens } from "renft-front/components/dev/mint-token";
 
 export const DevMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -21,7 +22,7 @@ export const DevMenu: React.FC = () => {
           className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm uppercase
               text-sm font-display tracking-widest font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          {open ? "Hide mint sidebar": "Show mint sidebar"}
+          {open ? "Hide mint sidebar" : "Show mint sidebar"}
         </button>
       </div>
       <Transition.Root show={open} as={Fragment}>

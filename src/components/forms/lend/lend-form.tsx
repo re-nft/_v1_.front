@@ -1,13 +1,4 @@
 import React, { Fragment, useMemo, useCallback, useEffect } from "react";
-import { LendItem } from "./lend-item";
-import { TransactionWrapper } from "../../transaction-wrapper";
-import { TransactionStateEnum } from "../../../types";
-import {
-  FormProps,
-  LendFormProps,
-  LendInputDefined,
-  LendInputProps
-} from "./lend-types";
 import { Transition } from "@headlessui/react";
 import {
   useForm,
@@ -16,15 +7,28 @@ import {
   FormState
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { validationSchema } from "./lend-validation";
-import { Button } from "../../common/button";
-import { useStartLend } from "../../../hooks/contract/useStartLend";
-import { useNFTApproval } from "../../../hooks/contract/useNFTApproval";
-import { useNftsStore } from "../../../hooks/store/useNftStore";
 import { devtools } from "zustand/middleware";
 import create from "zustand";
 import produce from "immer";
 import shallow from "zustand/shallow";
+
+import { TransactionStateEnum } from "renft-front/types";
+import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
+import { Button } from "renft-front/components/common/button";
+import { useStartLend } from "renft-front/hooks/contract/useStartLend";
+import { useNFTApproval } from "renft-front/hooks/contract/useNFTApproval";
+import { useNftsStore } from "renft-front/hooks/store/useNftStore";
+
+import { LendItem } from "./lend-item";
+import { validationSchema } from "./lend-validation";
+
+import type {
+  FormProps,
+  LendFormProps,
+  LendInputDefined,
+  LendInputProps
+} from "./lend-types";
+
 
 export const useLendFormState = create<{
   values: Record<string, LendInputProps>;
@@ -227,46 +231,46 @@ const TransitionLendItem: React.FC<{
   isSubmitting,
   formState
 }) => {
-  // render the initial values so transition can be shown
-  const index = useMemo(
-    () =>
-      controlledFields.findIndex((v: LendInputProps) => {
-        if (v === null || !v.nft) return -1;
-        return v.nft.nId === item.nft.nId;
-      }),
-    [controlledFields, item.nft.nId]
-  );
-  const show = useMemo(() => {
-    const controlledItem = controlledFields[index];
-    return Boolean(controlledItem && controlledItem.nft && index >= 0);
-  }, [controlledFields, index]);
+    // render the initial values so transition can be shown
+    const index = useMemo(
+      () =>
+        controlledFields.findIndex((v: LendInputProps) => {
+          if (v === null || !v.nft) return -1;
+          return v.nft.nId === item.nft.nId;
+        }),
+      [controlledFields, item.nft.nId]
+    );
+    const show = useMemo(() => {
+      const controlledItem = controlledFields[index];
+      return Boolean(controlledItem && controlledItem.nft && index >= 0);
+    }, [controlledFields, index]);
 
-  // there is some bug here
-  const value = useMemo(() => {
-    const controlledItem = controlledFields[index];
-    // bug with removal
-    return controlledItem && controlledItem.nft ? controlledItem : item;
-  }, [controlledFields, index, item]);
+    // there is some bug here
+    const value = useMemo(() => {
+      const controlledItem = controlledFields[index];
+      // bug with removal
+      return controlledItem && controlledItem.nft ? controlledItem : item;
+    }, [controlledFields, index, item]);
 
-  return (
-    <Transition
-      show={show}
-      as={Fragment}
-      enter="transition-opacity ease-linear duration-300"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity ease-linear duration-300"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <LendItem
-        lendingInput={value}
-        index={index}
-        register={register}
-        formState={formState}
-        disabled={isSubmitting || formSubmittedSuccessfully}
-        removeFromCart={remove}
-      ></LendItem>
-    </Transition>
-  );
-};
+    return (
+      <Transition
+        show={show}
+        as={Fragment}
+        enter="transition-opacity ease-linear duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity ease-linear duration-300"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <LendItem
+          lendingInput={value}
+          index={index}
+          register={register}
+          formState={formState}
+          disabled={isSubmitting || formSubmittedSuccessfully}
+          removeFromCart={remove}
+        ></LendItem>
+      </Transition>
+    );
+  };

@@ -3,6 +3,7 @@
     "baseUrl": "src/",
     "paths": {
       "renft-front/components/*": ["components/*"],
+      "renft-front/pages/*": ["pages/*"],
       "renft-front/hooks/*": ["hooks/*"],
       "renft-front/contracts/*": ["contracts/*"],
       "renft-front/services/*": ["services/*"],

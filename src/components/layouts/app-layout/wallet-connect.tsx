@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Jazzicon } from "@ukstv/jazzicon-react";
+import { Menu } from "@headlessui/react";
+
 import { useLookupAddress } from "renft-front/hooks/queries/useLookupAddress";
 import { InstallMetamask } from "renft-front/components/common/install-metamask";
 import { ShortenPopover } from "renft-front/components/common/shorten-popover";
-import { Jazzicon } from "@ukstv/jazzicon-react";
 import { useUserData } from "renft-front/hooks/store/useUserData";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
-import { Menu } from "@headlessui/react";
 
 const RenderButton: React.FC<{
   menuButton: boolean;

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Switch } from "@headlessui/react";
-import { classNames } from "../../utils";
+import { classNames } from "renft-front/utils";
 
 export const Toggle: React.FC<{
   title: string;

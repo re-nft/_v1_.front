@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import { ReactEventOnChangeType } from "../../types";
-import { classNames } from "../../utils";
+import type { ReactEventOnChangeType } from "renft-front/types";
+import { classNames } from "renft-front/utils";
 
 type CheckboxProps = {
   onChange: ReactEventOnChangeType;
@@ -17,7 +17,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   disabled,
   label,
   srOnly = true,
-  ariaLabel
+  ariaLabel,
 }) => {
   const cb: ReactEventOnChangeType = useCallback(
     (e: React.ChangeEvent<unknown>) => {

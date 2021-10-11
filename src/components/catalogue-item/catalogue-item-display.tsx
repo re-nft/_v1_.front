@@ -1,7 +1,7 @@
 import React from "react";
 // @ts-ignore
 import { Player } from "video-react";
-import { isVideo } from "../../utils";
+import { isVideo } from "renft-front/utils";
 
 export const CatalogueItemDisplay: React.FC<{
   image?: string;

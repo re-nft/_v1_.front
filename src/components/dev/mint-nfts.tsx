@@ -1,6 +1,6 @@
 import React from "react";
-import { useMint } from "../../hooks/misc/useMint";
-import { Button } from "../common/button";
+import { useMint } from "renft-front/hooks/misc/useMint";
+import { Button } from "renft-front/components/common/button";
 
 export const MintNfts: React.FC = () => {
   const { mintNFT } = useMint();

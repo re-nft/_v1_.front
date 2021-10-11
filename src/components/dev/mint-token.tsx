@@ -1,7 +1,7 @@
 import React from "react";
-import { useMint } from "../../hooks/misc/useMint";
-import { advanceTime } from "../../utils";
-import { Button } from "../common/button";
+import { useMint } from "renft-front/hooks/misc/useMint";
+import { advanceTime } from "renft-front/utils";
+import { Button } from "renft-front/components/common/button";
 
 export const MintTokens: React.FC = () => {
   const { mintE20 } = useMint();

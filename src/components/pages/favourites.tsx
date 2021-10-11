@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 
-import { Lending, Renting } from "../../types/classes";
-import { CatalogueItem } from "../catalogue-item";
-import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { useAllAvailableForRent } from "../../hooks/queries/useAllAvailableForRent";
-import SearchLayout from "../layouts/search-layout";
-import ItemWrapper from "../common/items-wrapper";
-import { PaginationList } from "../layouts/pagination-list";
-import { getUniqueID } from "../../utils";
-import { useUserData } from "../../hooks/store/useUserData";
+import { Lending, Renting } from "renft-front/types/classes";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { useAllAvailableForRent } from "renft-front/hooks/queries/useAllAvailableForRent";
+import SearchLayout from "renft-front/components/layouts/search-layout";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import { getUniqueID } from "renft-front/utils";
+import { useUserData } from "renft-front/hooks/store/useUserData";
 
 export const MyFavorites: React.FC = () => {
   const { allAvailableToRent, isLoading: allAvailableIsLoading } =

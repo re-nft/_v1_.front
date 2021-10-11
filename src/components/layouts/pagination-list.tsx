@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Lending, Nft, Renting } from "../../types/classes";
-import CatalogueLoader from "../common/catalogue-loader";
-import Pagination from "../common/pagination";
-import { useFetchMeta } from "../../hooks/store/useMetaState";
-import { usePrevious } from "../../hooks/misc/usePrevious";
+
+import CatalogueLoader from "renft-front/components/common/catalogue-loader";
+import Pagination from "renft-front/components/common/pagination";
+import { useFetchMeta } from "renft-front/hooks/store/useMetaState";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
+import { Lending, Nft, Renting } from "renft-front/types/classes";
 
 const defaultSate = {
   pageItems: [],

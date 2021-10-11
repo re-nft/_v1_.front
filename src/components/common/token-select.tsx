@@ -1,9 +1,9 @@
-import { PaymentToken } from "@renft/sdk";
+import React, { Fragment, useCallback, Ref } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
-import React, { Fragment, useCallback, Ref } from "react";
-import { classNames } from "../../utils";
-import { ReactEventOnChangeType } from "../../types";
+import { PaymentToken } from "@renft/sdk";
+import { classNames } from "renft-front/utils";
+import type { ReactEventOnChangeType } from "renft-front/types";
 
 const tokens = [
   { value: PaymentToken.WETH, name: "WETH", unavailable: false },

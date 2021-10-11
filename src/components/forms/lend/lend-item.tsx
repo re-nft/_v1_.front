@@ -1,14 +1,16 @@
 import React, { Ref, useCallback, useMemo } from "react";
-import ModalFields from "../../modals/modal-fields";
-import { TextField } from "../../common/text-field";
-import { CatalogueItemRow } from "../../catalogue-item/catalogue-item-row";
-import { useNftMetaState } from "../../../hooks/store/useMetaState";
-import shallow from "zustand/shallow";
-import { CatalogueItemDisplay } from "../../catalogue-item/catalogue-item-display";
 import XIcon from "@heroicons/react/outline/XIcon";
-import { ILendInput } from "./lend-types";
-import { TokenSelect } from "../../common/token-select";
-import { useRegisterFields } from "../../../hooks/misc/useRegisterFields";
+import shallow from "zustand/shallow";
+
+import ModalFields from "renft-front/components/modals/modal-fields";
+import { TextField } from "renft-front/components/common/text-field";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
+import { CatalogueItemDisplay } from "renft-front/components/catalogue-item/catalogue-item-display";
+import { TokenSelect } from "renft-front/components/common/token-select";
+import { useRegisterFields } from "renft-front/hooks/misc/useRegisterFields";
+
+import type { ILendInput } from "./lend-types";
 
 export const LendItem: React.FC<ILendInput> = React.forwardRef(
   (input: ILendInput, ref) => {

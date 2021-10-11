@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { CategorySelect } from "../../common/category-select";
 
+import { useRouter } from "next/router";
+import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import produce from "immer";
 import { devtools } from "zustand/middleware";
-import { CategoryOptions, useSearchOptions } from "../../../hooks/store/useSearch";
-import { useRouter } from "next/router";
+
+import { CategorySelect } from "renft-front/components/common/category-select";
+import { CategoryOptions, useSearchOptions } from "renft-front/hooks/store/useSearch";
 
 interface NftFilterState {
   filters: string | null;

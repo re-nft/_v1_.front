@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TransactionStateEnum } from "../types";
+import { TransactionStateEnum } from "renft-front/types";
 
 const IMAGE_PENDING = "/assets/loading-pending.gif";
 const IMAGE_SUCCESS = "/assets/loading-success.png";

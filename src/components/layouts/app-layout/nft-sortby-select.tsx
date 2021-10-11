@@ -4,9 +4,10 @@ import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
 import { devtools } from "zustand/middleware";
-import { CategorySelect } from "../../common/category-select";
-import { useSortOptions } from "../../../hooks/store/useSearch";
 import { useRouter } from "next/router";
+
+import { CategorySelect } from "renft-front/components/common/category-select";
+import { useSortOptions } from "renft-front/hooks/store/useSearch";
 
 interface NftSortbyState {
   sortBy: string;

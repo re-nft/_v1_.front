@@ -1,12 +1,14 @@
 import React, { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import MenuIcon from "@heroicons/react/outline/MenuIcon";
 import XIcon from "@heroicons/react/outline/XIcon";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { Footer } from "./footer";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+
+import { classNames } from "renft-front/utils";
+
 import { WalletConnect } from "./wallet-connect";
-import { classNames } from "../../../utils";
+import { Footer } from "./footer";
 
 const navigation = [
   { name: "Rent", href: "/" },

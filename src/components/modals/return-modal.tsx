@@ -1,11 +1,13 @@
 import React, { useCallback } from "react";
-import { Button } from "../common/button";
-import { TransactionWrapper } from "../transaction-wrapper";
-import { Nft, Renting } from "../../types/classes";
-import { useReturnIt } from "../../hooks/contract/useReturnIt";
+
+import { Button } from "renft-front/components/common/button";
+import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
+import { Nft, Renting } from "renft-front/types/classes";
+import { useReturnIt } from "renft-front/hooks/contract/useReturnIt";
+import { useNFTApproval } from "renft-front/hooks/contract/useNFTApproval";
+import { useRentingStore } from "renft-front/hooks/store/useNftStore";
+
 import Modal from "./modal";
-import { useNFTApproval } from "../../hooks/contract/useNFTApproval";
-import { useRentingStore } from "../../hooks/store/useNftStore";
 
 type ReturnModalProps = {
   checkedItems: string[];
@@ -18,7 +20,7 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
   open,
   onClose
 }) => {
-  const {returnIt, status} = useReturnIt();
+  const { returnIt, status } = useReturnIt();
 
   const selectedToReturn = useRentingStore(
     useCallback(

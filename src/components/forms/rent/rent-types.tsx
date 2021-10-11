@@ -1,5 +1,5 @@
 import { FormState, UseFormRegister } from "react-hook-form/dist/types";
-import { Lending } from "../../../types/classes";
+import type { Lending } from "renft-front/types/classes";
 
 export type LendFormProps = {
   checkedItems: string[];

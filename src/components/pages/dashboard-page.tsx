@@ -1,13 +1,13 @@
-import { useRouter } from "next/router";
 import React, { useMemo } from "react";
-import { useWallet } from "../../hooks/store/useWallet";
-import SearchLayout from "../layouts/search-layout";
+import { useRouter } from "next/router";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import SearchLayout from "renft-front/components/layouts/search-layout";
 
 export const DashboardPage: React.FC = ({ children }) => {
   const { signer } = useWallet();
-  const {pathname} = useRouter();
+  const { pathname } = useRouter();
 
-  const tabs = useMemo(()=>{
+  const tabs = useMemo(() => {
     return [
       {
         name: "Lending",

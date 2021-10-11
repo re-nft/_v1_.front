@@ -1,4 +1,4 @@
-import { short } from "../../utils";
+import { short } from "renft-front/utils";
 import React, { useState } from "react";
 
 export const ShortenPopover: React.FC<{ longString: string }> = ({

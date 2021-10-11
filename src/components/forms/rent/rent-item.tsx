@@ -1,14 +1,16 @@
-import XIcon from "@heroicons/react/solid/XIcon";
-import { PaymentToken } from "@renft/sdk";
 import React, { Ref, useCallback } from "react";
+import { PaymentToken } from "@renft/sdk";
+import XIcon from "@heroicons/react/solid/XIcon";
 import shallow from "zustand/shallow";
-import { useNftMetaState } from "../../../hooks/store/useMetaState";
-import { useRegisterFields } from "../../../hooks/misc/useRegisterFields";
-import { CatalogueItemDisplay } from "../../catalogue-item/catalogue-item-display";
-import { CatalogueItemRow } from "../../catalogue-item/catalogue-item-row";
-import { TextField } from "../../common/text-field";
-import ModalFields from "../../modals/modal-fields";
-import { RentItemProps } from "./rent-types";
+
+import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
+import { useRegisterFields } from "renft-front/hooks/misc/useRegisterFields";
+import { CatalogueItemDisplay } from "renft-front/components/catalogue-item/catalogue-item-display";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { TextField } from "renft-front/components/common/text-field";
+import ModalFields from "renft-front/components/modals/modal-fields";
+
+import type { RentItemProps } from "./rent-types";
 
 export const RentItem: React.FC<RentItemProps> = React.forwardRef(
   (props, ref) => {
@@ -18,7 +20,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
     const paymentToken = PaymentToken[token];
     const dailyRentPrice = item.dailyRentPrice;
     const nftPrice = item.nftPrice;
-    const totalRent = 
+    const totalRent =
       (item.nftPrice || 0) * Number(item.lentAmount) +
       (item.dailyRentPrice || 0) * Number(item.duration);
 

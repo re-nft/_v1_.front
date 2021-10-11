@@ -2,7 +2,7 @@ import React from "react";
 
 import Modal from "./modal";
 
-import { LendForm } from "../forms/lend/lend-form";
+import { LendForm } from "renft-front/components/forms/lend/lend-form";
 
 type LendModalProps = {
   checkedItems: string[];

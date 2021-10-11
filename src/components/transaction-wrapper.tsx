@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { SECOND_IN_MILLISECONDS } from "../consts";
-import { useDebounce } from "../hooks/misc/useDebounce";
-import { useWallet } from "../hooks/store/useWallet";
-import { NetworkName, TransactionHash, TransactionStateEnum } from "../types";
+
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import { useDebounce } from "renft-front/hooks/misc/useDebounce";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { NetworkName, TransactionHash, TransactionStateEnum } from "renft-front/types";
+
 import {
   PendingTransactionsLoader
 } from "./pending-transactions-loader";

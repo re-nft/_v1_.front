@@ -1,24 +1,27 @@
 import React, { Fragment, useCallback, useEffect, useMemo } from "react";
-import { TransactionStateEnum } from "../../../types";
+import produce from "immer";
+import create from "zustand";
+import shallow from "zustand/shallow";
+import { devtools } from "zustand/middleware";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Transition } from "@headlessui/react";
+import { useForm, useFieldArray } from "react-hook-form";
+
 import {
   StartRentNft,
   useRentApproval,
   useStartRent
-} from "../../../hooks/contract/useStartRent";
-import { TransactionWrapper } from "../../transaction-wrapper";
-import { Transition } from "@headlessui/react";
-import { FormProps, LendFormProps } from "./rent-types";
+} from "renft-front/hooks/contract/useStartRent";
+import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
+import { Button } from "renft-front/components/common/button";
+import { useLendingStore } from "renft-front/hooks/store/useNftStore";
+import { TransactionStateEnum } from "renft-front/types";
+
 import { RentItem } from "./rent-item";
 import { validationSchema } from "./rent-validate";
-import { Button } from "../../common/button";
-import { useForm, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useLendingStore } from "../../../hooks/store/useNftStore";
-import { devtools } from "zustand/middleware";
-import create from "zustand";
-import produce from "immer";
-import { Lending } from "../../../types/classes";
-import shallow from "zustand/shallow";
+
+import type { Lending } from "renft-front/types/classes";
+import type { FormProps, LendFormProps } from "./rent-types";
 
 export const useRentFormState = create<{
   values: Record<string, Lending>;

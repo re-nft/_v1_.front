@@ -1,7 +1,8 @@
 import React from "react";
-import { Lending } from "../types/classes";
 import { PaymentToken } from "@renft/sdk";
-import { CatalogueItemRow } from "./catalogue-item/catalogue-item-row";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+
+import type { Lending } from "renft-front/types/classes";
 
 const LendingFields: React.FC<{ lending: Lending }> = ({ lending }) => {
   const days = parseInt(String(lending.maxRentDuration), 10);

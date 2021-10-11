@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Nft } from "../../types/classes";
-import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
-import { ShortenPopover } from "../common/shorten-popover";
+import { Nft } from "renft-front/types/classes";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { ShortenPopover } from "renft-front/components/common/shorten-popover";
 
 export type CommonInfoProps = {
   nft: Pick<Nft, 'nftAddress' | "tokenId" | "id" | "isERC721">;

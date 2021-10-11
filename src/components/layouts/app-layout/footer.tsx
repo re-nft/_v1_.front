@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
-import { useContractAddress } from "../../../hooks/contract/useContractAddress";
-import { NetworkName } from "../../../types";
-import address from "../../../contracts/ReNFT.address";
+import { useContractAddress } from "renft-front/hooks/contract/useContractAddress";
+import address from "renft-front/contracts/ReNFT.address";
+import { NetworkName } from "renft-front/types";
 
 export const Footer: React.FC = () => {
   const contractAddress = useContractAddress();

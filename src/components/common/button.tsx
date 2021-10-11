@@ -1,6 +1,6 @@
 import React, { Ref } from "react";
-import { ReactEventOnClickType } from "../../types";
-import { classNames } from "../../utils";
+import type { ReactEventOnClickType } from "renft-front/types";
+import { classNames } from "renft-front/utils";
 
 type ButtonProps = {
   onClick: ReactEventOnClickType;

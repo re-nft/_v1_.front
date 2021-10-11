@@ -1,22 +1,23 @@
 import React, { useCallback, useState, useMemo } from "react";
-
-import { Lending } from "../../types/classes";
-import { CatalogueItem } from "../catalogue-item";
-import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { StopLendModal } from "../modals/stop-lend-modal";
-import { LendSearchLayout } from "../layouts/lend-search-layout";
-import { PaginationList } from "../layouts/pagination-list";
-import ItemWrapper from "../common/items-wrapper";
-import { useUserIsLending } from "../../hooks/queries/useUserIsLending";
-import { useWallet } from "../../hooks/store/useWallet";
-import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
-import { PaymentToken } from "@renft/sdk";
-import { isClaimable, useIsClaimable } from "../../hooks/misc/useIsClaimable";
-import { formatCollateral } from "../../utils";
-import ClaimModal from "../modals/claim-modal";
-import { useTimestamp } from "../../hooks/misc/useTimestamp";
-import { useLendingStore, useRentingStore } from "../../hooks/store/useNftStore";
 import shallow from "zustand/shallow";
+
+import { PaymentToken } from "@renft/sdk";
+
+import { Lending } from "renft-front/types/classes";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { StopLendModal } from "renft-front/components/modals/stop-lend-modal";
+import { LendSearchLayout } from "renft-front/components/layouts/lend-search-layout";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useUserIsLending } from "renft-front/hooks/queries/useUserIsLending";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { isClaimable, useIsClaimable } from "renft-front/hooks/misc/useIsClaimable";
+import { formatCollateral } from "renft-front/utils";
+import ClaimModal from "renft-front/components/modals/claim-modal";
+import { useTimestamp } from "renft-front/hooks/misc/useTimestamp";
+import { useLendingStore, useRentingStore } from "renft-front/hooks/store/useNftStore";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -110,18 +111,18 @@ const ItemsRenderer: React.FC<{
     setModalOpen(false);
   }, []);
 
-  const [claimableCheckedItems, nonClaimableCheckedItems] = useMemo(()=>{
+  const [claimableCheckedItems, nonClaimableCheckedItems] = useMemo(() => {
     const claimableItems: string[] = [];
     const nonclaimable: string[] = [];
-    checkedItems.forEach((id)=>{
+    checkedItems.forEach((id) => {
       const lending = lendings[id];
-      if(!lending) return;
+      if (!lending) return;
       const claimable = isClaimable(
         blockTimeStamp,
         lending.collateralClaimed,
         lending.rentingId ? rentings[lending?.rentingId] : null
       );
-      if(claimable) claimableItems.push(id)
+      if (claimable) claimableItems.push(id)
       else nonclaimable.push(id)
     })
     return [claimableItems, nonclaimable]

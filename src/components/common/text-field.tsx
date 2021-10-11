@@ -1,6 +1,6 @@
 import React, { Ref } from "react";
 import ExclamationCircleIcon from "@heroicons/react/solid/ExclamationCircleIcon";
-import { ReactEventOnBlurType, ReactEventOnChangeType } from "../../types";
+import type { ReactEventOnBlurType, ReactEventOnChangeType } from "renft-front/types";
 
 export const TextField: React.FC<{
   required?: boolean;

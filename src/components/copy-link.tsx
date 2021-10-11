@@ -1,7 +1,7 @@
-import useClipboard from "react-use-clipboard";
 import React, { useCallback, useEffect, useMemo } from "react";
+import useClipboard from "react-use-clipboard";
 import LinkIcon from "@heroicons/react/solid/LinkIcon";
-import { useSnackProvider } from "../hooks/store/useSnackProvider";
+import { useSnackProvider } from "renft-front/hooks/store/useSnackProvider";
 
 export const CopyLink: React.FC<{
   tokenId: string;

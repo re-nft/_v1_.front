@@ -1,18 +1,18 @@
 import React, { useCallback, useMemo } from "react";
 import {
   addOrRemoveUserFavorite,
-  upvoteOrDownvote
-} from "../../services/firebase";
-import { getUniqueID } from "../../utils";
+  upvoteOrDownvote,
+} from "renft-front/services/firebase";
+import { getUniqueID } from "renft-front/utils";
 import ArrowUp from "@heroicons/react/solid/ArrowUpIcon";
 import ArrowDown from "@heroicons/react/solid/ArrowDownIcon";
 import Heart from "@heroicons/react/solid/HeartIcon";
 import HeartOutline from "@heroicons/react/outline/HeartIcon";
-import { useUserData } from "../../hooks/store/useUserData";
-import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
-import { CopyLink } from "../copy-link";
-import Checkbox from "../common/checkbox";
-import { ReactEventOnChangeType } from "../../types";
+import { useUserData } from "renft-front/hooks/store/useUserData";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { CopyLink } from "renft-front/components/copy-link";
+import Checkbox from "renft-front/components/common/checkbox";
+import { ReactEventOnChangeType } from "renft-front/types";
 
 export const CatalogueActions: React.FC<{
   nftAddress: string;
@@ -31,7 +31,7 @@ export const CatalogueActions: React.FC<{
     calculatedUsersVote = {},
     usersVote = {},
     refreshUserData,
-    refreshVotes
+    refreshVotes,
   } = useUserData();
 
   const isFavorited = useMemo(() => {
@@ -79,7 +79,10 @@ export const CatalogueActions: React.FC<{
   return (
     <div className="flex flex-auto flex-row space-x-1 content-evenly p-1">
       <div className="flex-1 flex space-x-1 items-center">
-        <button className="flex-1 inline-block text-xl leading-none" onClick={handleUpVote}>
+        <button
+          className="flex-1 inline-block text-xl leading-none"
+          onClick={handleUpVote}
+        >
           {upvoted ? (
             <ArrowUp className="inline-block h-5 w-5 text-rn-green-dark stroke-2" />
           ) : (
@@ -89,7 +92,10 @@ export const CatalogueActions: React.FC<{
             {nftVote?.upvote || "?"}
           </span>
         </button>
-        <button className="flex-1 inline-block text-xl leading-none" onClick={handleDownVote}>
+        <button
+          className="flex-1 inline-block text-xl leading-none"
+          onClick={handleDownVote}
+        >
           {downvoted ? (
             <ArrowDown className="inline-block h-5 w-5 text-rn-red-dark stroke-2" />
           ) : (

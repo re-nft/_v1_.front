@@ -1,10 +1,10 @@
 import * as yup from "yup";
-import { NUMBER_REGEX } from "../../../consts";
+import { NUMBER_REGEX } from "renft-front/consts";
 
 yup.addMethod(
   yup.string,
   "isReNumber",
-  function (
+  function(
     message = "must be greater or equal 0.0001 and less or equal to 9999.9999 with maximum 4 precision"
   ) {
     return this.test({

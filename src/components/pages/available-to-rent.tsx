@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Lending } from "../../types/classes";
-import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import BatchRentModal from "../modals/batch-rent";
-import { CatalogueItem } from "../catalogue-item";
-import LendingFields from "../lending-fields";
-import { PaginationList } from "../layouts/pagination-list";
-import { RentSearchLayout } from "../layouts/rent-search-layout";
-import ItemWrapper from "../common/items-wrapper";
-import { useCurrentAddress } from "../../hooks/misc/useCurrentAddress";
+
+import { Lending } from "renft-front/types/classes";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import BatchRentModal from "renft-front/components/modals/batch-rent";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import LendingFields from "renft-front/components/lending-fields";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import { RentSearchLayout } from "renft-front/components/layouts/rent-search-layout";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: string[];
@@ -22,36 +23,36 @@ const RentCatalogueItem: React.FC<{
   handleBatchModalOpen,
   show
 }) => {
-  const currentAddress = useCurrentAddress();
-  const checkedMoreThanOne = useMemo(() => {
-    return checkedItems && checkedItems.length > 1;
-  }, [checkedItems]);
-  const checked = useMemo(() => {
-    const set = new Set(checkedItems);
-    return set.has(lending.id);
-  }, [checkedItems, lending]);
-  const userLender =
-    lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
-  const buttonTitle = useMemo(() => {
-    if (userLender) return "Lending";
-    return checkedMoreThanOne && checked ? "Rent all" : "Rent";
-  }, [userLender, checkedMoreThanOne, checked]);
-  return (
-    <CatalogueItem
-      nId={lending.nId}
-      uniqueId={lending.id}
-      checked={checked}
-      onCheckboxChange={onItemCheck(lending)}
-      hasAction
-      disabled={userLender}
-      show={show}
-      buttonTitle={buttonTitle}
-      onClick={handleBatchModalOpen(lending)}
-    >
-      <LendingFields lending={lending} />
-    </CatalogueItem>
-  );
-};
+    const currentAddress = useCurrentAddress();
+    const checkedMoreThanOne = useMemo(() => {
+      return checkedItems && checkedItems.length > 1;
+    }, [checkedItems]);
+    const checked = useMemo(() => {
+      const set = new Set(checkedItems);
+      return set.has(lending.id);
+    }, [checkedItems, lending]);
+    const userLender =
+      lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
+    const buttonTitle = useMemo(() => {
+      if (userLender) return "Lending";
+      return checkedMoreThanOne && checked ? "Rent all" : "Rent";
+    }, [userLender, checkedMoreThanOne, checked]);
+    return (
+      <CatalogueItem
+        nId={lending.nId}
+        uniqueId={lending.id}
+        checked={checked}
+        onCheckboxChange={onItemCheck(lending)}
+        hasAction
+        disabled={userLender}
+        show={show}
+        buttonTitle={buttonTitle}
+        onClick={handleBatchModalOpen(lending)}
+      >
+        <LendingFields lending={lending} />
+      </CatalogueItem>
+    );
+  };
 
 const ItemsRenderer: React.FC<{
   currentPage: (Lending & { show: boolean })[];

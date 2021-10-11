@@ -1,20 +1,25 @@
 import React, { useMemo, useCallback } from "react";
-import { CatalogueItemRow } from "./catalogue-item-row";
-import { Skeleton } from "./skeleton";
-import { CatalogueItemDisplay } from "./catalogue-item-display";
-
-import { useNftMetaState } from "../../hooks/store/useMetaState";
-import shallow from "zustand/shallow";
-import { ShortenPopover } from "../common/shorten-popover";
-import { CatalogueActions } from "./catalogue-actions";
-import { useWallet } from "../../hooks/store/useWallet";
-import { Button } from "../common/button";
-import { useNftsStore } from "../../hooks/store/useNftStore";
-import { useEventTrackedTransactionState } from "../../hooks/store/useEventTrackedTransactions";
-import { ReactEventOnChangeType, ReactEventOnClickType } from "../../types";
 import { Transition } from "@headlessui/react";
-import { classNames } from "../../utils";
-import { PendingTransactionsLoader } from "../pending-transactions-loader";
+import shallow from "zustand/shallow";
+
+import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useNftsStore } from "renft-front/hooks/store/useNftStore";
+import { useEventTrackedTransactionState } from "renft-front/hooks/store/useEventTrackedTransactions";
+
+import { ShortenPopover } from "renft-front/components/common/shorten-popover";
+import { Button } from "renft-front/components/common/button";
+import { PendingTransactionsLoader } from "renft-front/components/pending-transactions-loader";
+import type {
+  ReactEventOnChangeType,
+  ReactEventOnClickType,
+} from "renft-front/types";
+import { classNames } from "renft-front/utils";
+
+import { Skeleton } from "./skeleton";
+import { CatalogueItemRow } from "./catalogue-item-row";
+import { CatalogueActions } from "./catalogue-actions";
+import { CatalogueItemDisplay } from "./catalogue-item-display";
 
 type CatalougeItemBaseProps = {
   // nftId

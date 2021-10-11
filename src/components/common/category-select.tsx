@@ -1,8 +1,9 @@
-import { CategoryOptions } from "../../hooks/store/useSearch";
+import { Fragment, useCallback } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import SelectorIcon from "@heroicons/react/solid/SelectorIcon";
-import { Fragment, useCallback } from "react";
-import { classNames } from "../../utils";
+
+import { CategoryOptions } from "renft-front/hooks/store/useSearch";
+import { classNames } from "renft-front/utils";
 
 export const CategorySelect: React.FC<{
   options: CategoryOptions[];
