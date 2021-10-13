@@ -8,15 +8,17 @@ type ButtonProps = {
   description: string;
   datacy?: string;
   type?: "submit" | "button";
+  id?: string;
 };
 
 export const Button: React.FC<ButtonProps> = React.forwardRef(
   (
-    { disabled, onClick, description, datacy, type = "button" },
+    { disabled, onClick, description, datacy, type = "button", ...rest },
     ref: Ref<HTMLButtonElement>
   ) => {
     return (
       <button
+        {...rest}
         ref={ref}
         className={classNames(
           "py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2",

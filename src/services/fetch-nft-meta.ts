@@ -195,13 +195,13 @@ export const fetchNFTsFromOpenSea = async (
     throw new Error("OPENSEA_API is not defined");
   }
   return fetch(
-    `https://api.opensea.io/api/v1/assets/?${arrayToURI(
+    `${process.env.NEXT_PUBLIC_OPENSEA_API}/?${arrayToURI(
       "asset_contract_addresses",
       asset_contract_addresses
     )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
-        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API,
+        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API_KEY,
       },
     }
   )
@@ -226,7 +226,7 @@ export const fetchNFTsFromOpenSea = async (
       });
     })
     .catch((e) => {
-      //TODO add logging
+      //TODO:eniko add sentry logging
       return [];
     });
 };

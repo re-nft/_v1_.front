@@ -5,6 +5,7 @@ module.exports = {
   __esModule: true,
   ...originalModule,
   useSnackProvider: jest.fn().mockReturnValue({
+    errorIsShown: false,
     setError: jest.fn(),
   }),
 };

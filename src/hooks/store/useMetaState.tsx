@@ -80,6 +80,7 @@ export const useNftMetaState = create<NftMetaState>(
       setIPFSResult: (meta: NftTokenMeta) =>
         set(
           produce((state) => {
+
             state.metas[meta.nId].loading = false;
             state.metas[meta.nId].name = meta.name;
             state.metas[meta.nId].image = meta.image;
@@ -95,7 +96,7 @@ export const useNftMetaState = create<NftMetaState>(
   )
 );
 
-export const useFetchMeta = () => {
+export const useFetchMeta = (): (items: string[]) => void => {
   const fetchReadyOpenSea = useNftMetaState(
     useCallback((state) => {
       return state.fetchReadyOpenSea;

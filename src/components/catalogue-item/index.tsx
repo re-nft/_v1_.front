@@ -105,6 +105,13 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     },
     [disabled, onCheckboxChange]
   );
+  const actionDisabled = useMemo(() => {
+    if (nId === "0x0db8c099b426677f575d512874d45a767e9acc3c::1::0") {
+      console.log(checked, disabled || !checked || !signer)
+    }
+    return disabled || !checked || !signer;
+  }, [disabled, checked, signer, nId])
+
   return (
     <Transition
       show={show}
@@ -122,14 +129,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         checked && "shadow-rn-one border-4",
         "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
       )}
+      data-testid='catalogue-item'
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
-        <>
+        <div data-testid='catalogue-item-loaded'>
           <div onClick={onChange}>
             <>
               <div className="flex justify-center space-x-2">
                 <CatalogueActions
+                  id={nId}
                   nftAddress={nft.nftAddress}
                   tokenId={nft.tokenId}
                   disabled={disabled || !signer}
@@ -204,14 +213,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             {rest.hasAction && (
               <div className="flex-1 flex justify-end pr-2">
                 <Button
+                  id={`catalogue-button-${nId}`}
+                  data-testid="catalogue-item-action"
                   onClick={cb}
                   description={rest.buttonTitle}
-                  disabled={disabled || !checked || !signer}
+                  disabled={actionDisabled}
                 />
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </Transition>
   );
