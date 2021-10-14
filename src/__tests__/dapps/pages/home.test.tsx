@@ -78,10 +78,7 @@ describe("Home", () => {
       rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
       })
-
-
     )
-
 
     render(<Home />);
 
@@ -254,10 +251,52 @@ describe("Home", () => {
 
 
   }, 5000)
+
+  it("shows wallet owner lended items in rental tab", () => {})
+  it("shows correct details returned by API on cards", () => {})
+  it("show images for nfts", () => {})
+  it("show empty placeholders for nfts", () => {})
+
+  describe("rent form open", () => {
+
+    it('show rent form when 1 item selected with item details', () => {})
+    it('show rent form when 2 item selected with selected items details', () => {})
+    it('shows filled out details when modal was filled before (1 item)', () => {})
+    it('shows filled out details when modal was filled before (multiple item)', () => {})
+    it('when items selected and filled out and item rented out(api removed) form does not show it', () => {})
+
+  })
+
   describe("filter", () => {
     //todo
+    it('filter items out based on collection name', () => {})
+    it('filter shows only matches', () => {})
+    it('filter dropdown shows all available options in dropdown', () => {})
+    it('filter dropdown empty filter shows all items based on page', () => {})
   });
+
+  describe('filter + paging works together (multiple case)', () => {})
+  describe('filter + sort works together (multiple case)', () => {})
+  describe('sort + paging works together (multiple case)', () => {})
+  describe('filter + sort + paging works together (multiple case)', () => {})
   describe("sort", () => {
     //todo
+    it("sort reset sorts based on nId by default", () => {})
+    it("sorts items based on rental date desc", () => {})
+    it("sorts items based on rental date asc", () => {})
+    it("sorts items based on collateral desc", () => {})
+    it("sorts items based on collateral asc", () => {})
+    it("sorts items based on daily rent price desc", () => {})
+    it("sorts items based on daily rent price desc", () => {})
   });
+
+  describe("paging", () => {
+
+    it('show items based on page number based on initial sort', () => {})
+    it('items are not duplicated between pages', () => {})
+    it('prev page works as intended', () => {})
+    it('next page works as intended', () => {})
+    it('page jump works as intended', () => {})
+
+  })
 });

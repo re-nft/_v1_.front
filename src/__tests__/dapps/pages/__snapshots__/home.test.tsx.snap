@@ -14,51 +14,7 @@ Array [
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -84,24 +40,6 @@ Array [
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -110,6 +48,7 @@ Array [
                   aria-describedby="Toggle catalogue item 0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
                   type="checkbox"
                 />
               </div>
@@ -118,7 +57,7 @@ Array [
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
                 >
                   Toggle catalogue item 0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0
                 </label>
@@ -308,6 +247,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
           type="button"
         >
           Rent
@@ -327,51 +267,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -397,24 +293,6 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -423,6 +301,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
                   aria-describedby="Toggle catalogue item 0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
                   type="checkbox"
                 />
               </div>
@@ -431,7 +310,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
                 >
                   Toggle catalogue item 0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0
                 </label>
@@ -619,6 +498,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
           type="button"
         >
           Rent
@@ -638,51 +518,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -708,24 +544,6 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -734,6 +552,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
                   aria-describedby="Toggle catalogue item 0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
                   type="checkbox"
                 />
               </div>
@@ -742,7 +561,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
                 >
                   Toggle catalogue item 0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0
                 </label>
@@ -927,6 +746,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
           type="button"
         >
           Rent
@@ -946,51 +766,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -1016,24 +792,6 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -1042,6 +800,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
                   aria-describedby="Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
                   type="checkbox"
                 />
               </div>
@@ -1050,7 +809,7 @@ This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
                 >
                   Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0
                 </label>
@@ -1290,6 +1049,7 @@ Be quick before they are all gone and purchase your membership while prices are 
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
           type="button"
         >
           Rent
@@ -1309,51 +1069,7 @@ Be quick before they are all gone and purchase your membership while prices are 
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -1379,24 +1095,6 @@ Be quick before they are all gone and purchase your membership while prices are 
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -1405,6 +1103,7 @@ Be quick before they are all gone and purchase your membership while prices are 
                   aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
                   type="checkbox"
                 />
               </div>
@@ -1413,7 +1112,7 @@ Be quick before they are all gone and purchase your membership while prices are 
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
                 >
                   Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0
                 </label>
@@ -1601,6 +1300,7 @@ Be quick before they are all gone and purchase your membership while prices are 
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
           type="button"
         >
           Rent
@@ -1620,51 +1320,7 @@ Be quick before they are all gone and purchase your membership while prices are 
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -1690,24 +1346,6 @@ Be quick before they are all gone and purchase your membership while prices are 
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -1716,6 +1354,7 @@ Be quick before they are all gone and purchase your membership while prices are 
                   aria-describedby="Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                   type="checkbox"
                 />
               </div>
@@ -1724,7 +1363,7 @@ Be quick before they are all gone and purchase your membership while prices are 
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                 >
                   Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0
                 </label>
@@ -1923,6 +1562,7 @@ Be quick before they are all gone and purchase your membership while prices are 
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
           type="button"
         >
           Rent
@@ -1942,51 +1582,7 @@ Be quick before they are all gone and purchase your membership while prices are 
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -2012,24 +1608,6 @@ Be quick before they are all gone and purchase your membership while prices are 
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -2038,6 +1616,7 @@ Be quick before they are all gone and purchase your membership while prices are 
                   aria-describedby="Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
                   type="checkbox"
                 />
               </div>
@@ -2046,7 +1625,7 @@ Be quick before they are all gone and purchase your membership while prices are 
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
                 >
                   Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0
                 </label>
@@ -2234,6 +1813,7 @@ Be quick before they are all gone and purchase your membership while prices are 
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
           type="button"
         >
           Rent
@@ -2253,51 +1833,7 @@ Be quick before they are all gone and purchase your membership while prices are 
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -2323,24 +1859,6 @@ Be quick before they are all gone and purchase your membership while prices are 
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -2349,6 +1867,7 @@ Be quick before they are all gone and purchase your membership while prices are 
                   aria-describedby="Toggle catalogue item 0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
                   type="checkbox"
                 />
               </div>
@@ -2357,7 +1876,7 @@ Be quick before they are all gone and purchase your membership while prices are 
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
                 >
                   Toggle catalogue item 0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0
                 </label>
@@ -2547,6 +2066,7 @@ DCL Wearable 178/1000"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
           type="button"
         >
           Rent
@@ -2566,51 +2086,7 @@ DCL Wearable 178/1000"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -2636,24 +2112,6 @@ DCL Wearable 178/1000"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -2662,6 +2120,7 @@ DCL Wearable 178/1000"
                   aria-describedby="Toggle catalogue item 0x76be3b62873462d2142405439777e971754e8e77::10089::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x76be3b62873462d2142405439777e971754e8e77::10089::0"
                   type="checkbox"
                 />
               </div>
@@ -2670,7 +2129,7 @@ DCL Wearable 178/1000"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x76be3b62873462d2142405439777e971754e8e77::10089::0"
                 >
                   Toggle catalogue item 0x76be3b62873462d2142405439777e971754e8e77::10089::0
                 </label>
@@ -2858,6 +2317,7 @@ DCL Wearable 178/1000"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x76be3b62873462d2142405439777e971754e8e77::10089::0"
           type="button"
         >
           Rent
@@ -2877,51 +2337,7 @@ DCL Wearable 178/1000"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -2947,24 +2363,6 @@ DCL Wearable 178/1000"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -2973,6 +2371,7 @@ DCL Wearable 178/1000"
                   aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
                   type="checkbox"
                 />
               </div>
@@ -2981,7 +2380,7 @@ DCL Wearable 178/1000"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
                 >
                   Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0
                 </label>
@@ -3169,6 +2568,7 @@ DCL Wearable 178/1000"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
           type="button"
         >
           Rent
@@ -3188,51 +2588,7 @@ DCL Wearable 178/1000"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -3258,24 +2614,6 @@ DCL Wearable 178/1000"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -3284,6 +2622,7 @@ DCL Wearable 178/1000"
                   aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
                   type="checkbox"
                 />
               </div>
@@ -3292,7 +2631,7 @@ DCL Wearable 178/1000"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
                 >
                   Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0
                 </label>
@@ -3496,6 +2835,7 @@ RF.2021.61"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
           type="button"
         >
           Rent
@@ -3515,51 +2855,7 @@ RF.2021.61"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -3585,24 +2881,6 @@ RF.2021.61"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -3611,6 +2889,7 @@ RF.2021.61"
                   aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
                   type="checkbox"
                 />
               </div>
@@ -3619,7 +2898,7 @@ RF.2021.61"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
                 >
                   Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0
                 </label>
@@ -3807,6 +3086,7 @@ RF.2021.61"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
           type="button"
         >
           Rent
@@ -3826,51 +3106,7 @@ RF.2021.61"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -3896,24 +3132,6 @@ RF.2021.61"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -3922,6 +3140,7 @@ RF.2021.61"
                   aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
                   type="checkbox"
                 />
               </div>
@@ -3930,7 +3149,7 @@ RF.2021.61"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
                 >
                   Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0
                 </label>
@@ -4118,6 +3337,7 @@ RF.2021.61"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
           type="button"
         >
           Rent
@@ -4137,51 +3357,7 @@ RF.2021.61"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -4207,24 +3383,6 @@ RF.2021.61"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -4233,6 +3391,7 @@ RF.2021.61"
                   aria-describedby="Toggle catalogue item 0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
                   type="checkbox"
                 />
               </div>
@@ -4241,7 +3400,7 @@ RF.2021.61"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
                 >
                   Toggle catalogue item 0x14b76477739b4eeeab7af197f638d882373b8329::46::0
                 </label>
@@ -4429,6 +3588,7 @@ RF.2021.61"
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
           type="button"
         >
           Rent
@@ -4448,51 +3608,7 @@ RF.2021.61"
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -4518,24 +3634,6 @@ RF.2021.61"
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -4544,6 +3642,7 @@ RF.2021.61"
                   aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
                   type="checkbox"
                 />
               </div>
@@ -4552,7 +3651,7 @@ RF.2021.61"
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
                 >
                   Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0
                 </label>
@@ -4752,6 +3851,7 @@ All funds generated from the Founders Edition coins will go toward building this
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
           type="button"
         >
           Rent
@@ -4771,51 +3871,7 @@ All funds generated from the Founders Edition coins will go toward building this
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -4841,24 +3897,6 @@ All funds generated from the Founders Edition coins will go toward building this
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -4867,6 +3905,7 @@ All funds generated from the Founders Edition coins will go toward building this
                   aria-describedby="Toggle catalogue item 0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
                   type="checkbox"
                 />
               </div>
@@ -4875,7 +3914,7 @@ All funds generated from the Founders Edition coins will go toward building this
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
                 >
                   Toggle catalogue item 0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0
                 </label>
@@ -5062,6 +4101,7 @@ All funds generated from the Founders Edition coins will go toward building this
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
           type="button"
         >
           Rent
@@ -5081,51 +4121,7 @@ All funds generated from the Founders Edition coins will go toward building this
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -5151,24 +4147,6 @@ All funds generated from the Founders Edition coins will go toward building this
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -5177,6 +4155,7 @@ All funds generated from the Founders Edition coins will go toward building this
                   aria-describedby="Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                   type="checkbox"
                 />
               </div>
@@ -5185,7 +4164,7 @@ All funds generated from the Founders Edition coins will go toward building this
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
                 >
                   Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0
                 </label>
@@ -5384,6 +4363,7 @@ All funds generated from the Founders Edition coins will go toward building this
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
           type="button"
         >
           Rent
@@ -5403,51 +4383,7 @@ All funds generated from the Founders Edition coins will go toward building this
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -5473,24 +4409,6 @@ All funds generated from the Founders Edition coins will go toward building this
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -5499,6 +4417,7 @@ All funds generated from the Founders Edition coins will go toward building this
                   aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
                   type="checkbox"
                 />
               </div>
@@ -5507,7 +4426,7 @@ All funds generated from the Founders Edition coins will go toward building this
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
                 >
                   Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0
                 </label>
@@ -5697,6 +4616,7 @@ All funds generated from the Founders Edition coins will go toward building this
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
           type="button"
         >
           Rent
@@ -5716,51 +4636,7 @@ All funds generated from the Founders Edition coins will go toward building this
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -5786,24 +4662,6 @@ All funds generated from the Founders Edition coins will go toward building this
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -5812,6 +4670,7 @@ All funds generated from the Founders Edition coins will go toward building this
                   aria-describedby="Toggle catalogue item 0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
                   type="checkbox"
                 />
               </div>
@@ -5820,7 +4679,7 @@ All funds generated from the Founders Edition coins will go toward building this
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
                 >
                   Toggle catalogue item 0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0
                 </label>
@@ -6008,6 +4867,7 @@ All funds generated from the Founders Edition coins will go toward building this
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
           type="button"
         >
           Rent
@@ -6027,51 +4887,7 @@ All funds generated from the Founders Edition coins will go toward building this
         >
           <div
             class="flex-1 flex space-x-1 items-center"
-          >
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="inline-block text-rn-green"
-              >
-                ?
-              </span>
-            </button>
-            <button
-              class="flex-1 inline-block text-xl leading-none"
-            >
-              <svg
-                class="inline-block h-5 w-5 text-gray-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  clip-rule="evenodd"
-                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-              <span
-                class="text-rn-red"
-              >
-                 
-                ?
-              </span>
-            </button>
-          </div>
+          />
           <div
             class="flex-1 flex justify-center items-center pl-3"
           >
@@ -6097,24 +4913,6 @@ All funds generated from the Founders Edition coins will go toward building this
           <div
             class="flex-1 flex justify-end items-center space-x-2 pr-2"
           >
-            <button
-              class="flex"
-            >
-              <svg
-                class="h-5 w-5 text-rn-red"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </button>
             <div>
               <div
                 class="flex items-center h-5"
@@ -6123,6 +4921,7 @@ All funds generated from the Founders Edition coins will go toward building this
                   aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
                   class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
                   disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
                   type="checkbox"
                 />
               </div>
@@ -6131,7 +4930,7 @@ All funds generated from the Founders Edition coins will go toward building this
               >
                 <label
                   class="font-medium text-gray-700"
-                  for="comments"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
                 >
                   Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0
                 </label>
@@ -6323,6 +5122,7 @@ Please check the expiration date. To keep your name beyond that date, you will n
           class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
           data-testid="catalogue-item-action"
           disabled=""
+          id="catalogue-button-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
           type="button"
         >
           Rent

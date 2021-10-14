@@ -1,3 +1,11 @@
+// import React from "react";
+// import { render, screen, waitFor } from "@testing-library/react";
+
+jest.mock("firebase/app");
+jest.mock("react-ga");
+jest.mock("@ethersproject/providers");
+jest.mock("web3modal");
+
 describe("Rent form", () => {
   it("should not allow submit when form invalid", () => {
     expect(true).toBe(false);
@@ -23,5 +31,10 @@ describe("Rent form", () => {
   });
   it("should save state on form change", () => {
     expect(true).toBe(false);
+  });
+  describe("should not allow invalid values", () => {
+    it("invalid value state", () => {
+      expect(true).toBe(false);
+    });
   });
 });

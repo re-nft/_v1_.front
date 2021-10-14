@@ -106,11 +106,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     [disabled, onCheckboxChange]
   );
   const actionDisabled = useMemo(() => {
-    if (nId === "0x0db8c099b426677f575d512874d45a767e9acc3c::1::0") {
-      console.log(checked, disabled || !checked || !signer)
-    }
     return disabled || !checked || !signer;
-  }, [disabled, checked, signer, nId])
+  }, [disabled, checked, signer, nId]);
 
   return (
     <Transition
@@ -129,11 +126,11 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         checked && "shadow-rn-one border-4",
         "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
       )}
-      data-testid='catalogue-item'
+      data-testid="catalogue-item"
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
-        <div data-testid='catalogue-item-loaded'>
+        <div data-testid="catalogue-item-loaded">
           <div onClick={onChange}>
             <>
               <div className="flex justify-center space-x-2">

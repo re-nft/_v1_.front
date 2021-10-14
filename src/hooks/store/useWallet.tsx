@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from "react";
-import {  Signer } from "@ethersproject/abstract-signer";
+import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider, ExternalProvider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
 import { THROWS } from "../../utils";
@@ -70,7 +70,7 @@ const useWalletState = create<WalletContextType>((set) => ({
       produce((state) => {
         state.web3Provider = p;
       })
-    )
+    ),
 }));
 
 export const useWallet = (): {
@@ -121,16 +121,14 @@ export const useWallet = (): {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions // required
+          providerOptions, // required
         })
       : null;
   }, [providerOptions, hasWindow]);
 
   const initState = useCallback(
     async (provider: unknown) => {
-      const web3p = new Web3Provider(
-        provider as ExternalProvider
-      );
+      const web3p = new Web3Provider(provider as ExternalProvider);
       const network = await web3p?.getNetwork();
       const name = network.chainId === 31337 ? "localhost" : network?.name;
       const nname = name === "homestead" ? "mainnet" : name;
@@ -156,7 +154,8 @@ export const useWallet = (): {
       if (web3Modal == null) return EMPTY;
       const noSigner = signer == null;
       const connectedBefore = permissions.length > 0 && noSigner;
-      if(!connectedBefore) return EMPTY
+
+      if (!connectedBefore && !manual) return EMPTY;
       // only reconnect if we have permissions or
       // user manually connected through action
       return from(
@@ -178,7 +177,7 @@ export const useWallet = (): {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    if(typeof window === 'undefined') return EMPTY;
+    if (typeof window === "undefined") return EMPTY;
     if (window.ethereum == null) return EMPTY;
     if (window.ethereum.request == null) return EMPTY;
     return from<Promise<string[]>>(
@@ -205,7 +204,15 @@ export const useWallet = (): {
         return;
       })
     );
-  }, [address, network, signer, setPermissions, setAddress, setSigner, setNetworkName]);
+  }, [
+    address,
+    network,
+    signer,
+    setPermissions,
+    setAddress,
+    setSigner,
+    setNetworkName,
+  ]);
 
   useEffect(() => {
     const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
@@ -257,7 +264,7 @@ export const useWallet = (): {
       setPermissions,
       setAddress,
       setSigner,
-      setNetworkName
+      setNetworkName,
     ]
   );
   const chainChanged = useCallback(() => {
@@ -295,6 +302,6 @@ export const useWallet = (): {
     signer,
     address,
     web3Provider,
-    network
+    network,
   };
 };
