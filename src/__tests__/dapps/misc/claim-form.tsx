@@ -1,0 +1,19 @@
+// import React from "react";
+// import { render, screen, waitFor } from "@testing-library/react";
+
+jest.mock("firebase/app");
+jest.mock("react-ga");
+jest.mock("@ethersproject/providers");
+jest.mock("web3modal");
+
+describe("Claim form", () => {
+  it("should not items to be claimed", () => {
+    expect(true).toBe(false);
+  });
+  it("should show claim button", () => {
+    expect(true).toBe(false);
+  });
+  it("should not items already claimed before", () => {
+    expect(true).toBe(false);
+  });
+});

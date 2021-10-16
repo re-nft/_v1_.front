@@ -1,0 +1,5094 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home renders rentals returned by API 1`] = `
+Array [
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0"
+                >
+                  Toggle catalogue item 0x9d413b9434c20c73f509505f7fbc6fc591bbf04a::7085325::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="Kudzu is contagious, let the vine grow...
+
+This is the token number 108 but it has ID 7085325 (0x6c1d0d) with ugh eyes (0x1d) and little-mad-2 mouth (0xd)."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/nurkKFN8exjU9rhe4kBbhQ4IEiBobk1WFm_9fj0c7og-8nkQ_2mq2og6m5n4kebemIeYCxFz4jr1w7X-TsaOZvAgti1uNdZpTrbpfA=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Kudzu No 108
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x9d413...04a
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              7085325
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            100
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x9d413b9434c20c73f509505f7fbc6fc591bbf04a:7085325"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x9d413b9434c20c73f509505f7fbc6fc591bbf04a/7085325"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0"
+                >
+                  Toggle catalogue item 0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a::151493::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="A LAND is a digital piece of real estate in The Sandbox metaverse that players can buy to build experiences on top of. Once you own a LAND, you will be able to populate it with Games and Assets. Each LAND is a unique (non-fungible) token lying on the public Ethereum blockchain (ERC-721)."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/pGlg3CXwF_UZzBHGqNL1bkMgXBPbiorayGAcxvMr3dkigkT9igIZczlaKyU47UlbkThSp26nkCA0EA7cgNNLwcwCrKtKgFl1DzQRZw=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          LAND (-79, 167)
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x50f54...d4a
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              151493
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.002
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            10
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            3.5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a:151493"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a/151493"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0"
+                >
+                  Toggle catalogue item 0x3a8778a58993ba4b941f85684d74750043a4bb5f::843::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/e8ZsEsmIy0oX1rc4nzb_qU7NjfhXps3YVcxFfMbr0-QOP7IuNHnL6Co4tKOR3ywQ_4N7kXnJjj2Tw8ceA32tYwU22HGe4QOxko_s=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        />
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x3a877...b5f
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              843
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.05
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x3a8778a58993ba4b941f85684d74750043a4bb5f:843"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x3a8778a58993ba4b941f85684d74750043a4bb5f/843"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0"
+                >
+                  Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26988627869463380234130690785386738851806103183721947346441956716025544179713::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="NFT Music Group is a upcoming digital NFT Record Label that represents the NFT music scene.
+
+As the world remains digital; Music Artists, Bands, Producers and DJs are looking for ways to connect and create for their audiences. 
+NFT Music Group will provide a new outlet for them with several benefits.
+Having a NFT Music Group membership grants you full lifetime access to the future members-only benefits.
+
+There will only be 50.000 NFT Music Group membership given away total.
+
+The members only benefits unlocks the following:
+
+1. Lifetime access to the social media platform
+2. Lifetime access to the audio streaming platform
+3. All music genres
+4. Sell your music
+5. Join in on contests
+6. Promote your music
+7. Reach more fans
+8. Network and collabs
+9. Link with music managers, producers, engineers, songwriters and more.
+10. Full lifetime membership to the NFT music group
+11. Music distribution
+12. Professional mix and mastering
+13. Music marketing
+14. Raffles
+15. Community giveaways
+16. Creative and commercial rights
+17. Bands community
+18. DJs community
+19. Audio creators community
+20. Future perks
+
+As well as inclusion in the record label and more. 
+
+Future updates and perks will be also be revealed soon as well as many other benefits in our roadmap & beyond.
+
+OUR GOAL
+Our goal is to rebuild the music industry.
+
+OUR FOCUS
+Our focus is to shift power to artist as the music business evolves.
+
+WHY SUPPORT NFT MUSIC GROUP?
+Supporting us help's artists create new possibilities and experiences with their fans.
+All purchases goes back to the NFT music community.
+
+Musicians are continuing to be creative with what they offer to their fan bases. 
+Help us completely revolutionize the music industry like how the internet did.
+
+
+PRICING AND RELEASE
+There will only be 50.000 NFT Music Group memberships given away total. 
+NFT Music Group Ethereum Piece are starting at Ξ 0.01, and will get exponentially more expensive as more are uploaded onto the OpenSea.
+Be quick before they are all gone and purchase your membership while prices are low!!!"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/jgXao91LDYR9ZRPYaP5NNQvH-ZILZDm52j1P5Wy4zJYvoY2HEqQ2gJOZ7SmaE3d5o3WF7AILPqVPOqp7-5DAwyEo6F24tj4JDJJ9PwM=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          NFT Music Group Membership #00.066
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x495f9...b5e
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              2698862...713
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            10
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            2
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x495f947276749ce646f68ac8c248420045cb7b5e:26988627869463380234130690785386738851806103183721947346441956716025544179713"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/26988627869463380234130690785386738851806103183721947346441956716025544179713"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0"
+                >
+                  Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::100259785915172647746245848954213430034851451612620645515944082807742132770546::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="\`moonrocket.eth\`, an ENS name."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/AyE_HpUYrX4ohN5lRAlAMbjDp3jIR7HoTgzGWLpQ49JbWI0QH2sK3YFQTffv2pCvBwWLp0JHNRNAqrSxNCT0ytXF=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          moonrocket.eth
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x57f18...a85
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              1002597...546
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            28
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.05
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:100259785915172647746245848954213430034851451612620645515944082807742132770546"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/100259785915172647746245848954213430034851451612620645515944082807742132770546"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                >
+                  Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="reNFT Genesis Card #1. To the Moon, Cat."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/ODGV1jVH-y0QRqcMr-MHJJjXYmtBLVg--gZ6eLLSKqw0fGbuH_MmrVpa0-ivANNiGOA6wQcjsesegUNWddrS7R8smLtEJXufOsui=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Astrocat
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        >
+          <a
+            class="flex-initial p-2"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <img
+              class="nft__icon small"
+              src="/assets/nft-verified.png"
+            />
+          </a>
+        </div>
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x0db8c...c3c
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              1
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x0db8c099b426677f575d512874d45a767e9acc3c:1"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x0db8c099b426677f575d512874d45a767e9acc3c/1"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0"
+                >
+                  Toggle catalogue item 0x495f947276749ce646f68ac8c248420045cb7b5e::26132982584538924556590114740376312170836847205654900616374432474738840305665::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="#12"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/sXY5ll2tpPyqL62322LFCQIuBZhFEMBl3MUhhGoJReat1HpK4RHTefQNWwFWe-H4fGoLMzFgcj_Q-I-qEVzSzrN4B5aoh87BrqTu_tk=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          BitBoard #12
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x495f9...b5e
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              2613298...665
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [day]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x495f947276749ce646f68ac8c248420045cb7b5e:26132982584538924556590114740376312170836847205654900616374432474738840305665"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/26132982584538924556590114740376312170836847205654900616374432474738840305665"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0"
+                >
+                  Toggle catalogue item 0x6b47e7066c7db71aa04a1d5872496fe05c4c331f::178::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="RTFKT x Atari sneakers with holographic print. 
+
+DCL Wearable 178/1000"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/_Vil8STsmQcBa1jd3sv6ZUeaTb-V7SaAg-7n_khq_WfIcs0fzVgwAdUx8qeYfg3lI4xMCIQ8KHvdvYT5VWfEIS7tdCd1qrMC5Sg-FQ=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Purple RTFKT X Atari Sneakers
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x6b47e...31f
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              178
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [DAI]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            15
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            7
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [DAI]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            500
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x6b47e7066c7db71aa04a1d5872496fe05c4c331f:178"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x6b47e7066c7db71aa04a1d5872496fe05c4c331f/178"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x76be3b62873462d2142405439777e971754e8e77::10089::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x76be3b62873462d2142405439777e971754e8e77::10089::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x76be3b62873462d2142405439777e971754e8e77::10089::0"
+                >
+                  Toggle catalogue item 0x76be3b62873462d2142405439777e971754e8e77::10089::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="Ah, rug pollen. Grass near the source turns to a soft, plush velvet. Feels great between the toes, but get too comfortable and you’ll be too dizzy to tell the difference between your lover and a big ol’ blacktusk. Nasty little trick."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/mIlVLUwYCrZhQS-gnnMOBkIidpruh0hlVCwCImF9qYM2ZA7RZLuSRyD-HEPx54faKQsJa7GoPyzJRTpiviKss7zAvt6jvxvE1s5L=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Rug Poll
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x76be3...e77
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              10089
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x76be3b62873462d2142405439777e971754e8e77:10089"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x76be3b62873462d2142405439777e971754e8e77/10089"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0"
+                >
+                  Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::184918::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="Edition of 25 — 3000x3340px 300dpi High Resolution PNG"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/wKiUSuHC5bKDtJHhBHvDZ442GffvbGs7wuZ0qVHrQmQTagBBpOXsN3r41KHDQzmjVG1VlsWQny0dzlwSEpRau-RCmROhHzXgFB9S=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          The Catcher in the NFT, a novel by John Dogg, 2021
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0xd07dc...430
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              184918
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.02
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            2
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0xd07dc4262bcdbf85190c01c996b4c06a461d2430:184918"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/184918"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0"
+                >
+                  Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::253786::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="FyderPunks by contemporary artist Rulton Fyder.
+
+15 unique blue canvas FyderPunks,  
+
+5 edition-of-100 red canvas FyderPunks.
+
+515 FdyerPunks total, forever sealed in contemporary art history.
+
+No future releases, collectors may be asked to loan FyderPunks to physical contemporary art museums for exhibitions in the future. 
+
+Time to bring some exquisite contemporary art FyderPunks to this world. 
+
+Free to claim.
+
+Rulton Fyder
+FyderPunks #16, 2021
+RF.2021.61"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/SCMVh53unzVxcxoQpMp5PN0gzX0IL9S2a9VYsLFqJbgDmGNnBR1CEPGq-MYLvzWrg8g2m5ezrYp8TiDY5ZCYgLqkQi-PjpubOyxh=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          FyderPunks #16, 2021
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0xd07dc...430
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              253786
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            10
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0xd07dc4262bcdbf85190c01c996b4c06a461d2430:253786"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/253786"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0"
+                >
+                  Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::178843::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="Priority Slaps are a graffiti subculture that uses USPS address label stickers as miniature canvases that can be \\"slapped\\" onto surfaces."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/6mv_TrNbC9hFgDi8cQ-_phq_KOXO0UyEp1x8UoYT0-ScdybvB9FwrU6PzM1_-s0a2MikOie7RPc6KiWTagbLTNkQ4yFC4mqOKBc1Knw=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Whisper Wizard, Green #PrioritySlaps
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0xd07dc...430
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              178843
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [USDC]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            2
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [day]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [USDC]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            500
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0xd07dc4262bcdbf85190c01c996b4c06a461d2430:178843"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/178843"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0"
+                >
+                  Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::81089703431117778499039095787558921261590138106147275490437694069174079406367::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="\`challange.eth\`, an ENS name."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/2J7VT5AIcJXzaedOcbjcgRzMFXwExtnVOZvuY_cuOYoEtVXRv2KXY-5vaxp1xPAokeP12rTqJ7VJl6E74F5lhH-J=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          challange.eth
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x57f18...a85
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              8108970...367
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.0003
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            100
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:81089703431117778499039095787558921261590138106147275490437694069174079406367"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/81089703431117778499039095787558921261590138106147275490437694069174079406367"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x14b76477739b4eeeab7af197f638d882373b8329::46::0"
+                >
+                  Toggle catalogue item 0x14b76477739b4eeeab7af197f638d882373b8329::46::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="Mintable Discount cards"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/S5FTMXU1gy29n4kPs8rKx3dkBVDAVE2AreYjWmXAy4fy_ACT_pEpg1oVHo_i0KH30Xd4ey049guqgeTaC16q7PRz=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Mintable Discount cards
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x14b76...329
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              46
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.002
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            7
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.8
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x14b76477739b4eeeab7af197f638d882373b8329:46"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x14b76477739b4eeeab7af197f638d882373b8329/46"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0"
+                >
+                  Toggle catalogue item 0xd07dc4262bcdbf85190c01c996b4c06a461d2430::641308::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="PandaBugz™ Founders Edition Coin
+
+This title gives the owner an entitlement to certain benefits, and perks such as; 
+
+* Memberships/access to new-releases & upcoming merch
+* Metaverse Privileges/Private Elite Club Access
+* DApp development/Building rights within our metaverse
+* Leveraged voting rights
+* Integration within the Discord channel
+* Certificate for the upcoming DAO  
+* With more to come!
+
+All funds generated from the Founders Edition coins will go toward building this awesome project, and adding some cool new features to PandaBugz™"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/UTHsZgPvBra7TurQ5hMMHlyKdgKL34GdczbjnQ_E_U6WVeY9MwlOksc5BjhK824s8zOzAw61py0kpAtcUEqLiRti5geX67pc4ADpPQ=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          PandaBugz™ | Founders Edition Coin
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0xd07dc...430
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              641308
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.02
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            5
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0xd07dc4262bcdbf85190c01c996b4c06a461d2430:641308"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0xd07dc4262bcdbf85190c01c996b4c06a461d2430/641308"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0"
+                >
+                  Toggle catalogue item 0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb::1493::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/8QUwdKPA39L7oTfOup1oKckBDlKp5VqKPz24sVKIvbKhm-TQFCpYe1M1jf_TMIjKFLlOWpKgJBePubALdQBF6k0m2OtepL3EeF5o_yA=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Untamed Companion #1493
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x7870c...3eb
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              1493
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.69
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb:1493"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x7870cc63b6b1af0aed0d6dd7c1efb39300b773eb/1493"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x0db8c099b426677f575d512874d45a767e9acc3c::1::0"
+                >
+                  Toggle catalogue item 0x0db8c099b426677f575d512874d45a767e9acc3c::1::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="reNFT Genesis Card #1. To the Moon, Cat."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/ODGV1jVH-y0QRqcMr-MHJJjXYmtBLVg--gZ6eLLSKqw0fGbuH_MmrVpa0-ivANNiGOA6wQcjsesegUNWddrS7R8smLtEJXufOsui=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Astrocat
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        >
+          <a
+            class="flex-initial p-2"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <img
+              class="nft__icon small"
+              src="/assets/nft-verified.png"
+            />
+          </a>
+        </div>
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x0db8c...c3c
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              1
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1155
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [days]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x0db8c099b426677f575d512874d45a767e9acc3c:1"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x0db8c099b426677f575d512874d45a767e9acc3c/1"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0"
+                >
+                  Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::27428416484006642314585243504927643578238882871549423173816902763765454520370::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="\`[BRAILLE: ⠀]ethereum.eth\`, an ENS name.
+
+⚠️ **ATTENTION**: This name contains non-ASCII characters as shown above. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this [Wikipedia article](https://en.wikipedia.org/wiki/IDN_homograph_attack)."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/7O0dOfyiJ1L-f8ujv9-z9RnCkf0SN91ZCLTjlKWQwRTVeg4kH4Yc4OSr9SFrpO-UqdT6wnjqTMK8mwEzohJKhAWAytym-dRkAP0yhLE=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          ⠀ethereum.eth ⚠️
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x57f18...a85
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              2742841...370
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [day]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.2
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:27428416484006642314585243504927643578238882871549423173816902763765454520370"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/27428416484006642314585243504927643578238882871549423173816902763765454520370"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0"
+                >
+                  Toggle catalogue item 0xe71cd39b62667519f35274c393271daa5048b8ce::2448::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="AI Generated Abstract art. Chaos into beauty. Seed #2448"
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/pdCMwdwAWaokV67oTuZqV5zmRQ-VY6UeT9w2bipOhIEtT2qzDGEDorwx9LcvatgGeFI5PBmBfkWHowLcVGwJXqqz1f_fGBky6tPb=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          Entropyseed #2448
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0xe71cd...8ce
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              2448
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [day]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.2
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0xe71cd39b62667519f35274c393271daa5048b8ce:2448"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0xe71cd39b62667519f35274c393271daa5048b8ce/2448"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="catalogue-item-loaded"
+  >
+    <div>
+      <div
+        class="flex justify-center space-x-2"
+      >
+        <div
+          class="flex flex-auto flex-row space-x-1 content-evenly p-1"
+        >
+          <div
+            class="flex-1 flex space-x-1 items-center"
+          />
+          <div
+            class="flex-1 flex justify-center items-center pl-3"
+          >
+            <button
+              aria-label="copy"
+              class="h-7 w-7 text-gray-700 fill-current"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-7 w-7"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+          <div
+            class="flex-1 flex justify-end items-center space-x-2 pr-2"
+          >
+            <div>
+              <div
+                class="flex items-center h-5"
+              >
+                <input
+                  aria-describedby="Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
+                  class="cursor-not-allowed border-gray-300 focus:ring-rn-green h-5 w-5 text-rn-green border-black border-2"
+                  disabled=""
+                  id="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
+                  type="checkbox"
+                />
+              </div>
+              <div
+                class="sr-only ml-3 text-sm"
+              >
+                <label
+                  class="font-medium text-gray-700"
+                  for="checkbox-0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0"
+                >
+                  Toggle catalogue item 0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85::34986437035383913738450534427909329307172872361642335618356871296476263705484::0
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <div
+          class="overflow-hidden aspect-w-1 aspect-h-1 overflow-hidden lg:h-50"
+        >
+          <img
+            alt="\`[BRAILLE: ⠀]eth.eth\`, an ENS name.
+
+⚠️ **ATTENTION**: This name contains non-ASCII characters as shown above. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this [Wikipedia article](https://en.wikipedia.org/wiki/IDN_homograph_attack).
+
+Please check the expiration date. To keep your name beyond that date, you will need to pay a renewal fee, currently set at $5/year for names 5 characters or longer, $160/year for names 4 characters in length, and $640/year for names 3 characters in length."
+            class="w-full h-full object-center object-cover lg:w-full lg:h-full"
+            src="https://lh3.googleusercontent.com/-Z4P0nNM4tGdGKY6KYqJHrLiiebaFp9w8Lzgd42Bv3favV4jyCBy-ZFerOXODuhBtG1Un6TEnAC_RtZ-L5jb-3Cids25Y4mNHAu6AQ=s250"
+          />
+        </div>
+        <div
+          class="absolute inset-0  flex items-center text-center justify-center"
+        />
+      </div>
+      <div
+        class="font-body text-xl leading-rn-1 tracking-wide text-center py-3 px-4 flex flex-col justify-center items-center"
+      >
+        <p
+          class="flex-initial"
+        >
+          ⠀eth.eth ⚠️
+        </p>
+        <div
+          class="flex flex-auto flex-row"
+        />
+      </div>
+      <div
+        class="px-2 flex flex-auto flex-col text-black"
+      >
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            NFT Address
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              0x57f18...a85
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Token id
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            <span
+              aria-haspopup="true"
+            >
+              3498643...484
+            </span>
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Standard
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            721
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Price/day [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.01
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Max duration [day]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            1
+          </div>
+        </div>
+        <div
+          class="w-full flex font-body text-xl leading-rn-1 tracking-wide"
+        >
+          <div
+            class="flex-initial"
+          >
+            Collateral [WETH]
+          </div>
+          <div
+            class="flex-auto border-b-2 border-dotted border-black font-display"
+          />
+          <div
+            class="flex-initial"
+          >
+            0.5
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="py-3 flex flex-auto space-between px-2"
+    >
+      <div
+        class="flex-1"
+      >
+        <a
+          class="flex-initial"
+          href="https://rarible.com/token/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85:34986437035383913738450534427909329307172872361642335618356871296476263705484"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/rarible.png"
+          />
+        </a>
+        <a
+          class="flex-initial"
+          href="https://opensea.io/assets/0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85/34986437035383913738450534427909329307172872361642335618356871296476263705484"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <img
+            class="nft__icon"
+            src="/assets/opensea.png"
+          />
+        </a>
+      </div>
+      <div
+        class="flex-1 flex justify-end pr-2"
+      >
+        <button
+          class="py-2 px-2 tracking-widest bg-rn-green shadow-rn-drop-green text-white leading-none font-display uppercase text-sm whitespace-nowrap -top-2 -left-2 bg-rn-grey shadow-rn-drop-grey cursor-not-allowed"
+          disabled=""
+          type="button"
+        >
+          Rent
+        </button>
+      </div>
+    </div>
+  </div>,
+]
+`;
