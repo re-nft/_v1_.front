@@ -23,7 +23,7 @@ describe("Layout", () => {
     expect(true).toBe(false);
   });
 
-  it("should footer", () => {
+  it("should show footer", () => {
     expect(true).toBe(false);
   });
 });

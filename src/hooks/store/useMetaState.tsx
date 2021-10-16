@@ -62,6 +62,7 @@ export const useNftMetaState = create<NftMetaState>(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
             founds.map((meta) => {
+              if (!state.metas[meta.nId]) state.metas[meta.nId] = {};
               state.metas[meta.nId].loading = false;
               state.metas[meta.nId].name = meta.name;
               state.metas[meta.nId].image = meta.image;
@@ -80,7 +81,7 @@ export const useNftMetaState = create<NftMetaState>(
       setIPFSResult: (meta: NftTokenMeta) =>
         set(
           produce((state) => {
-
+            if (!state.metas[meta.nId]) state.metas[meta.nId] = {};
             state.metas[meta.nId].loading = false;
             state.metas[meta.nId].name = meta.name;
             state.metas[meta.nId].image = meta.image;
@@ -96,7 +97,7 @@ export const useNftMetaState = create<NftMetaState>(
   )
 );
 
-export const useFetchMeta = (): (items: string[]) => void => {
+export const useFetchMeta = (): ((items: string[]) => void) => {
   const fetchReadyOpenSea = useNftMetaState(
     useCallback((state) => {
       return state.fetchReadyOpenSea;
@@ -121,9 +122,15 @@ export const useFetchMeta = (): (items: string[]) => void => {
     }, []),
     shallow
   );
-  const setFetchReady = useNftMetaState((state) => state.setFetchReady);
-  const setOpenseaResult = useNftMetaState((state) => state.setOpenseaResult);
-  const setIPFSResult = useNftMetaState((state) => state.setIPFSResult);
+  const setFetchReady = useNftMetaState(
+    useCallback((state) => state.setFetchReady, [])
+  );
+  const setOpenseaResult = useNftMetaState(
+    useCallback((state) => state.setOpenseaResult, [])
+  );
+  const setIPFSResult = useNftMetaState(
+    useCallback((state) => state.setIPFSResult, [])
+  );
 
   useEffect(() => {
     const fetchReady = fetchReadyOpenSea;
@@ -131,7 +138,7 @@ export const useFetchMeta = (): (items: string[]) => void => {
     const contractAddresses: string[] = [];
     const tokenIds: string[] = [];
     fetchReady.forEach((nId) => {
-      const [contractAddress, tokenId] = nId.split(RENFT_SUBGRAPH_ID_SEPARATOR)
+      const [contractAddress, tokenId] = nId.split(RENFT_SUBGRAPH_ID_SEPARATOR);
       contractAddresses.push(contractAddress);
       tokenIds.push(tokenId);
     });
@@ -155,9 +162,7 @@ export const useFetchMeta = (): (items: string[]) => void => {
       subscription?.unsubscribe();
     };
   }, [fetchReadyOpenSea, setOpenseaResult]);
-  const nftsInStore = useNftsStore(
-    useCallback((state) => state.nfts, [])
-  );
+  const nftsInStore = useNftsStore(useCallback((state) => state.nfts, []));
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
     if (fetchReady.length < 1) return;

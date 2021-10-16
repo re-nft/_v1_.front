@@ -1,31 +1,21 @@
 import { useEffect, useCallback } from "react";
-import {
-  getUserDataOrCrateNew,
-  getAllUsersVote,
-} from "../../services/firebase";
-import { calculateVoteByUsers } from "../../services/vote";
-import { from, map } from "rxjs";
-import { CalculatedUserVote, UserData, UsersVote } from "../../types";
+import { getUserDataOrCrateNew } from "renft-front/services/firebase";
+import { from } from "rxjs";
+import { UserData } from "renft-front/types";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 
 type UserDataState = {
   userData: UserData;
-  usersVote: UsersVote;
-  calculatedUsersVote: CalculatedUserVote;
   isLoading: boolean;
   setUserData: (userData: UserData) => void;
   setLoading: (b: boolean) => void;
-  setCalculatedUsersVote: (v: CalculatedUserVote) => void;
-  setUsersVote: (v: UsersVote) => void;
 };
 
 const useUserLendingState = create<UserDataState>((set) => ({
   userData: { favorites: {} },
-  usersVote: {},
-  calculatedUsersVote: {},
   isLoading: false,
   setUserData: (userData: UserData) =>
     set(
@@ -39,18 +29,6 @@ const useUserLendingState = create<UserDataState>((set) => ({
         state.userData = isLoading;
       })
     ),
-  setCalculatedUsersVote: (s: CalculatedUserVote) =>
-    set(
-      produce((state) => {
-        state.calculatedUsersVote = s;
-      })
-    ),
-  setUsersVote: (s: UsersVote) =>
-    set(
-      produce((state) => {
-        state.calculatedUsersVote = s;
-      })
-    ),
 }));
 export const useUserData = () => {
   const currentAddress = useCurrentAddress();
@@ -62,20 +40,8 @@ export const useUserData = () => {
     useCallback((state) => state.isLoading, []),
     shallow
   );
-  const usersVote = useUserLendingState(
-    useCallback((state) => state.usersVote, []),
-    shallow
-  );
   const setLoading = useUserLendingState((state) => state.setLoading);
   const setUserData = useUserLendingState((state) => state.setUserData);
-  const setUsersVote = useUserLendingState((state) => state.setUsersVote);
-  const calculatedUsersVote = useUserLendingState(
-    (state) => state.calculatedUsersVote
-  );
-  const setCalculatedUsersVote = useUserLendingState(
-    (state) => state.setCalculatedUsersVote
-  );
-
   const refreshUserData = useCallback(() => {
     if (currentAddress) {
       setLoading(true);
@@ -89,7 +55,7 @@ export const useUserData = () => {
           })
           .catch(() => {
             setLoading(false);
-
+            //TODO:eniko sentry logging
             console.warn("could not update global user data");
           })
       );
@@ -97,30 +63,16 @@ export const useUserData = () => {
     return from(Promise.resolve());
   }, [currentAddress, setLoading, setUserData]);
 
-  const refreshVotes = useCallback(() => {
-    return from(getAllUsersVote()).pipe(
-      map((d) => {
-        setUsersVote(d);
-        setCalculatedUsersVote(calculateVoteByUsers(d));
-      })
-    );
-  }, [setUsersVote, setCalculatedUsersVote]);
-
   useEffect(() => {
     const s1 = refreshUserData().subscribe();
-    const s2 = refreshVotes().subscribe();
     return () => {
       s1.unsubscribe();
-      s2.unsubscribe();
     };
-  }, [currentAddress, refreshUserData, refreshVotes]);
+  }, [currentAddress, refreshUserData]);
 
   return {
     userData,
-    usersVote,
-    calculatedUsersVote,
     isLoading,
     refreshUserData,
-    refreshVotes,
   };
 };

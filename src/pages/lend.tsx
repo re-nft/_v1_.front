@@ -8,6 +8,7 @@ import { LendSearchLayout } from "../components/layouts/lend-search-layout";
 import { PaginationList } from "../components/layouts/pagination-list";
 import ItemWrapper from "../components/common/items-wrapper";
 import { useWallet } from "../hooks/store/useWallet";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
@@ -40,10 +41,10 @@ const LendCatalagoueItem: React.FC<{
 };
 
 const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
-  currentPage
+  currentPage,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, onCheckboxChange } = useBatchItems('lend');
+  const { checkedItems, onCheckboxChange } = useBatchItems("lend");
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
@@ -93,9 +94,7 @@ const Lendings: React.FC = () => {
   if (!signer) {
     return (
       <LendSearchLayout>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+        <NoSignerMessage />
       </LendSearchLayout>
     );
   }

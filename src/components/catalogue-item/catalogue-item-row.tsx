@@ -13,6 +13,8 @@ export const CatalogueItemRow: React.FC<CatalogueItemRowProps> = ({
   <div className="w-full flex font-body text-xl leading-rn-1 tracking-wide">
     <div className="flex-initial">{text}</div>
     <div className="flex-auto border-b-2 border-dotted border-black font-display"></div>
-    <div className="flex-initial">{value}</div>
+    <div className="flex-initial" data-testid={text}>
+      {value}
+    </div>
   </div>
 );

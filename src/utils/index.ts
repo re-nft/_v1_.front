@@ -1,8 +1,8 @@
-import { ERC721 } from "../types/typechain/ERC721";
-import { ERC1155 } from "../types/typechain/ERC1155";
-import { ERC20 } from "../types/typechain/ERC20";
+import { ERC721 } from "renft-front/types/typechain/ERC721";
+import { ERC1155 } from "renft-front/types/typechain/ERC1155";
+import { ERC20 } from "renft-front/types/typechain/ERC20";
 import createDebugger from "debug";
-import { Lending } from "../types/classes";
+import { Lending } from "renft-front/types/classes";
 import { PaymentToken } from "@renft/sdk";
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -10,7 +10,7 @@ import { Contract } from "@ethersproject/contracts";
 import { getAddress } from "@ethersproject/address";
 import { ERC1155__factory } from "renft-front/contracts/ERC1155__factory";
 import { ERC721__factory } from "renft-front/contracts/ERC721__factory";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../consts";
+import { RENFT_SUBGRAPH_ID_SEPARATOR } from "renft-front/consts";
 
 import { unpackPrice } from "@renft/sdk";
 import {

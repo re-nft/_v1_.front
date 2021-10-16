@@ -1,15 +1,12 @@
 import request from "graphql-request";
-import { Lending, Renting } from "../types/classes";
+import { Lending, Renting } from "renft-front/types/classes";
 import {
   queryMyERC1155s,
   queryMyERC721s,
   queryUserRentingRenft,
 } from "./queries";
-import { ERC1155s, ERC721s, NftToken, RentingRaw } from "../types";
-import { timeItAsync } from "../utils";
-import createDebugger from "debug";
-
-const debug = createDebugger("app:request:graph");
+import { ERC1155s, NftToken, RentingRaw } from "renft-front/types";
+import * as Sentry from "@sentry/nextjs";
 
 export enum FetchType {
   ERC721,
@@ -41,34 +38,36 @@ export const fetchUserProd721 = async (
   skip = 0
 ): Promise<NftToken[]> => {
   if (!currentAddress) return [];
-  let query = "";
-  let subgraphURI = "";
-  query = queryMyERC721s(currentAddress, skip);
 
-  if (!process.env.NEXT_PUBLIC_EIP721_API) {
-    throw new Error("EIP721_API is not defined");
+  const subgraphURI = process.env.NEXT_PUBLIC_EIP721_API;
+  if (!subgraphURI) {
+    return Promise.reject("EIP721_API is not defined");
   }
-  subgraphURI = process.env.NEXT_PUBLIC_EIP721_API;
+  const query = queryMyERC721s(currentAddress, skip);
 
-  const response: ERC721s = await timeItAsync(
-    `Pulled My ${FetchType[FetchType.ERC721]} NFTs`,
-    async () => request(subgraphURI, query)
-  );
-
-  const tokens: NftToken[] = (response as ERC721s).tokens.map((token) => {
-    // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
-    const [address, tokenId] = token.id.split("_");
-    return {
-      address,
-      tokenURI: token.tokenURI,
-      tokenId,
-      isERC721: true,
-    };
-  });
-
-  // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
-  // TODO: nothing has changed
-  return tokens;
+  return request(subgraphURI, query)
+    .then((response) => {
+      if (response.tokens)
+        return Promise.resolve(
+          response.tokens.map((token) => {
+            // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
+            const [address, tokenId] = token.id.split("_");
+            return {
+              address,
+              tokenURI: token.tokenURI,
+              tokenId,
+              isERC721: true,
+            };
+          })
+        );
+      return Promise.resolve([]);
+    })
+    .catch((e) => {
+      //TODO:eniko user feedback
+      //TODO:eniko only log errors which doesn't result of not found pages
+      Sentry.captureException(e);
+      return Promise.resolve([]);
+    });
 };
 
 /**
@@ -80,31 +79,32 @@ export const fetchUserProd1155 = async (
   skip = 0
 ): Promise<NftToken[]> => {
   if (!currentAddress) return [];
-  let query = "";
-  let subgraphURI = "";
 
-  query = queryMyERC1155s(currentAddress, skip);
-  if (!process.env.NEXT_PUBLIC_EIP1155_API) {
-    throw new Error("EIP1155_API is not defined");
+  const subgraphURI = process.env.NEXT_PUBLIC_EIP1155_API;
+  if (!subgraphURI) {
+    return Promise.reject("EIP1155_API is not defined");
   }
-  subgraphURI = process.env.NEXT_PUBLIC_EIP1155_API;
+  const query = queryMyERC1155s(currentAddress, skip);
 
-  const response: ERC1155s = await timeItAsync(
-    `Pulled My ${FetchType[FetchType.ERC1155]} NFTs`,
-    async () => request(subgraphURI, query)
-  );
-
-  const tokens: NftToken[] =
-    (response as ERC1155s).account?.balances?.map(({ token }) => ({
-      address: token.registry.contractAddress,
-      tokenURI: token.tokenURI,
-      tokenId: token.tokenId,
-      isERC721: false,
-    })) || [];
-
-  // TODO: compute hash of the fetch, and everything, to avoid resetting the state, if
-  // TODO: nothing has changed
-  return tokens;
+  return request(subgraphURI, query)
+    .then((response) => {
+      if (response?.account?.balances)
+        return Promise.resolve(
+          (response as ERC1155s).account.balances.map(({ token }) => ({
+            address: token.registry.contractAddress,
+            tokenURI: token.tokenURI,
+            tokenId: token.tokenId,
+            isERC721: false,
+          }))
+        );
+      return Promise.resolve([]);
+    })
+    .catch((e) => {
+      //TODO:eniko only log errors which doesn't result of not found pages
+      //TODO:eniko user feedback
+      Sentry.captureException(e);
+      return Promise.resolve([]);
+    });
 };
 
 export type FetchUserRentingReturn =
@@ -121,14 +121,9 @@ export const fetchUserRenting = async (
   currentAddress: string | undefined
 ): Promise<FetchUserRentingReturn> => {
   if (!currentAddress) return;
-  const query = queryUserRentingRenft(currentAddress);
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
     throw new Error("RENFT_API is not defined");
   }
-  const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
-  const response: FetchUserRentingReturn = await timeItAsync(
-    "Pulled My Renft Renting Nfts",
-    async () => await request(subgraphURI, query)
-  );
-  return response;
+  const query = queryUserRentingRenft(currentAddress);
+  return request(subgraphURI, query);
 };

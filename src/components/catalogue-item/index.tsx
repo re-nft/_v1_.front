@@ -68,7 +68,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     return meta && !meta.loading;
   }, [meta]);
 
-  const { name, image, description, openseaLink } = meta;
+  const { name, image, openseaLink } = meta;
   const pendingStatus = useEventTrackedTransactionState(
     useCallback(
       (state) => {
@@ -107,12 +107,12 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
   const actionDisabled = useMemo(() => {
     return disabled || !checked || !signer;
-  }, [disabled, checked, signer, nId]);
+  }, [disabled, checked, signer]);
 
   return (
     <Transition
       show={show}
-      as="div"
+      as="li"
       enter="transition-opacity ease-linear duration-300"
       enterFrom="opacity-0"
       enterTo="opacity-100"
@@ -126,7 +126,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
         checked && "shadow-rn-one border-4",
         "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
       )}
-      data-testid="catalogue-item"
+      aria-selected={!!checked}
+      role="gridcell"
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
@@ -144,7 +145,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 />
               </div>
               <div className="relative">
-                <CatalogueItemDisplay image={image} description={description} />
+                <CatalogueItemDisplay image={image} description={name} />
                 <div className="absolute inset-0  flex items-center text-center justify-center">
                   <PendingTransactionsLoader status={pendingStatus} />
                 </div>
@@ -180,7 +181,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 text="Standard"
                 value={nft.isERC721 ? "721" : "1155"}
               />
-
               {children}
             </div>
           </div>
@@ -210,8 +210,6 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             {rest.hasAction && (
               <div className="flex-1 flex justify-end pr-2">
                 <Button
-                  id={`catalogue-button-${nId}`}
-                  data-testid="catalogue-item-action"
                   onClick={cb}
                   description={rest.buttonTitle}
                   disabled={actionDisabled}

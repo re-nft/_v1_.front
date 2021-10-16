@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/router";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import SearchLayout from "renft-front/components/layouts/search-layout";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
 
 export const DashboardPage: React.FC = ({ children }) => {
   const { signer } = useWallet();
@@ -11,35 +12,31 @@ export const DashboardPage: React.FC = ({ children }) => {
     return [
       {
         name: "Lending",
-        current: pathname === '/dashboard/lending' || pathname === '/dashboard',
-        href: "/dashboard/lending"
+        current: pathname === "/dashboard/lending" || pathname === "/dashboard",
+        href: "/dashboard/lending",
       },
       {
         name: "Renting",
-        current: pathname === '/dashboard/renting',
-        href: "/dashboard/renting"
+        current: pathname === "/dashboard/renting",
+        href: "/dashboard/renting",
       },
       {
         name: "Favourites",
-        current: pathname == '/dashboard/favourites',
-        href: "/dashboard/favourites"
-      }
-    ]
-  }, [pathname])
+        current: pathname == "/dashboard/favourites",
+        href: "/dashboard/favourites",
+      },
+    ];
+  }, [pathname]);
   if (!signer) {
     return (
       <SearchLayout tabs={[]}>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+        <NoSignerMessage />
       </SearchLayout>
     );
   }
 
   return (
-    <SearchLayout
-      tabs={tabs}
-    >
+    <SearchLayout tabs={tabs}>
       <div className="flex flex-col space-y-2 text-white text-base">
         {children}
       </div>

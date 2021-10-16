@@ -1,26 +1,26 @@
-import { Lending, Nft, Renting } from "../../types/classes";
+import { Lending, Nft, Renting } from "renft-front/types/classes";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePrevious } from "../misc/usePrevious";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 import { EMPTY, from, map, switchMap, timer } from "rxjs";
-import { parseLending, timeItAsync } from "../../utils";
-import { LendingRaw } from "../../types";
+import { parseLending, timeItAsync } from "renft-front/utils";
+import { LendingRaw } from "renft-front/types";
 import request from "graphql-request";
-import { queryUserLendingRenft } from "../../services/queries";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { queryUserLendingRenft } from "renft-front/services/queries";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import {
   NFTRentType,
   useLendingStore,
   useNftsStore,
-  useRentingStore
-} from "../store/useNftStore";
+  useRentingStore,
+} from "renft-front/hooks/store/useNftStore";
 import shallow from "zustand/shallow";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../store/useEventTrackedTransactions";
+  useEventTrackedTransactionState,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 
 export const useUserIsLending = (): {
   isLoading: boolean;
@@ -92,6 +92,7 @@ export const useUserIsLending = (): {
           // ! that something went wrong. That way, if the app behaves incorrectly, we will
           // ! know where to look. Right now I am running into an issue of localising the
           // ! problem why user's lending does not show and there is no console.warn here
+          //TODO:eniko sentry loggin
           console.warn("could not pull users ReNFT lendings");
           return {};
         });
@@ -142,7 +143,7 @@ export const useUserIsLending = (): {
     addLendings,
     currentAddress,
     addNfts,
-    addRentings
+    addRentings,
   ]);
 
   useEffect(() => {

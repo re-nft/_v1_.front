@@ -1,5 +1,5 @@
-import { fetchUserProd1155 } from "../../services/graph";
-import { Nft } from "../../types/classes";
+import { fetchUserProd1155 } from "renft-front/services/graph";
+import { Nft } from "renft-front/types/classes";
 import { useCallback, useEffect, useState } from "react";
 import {
   debounceTime,
@@ -8,21 +8,26 @@ import {
   map,
   mergeMap,
   switchMap,
-  timer
+  timer,
+  catchError,
 } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { getContractWithProvider } from "../../utils";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { NetworkName, NftToken } from "../../types";
-import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import { getContractWithProvider } from "renft-front/utils";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { NetworkName, NftToken } from "renft-front/types";
+import {
+  OWNED_NFT_TYPE,
+  useNftsStore,
+} from "renft-front/hooks/store/useNftStore";
 import shallow from "zustand/shallow";
-import { usePrevious } from "../misc/usePrevious";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../store/useEventTrackedTransactions";
+  useEventTrackedTransactionState,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
+import * as Sentry from "@sentry/nextjs";
 
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
@@ -32,7 +37,7 @@ const fetchERC1155 = (currentAddress: string) => {
       fetchUserProd1155(currentAddress, 1),
       fetchUserProd1155(currentAddress, 2),
       fetchUserProd1155(currentAddress, 3),
-      fetchUserProd1155(currentAddress, 4)
+      fetchUserProd1155(currentAddress, 4),
     ]).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
@@ -44,12 +49,20 @@ const fetchERC1155 = (currentAddress: string) => {
   ).pipe(
     map((result) => {
       // filter out duplicates
-      return result.map((nft) => {
-        return new Nft(nft.address, nft.tokenId, nft.isERC721, {
-          meta: nft.meta,
-          tokenURI: nft.tokenURI
-        });
-      });
+      const set = new Set();
+      return result
+        .map((nft) => {
+          const id = `${nft.tokenId}-${nft.address}`;
+          if (set.has(id)) {
+            return null;
+          }
+          set.add(id);
+          return new Nft(nft.address, nft.tokenId, nft.isERC721, {
+            meta: nft.meta,
+            tokenURI: nft.tokenURI,
+          });
+        })
+        .filter((n) => n !== null);
     })
   );
 };
@@ -96,7 +109,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
           .balanceOf(currentAddress, nft.tokenId)
           .catch((e) => {
             //this only works on mainnet, as graph data are from mainnet
-            console.log(e);
+            Sentry.captureException(e);
             return "0";
           });
         // amount should not be a too big number
@@ -130,6 +143,13 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
           setLoading(false);
+        }),
+        catchError((e) => {
+          //TODO:eniko dev test
+          console.log(e);
+          Sentry.captureException(e);
+          setLoading(false);
+          return of();
         })
       )
       .subscribe();
@@ -142,7 +162,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     setLoading,
     addNfts,
     refetchAfterOperation,
-    network
+    network,
   ]);
 
   // reset on wallet change

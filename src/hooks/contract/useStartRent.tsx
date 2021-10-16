@@ -1,22 +1,22 @@
 import { useCallback, useMemo, useState } from "react";
 import { PaymentToken } from "@renft/sdk";
 import { BigNumber } from "@ethersproject/bignumber";
-import { getDistinctItems, getE20, sortNfts } from "../../utils";
-import { MAX_UINT256 } from "../../consts";
+import { getDistinctItems, getE20, sortNfts } from "renft-front/utils";
+import { MAX_UINT256 } from "renft-front/consts";
 import createDebugger from "debug";
-import { ERC20 } from "../../types/typechain/ERC20";
+import { ERC20 } from "renft-front/types/typechain/ERC20";
 import { useSDK } from "./useSDK";
 import {
   SmartContractEventType,
   TransactionStatus,
-} from "../store/useEventTrackedTransactions";
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 import { useContractAddress } from "./useContractAddress";
 import { useResolverAddress } from "./useResolverAddress";
 import { useSmartContracts } from "./useSmartContracts";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { Lending } from "../../types/classes";
-import { useCreateRequest } from "../store/useCreateRequest";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { Lending } from "renft-front/types/classes";
+import { useCreateRequest } from "renft-front/hooks/store/useCreateRequest";
 
 const debug = createDebugger("app:contract:startRent");
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react";
 import shallow from "zustand/shallow";
 
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
 import { PaymentToken } from "@renft/sdk";
 
 import { Lending } from "renft-front/types/classes";
@@ -13,11 +14,17 @@ import ItemWrapper from "renft-front/components/common/items-wrapper";
 import { useUserIsLending } from "renft-front/hooks/queries/useUserIsLending";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
-import { isClaimable, useIsClaimable } from "renft-front/hooks/misc/useIsClaimable";
+import {
+  isClaimable,
+  useIsClaimable,
+} from "renft-front/hooks/misc/useIsClaimable";
 import { formatCollateral } from "renft-front/utils";
 import ClaimModal from "renft-front/components/modals/claim-modal";
 import { useTimestamp } from "renft-front/hooks/misc/useTimestamp";
-import { useLendingStore, useRentingStore } from "renft-front/hooks/store/useNftStore";
+import {
+  useLendingStore,
+  useRentingStore,
+} from "renft-front/hooks/store/useNftStore";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -94,17 +101,11 @@ const ItemsRenderer: React.FC<{
 
   const blockTimeStamp = useTimestamp();
   const rentings = useRentingStore(
-    useCallback(
-      (state) => state.rentings,
-      []
-    ),
+    useCallback((state) => state.rentings, []),
     shallow
   );
   const lendings = useLendingStore(
-    useCallback(
-      (state) => state.lendings,
-      []
-    ),
+    useCallback((state) => state.lendings, []),
     shallow
   );
   const handleCloseModal = useCallback(() => {
@@ -122,12 +123,11 @@ const ItemsRenderer: React.FC<{
         lending.collateralClaimed,
         lending.rentingId ? rentings[lending?.rentingId] : null
       );
-      if (claimable) claimableItems.push(id)
-      else nonclaimable.push(id)
-    })
-    return [claimableItems, nonclaimable]
-  }, [checkedItems, lendings, blockTimeStamp, rentings])
-
+      if (claimable) claimableItems.push(id);
+      else nonclaimable.push(id);
+    });
+    return [claimableItems, nonclaimable];
+  }, [checkedItems, lendings, blockTimeStamp, rentings]);
 
   const handleClaimCloseModal = useCallback(() => {
     setClaimModalOpen(false);
@@ -183,9 +183,7 @@ export const UserIsLending: React.FC = () => {
   if (!signer) {
     return (
       <LendSearchLayout hideDevMenu>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+        <NoSignerMessage />
       </LendSearchLayout>
     );
   }

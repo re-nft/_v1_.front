@@ -10,6 +10,7 @@ import { ShortenPopover } from "renft-front/components/common/shorten-popover";
 import { useUserData } from "renft-front/hooks/store/useUserData";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useUserData();
@@ -53,13 +54,7 @@ const Profile: React.FC = () => {
     }
   }, [userData]);
 
-  if (!signer) {
-    return (
-      <div className="text-center text-base text-white font-display py-32 leading-tight">
-        Please connect your wallet!
-      </div>
-    );
-  }
+  if (!signer) return <NoSignerMessage />;
 
   if (isLoading) {
     return (

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Nft } from "../../types/classes";
-import { useWallet } from "../store/useWallet";
+import { Nft } from "renft-front/types/classes";
+import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";

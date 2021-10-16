@@ -1,9 +1,6 @@
-const Custom404: React.FC = () => {
-  return (
-    <div className="font-display text-white h-48 flex justify-center items-center text-center w-full">
-      <h1>404 - Page Not Found</h1>
-    </div>
-  );
-};
+import Error from "next/error";
 
-export default Custom404;
+export default function NotFound() {
+  // Opinionated: do not record an exception in Sentry for 404
+  return <Error statusCode={404} />;
+}

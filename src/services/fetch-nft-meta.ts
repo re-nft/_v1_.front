@@ -1,5 +1,5 @@
-import { NftTokenMeta } from "../types";
-import { Nft } from "../types/classes";
+import { NftTokenMeta } from "renft-front/types";
+import { Nft } from "renft-front/types/classes";
 import {
   arrayToURI,
   buildStaticIPFS_URL,
@@ -8,7 +8,8 @@ import {
   normalizeTokenUri,
   snakeCaseToCamelCase,
 } from "./utils";
-import { getUniqueID } from "../utils";
+import { getUniqueID } from "renft-front/utils";
+import * as Sentry from "@sentry/nextjs";
 
 export type NftError = { nId: string; error: string };
 
@@ -150,7 +151,7 @@ export const fetchNFTFromOtherSource = async (
     process.env.NEXT_PUBLIC_OPENSEA_API &&
     transformedUri.indexOf("api.opensea") > -1
   ) {
-    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API;
+    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
@@ -181,7 +182,9 @@ export const fetchNFTFromOtherSource = async (
           nId: key,
         };
       })
-      .catch(() => {
+      .catch((e) => {
+        //TODO:eniko user warning
+        Sentry.captureException(e);
         return { nId: key, error: "unknown error" };
       })
   );
@@ -226,7 +229,8 @@ export const fetchNFTsFromOpenSea = async (
       });
     })
     .catch((e) => {
-      //TODO:eniko add sentry logging
+      //TODO:eniko add sentry tests for logging
+      Sentry.captureException(e);
       return [];
     });
 };
