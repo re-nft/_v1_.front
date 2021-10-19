@@ -29,12 +29,12 @@ type NftMetaState = {
   ) => void;
 };
 
-const preloadImages = (metas: MetaLoading[]) => {
-  metas.map((meta) => {
-    const img = new Image();
-    if (meta.image) img.src = meta.image;
-  });
-};
+// const preloadImages = (metas: MetaLoading[]) => {
+//   metas.map((meta) => {
+//     const img = new Image();
+//     if (meta.image) img.src = meta.image;
+//   });
+// };
 
 export const useNftMetaState = create<NftMetaState>(
   devtools(
@@ -64,6 +64,7 @@ export const useNftMetaState = create<NftMetaState>(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
             founds.map((meta) => {
+                if(!state.metas[meta.nId]) state.metas[meta.nId] = {}
                 state.metas[meta.nId].loading = false;
                 state.metas[meta.nId].name = meta.name;
                 state.metas[meta.nId].image = meta.image;
@@ -97,7 +98,7 @@ export const useNftMetaState = create<NftMetaState>(
   )
 );
 
-export const useFetchMeta = () => {
+export const useFetchMeta = (): (items: Nft[]) => void => {
   const fetchReadyOpenSea = useNftMetaState(
     useCallback((state) => {
       return state.fetchReadyOpenSea;
@@ -129,9 +130,15 @@ export const useFetchMeta = () => {
   useEffect(() => {
     const fetchReady = fetchReadyOpenSea;
     if (fetchReady.length < 1) return;
+    let fetch: Nft[] = fetchReady;
+    // only fetch 20 items at a time
+    // when fetched, this effect will retrigger with new arr ready to be fetched
+    if(fetchReady.length > 20){
+      fetch = fetchReady.slice(0, 20)
+    }
     const contractAddress: string[] = [];
     const tokenIds: string[] = [];
-    fetchReady.forEach((nft: Nft) => {
+    fetch.forEach((nft: Nft) => {
       contractAddress.push(nft.address);
       tokenIds.push(nft.tokenId);
     });
@@ -143,10 +150,10 @@ export const useFetchMeta = () => {
             acc.add(nft.nId);
             return acc;
           }, new Set());
-          const notFounds = fetchReady.filter((nft: NftTokenMeta) => {
+          const notFounds = fetch.filter((nft: NftTokenMeta) => {
             return !foundIds.has(nft.nId);
           });
-          preloadImages(founds);
+        //  preloadImages(founds);
           setOpenseaResult(founds, notFounds);
         })
       )
@@ -154,7 +161,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyOpenSea]);
+  }, [fetchReadyOpenSea, setOpenseaResult]);
 
   useEffect(() => {
     const fetchReady = fetchReadyIPFS;
@@ -167,7 +174,7 @@ export const useFetchMeta = () => {
           return from(fetchNFTFromOtherSource(nft));
         }),
         map((data) => {
-          preloadImages([data]);
+       //   preloadImages([data]);
           setIPFSResult(data);
         })
       )
@@ -175,7 +182,7 @@ export const useFetchMeta = () => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [fetchReadyIPFS, nfts]);
+  }, [fetchReadyIPFS, nfts, setIPFSResult]);
 
   return useCallback(
     (items: Nft[]) => {
@@ -190,6 +197,6 @@ export const useFetchMeta = () => {
       });
       if (fetching.length > 0) setFetchReady(fetching);
     },
-    [metas]
+    [metas, setFetchReady]
   );
 };

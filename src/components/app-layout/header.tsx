@@ -15,10 +15,12 @@ export const Header: React.FC = () => {
   const { userData } = useContext(GraphContext);
   const lookupAddress = useLookupAddress();
   const installMetaMask = useMemo(() => {
-    return typeof window === "undefined"
-      ? false
-      : !(window?.web3 || window?.ethereum);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const noProvider =
+      typeof window === "undefined"
+        ? false
+        : typeof window?.web3 === "undefined" &&
+          typeof window?.ethereum === "undefined";
+    return noProvider;
   }, [typeof window]);
 
   useEffect(() => {
@@ -28,6 +30,8 @@ export const Header: React.FC = () => {
   }, [userData]);
 
   const networkNotSupported = useMemo(() => {
+    if (network == null) return false;
+    if (network === "") return false;
     return network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED;
   }, [network]);
 

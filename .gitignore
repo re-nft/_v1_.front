@@ -44,8 +44,8 @@ cypress/videos
 # vercel
 .vercel
 
-#disable yarn on this branch
-.yarn.lock
+
+.sentryclirc
 # Sentry
 .sentryclirc
 

@@ -99,7 +99,7 @@ const ItemsRenderer: React.FC<{ currentPage: Renting[] }> = ({
           onClose={handleCloseModal}
         />
       )}
-      <ItemWrapper flipId={currentPage.map((c) => c.id).join("")}>
+      <ItemWrapper>
         {currentPage.map((nft: Renting) => (
           <RentingCatalogueItem
             nft={nft}

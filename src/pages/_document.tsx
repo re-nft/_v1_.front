@@ -3,6 +3,8 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheets } from "@material-ui/core/styles";
 import { theme } from "../components/theme";
 
+
+
 class MyDocument extends Document {
   render(): React.ReactElement {
     return (
@@ -108,8 +110,8 @@ class MyDocument extends Document {
             key="twitter:description"
             content="reNFT - Peer to Peer NFT Rentals"
           />
+          <script src="/js/sentry-proxy.js"/>
         </Head>
-
         <body>
           <Main />
           <NextScript />

@@ -16,6 +16,8 @@ import { CurrentAddressWrapper } from "./CurrentAddressWrapper";
 import { usePrevious } from "../hooks/usePrevious";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
+import * as Sentry from "@sentry/nextjs";
+
 
 export type UserLendingContextType = {
   userLending: Lending[];
@@ -58,6 +60,8 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           subgraphURI,
           queryUserLendingRenft(currentAddress)
         ).catch((e) => {
+          Sentry.captureException(e);
+
           // ! let's warn with unique messages, without console logging the error message
           // ! that something went wrong. That way, if the app behaves incorrectly, we will
           // ! know where to look. Right now I am running into an issue of localising the

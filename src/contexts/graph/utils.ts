@@ -20,6 +20,7 @@ export const parseLending = (
     rentClaimed: Boolean(lending.rentClaimed),
     is721: lending.is721,
     renting: parsedRenting,
+    lentAt: Number(lending.lentAt)
   };
 };
 
