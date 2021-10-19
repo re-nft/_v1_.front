@@ -82,8 +82,8 @@ const intervalServerError = { message: "Interval Server error" };
 
 beforeAll(() => {
   jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation();
+  jest.spyOn(console, "warn").mockImplementation();
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "fdsafa8";
@@ -1087,9 +1087,83 @@ describe("lend page wallet connected", () => {
       expect(spyLog).not.toHaveBeenCalled();
       expect(spyWarn).not.toHaveBeenCalled();
     });
-    it("shows filled out details when modal was filled before (1 item)", () => {});
-    it("shows filled out details when modal was filled before (multiple item)", () => {});
-    it("when items selected and filled out and item lended out (form closed/form opened) form does not show it", () => {});
+    it("shows filled out details when modal was filled before (1 item)", () => {
+      expect(true).toBe(true);
+      const spyLog = jest.spyOn(global.console, "log");
+      const spyWarn = jest.spyOn(global.console, "warn");
+
+      mswServer.use(
+        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
+          // Respond with "500 Internal Server Error" status for this test.
+          return res(ctx.status(200), ctx.json(EIP721_response));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
+          // Respond with "500 Internal Server Error" status for this test.
+          return res(ctx.status(200), ctx.json(EIP1155_response));
+        }),
+
+        // empty opensea
+        rest.get(
+          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
+          async (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}));
+          }
+        ),
+        // catch all for ipfs data
+        rest.get("*", (req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.json({
+              image: null,
+              description: "",
+              name: "",
+            })
+          );
+        })
+      );
+
+      render(<LendPage />);
+
+      await waitFor(() => {
+        const loader = screen.getByTestId("list-loader");
+        expect(loader).toBeInTheDocument();
+      });
+      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
+        timeout: 1500,
+      });
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+      const grid = screen.getByRole("grid", {
+        name: /nfts/i,
+      });
+
+      const { getAllByRole } = within(grid);
+      const items = getAllByRole("gridcell", {
+        selected: false,
+      });
+      expect(items.length).toBe(2);
+      const firstItem = within(items[0]);
+      user.click(firstItem.getByRole("checkbox"));
+
+      const button = firstItem.getByRole("button", {
+        name: /lend/i,
+      });
+      user.click(button);
+
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      const list = screen.getAllByRole("listitem");
+      expect(list.length).toBe(2);
+
+      expect(spyLog).not.toHaveBeenCalled();
+      expect(spyWarn).not.toHaveBeenCalled();
+    });
+    it("shows filled out details when modal was filled before (multiple item)", () => {
+      expect(true).toBe(true);
+    });
+    it("when items selected and filled out and item lended out (form closed/form opened) form does not show it", () => {
+      expect(true).toBe(true);
+    });
   });
 
   xdescribe("filter", () => {
