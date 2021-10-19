@@ -1,4 +1,8 @@
 import { useContext, useMemo } from "react";
+import {
+  ANIMETAS_CONTRACT_ADDRESS,
+  ANIMONKEYS_CONTRACT_ADDRESS
+} from "../consts";
 import { Nft } from "../contexts/graph/classes";
 import UserContext from "../contexts/UserProvider";
 import { useFetchERC1155 } from "./useFetchERC1155";
@@ -20,22 +24,20 @@ export const useAllAvailableToLend = (): {
   // TODO: below with hardcoding
 
   const filteredERC1155 = useMemo(() => {
-    return ERC1155.filter(
-      (nft) =>
-        nft.address.toLowerCase() !==
-          "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-        nft.address.toLowerCase() !==
-          "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
-    );
+    return ERC1155.filter((v) => {
+      return process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === "mainnet"
+        ? v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+          v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+        : true;
+    });
   }, [ERC1155]);
 
   const filteredERC721 = useMemo(() => {
-    return ERC721.filter(
-      (nft) =>
-        nft.address.toLowerCase() !==
-          "0x2af75676692817d85121353f0d6e8e9ae6ad5576" &&
-        nft.address.toLowerCase() !==
-          "0xa342f5d851e866e18ff98f351f2c6637f4478db5"
+    return ERC721.filter((v) =>
+      process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === "mainnet"
+        ? v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+          v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
+        : true
     );
   }, [ERC721]);
 

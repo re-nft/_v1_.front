@@ -38,15 +38,14 @@ interface UserERC1155State {
 const fetchERC1155 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC1155
   return from<Promise<NftToken[]>>(
-    Promise.allSettled([
-      fetchUserProd1155(currentAddress, 0),
-      fetchUserProd1155(currentAddress, 1),
-      fetchUserProd1155(currentAddress, 2),
-      fetchUserProd1155(currentAddress, 3),
-      fetchUserProd1155(currentAddress, 4)
-    ]).then((r) => {
+
+    Promise.allSettled(
+      new Array(15).fill(1).map((_el, index) =>
+        fetchUserProd1155(currentAddress, index)
+      )
+    ).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
-        if (v.status === "fulfilled") {
+        if (v.status === "fulfilled" && v.value) {
           acc = [...acc, ...v.value];
         }
         return acc;
@@ -78,42 +77,60 @@ export const useERC1155 = create<UserERC1155State>(
   devtools((set) => ({
     users: {},
     setUserNft: (user: string, items: Nft[]) =>
-      set(
-        produce((state) => {
-          if (!state.users[user]) state.users[user] = {};
-          const previousNfts = state.users[user]?.nfts || [];
-          const map = items.reduce((acc, item) => {
-            acc.set(item.id, item);
-            return acc;
-          }, new Map<string, Nft>());
-          let nfts = [];
-          if (previousNfts.length === 0 || items.length === 0) {
-            nfts = items;
-          } else {
-            nfts = previousNfts.filter((item: Nft) => {
-              return map.has(item.id);
-            });
+      set((state) => {
+        const previousNfts = state.users[user]?.nfts || [];
+        const map = items.reduce((acc, item) => {
+          acc.set(item.id, item);
+          return acc;
+        }, new Map<string, Nft>());
+        let nfts = [];
+        if (previousNfts.length === 0 || items.length === 0) {
+          nfts = items;
+        } else {
+          nfts = previousNfts.filter((item) => {
+            return map.has(item.id);
+          });
+        }
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              nfts
+            }
           }
-          state.users[user].nfts = nfts;
-        })
-      ),
+        };
+      }),
     setLoading: (user: string, isLoading: boolean) =>
-      set(
-        produce((state) => {
-          if (!state.users[user]) state.users[user] = {};
-          state.users[user].isLoading = isLoading;
-        })
-      ),
+      set((state) => {
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              isLoading
+            }
+          }
+        };
+      }),
     setAmount: (user: string, id: string, amount: string) =>
-      set(
-        produce((state) => {
-          if (!state.users[user]) state.users[user] = {};
-          const nfts = [...state.users[user].nfts];
-          const index = nfts.findIndex((i: Nft) => i.id === id);
-          nfts[index].amount = amount;
-          state.users[user].nfts = nfts;
-        })
-      )
+      set((state) => {
+        return {
+          ...state,
+          users: {
+            ...state.users,
+            [`${user}`]: {
+              ...state.users[user],
+              nfts: state.users[user]?.nfts.map((nft) => {
+                if (nft.id === id) nft.amount = amount;
+                return nft;
+              })
+            }
+          }
+        };
+      })
   }))
 );
 

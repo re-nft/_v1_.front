@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { ILending, IRenting, LendingRaw, RentingRaw } from "./types";
-import { unpackPrice } from "@renft/sdk";
+//@ts-ignore
+import { unpackPrice } from "@eenagy/sdk";
 import { parsePaymentToken } from "../../utils";
 
 export const parseLending = (
@@ -10,15 +11,14 @@ export const parseLending = (
   return {
     id: lending.id,
     nftAddress: ethers.utils.getAddress(lending.nftAddress),
-    tokenId: lending.tokenId,
-    lentAmount: lending.lentAmount,
+    tokenId: lending.tokenID,
+    lentAmount: lending.lendAmount,
     lenderAddress: ethers.utils.getAddress(lending.lenderAddress),
     maxRentDuration: Number(lending.maxRentDuration),
     dailyRentPrice: unpackPrice(lending.dailyRentPrice),
-    nftPrice: unpackPrice(lending.nftPrice),
     paymentToken: parsePaymentToken(lending.paymentToken),
-    collateralClaimed: Boolean(lending.collateralClaimed),
-    isERC721: lending.isERC721,
+    rentClaimed: Boolean(lending.rentClaimed),
+    is721: lending.is721,
     renting: parsedRenting,
     lentAt: Number(lending.lentAt)
   };
@@ -35,5 +35,6 @@ export const parseRenting = (
     rentedAt: Number(renting.rentedAt),
     lendingId: parsedLending.id,
     lending: parsedLending,
+    expired: renting.expired
   };
 };

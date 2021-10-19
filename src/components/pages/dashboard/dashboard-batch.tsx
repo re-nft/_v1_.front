@@ -4,6 +4,8 @@ import { Lending, Renting } from "../../../contexts/graph/classes";
 import ClaimModal from "../../../modals/claim-modal";
 import ReturnModal from "../../../modals/return-modal";
 import StopLendModal from "../../../modals/stop-lend-modal";
+import { nftReturnIsExpired } from "../../../utils";
+import { IRenting } from "../../../contexts/graph/types";
 
 export const DashboardBatch: React.FC<{
   isReturnModalOpen: boolean;
@@ -40,7 +42,11 @@ export const DashboardBatch: React.FC<{
     return checkedLendingItems.length;
   }, [checkedLendingItems]);
   const lendinItemsStopLendable = useMemo(() => {
-    return checkedLendingItems.filter((v) => !v.renting);
+    const isExpired = (renting: IRenting | null) =>
+      renting ? nftReturnIsExpired(renting) : false;
+    return checkedLendingItems.filter(
+      (v) => !v.renting || (isExpired(v.renting) && v.renting.expired)
+    );
   }, [checkedLendingItems]);
   return (
     <>
@@ -50,9 +56,7 @@ export const DashboardBatch: React.FC<{
           open={isReturnModalOpen}
           onClose={() => {
             toggleReturnModal(false);
-            handleResetRenting(
-              checkedRentingItems.map((i) => i.id)
-            );
+            handleResetRenting(checkedRentingItems.map((i) => i.id));
           }}
         />
       )}
@@ -62,9 +66,7 @@ export const DashboardBatch: React.FC<{
           open={isLendModalOpen}
           onClose={() => {
             toggleLendModal(false);
-            handleResetLending(
-              lendinItemsStopLendable.map((i) => i.id)
-            );
+            handleResetLending(lendinItemsStopLendable.map((i) => i.id));
           }}
         />
       )}
@@ -74,9 +76,7 @@ export const DashboardBatch: React.FC<{
           open={isClaimModalOpen}
           onClose={() => {
             toggleClaimModal(false);
-            handleResetLending(
-              checkedClaims.map((i) => i.id)
-            );
+            handleResetLending(checkedClaims.map((i) => i.id));
           }}
         />
       )}

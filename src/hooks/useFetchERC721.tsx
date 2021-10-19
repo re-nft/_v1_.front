@@ -45,9 +45,9 @@ const useERC721 = create<UserERC721State>((set, get) => ({
           ...state.users,
           [`${user}`]: {
             ...state.users[user],
-            nfts,
-          },
-        },
+            nfts
+          }
+        }
       };
     }),
   setLoading: (user: string, isLoading: boolean) =>
@@ -58,29 +58,25 @@ const useERC721 = create<UserERC721State>((set, get) => ({
           ...state.users,
           [`${user}`]: {
             ...state.users[user],
-            isLoading,
-          },
-        },
+            isLoading
+          }
+        }
       };
-    }),
+    })
 }));
 
 const fetchERC721 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC721
   return from(
-    Promise.allSettled([
-      fetchUserProd721(currentAddress, 0),
-      fetchUserProd721(currentAddress, 1),
-      fetchUserProd721(currentAddress, 2),
-      fetchUserProd721(currentAddress, 3),
-      fetchUserProd721(currentAddress, 4),
-    ]).then((r) => {
-      return r.reduce<NftToken[]>((acc, v) => {
-        if (v.status === "fulfilled") {
+    Promise.allSettled(
+      new Array(15).fill(1).map((_el, index) => fetchUserProd721(currentAddress, index))
+    ).then((r) => {
+      return r ? r.reduce<NftToken[]>((acc, v) => {
+        if (v.status === "fulfilled" && v.value) {
           acc = [...acc, ...v.value];
         }
         return acc;
-      }, []);
+      }, []): [];
     })
   ).pipe(
     map((result) => {
@@ -91,7 +87,7 @@ const fetchERC721 = (currentAddress: string) => {
         .map((nft) => {
           return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
             meta: nft.meta,
-            tokenURI: nft.tokenURI,
+            tokenURI: nft.tokenURI
           });
         })
         .forEach((nft) => {

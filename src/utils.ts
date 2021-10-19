@@ -6,12 +6,14 @@ import fetch from "cross-fetch";
 import createDebugger from "debug";
 import moment from "moment";
 import { Lending, Nft, NftType, Renting } from "./contexts/graph/classes";
-import { PaymentToken } from "@renft/sdk";
+//@ts-ignore
+import { PaymentToken } from "@eenagy/sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
+import { IRenting } from "./contexts/graph/types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
 const debug = createDebugger("app:timer");
@@ -219,10 +221,10 @@ export const getDistinctItems = <T extends Object>(
   return distinctItems;
 };
 
-export const nftReturnIsExpired = (rent: Renting): boolean => {
+export const nftReturnIsExpired = (renting: IRenting): boolean => {
   const isExpired =
-    moment(rent.renting.rentedAt * 1000)
-      .add(rent.renting.rentDuration, "days")
+    moment(renting.rentedAt * 1000)
+      .add(renting.rentDuration, "days")
       .unix() *
       1000 <
     moment.now();
@@ -251,7 +253,7 @@ export const sortNfts = (
 export const filterClaimed =
   (showClaimed: boolean) => (l: Lending | Renting) => {
     if (!showClaimed) {
-      if (l.lending) return !l.lending.collateralClaimed;
+      if (l.lending) return !l.lending.rentClaimed;
       return false;
     }
     return true;

@@ -6,13 +6,15 @@ import createDebugger from "debug";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
+//@ts-ignore
+import { NFTStandard } from "@eenagy/sdk";
 
 const debug = createDebugger("app:contracts:useClaimColleteral");
 
-export const useClaimColleteral = (): ((
+export const useClaim = (): ((
   nfts: Lending[]
 ) => Observable<TransactionStatus>) => {
   const transactionWrapper = useTransactionWrapper();
@@ -25,10 +27,12 @@ export const useClaimColleteral = (): ((
         return EMPTY;
       }
       const sortedNfts = nfts.sort(sortNfts);
-      const params: [string[], BigNumber[], BigNumber[]] = [
+      const params: [NFTStandard[], string[], BigNumber[], BigNumber[], BigNumber[]] = [
+        sortedNfts.map((nft) => nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155),
         sortedNfts.map((nft) => nft.address),
         sortedNfts.map((nft) => BigNumber.from(nft.tokenId)),
-        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId))
+        sortedNfts.map((nft) => BigNumber.from(nft.renting?.lendingId)),
+        sortedNfts.map((nft) => BigNumber.from(nft.renting?.id)),
       ];
       debug(
         "Claim modal addresses ",
@@ -42,14 +46,17 @@ export const useClaimColleteral = (): ((
         "Claim modal lendingId ",
         sortedNfts.map((nft) => nft.renting?.lendingId)
       );
-      return transactionWrapper(sdk.claimCollateral(...params), {
+      return transactionWrapper(sdk.claimRent(...params), {
         action: "claim",
-        label: `Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
+        label: `
+        Claim modal standardss : ${sortedNfts.map((nft) => nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155)}
+        Claim modal addresses : ${sortedNfts.map((nft) => nft.address)}
         Claim modal tokenId: ${sortedNfts.map((nft) => nft.tokenId)}
         Claim modal lendingIds: ${sortedNfts.map(
           (nft) => nft.renting?.lendingId
         )}
-        `
+        Claim model rentindIds ${sortedNfts.map((nft) => BigNumber.from(nft.renting?.id))}
+        `,
       });
     },
     [sdk, transactionWrapper]

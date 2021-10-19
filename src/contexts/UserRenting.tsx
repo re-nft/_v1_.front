@@ -3,7 +3,7 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 
 import { fetchUserRenting, FetchUserRentingReturn } from "../services/graph";
@@ -24,7 +24,7 @@ export type UserRentingContextType = {
 export const UserRentingContext = createContext<UserRentingContextType>({
   userRenting: [],
   isLoading: false,
-  refetchRenting: () => EMPTY
+  refetchRenting: () => EMPTY,
 });
 
 export const UserRentingProvider: React.FC = ({ children }) => {
@@ -65,12 +65,12 @@ export const UserRentingProvider: React.FC = ({ children }) => {
             return;
           }
           const _renting: Renting[] = r
-            .filter((v) => v.lending && !v.lending.collateralClaimed)
+            .filter((v) => v.lending)
             .map(
               (r) =>
                 new Renting(
                   r.lending.nftAddress,
-                  r.lending.tokenId,
+                  r.lending.tokenID,
                   parseLending(r.lending),
                   r
                 )
@@ -108,7 +108,7 @@ export const UserRentingProvider: React.FC = ({ children }) => {
       value={{
         userRenting: renting,
         isLoading,
-        refetchRenting: fetchRenting
+        refetchRenting: fetchRenting,
       }}
     >
       {children}

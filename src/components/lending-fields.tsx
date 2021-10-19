@@ -1,6 +1,7 @@
 import React from "react";
 import { Lending } from "../contexts/graph/classes";
-import { PaymentToken } from "@renft/sdk";
+//@ts-ignore
+import { PaymentToken } from "@eenagy/sdk";
 import { CatalogueItemRow } from "./catalogue-item/catalogue-item-row";
 
 const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
@@ -14,10 +15,6 @@ const LendingFields: React.FC<{ nft: Lending }> = ({ nft }) => {
       <CatalogueItemRow
         text={`Max duration [${days > 1 ? "days" : "day"}]`}
         value={days.toString()}
-      />
-      <CatalogueItemRow
-        text={`Collateral [${PaymentToken[nft.lending.paymentToken]}]`}
-        value={nft.lending.nftPrice.toString()}
       />
     </>
   );

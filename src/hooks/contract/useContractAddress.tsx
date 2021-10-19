@@ -1,4 +1,5 @@
-import { RENFT_ADDRESS } from "@renft/sdk";
+//@ts-ignore
+import { RENFT_ADDRESS } from "@eenagy/sdk";
 import React, { useContext, useMemo } from "react";
 import { ContractContext } from "../../contexts/ContractsProvider";
 import { NetworkName } from "../../types";

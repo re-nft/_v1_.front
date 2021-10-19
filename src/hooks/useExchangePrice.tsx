@@ -6,7 +6,8 @@ import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
 
-import { PaymentToken } from "@renft/sdk";
+//@ts-ignore
+import { PaymentToken } from "@eenagy/sdk";
 
 interface TOKEN_PRICE {
   tokenPerUSD: Record<PaymentToken, number>;

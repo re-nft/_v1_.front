@@ -23,10 +23,10 @@ const ROUTES = [
   //   path: "/leaderboard",
   //   name: "Leaderboard",
   // },
-  {
-    path: "/faq",
-    name: "FAQ",
-  },
+  // {
+  //   path: "/faq",
+  //   name: "FAQ",
+  // },
 ];
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;

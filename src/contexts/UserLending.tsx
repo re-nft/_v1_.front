@@ -66,7 +66,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
           // ! that something went wrong. That way, if the app behaves incorrectly, we will
           // ! know where to look. Right now I am running into an issue of localising the
           // ! problem why user's lending does not show and there is no console.warn here
-          console.warn("could not pull users ReNFT lendings");
+          console.warn("could not pull users ReNFT lendings", e);
           return {};
         });
       })

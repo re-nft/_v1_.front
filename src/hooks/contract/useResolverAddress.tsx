@@ -1,4 +1,5 @@
-import { RESOLVER_ADDRESS } from "@renft/sdk";
+//@ts-ignore
+import { RESOLVER_ADDRESS } from "@eenagy/sdk";
 import React, { useContext } from "react";
 import { ContractContext } from "../../contexts/ContractsProvider";
 import UserContext from "../../contexts/UserProvider";

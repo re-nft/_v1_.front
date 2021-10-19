@@ -1,7 +1,7 @@
 import "../style/index.scss";
 import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import Head from "next/head";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { StateProvider } from "../contexts/StateProvider";
 import AppLayout from "../components/app-layout";
 import type { AppProps } from "next/app";
@@ -10,6 +10,7 @@ import { theme } from "../components/theme";
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
 import "../scripts/wdyr";
+
 
 //@ts-ignore
 import NProgress from "nprogress";
@@ -22,9 +23,9 @@ if (typeof window !== "undefined") {
     //   ? window.location.hostname !== "dapp.renft.io"
     //   : true,
     gaOptions: {
-      siteSpeedSampleRate: 100,
+      siteSpeedSampleRate: 100
     },
-    testMode: window.location.hostname !== "dapp.renft.io",
+    testMode: window.location.hostname !== "animetas.renft.io"
   });
 }
 
@@ -85,7 +86,6 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => {
           key="og:image"
         />
       </Head>
-
       <StateProvider>
         <ThemeProvider theme={theme}>
           <AppLayout>

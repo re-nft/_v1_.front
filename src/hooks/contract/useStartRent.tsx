@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { PaymentToken } from "@renft/sdk";
+//@ts-ignore
+import { NFTStandard, PaymentToken } from "@eenagy/sdk";
 import { BigNumber } from "ethers";
 import { getDistinctItems, getE20, sortNfts } from "../../utils";
 import { MAX_UINT256 } from "../../consts";
@@ -11,7 +12,7 @@ import { ContractContext } from "../../contexts/ContractsProvider";
 import { useSDK } from "./useSDK";
 import {
   TransactionStatus,
-  useTransactionWrapper
+  useTransactionWrapper,
 } from "../useTransactionWrapper";
 import { EMPTY, Observable } from "rxjs";
 import { useObservable } from "../useObservable";
@@ -26,6 +27,7 @@ export type StartRentNft = {
   tokenId: string;
   lendingId: string;
   rentDuration: string;
+  rentAmount: number;
   paymentToken: PaymentToken;
   isERC721: boolean;
 };
@@ -128,10 +130,15 @@ export const useStartRent = (): {
 
       const sortedNfts = nfts.sort(sortNfts);
       const addresses = sortedNfts.map((nft) => nft.address);
+      const standards = sortedNfts.map((nft) =>
+        nft.isERC721 ? NFTStandard.E721 : NFTStandard.E1155
+      );
       const tokenIds = sortedNfts.map((nft) => BigNumber.from(nft.tokenId));
       const lendingIds = sortedNfts.map((nft) => BigNumber.from(nft.lendingId));
       const rentDurations = sortedNfts.map((nft) => Number(nft.rentDuration));
+      const rentAmount = sortedNfts.map((nft) => Number(nft.rentAmount));
 
+      debug("standards", standards);
       debug("addresses", addresses);
       debug(
         "tokenIds",
@@ -142,16 +149,27 @@ export const useStartRent = (): {
         sortedNfts.map((nft) => nft.lendingId)
       );
       debug("rentDurations", rentDurations);
+      debug("rentAmount", rentAmount);
+
       return transactionWrapper(
-        sdk.rent(addresses, tokenIds, lendingIds, rentDurations),
+        sdk.rent(
+          standards,
+          addresses,
+          tokenIds,
+          lendingIds,
+          rentDurations,
+          rentAmount
+        ),
         {
           action: "rent",
           label: `
+          standards: ${standards}
           addresses: ${addresses}
           tokenIds: ${sortedNfts.map((nft) => nft.tokenId)}
           lendingIds: ${sortedNfts.map((nft) => nft.lendingId)}
-          rentDurations: ${rentDurations}
-          `
+          rentDurations: ${rentDurations},
+          rentDurations: ${rentAmount}
+          `,
         }
       );
     },
@@ -164,7 +182,7 @@ export const useStartRent = (): {
     handleApproveAll,
     isApproved,
     approvalStatus: {
-      ...approvalStatus
-    }
+      ...approvalStatus,
+    },
   };
 };

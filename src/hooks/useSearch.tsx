@@ -2,8 +2,9 @@ import { useCallback, useMemo, useEffect } from "react";
 import { useNFTFilterBy } from "../components/app-layout/nft-filter-select";
 import { useNFTSortBy } from "../components/app-layout/nft-sortby-select";
 import shallow from "zustand/shallow";
-import { Lending, Nft, Renting } from "../contexts/graph/classes";
-import { PaymentToken } from "@renft/sdk";
+import { Lending, Nft } from "../contexts/graph/classes";
+//@ts-ignore
+import { PaymentToken } from "@eenagy/sdk";
 import { useExchangePrice } from "./useExchangePrice";
 import { isLending } from "../utils";
 import { useNftMetaState } from "./useMetaState";
@@ -192,9 +193,7 @@ export const useSearch = <T extends Nft>(items: T[]): T[] => {
       priceInUSD: isLending(r)
         ? toUSD(r.lending.paymentToken, r.lending.dailyRentPrice, tokenPerUSD)
         : 1,
-      collateralInUSD: isLending(r)
-        ? toUSD(r.lending.paymentToken, r.lending.nftPrice, tokenPerUSD)
-        : 1
+      collateralInUSD: 0,
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -255,10 +254,6 @@ export const useSortOptions = (): CategoryOptions[] => {
     return [
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
-      { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
-      { label: "Latest rent items", value: "lri", imageUrl: "" },
-      { label: "Oldest rent items", value: "ori", imageUrl: "" }
     ];
   }, []);
 };

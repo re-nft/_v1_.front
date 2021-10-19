@@ -44,6 +44,8 @@ cypress/videos
 # vercel
 .vercel
 
+
 .sentryclirc
 # Sentry
 .sentryclirc
+

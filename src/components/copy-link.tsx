@@ -15,6 +15,7 @@ export const CopyLink: React.FC<{
         ? window.location.origin
         : "https://dapp.renft.io";
     return `${href}/rent/${address}/${tokenId}`;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeof window !== "undefined", address, tokenId]);
 
   const [isCopied, setCopied] = useClipboard(copyLink);

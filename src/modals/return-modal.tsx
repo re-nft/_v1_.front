@@ -16,11 +16,10 @@ type ReturnModalProps = {
 export const ReturnModal: React.FC<ReturnModalProps> = ({
   nfts,
   open,
-  onClose
+  onClose,
 }) => {
   const returnIt = useReturnIt();
   const [returnT, setReturnObservable] = useObservable();
-  const { handleApproveAll, isApproved, approvalStatus } = useNFTApproval(nfts);
 
   const handleReturnNft = useCallback(() => {
     setReturnObservable(returnIt(nfts));
@@ -31,33 +30,18 @@ export const ReturnModal: React.FC<ReturnModalProps> = ({
       <div className="modal-dialog-section">
         <div className="modal-dialog-title">Do you want to return?</div>
         <div className="modal-dialog-button">
-          {!isApproved && (
-            <TransactionWrapper
-              isLoading={approvalStatus.isLoading}
-              status={approvalStatus.status}
-              transactionHashes={approvalStatus.transactionHash}
-            >
-              <Button
-                description="Approve Return"
-                disabled={approvalStatus.isLoading}
-                onClick={handleApproveAll}
-              />
-            </TransactionWrapper>
-          )}
-          {isApproved && (
-            <TransactionWrapper
-              isLoading={returnT.isLoading}
-              closeWindow={onClose}
-              status={returnT.status}
-              transactionHashes={returnT.transactionHash}
-            >
-              <Button
-                description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
-                disabled={approvalStatus.isLoading || !isApproved}
-                onClick={handleReturnNft}
-              />
-            </TransactionWrapper>
-          )}
+          <TransactionWrapper
+            isLoading={returnT.isLoading}
+            closeWindow={onClose}
+            status={returnT.status}
+            transactionHashes={returnT.transactionHash}
+          >
+            <Button
+              description={nfts.length > 1 ? "Return All NFTs" : "Return NFT"}
+              disabled={false}
+              onClick={handleReturnNft}
+            />
+          </TransactionWrapper>
         </div>
       </div>
     </Modal>

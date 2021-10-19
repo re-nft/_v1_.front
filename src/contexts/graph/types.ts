@@ -1,4 +1,6 @@
-import { PaymentToken } from "@renft/sdk";
+//@ts-ignore
+
+import { PaymentToken } from "@eenagy/sdk";
 import { Address, TokenId } from "../../types";
 
 export type NftTokenMeta = {
@@ -11,9 +13,8 @@ export type NftTokenMeta = {
     name: string;
     description: string;
     imageUrl: string;
-  }
+  };
 };
-
 
 export type NftToken = {
   address: Address;
@@ -61,10 +62,9 @@ export interface ILending {
   lenderAddress: Address;
   maxRentDuration: number;
   dailyRentPrice: number;
-  nftPrice: number;
   paymentToken: PaymentToken;
-  collateralClaimed: boolean;
-  isERC721: boolean;
+  rentClaimed: boolean;
+  is721: boolean;
   renting?: IRenting;
   lentAt: number;
 }
@@ -72,17 +72,16 @@ export interface ILending {
 export type LendingRaw = {
   id: string;
   nftAddress: string;
-  tokenId: string;
-  lentAmount: string;
+  tokenID: string;
+  lendAmount: string;
   lenderAddress: string;
   maxRentDuration: string;
   dailyRentPrice: string;
-  nftPrice: string;
   paymentToken: string;
-  collateralClaimed: boolean;
-  isERC721: boolean;
-  renting: RentingRaw;
-  lentAt: number;
+  rentClaimed: boolean;
+  is721: boolean;
+  renting: RentingRaw[];
+
 };
 
 export interface IRenting {
@@ -92,6 +91,7 @@ export interface IRenting {
   rentedAt: number;
   lendingId: string;
   lending: ILending;
+  expired: boolean;
 }
 
 export type RentingRaw = {
@@ -101,6 +101,7 @@ export type RentingRaw = {
   rentedAt: string;
   lendingId: string;
   lending: LendingRaw;
+  expired: boolean;
 };
 
 export type NftRaw = {

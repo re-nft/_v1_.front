@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useMemo,
-  useCallback,
+  useCallback
 } from "react";
 import { ethers, Signer } from "ethers";
 import Web3Modal from "web3modal";
@@ -11,6 +11,7 @@ import { hasDifference, THROWS } from "../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import ReactGA from "react-ga";
+import * as Sentry from "@sentry/nextjs";
 
 const DefaultUser = {
   address: "",
@@ -18,7 +19,7 @@ const DefaultUser = {
   provider: undefined,
   connect: THROWS,
   web3Provider: undefined,
-  network: "",
+  network: ""
 };
 
 type UserContextType = {
@@ -50,7 +51,7 @@ export const UserProvider: React.FC = ({ children }) => {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions, // required
+          providerOptions // required
         })
       : null;
   }, [providerOptions, hasWindow]);
@@ -153,6 +154,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     ReactGA.set({ userId: address });
+    Sentry.setUser({ id: address });
   }, [address]);
 
   const accountsChanged = useCallback(
@@ -210,7 +212,7 @@ export const UserProvider: React.FC = ({ children }) => {
         signer,
         address,
         web3Provider,
-        network,
+        network
       }}
     >
       {children}

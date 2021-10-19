@@ -38,14 +38,14 @@
         
         &:hover {
             color: $white;
-            background: $orange;
-            box-shadow: 7px 7px 0 $orange-dark, 
-            6px 6px 0 $orange-dark, 
-            5px 5px 0 $orange-dark, 
-            4px 4px 0 $orange-dark,
-            3px 3px 0 $orange-dark,
-            2px 2px 0 $orange-dark, 
-            1px 1px 0 $orange-dark;
+            background: $purple-dark;
+            box-shadow: 7px 7px 0 $purple-dark, 
+            6px 6px 0 $purple-dark, 
+            5px 5px 0 $purple-dark, 
+            4px 4px 0 $purple-dark,
+            3px 3px 0 $purple-dark,
+            2px 2px 0 $purple-dark, 
+            1px 1px 0 $purple-dark;
           
         }
         
@@ -59,7 +59,7 @@
             left: 3px;
             z-index: -1;
             padding: 4px;
-            background: black;
+            background: $animetas;
         }
         
         &-active {
@@ -71,9 +71,10 @@
             &:before {
                 top:-4px;
                 left:-4px;
+                background: $animetas;
             }
             &:hover {
-                box-shadow: inset 8px 8px 0 $orange-dark;
+                box-shadow: inset 8px 8px 0 $animetas;
             }
         }
     }

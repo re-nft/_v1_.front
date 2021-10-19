@@ -9,6 +9,13 @@
     position: relative;
     min-height: 100%;
     height: 100%;
+    min-height: 100vh;
+
+    background-color: rgb(26, 0, 49);
+    background-image: url(/assets/bg-tile.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 0;
 
     &__container {
         flex: 1 0 auto;
@@ -71,6 +78,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    
 }
 
 .content-center {
@@ -108,7 +116,7 @@
             left: 0;
             width: 101%;
             height: 100%;
-            box-shadow: 5px 5px $black;
+            box-shadow: 5px 5px $animetas;
         }
     }
 
@@ -119,9 +127,9 @@
     &.main-content {
         flex-grow: 1;
         display: flex;
-        border: 4px solid $black;
+        border: 4px solid $animetas;
         box-sizing: border-box;
-        box-shadow: 7px 7px 0 $black;
+        box-shadow: 7px 7px 0 $animetas;
         background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
         z-index:10;
     }
@@ -175,20 +183,23 @@
         }
       
         &-user {
-          background: #fdfff9;
-          color: $purple;
-          border: 4px solid $black;
+          background:black;
+          color: white !important;
+          border: 4px solid $animetas;
           text-align: center;
           font-size: 18px;
           padding: 8px 18px;
           line-height: 1;
-          box-shadow: 6px 6px 0 $black;
+          box-shadow: 6px 6px 0 $animetas;
+          & > a{
+              color: white;
+          }
         }
     }
 
 
     &__logo {
-      background-image: url(./img/logo.svg);
+      background-image: url(/assets/logo.png);
       background-size: auto 50px;
       background-repeat: no-repeat;
       height: 50px;
@@ -285,4 +296,8 @@
 }
 .black-text{
     color: black;
+}
+
+.white-text{
+    color: white;
 }

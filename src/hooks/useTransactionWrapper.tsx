@@ -128,11 +128,10 @@ export const useTransactionWrapper = (): ((
         }),
         from(
           promise.catch((err) => {
-            ReactGA.event({
+            const event = {
               category: "Contract interaction",
               action: `Error action:${action}`,
-              label: `uniqueId:${id} ${err.message}`,
-            });
+              label: `uniqueId:${id} ${err.message}`,};
             Sentry.captureMessage(`Error action: ${action} ${err.message}`)
             setError(err.message, "warning");
             return null;
