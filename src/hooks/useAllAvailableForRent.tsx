@@ -3,13 +3,9 @@ import { useContext, useEffect, useMemo } from "react";
 import { CurrentAddressWrapper } from "../contexts/CurrentAddressWrapper";
 import { Lending, Nft } from "../contexts/graph/classes";
 import { queryAllLendingRenft } from "../contexts/graph/queries";
-import { nftReturnIsExpired, timeItAsync } from "../utils";
+import { nftReturnIsExpired, timeItAsync, filterByCompany } from "../utils";
 import UserContext from "../contexts/UserProvider";
-import {
-  ANIMETAS_CONTRACT_ADDRESS,
-  ANIMONKEYS_CONTRACT_ADDRESS,
-  SECOND_IN_MILLISECONDS
-} from "../consts";
+import { SECOND_IN_MILLISECONDS } from "../consts";
 import { debounceTime, from, map, switchMap, timer } from "rxjs";
 import { LendingRaw } from "../contexts/graph/types";
 import shallow from "zustand/shallow";
@@ -35,12 +31,7 @@ export const fetchRentings = () => {
       return (
         lendings
           .filter((v) => v != null)
-          .filter((v) => {
-            return process.env.NEXT_PUBLIC_NETWORK_SUPPORTED === "mainnet"
-              ? v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
-                  v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS
-              : true;
-          })
+          .filter(filterByCompany())
           .map((lending) => {
             return new Lending(lending);
           })
@@ -80,16 +71,16 @@ const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
       }
       return {
         ...state,
-        nfts
+        nfts,
       };
     }),
   setLoading: (isLoading: boolean) =>
     set((state) => {
       return {
         ...state,
-        isLoading
+        isLoading,
       };
-    })
+    }),
 }));
 
 export const useAllAvailableForRent = () => {
@@ -130,14 +121,13 @@ export const useAllAvailableForRent = () => {
 
   const allAvailableToRent = useMemo(() => {
     if (!currentAddress) return nfts;
-    const items = nfts
-      .filter((l: Lending) => {
-        const userNotRenter =
-          l.renting && l.renting.renterAddress
-            ? l.renting.renterAddress.toLowerCase() !== currentAddress
-            : true;
-        return userNotRenter;
-      })
+    const items = nfts.filter((l: Lending) => {
+      const userNotRenter =
+        l.renting && l.renting.renterAddress
+          ? l.renting.renterAddress.toLowerCase() !== currentAddress
+          : true;
+      return userNotRenter;
+    });
     return items;
   }, [currentAddress, nfts]);
 

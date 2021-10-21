@@ -12,7 +12,14 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { ERC1155__factory } from "./contracts/ERC1155__factory";
 import { ERC721__factory } from "./contracts/ERC721__factory";
 import { diffJson } from "diff";
-import { RENFT_SUBGRAPH_ID_SEPARATOR } from "./consts";
+import {
+  RENFT_SUBGRAPH_ID_SEPARATOR,
+  ANIMETAS_CONTRACT_ADDRESS,
+  ANIMONKEYS_CONTRACT_ADDRESS,
+  GFC_CONTRACT_ADDRESS,
+  GFC_WEAPON_CONTRACT_ADDRESS,
+  GFC_COMPANION_CONTRACT_ADDRESS,
+} from "./consts";
 import { IRenting } from "./contexts/graph/types";
 
 // ENABLE with DEBUG=* or DEBUG=FETCH,Whatever,ThirdOption
@@ -40,7 +47,7 @@ const e20abi = [
   "function allowance(address owner, address spender) view returns (uint256)",
   "function transfer(address to, uint amount) returns (boolean)",
   "function approve(address spender, uint256 amount) returns (boolean)",
-  "event Transfer(address indexed from, address indexed to, uint amount)"
+  "event Transfer(address indexed from, address indexed to, uint amount)",
 ];
 
 export const getE20 = (address: string, signer?: ethers.Signer): ERC20 => {
@@ -180,18 +187,6 @@ export const toDataURLFromURL = (
     });
 
 /**
- * ReNFT is implemented in such a way that it invokes handlers (lent, rend, stopLend, claim, return)
- * on unique groups of NFTs. For example, 721A,1155A,1155A,1155B will invoke the handler 3 times.
- * Once for 721A, once for 1155A,1155A and once for 1155B. This means, that we must bundle the NFTs
- * correctly on the front-end to be passed to the contracts. That means that same addresses must
- * be next to each other, and the respective tokenIds (in the case of 1155s) must be ordered in ascending
- * order
- */
-const bundleNfts = () => {
-  true;
-};
-
-/**
  * Helps advance time on test blockhain to test claimColletaral and similar
  * @param seconds
  */
@@ -234,7 +229,7 @@ export const nftReturnIsExpired = (renting: IRenting): boolean => {
 enum EQUALITY {
   LESS = -1,
   EQUAL = 0,
-  GREATER = 1
+  GREATER = 1,
 }
 export const sortNfts = (
   a: { tokenId: string; isERC721: boolean },
@@ -262,7 +257,7 @@ export const mapAddRelendedField =
   (ids: Set<string>) => (l: Lending | Renting) => {
     return {
       ...l,
-      relended: ids.has(`${l.nftAddress}:${l.tokenId}`)
+      relended: ids.has(`${l.nftAddress}:${l.tokenId}`),
     };
   };
 export const mapToIds = (items: Renting[] | Lending[]) => {
@@ -283,7 +278,7 @@ export const isDegenerateNft = async (
   if (!provider) return true;
 
   const abi165 = [
-    "supportsInterface(bytes4 interfaceID) external view returns (bool)"
+    "supportsInterface(bytes4 interfaceID) external view returns (bool)",
   ];
   const contract = new ethers.Contract(address, abi165, provider);
   let isDegenerate = true;
@@ -308,9 +303,12 @@ export const isVideo = (image: string | undefined) =>
   image?.endsWith("avi") ||
   image?.endsWith("flv");
 
-export const hasDifference = (a: Record<string, unknown> | unknown[], b: Record<string, unknown> | unknown[]) => {
+export const hasDifference = (
+  a: Record<string, unknown> | unknown[],
+  b: Record<string, unknown> | unknown[]
+) => {
   const difference = diffJson(a, b, {
-    ignoreWhitespace: true
+    ignoreWhitespace: true,
   });
   //const difference = true;
   if (
@@ -358,3 +356,24 @@ export const getUniqueID = (
 // export const getUniqueCheckboxId = (item: Nft): string => {
 //   return getUniqueID(item.address, item.tokenId, getLendingId(item));
 // };
+
+export const filterByCompany = (): ((v) => boolean) => {
+  if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED !== "mainnet") {
+    return () => true;
+  } else if (process.env.NEXT_PUBLIC_FILTER_COMPANY === "animetas") {
+    return () =>
+      v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
+      v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS;
+  } else if (process.env.NEXT_PUBLIC_FILTER_COMPANY === "gfc") {
+    return (v) => {
+      return (
+        v.nftAddress.toLowerCase() === GFC_CONTRACT_ADDRESS ||
+        v.nftAddress.toLowerCase() === GFC_WEAPON_CONTRACT_ADDRESS ||
+        v.nftAddress.toLowerCase() === GFC_COMPANION_CONTRACT_ADDRESS
+      );
+    };
+  } else if (typeof process.env.NEXT_PUBLIC_FILTER_COMPANY !== "undefined") {
+    throw new Error("No support for this company.");
+  }
+  return () => true;
+};

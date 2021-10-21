@@ -23,10 +23,7 @@ type NftMetaState = {
   fetchReadyIPFS: Nft[];
   setFetchReady: (items: Nft[]) => void;
   setIPFSResult: (items: NftTokenMeta) => void;
-  setOpenseaResult: (
-    items: NftTokenMeta[],
-    notFounds: NftTokenMeta[]
-  ) => void;
+  setOpenseaResult: (items: NftTokenMeta[], notFounds: NftTokenMeta[]) => void;
 };
 
 // const preloadImages = (metas: MetaLoading[]) => {
@@ -51,7 +48,7 @@ export const useNftMetaState = create<NftMetaState>(
               if (!state.metas[nft.id]) {
                 state.metas[nft.nId] = {
                   nId: nft.nId,
-                  loading: true
+                  loading: true,
                 };
                 state.nfts.push(nft);
                 state.fetchReadyOpenSea.push(nft);
@@ -64,25 +61,26 @@ export const useNftMetaState = create<NftMetaState>(
           produce((state) => {
             if (founds.length < 1 && notFounds.length < 1) return;
             founds.map((meta) => {
-                if(!state.metas[meta.nId]) state.metas[meta.nId] = {}
-                state.metas[meta.nId].loading = false;
-                state.metas[meta.nId].name = meta.name;
-                state.metas[meta.nId].image = meta.image;
-                state.metas[meta.nId].description = meta.description;
-                state.metas[meta.nId].collection = meta.collection;
-                state.metas[meta.nId].openseaLink = meta.openseaLink;
+              if (!state.metas[meta.nId]) state.metas[meta.nId] = {};
+              state.metas[meta.nId].loading = false;
+              state.metas[meta.nId].name = meta.name;
+              state.metas[meta.nId].image = meta.image;
+              state.metas[meta.nId].description = meta.description;
+              state.metas[meta.nId].collection = meta.collection;
+              state.metas[meta.nId].openseaLink = meta.openseaLink;
             });
             const foundSet = new Set(founds.map((f) => f.nId));
             state.fetchReadyOpenSea = state.fetchReadyOpenSea.filter(
               (n: NftTokenMeta) => !foundSet.has(n.nId)
             );
-            state.fetchReadyIPFS = notFounds;
+            state.fetchReadyIPFS = [...state.fetchReadyIPFS, ...notFounds];
             state.keys.push(...founds.map((f) => f.nId));
           })
         ),
       setIPFSResult: (meta: NftTokenMeta) =>
         set(
           produce((state) => {
+            if (!state.metas[meta.nId]) state.metas[meta.nId] = {};
             state.metas[meta.nId].loading = false;
             state.metas[meta.nId].name = meta.name;
             state.metas[meta.nId].image = meta.image;
@@ -92,13 +90,13 @@ export const useNftMetaState = create<NftMetaState>(
             );
             state.keys.push(meta.nId);
           })
-        )
+        ),
     }),
     "meta-store"
   )
 );
 
-export const useFetchMeta = (): (items: Nft[]) => void => {
+export const useFetchMeta = (): ((items: Nft[]) => void) => {
   const fetchReadyOpenSea = useNftMetaState(
     useCallback((state) => {
       return state.fetchReadyOpenSea;
@@ -123,19 +121,22 @@ export const useFetchMeta = (): (items: Nft[]) => void => {
     }, []),
     shallow
   );
-  const setFetchReady = useNftMetaState((state) => state.setFetchReady);
-  const setOpenseaResult = useNftMetaState((state) => state.setOpenseaResult);
-  const setIPFSResult = useNftMetaState((state) => state.setIPFSResult);
+  const setFetchReady = useNftMetaState(
+    useCallback((state) => state.setFetchReady, [])
+  );
+  const setOpenseaResult = useNftMetaState(
+    useCallback((state) => state.setOpenseaResult, [])
+  );
+  const setIPFSResult = useNftMetaState(
+    useCallback((state) => state.setIPFSResult, [])
+  );
 
   useEffect(() => {
     const fetchReady = fetchReadyOpenSea;
     if (fetchReady.length < 1) return;
-    let fetch: Nft[] = fetchReady;
-    // only fetch 20 items at a time
-    // when fetched, this effect will retrigger with new arr ready to be fetched
-    if(fetchReady.length > 20){
-      fetch = fetchReady.slice(0, 20)
-    }
+    const fetch: Nft[] =
+      fetchReady.length > 20 ? fetchReady.slice(0, 20) : fetchReady;
+
     const contractAddress: string[] = [];
     const tokenIds: string[] = [];
     fetch.forEach((nft: Nft) => {
@@ -147,13 +148,14 @@ export const useFetchMeta = (): (items: Nft[]) => void => {
       .pipe(
         map((founds: Array<NftTokenMeta>) => {
           const foundIds = founds.reduce((acc, nft) => {
-            acc.add(nft.nId);
+            acc.add(nft.nId.toLowerCase());
             return acc;
           }, new Set());
           const notFounds = fetch.filter((nft: NftTokenMeta) => {
-            return !foundIds.has(nft.nId);
+            return !foundIds.has(nft.nId.toLowerCase());
           });
-        //  preloadImages(founds);
+
+          //  preloadImages(founds);
           setOpenseaResult(founds, notFounds);
         })
       )
@@ -174,7 +176,7 @@ export const useFetchMeta = (): (items: Nft[]) => void => {
           return from(fetchNFTFromOtherSource(nft));
         }),
         map((data) => {
-       //   preloadImages([data]);
+          //   preloadImages([data]);
           setIPFSResult(data);
         })
       )
@@ -191,7 +193,7 @@ export const useFetchMeta = (): (items: Nft[]) => void => {
       items.forEach((nft) => {
         if (!metas[nft.nId]) {
           fetching.push({
-            ...nft
+            ...nft,
           });
         }
       });
