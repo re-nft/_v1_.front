@@ -361,7 +361,7 @@ export const filterByCompany = (): ((v) => boolean) => {
   if (process.env.NEXT_PUBLIC_NETWORK_SUPPORTED !== "mainnet") {
     return () => true;
   } else if (process.env.NEXT_PUBLIC_FILTER_COMPANY === "animetas") {
-    return () =>
+    return (v) =>
       v.nftAddress.toLowerCase() === ANIMETAS_CONTRACT_ADDRESS ||
       v.nftAddress.toLowerCase() === ANIMONKEYS_CONTRACT_ADDRESS;
   } else if (process.env.NEXT_PUBLIC_FILTER_COMPANY === "gfc") {

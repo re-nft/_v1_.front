@@ -2,7 +2,7 @@ import React from "react";
 
 const getTheme = () => {
   const comp = process.env.NEXT_PUBLIC_FILTER_COMPANY;
-  if (comp === "animetas") return "theme-animates";
+  if (comp === "animetas") return "theme-animetas";
   if (comp === "gfc") return "theme-gfc";
   return "";
 };
