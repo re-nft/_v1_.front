@@ -1,96 +1,87 @@
 .menu {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    align-content: flex-start;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  align-content: flex-start;
 
-    width: 100%;
+  width: 100%;
 
-    &__item {
-        background: $purple;
-        border: 0;
-        font-family: 'Press Start 2P', cursive;
-        text-transform: uppercase;
-        font-size: 14px;
-        font-weight: 400;
-        padding: 10px 12px;
-        text-decoration: none;
-        white-space: nowrap;
-        line-height: 1;
-        color: $white;
-        box-shadow: 7px 7px 0 $purple-dark, 
-        6px 6px 0 $purple-dark, 
-        5px 5px 0 $purple-dark, 
-        4px 4px 0 $purple-dark,
-        3px 3px 0 $purple-dark,
-        2px 2px 0 $purple-dark, 
-        1px 1px 0 $purple-dark;
-        cursor: pointer;
-        outline: none;
-        position: relative;
-        transition: all 250ms;
-        margin-right: 24px;
+  &__item {
+    background: $purple;
+    border: 0;
+    font-family: "Press Start 2P", cursive;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 10px 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    line-height: 1;
+    color: $white;
+    box-shadow: 7px 7px 0 $purple-dark, 6px 6px 0 $purple-dark,
+      5px 5px 0 $purple-dark, 4px 4px 0 $purple-dark, 3px 3px 0 $purple-dark,
+      2px 2px 0 $purple-dark, 1px 1px 0 $purple-dark;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    transition: all 250ms;
+    margin-right: 24px;
 
-        &:last-child {
-            margin-right: 0;
-        }
-        
-        &:hover {
-            color: $white;
-            background: $purple-dark;
-            box-shadow: 7px 7px 0 $purple-dark, 
-            6px 6px 0 $purple-dark, 
-            5px 5px 0 $purple-dark, 
-            4px 4px 0 $purple-dark,
-            3px 3px 0 $purple-dark,
-            2px 2px 0 $purple-dark, 
-            1px 1px 0 $purple-dark;
-          
-        }
-        
-        &:before {
-            content: '';
-            display: block;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 3px;
-            left: 3px;
-            z-index: -1;
-            padding: 4px;
-            background: $animetas;
-        }
-        
-        &-active {
-            background: $orange;
-            color: $white;
-            box-shadow: inset 3px 3px 0 $orange-dark;
-            top:6px;
-            left:6px;
-            &:before {
-                top:-4px;
-                left:-4px;
-                background: $animetas;
-            }
-            &:hover {
-                box-shadow: inset 8px 8px 0 $animetas;
-            }
-        }
+    &:last-child {
+      margin-right: 0;
     }
 
-    &.menu__search {
-        justify-content: flex-end;
-        .menu__item{
-            padding:0;
-            background-color: white;
-            box-shadow: none;
-            &:before {
-                content: none;
-            }
-        }
+    &:hover {
+      color: $white;
+      background: $purple-dark;
+      box-shadow: 7px 7px 0 $purple-dark, 6px 6px 0 $purple-dark,
+        5px 5px 0 $purple-dark, 4px 4px 0 $purple-dark, 3px 3px 0 $purple-dark,
+        2px 2px 0 $purple-dark, 1px 1px 0 $purple-dark;
     }
-    &.menu-wrapper {
-        align-items: center;
+
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 3px;
+      left: 3px;
+      z-index: -1;
+      padding: 4px;
+      background: var(--company-color);
     }
+
+    &-active {
+      background: $orange;
+      color: $white;
+      box-shadow: inset 3px 3px 0 $orange-dark;
+      top: 6px;
+      left: 6px;
+      &:before {
+        top: -4px;
+        left: -4px;
+        background: var(--company-color);
+      }
+      &:hover {
+        box-shadow: inset 8px 8px 0 var(--company-color);
+      }
+    }
+  }
+
+  &.menu__search {
+    justify-content: flex-end;
+    .menu__item {
+      padding: 0;
+      background-color: white;
+      box-shadow: none;
+      &:before {
+        content: none;
+      }
+    }
+  }
+  &.menu-wrapper {
+    align-items: center;
+  }
 }

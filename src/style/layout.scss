@@ -1,303 +1,302 @@
 #root {
-    position: relative;
-    min-height: 100%;
-    height: 100%;
+  position: relative;
+  min-height: 100%;
+  height: 100%;
 }
 
 .app {
-    flex-grow: 1;
-    position: relative;
+  flex-grow: 1;
+  position: relative;
+  min-height: 100%;
+  height: 100%;
+  min-height: 100vh;
+
+  background-color: rgb(26, 0, 49);
+  background-image: var(--company-bg-tile);
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 0;
+
+  &__container {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
     min-height: 100%;
     height: 100%;
-    min-height: 100vh;
-
-    background-color: rgb(26, 0, 49);
-    background-image: url(/assets/bg-tile.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    z-index: 0;
-
-    &__container {
-        flex: 1 0 auto;
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-        height: 100%;
-    }
+  }
 }
 
 .content-header {
-    font-size: 28px;
-    line-height: 1;
-    margin-bottom: 16px;
-    color: $white;
-    padding-bottom: 8px;
-    border-bottom: 2px solid $white;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 16px;
+  color: $white;
+  padding-bottom: 8px;
+  border-bottom: 2px solid $white;
 }
 
 .content-wrapper.footer {
-    flex-wrap: wrap;
-    padding: 24px 0;
+  flex-wrap: wrap;
+  padding: 24px 0;
 
-    .footer__message {
-        flex: 1 1 100%;
-        align-items: center;
-        text-align: center;
-        color: $red;
-        font-size: 16px;
+  .footer__message {
+    flex: 1 1 100%;
+    align-items: center;
+    text-align: center;
+    color: $red;
+    font-size: 16px;
+  }
+  .footer__content {
+    flex: 1 1 100%;
 
-    }
-    .footer__content  {
-        flex: 1 1 100%;
-
-        line-height: 1;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-}
-
-.text-content {
-    padding: 32px;
-    font-size: 24px;
-    color: $white;
-
-    .bolder {
-        text-transform: uppercase;
-    }
-
-    p {
-         margin-bottom: 16px;
-    }
-}
-
-.main {
-    position: relative;
-    padding: 0 80px;
-    min-height: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    
-}
-
-.content-center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.content-wrapper {
-    position: relative;
-    max-width: 1320px;
-    width: 100%;
-    margin: 0 auto;
-    display: flex;
-
-    &.fixed-position {
-        position: fixed;
-        top: 0;
-        padding: 0 80px;
-        left: 50%;
-        z-index: 9;
-        background: $white;
-        height: 60px;
-        margin-bottom: 0;
-        width: 100%;
-        padding-bottom: 12px;
-        box-shadow: 15px 0px $white;
-        transform: translate(-50%, 0);
-
-        &:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 101%;
-            height: 100%;
-            box-shadow: 5px 5px $animetas;
-        }
-    }
-
-    &.mb-l {
-        margin-bottom: 32px;
-    }
-
-    &.main-content {
-        flex-grow: 1;
-        display: flex;
-        border: 4px solid $animetas;
-        box-sizing: border-box;
-        box-shadow: 7px 7px 0 $animetas;
-        background-image: linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%);
-        z-index:10;
-    }
-
-    &.footer-content {
-        line-height: 1;
-        padding: 24px 0;
-    }
-}
-
-.content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 16px 0;
-    min-height: 250px;
-
-    &__navigation {
-        justify-content: flex-end;
-        display: flex;
-        flex-direction: row;
-        box-sizing: border-box;
-        padding: 0 24px;
-    }
-
-    &__items {
-        flex-grow: 1;
-        display: flex;
-        flex-wrap: wrap;
-        padding-top: 48px;
-        justify-content: center;
-        overflow: hidden;
-    }
-}
-
-.header {
-    width: 100%;
+    line-height: 1;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 30px;
-
-    &__wallet {
-        display:flex;
-
-        &-network {
-            margin-right: 10px;
-            align-self: center;
-        }
-      
-        &-user {
-          background:black;
-          color: white !important;
-          border: 4px solid $animetas;
-          text-align: center;
-          font-size: 18px;
-          padding: 8px 18px;
-          line-height: 1;
-          box-shadow: 6px 6px 0 $animetas;
-          & > a{
-              color: white;
-          }
-        }
-    }
-
-
-    &__logo {
-      background-image: url(/assets/logo.png);
-      background-size: auto 50px;
-      background-repeat: no-repeat;
-      height: 50px;
-      width: 300px;
-      flex-grow: 1;
-    }
-    .nft__button {
-        margin-right: 3px;
-    }
   }
-  .dashboard-header {
-  
-    &__lending {
-        margin-top: 30px;
-        background-image: url(./img/Lending-Headline.svg);
-        background-size: auto 50px;
-        background-repeat: no-repeat;
-        height: 50px;
-        width: 350px;
-        flex-grow: 1;
-    }
-  
-    &__renting {
-      margin-top: 30px;
-      background-image: url(./img/Renting-Headline.svg);
-      background-size: auto 50px;
-      background-repeat: no-repeat;
-      height: 50px;
-      width: 350px;
-      flex-grow: 1;
-    }
+}
+
+.text-content {
+  padding: 32px;
+  font-size: 24px;
+  color: $white;
+
+  .bolder {
+    text-transform: uppercase;
   }
-.center {
-    position: absolute;
-    top: 50%;
+
+  p {
+    margin-bottom: 16px;
+  }
+}
+
+.main {
+  position: relative;
+  padding: 0 80px;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.content-wrapper {
+  position: relative;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+
+  &.fixed-position {
+    position: fixed;
+    top: 0;
+    padding: 0 80px;
     left: 50%;
-    color: $white;
-    transform: translate(-50%, -50%);
-    font-size: 25px;
+    z-index: 9;
+    background: $white;
+    height: 60px;
+    margin-bottom: 0;
+    width: 100%;
+    padding-bottom: 12px;
+    box-shadow: 15px 0px $white;
+    transform: translate(-50%, 0);
+
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 101%;
+      height: 100%;
+      box-shadow: 5px 5px var(--company-color);
+    }
+  }
+
+  &.mb-l {
+    margin-bottom: 32px;
+  }
+
+  &.main-content {
+    flex-grow: 1;
+    display: flex;
+    border: 4px solid var(--company-color);
+    box-sizing: border-box;
+    box-shadow: 7px 7px 0 var(--company-color);
+    background-image: linear-gradient(
+      rgb(244, 62, 119) 0%,
+      rgb(104, 87, 159) 100%
+    );
+    z-index: 10;
+  }
+
+  &.footer-content {
+    line-height: 1;
+    padding: 24px 0;
+  }
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 0;
+  min-height: 250px;
+
+  &__navigation {
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    padding: 0 24px;
+  }
+
+  &__items {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 48px;
+    justify-content: center;
+    overflow: hidden;
+  }
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 30px;
+
+  &__wallet {
+    display: flex;
+
+    &-network {
+      margin-right: 10px;
+      align-self: center;
+    }
+
+    &-user {
+      background: black;
+      color: white !important;
+      border: 4px solid var(--company-color);
+      text-align: center;
+      font-size: 18px;
+      padding: 8px 18px;
+      line-height: 1;
+      box-shadow: 6px 6px 0 var(--company-color);
+      & > a {
+        color: white;
+      }
+    }
+  }
+
+  &__logo {
+    background-image: var(--company-logo);
+    background-size: auto 50px;
+    background-repeat: no-repeat;
+    height: 50px;
+    width: 300px;
+    flex-grow: 1;
+  }
+  .nft__button {
+    margin-right: 3px;
+  }
+}
+.dashboard-header {
+  &__lending {
+    margin-top: 30px;
+    background-image: url(./img/Lending-Headline.svg);
+    background-size: auto 50px;
+    background-repeat: no-repeat;
+    height: 50px;
+    width: 350px;
+    flex-grow: 1;
+  }
+
+  &__renting {
+    margin-top: 30px;
+    background-image: url(./img/Renting-Headline.svg);
+    background-size: auto 50px;
+    background-repeat: no-repeat;
+    height: 50px;
+    width: 350px;
+    flex-grow: 1;
+  }
+}
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  color: $white;
+  transform: translate(-50%, -50%);
+  font-size: 25px;
 }
 
 .batch {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background: $purple;
-    border-top: 8px solid $black;
-    width: 100%;
-    padding: 32px;
-    z-index: 9;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: $purple;
+  border-top: 8px solid $black;
+  width: 100%;
+  padding: 32px;
+  z-index: 9;
 }
 
 .batch__inner {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .pagination {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-bottom: 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: 32px;
 
-    li {
-        margin: 0 8px;
+  li {
+    margin: 0 8px;
 
-        &.page-count {
-            color: $white;
-            font-size: 28px;
-        }
+    &.page-count {
+      color: $white;
+      font-size: 28px;
     }
+  }
 }
 
 .modal-dialog-title {
-    font-size: 24px;
-    text-align: center;
-    margin: 24px 0;
+  font-size: 24px;
+  text-align: center;
+  margin: 24px 0;
 }
 
 .copy-text {
-    font-family: 'VT323';
-    font-size: 24px;
-    line-height: 27px;
+  font-family: "VT323";
+  font-size: 24px;
+  line-height: 27px;
 }
 
-.headline{
-    font-family: 'Press Start 2P', cursive;
-    font-size: 14px;
-    line-height: 27px;
+.headline {
+  font-family: "Press Start 2P", cursive;
+  font-size: 14px;
+  line-height: 27px;
 }
 
-.pink-text{
-    color: $purple;
+.pink-text {
+  color: $purple;
 }
-.black-text{
-    color: black;
+.black-text {
+  color: black;
 }
 
-.white-text{
-    color: white;
+.white-text {
+  color: white;
 }

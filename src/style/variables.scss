@@ -8,8 +8,24 @@ $grey-light: #eee6f6;
 $grey: #b4b4b4;
 $grey-dark: #9a9a9a;
 $red: #f14c4c;
-$red-dark:#d82020;
+$red-dark: #d82020;
 $black: #000;
 $white: #fff;
 
-$animetas: rgb(239, 184, 249);
+:root {
+  --company-color: $green;
+  --company-secondary-color: black;
+}
+
+.theme-animetas {
+  --company-color: rgb(239, 184, 249);
+  --company-logo: url(/assets/logo-animetas.png);
+  --company-bg-tile: url(/assets/bg-tile-animetas.png);
+  --company-secondary-color: black;
+}
+.theme-gfc {
+  --company-color: white;
+  --company-logo: url(/assets/logo-gfc.png);
+  --company-bg-tile: url(/assets/bg-tile-gfc.png);
+  --company-secondary-color: white;
+}
