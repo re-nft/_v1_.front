@@ -32,8 +32,8 @@ let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
   jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "error");
+  jest.spyOn(console, "warn");
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
@@ -199,11 +199,9 @@ describe("Home when wallet connected ", () => {
 
     expect(spyWarn).not.toHaveBeenCalled();
   }, 5000);
-  it("rerenders saved form items, when form model closes", () => {
-    //todo
-  });
-  it("rerenders saved form items, when form model closes", () => {
-    //todo
+
+  it("renders item as lended in rentals when user is lender", () => {
+    expect(false).toBe(true);
   });
   it("rerenders selected rentals when page changed", () => {
     //todo

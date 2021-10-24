@@ -7,7 +7,10 @@ import shallow from "zustand/shallow";
 import { devtools } from "zustand/middleware";
 
 import { CategorySelect } from "renft-front/components/common/category-select";
-import { CategoryOptions, useSearchOptions } from "renft-front/hooks/store/useSearch";
+import {
+  CategoryOptions,
+  useSearchOptions,
+} from "renft-front/hooks/store/useSearch";
 
 interface NftFilterState {
   filters: string | null;
@@ -50,8 +53,11 @@ export const NftFilterSelect: React.FC = () => {
     };
   }, [router, setNftFilter]);
 
+  if (!options || options.length === 0) return null;
+
   return (
     <CategorySelect
+      label="Filter"
       value={value}
       options={options}
       setValue={setNftFilter}

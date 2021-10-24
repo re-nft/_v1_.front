@@ -6,14 +6,13 @@ type ButtonProps = {
   onClick: ReactEventOnClickType;
   disabled?: boolean;
   description: string;
-  datacy?: string;
   type?: "submit" | "button";
   id?: string;
 };
 
 export const Button: React.FC<ButtonProps> = React.forwardRef(
   (
-    { disabled, onClick, description, datacy, type = "button", ...rest },
+    { disabled, onClick, description, type = "button", ...rest },
     ref: Ref<HTMLButtonElement>
   ) => {
     return (
@@ -28,8 +27,8 @@ export const Button: React.FC<ButtonProps> = React.forwardRef(
         )}
         disabled={disabled}
         onClick={onClick}
-        data-cy={datacy}
         type={type}
+        aria-label={description}
       >
         {description}
       </button>

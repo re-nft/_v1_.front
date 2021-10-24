@@ -306,6 +306,7 @@ export const parseLending = (
 ): ILending => {
   return {
     id: lending.id,
+    //TODO:eniko get rid of getAddress, seems quite unneeded
     nftAddress: getAddress(lending.nftAddress),
     tokenId: lending.tokenId,
     lentAmount: lending.lentAmount,

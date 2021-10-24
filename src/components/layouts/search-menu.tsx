@@ -4,11 +4,11 @@ import { NftSortBySelect } from "./nft-sortby-select";
 
 export const SearchMenu: React.FC = () => {
   return (
-    <div className="flex justify-end flex-1">
-      <div className="mr-4">
+    <div className="flex flex-col content-center justify-center md:flex-row md:justify-end flex-1">
+      <div className="flex-initial md:mr-4">
         <NftFilterSelect />
       </div>
-      <div className="">
+      <div className="flex-initial">
         <NftSortBySelect />
       </div>
     </div>

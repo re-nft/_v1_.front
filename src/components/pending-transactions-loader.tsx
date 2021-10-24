@@ -24,5 +24,11 @@ export const PendingTransactionsLoader: React.FC<{
 
   if (!imageSource) return null;
 
-  return <img src={imageSource}></img>;
+  return (
+    <img
+      src={imageSource}
+      aria-label="transaction-status-loader"
+      alt="transaction status"
+    ></img>
+  );
 };

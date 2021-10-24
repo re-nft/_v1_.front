@@ -143,6 +143,11 @@ export const fetchNFTFromOtherSource = async (
   if (!tokenURI) {
     return { nId: key, error: "No tokenUri" };
   }
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API_KEY) {
+    throw new Error("OPENSEA_API_KEY is not defined");
+  }
+
+  const api_key: string = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
 
   // It's still possible that the tokenUri points to opensea...
   const headers: Record<string, string> = {};
@@ -151,7 +156,7 @@ export const fetchNFTFromOtherSource = async (
     process.env.NEXT_PUBLIC_OPENSEA_API &&
     transformedUri.indexOf("api.opensea") > -1
   ) {
-    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
+    headers["X-API-KEY"] = api_key;
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
@@ -197,6 +202,11 @@ export const fetchNFTsFromOpenSea = async (
   if (!process.env.NEXT_PUBLIC_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API_KEY) {
+    throw new Error("OPENSEA_API_KEY is not defined");
+  }
+
+  const key: string = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
   return fetch(
     `${process.env.NEXT_PUBLIC_OPENSEA_API}/?${arrayToURI(
       "asset_contract_addresses",
@@ -204,7 +214,7 @@ export const fetchNFTsFromOpenSea = async (
     )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
-        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API_KEY,
+        "X-API-KEY": key,
       },
     }
   )

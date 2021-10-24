@@ -41,7 +41,8 @@ export const useAllAvailableToLend = (): {
 
   const allAvailableToLend: Nft[] = useMemo(() => {
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return [];
-    return [...devNfts, ...filteredERC1155, ...filteredERC721];
+    const all = [...devNfts, ...filteredERC1155, ...filteredERC721];
+    return all;
   }, [filteredERC1155, filteredERC721, devNfts, network]);
 
   const isLoading = useMemo(() => {

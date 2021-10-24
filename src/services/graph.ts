@@ -49,7 +49,7 @@ export const fetchUserProd721 = async (
     .then((response) => {
       if (response.tokens)
         return Promise.resolve(
-          response.tokens.map((token) => {
+          response.tokens.map((token: { id: string; tokenURI: string }) => {
             // ! in the case of ERC721 the raw tokenId is in fact `${nftAddress}_${tokenId}`
             const [address, tokenId] = token.id.split("_");
             return {
@@ -121,7 +121,9 @@ export const fetchUserRenting = async (
   currentAddress: string | undefined
 ): Promise<FetchUserRentingReturn> => {
   if (!currentAddress) return;
-  if (!process.env.NEXT_PUBLIC_RENFT_API) {
+
+  const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
+  if (!subgraphURI) {
     throw new Error("RENFT_API is not defined");
   }
   const query = queryUserRentingRenft(currentAddress);

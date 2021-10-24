@@ -10,7 +10,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import {
   StartRentNft,
   useRentApproval,
-  useStartRent
+  useStartRent,
 } from "renft-front/hooks/contract/useStartRent";
 import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
 import { Button } from "renft-front/components/common/button";
@@ -36,18 +36,18 @@ export const useRentFormState = create<{
             state.values[value.id] = { ...value };
           });
         })
-      )
+      ),
   }))
 );
 export const RentForm: React.FC<LendFormProps> = ({
   checkedItems,
-  onClose
+  onClose,
 }) => {
   const {
     isApproved,
     handleApproveAll,
     checkApprovals,
-    status: approvalStatus
+    status: approvalStatus,
   } = useRentApproval();
   const { startRent: handleSave, status } = useStartRent();
   const setValues = useRentFormState(
@@ -74,7 +74,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   }, [checkApprovals, selectedToRent]);
 
   const defaultValues: FormProps = {
-    inputs: selectedToRent
+    inputs: selectedToRent,
   };
   const {
     register,
@@ -82,22 +82,22 @@ export const RentForm: React.FC<LendFormProps> = ({
     control,
     watch,
     formState: { isSubmitting, isValid },
-    formState
+    formState,
   } = useForm<FormProps>({
     defaultValues,
     mode: "onChange",
     shouldFocusError: true,
-    resolver: yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema),
   });
   const { fields, remove } = useFieldArray({
     control,
-    name: "inputs"
+    name: "inputs",
   });
   const watchFieldArray = watch("inputs");
   const controlledFields = fields.map((field, index) => {
     return {
       ...field,
-      ...watchFieldArray[index]
+      ...watchFieldArray[index],
     };
   });
   const onSubmit = (values: FormProps) => {
@@ -110,7 +110,7 @@ export const RentForm: React.FC<LendFormProps> = ({
           lendingId: lending.id,
           rentDuration: lending.duration,
           paymentToken: lending.paymentToken,
-          isERC721: lending.isERC721
+          isERC721: lending.isERC721,
         })
       )
     );
@@ -143,6 +143,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col space-y-12 mt-4"
+        aria-label="rent-form"
       >
         <section aria-labelledby="cart-heading">
           <h2 id="cart-heading" className="sr-only">

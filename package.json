@@ -49,7 +49,7 @@
     "tailwindcss": "2.2.7",
     "video-react": "0.14.1",
     "web3modal": "1.9.3",
-    "yup": "0.32.9",
+    "yup": "0.32.11",
     "zustand": "3.5.7"
   },
   "devDependencies": {

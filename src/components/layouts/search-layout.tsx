@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { classNames } from "../../utils";
+import { classNames } from "renft-front/utils";
 import { DevMenu } from "./app-layout/dev-menu";
-import { SnackAlert } from "../common/snack-alert";
+import { SnackAlert } from "renft-front/components/common/snack-alert";
+import { SearchMenu } from "./search-menu";
 
 type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];
@@ -13,22 +14,25 @@ type PageLayoutProps = {
 const SearchLayout: React.FC<PageLayoutProps> = ({
   tabs,
   children,
-  hideDevMenu = false
+  hideDevMenu = false,
 }) => {
   const router = useRouter();
   if (!tabs || tabs.length < 1)
     return (
       <div className="flex flex-col py-4 w-full">
-        {!hideDevMenu && <DevMenu />}
-
+        <div className="flex flex-col md:flex-row pr-10">
+          {!hideDevMenu && <DevMenu />}
+          <SearchMenu />
+        </div>
         {children}
-        <SnackAlert/>
+        <SnackAlert />
       </div>
     );
 
   return (
     <div className="flex flex-col py-4 w-full">
       {!hideDevMenu && <DevMenu />}
+      <SearchMenu />
       <div>
         <div className="sm:hidden">
           <label htmlFor="tabs" className="sr-only">
@@ -77,7 +81,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
       </div>
       {children}
       <div className="flex-1">
-        <SnackAlert/>
+        <SnackAlert />
       </div>
     </div>
   );

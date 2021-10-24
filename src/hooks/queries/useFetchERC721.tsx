@@ -9,6 +9,7 @@ import {
   switchMap,
   timer,
   catchError,
+  of,
 } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 import { useWallet } from "renft-front/hooks/store/useWallet";

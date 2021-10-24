@@ -16,51 +16,46 @@ const RentCatalogueItem: React.FC<{
   onItemCheck: (lending: Lending) => () => void;
   handleBatchModalOpen: (lending: Lending) => () => void;
   show: boolean;
-}> = ({
-  checkedItems,
-  lending,
-  onItemCheck,
-  handleBatchModalOpen,
-  show
-}) => {
-    const currentAddress = useCurrentAddress();
-    const checkedMoreThanOne = useMemo(() => {
-      return checkedItems && checkedItems.length > 1;
-    }, [checkedItems]);
-    const checked = useMemo(() => {
-      const set = new Set(checkedItems);
-      return set.has(lending.id);
-    }, [checkedItems, lending]);
-    const userLender =
-      lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
-    const buttonTitle = useMemo(() => {
-      if (userLender) return "Lending";
-      return checkedMoreThanOne && checked ? "Rent all" : "Rent";
-    }, [userLender, checkedMoreThanOne, checked]);
-    return (
-      <CatalogueItem
-        nId={lending.nId}
-        uniqueId={lending.id}
-        checked={checked}
-        onCheckboxChange={onItemCheck(lending)}
-        hasAction
-        disabled={userLender}
-        show={show}
-        buttonTitle={buttonTitle}
-        onClick={handleBatchModalOpen(lending)}
-      >
-        <LendingFields lending={lending} />
-      </CatalogueItem>
-    );
-  };
+}> = ({ checkedItems, lending, onItemCheck, handleBatchModalOpen, show }) => {
+  const currentAddress = useCurrentAddress();
+  const checkedMoreThanOne = useMemo(() => {
+    return checkedItems && checkedItems.length > 1;
+  }, [checkedItems]);
+  const checked = useMemo(() => {
+    const set = new Set(checkedItems);
+    return set.has(lending.id);
+  }, [checkedItems, lending]);
+  const userLender =
+    lending.lenderAddress.toLowerCase() === currentAddress.toLowerCase();
+  const buttonTitle = useMemo(() => {
+    if (userLender) return "Lending";
+    return checkedMoreThanOne && checked ? "Rent all" : "Rent";
+  }, [userLender, checkedMoreThanOne, checked]);
+  return (
+    <CatalogueItem
+      nId={lending.nId}
+      uniqueId={lending.id}
+      checked={checked}
+      onCheckboxChange={onItemCheck(lending)}
+      hasAction
+      disabled={userLender}
+      show={show}
+      buttonTitle={buttonTitle}
+      onClick={handleBatchModalOpen(lending)}
+    >
+      <LendingFields lending={lending} />
+    </CatalogueItem>
+  );
+};
 
 const ItemsRenderer: React.FC<{
   currentPage: (Lending & { show: boolean })[];
-}> = ({ currentPage }) => {
-  const {
-    checkedItems,
-    onCheckboxChange
-  } = useBatchItems('available-to-rent');
+  pageItems: Lending[];
+}> = ({ currentPage, pageItems }) => {
+  const { checkedItems, onCheckboxChange } = useBatchItems(
+    "available-to-rent",
+    pageItems
+  );
   const [isOpenBatchModel, setOpenBatchModel] = useState(false);
   const handleBatchModalClose = useCallback(() => {
     setOpenBatchModel(false);

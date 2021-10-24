@@ -1,6 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import { Transition } from "@headlessui/react";
 import shallow from "zustand/shallow";
+import { ASTROCAT_CONTRACT_ADDRESS } from "renft-front/consts";
 
 import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
 import { useWallet } from "renft-front/hooks/store/useWallet";
@@ -57,15 +58,17 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   const meta = useNftMetaState(
     useCallback(
       (state) => {
-        return state.metas[nft.nId] || {};
+        return state.metas[nft?.nId] || {};
       },
-      [nft.nId]
+      [nft?.nId]
     ),
     shallow
   );
 
   const imageIsReady = useMemo(() => {
-    return meta && !meta.loading;
+    if (!meta) return false;
+    if (typeof meta.loading === "undefined") return false;
+    return !meta.loading;
   }, [meta]);
 
   const { name, image, openseaLink } = meta;
@@ -80,11 +83,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 
   const knownContract = useMemo(() => {
-    return (
-      nft.nftAddress.toLowerCase() ===
-      "0x0db8c099b426677f575d512874d45a767e9acc3c"
-    );
-  }, [nft.nftAddress]);
+    return nft?.nftAddress.toLowerCase() === ASTROCAT_CONTRACT_ADDRESS;
+  }, [nft?.nftAddress]);
 
   const cb: ReactEventOnClickType = useCallback(
     (e: React.MouseEvent<unknown>) => {
@@ -119,7 +119,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       leave="transition-opacity ease-linear duration-300"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      key={nft.id}
+      key={nft?.id}
       className={classNames(
         disabled && "cursor-not-allowed",
         !disabled && "hover:shadow-rn-one",
@@ -137,8 +137,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
               <div className="flex justify-center space-x-2">
                 <CatalogueActions
                   id={nId}
-                  nftAddress={nft.nftAddress}
-                  tokenId={nft.tokenId}
+                  nftAddress={nft?.nftAddress || ""}
+                  tokenId={nft?.tokenId || ""}
                   disabled={disabled || !signer}
                   checked={!!checked}
                   onCheckboxChange={onCheckboxChange}
@@ -158,11 +158,9 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       className="flex-initial p-2"
                       target="_blank"
                       rel="noreferrer"
+                      aria-label="verified"
                     >
-                      <img
-                        src="/assets/nft-verified.png"
-                        className="nft__icon small"
-                      />
+                      <img src="/assets/nft-verified.png" alt="" />
                     </a>
                   )}
                 </div>
@@ -171,15 +169,15 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <div className="px-2 flex flex-auto flex-col text-black">
               <CatalogueItemRow
                 text="NFT Address"
-                value={<ShortenPopover longString={nft.nftAddress} />}
+                value={<ShortenPopover longString={nft?.nftAddress || ""} />}
               />
               <CatalogueItemRow
                 text="Token id"
-                value={<ShortenPopover longString={nft.tokenId} />}
+                value={<ShortenPopover longString={nft?.tokenId || ""} />}
               />
               <CatalogueItemRow
                 text="Standard"
-                value={nft.isERC721 ? "721" : "1155"}
+                value={nft?.isERC721 ? "721" : "1155"}
               />
               {children}
             </div>
@@ -189,20 +187,22 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <div className="flex-1">
               <a
                 className="flex-initial"
+                aria-label="rarible link"
                 target="_blank"
                 rel="noreferrer"
-                href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
+                href={`https://rarible.com/token/${nft?.nftAddress}:${nft?.tokenId}`}
               >
-                <img src="/assets/rarible.png" className="nft__icon" />
+                <img src="/assets/rarible.png" className="nft__icon" alt="" />
               </a>
               {openseaLink && (
                 <a
                   className="flex-initial"
                   target="_blank"
                   rel="noreferrer"
+                  aria-label="opensea link"
                   href={openseaLink}
                 >
-                  <img src="/assets/opensea.png" className="nft__icon" />
+                  <img src="/assets/opensea.png" className="nft__icon" alt="" />
                 </a>
               )}
             </div>

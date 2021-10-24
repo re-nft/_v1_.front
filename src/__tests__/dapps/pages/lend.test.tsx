@@ -5,11 +5,12 @@ import {
   waitFor,
   waitForElementToBeRemoved,
   within,
+  act,
 } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { SetupServerApi } from "msw/node";
 import { rest } from "msw";
-//import * as testAssets from "./assets.json";
+import * as testAssets from "./assets.json";
 //import { PAGE_SIZE } from "renft-front/consts";
 import { enableMapSet } from "immer";
 import * as Sentry from "@sentry/nextjs";
@@ -44,9 +45,27 @@ jest.mock("renft-front/utils", () => {
     getContractWithProvider: jest.fn().mockReturnValue({
       balanceOf: jest.fn().mockReturnValue(Promise.resolve(2)),
     }),
+    getContractWithSigner: jest.fn().mockResolvedValue({
+      isApprovedForAll: jest.fn().mockResolvedValue(true),
+    }),
   };
 });
-
+jest.mock("renft-front/consts", () => {
+  const actualModule = jest.requireActual("renft-front/consts");
+  return {
+    __esModule: true,
+    ...actualModule,
+    ERC755_REFETCH_INTERVAL: 2000,
+  };
+});
+jest.mock("next/router", () => {
+  return {
+    __esModule: true,
+    useRouter: jest.fn().mockReturnValue({
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
+  };
+});
 import LendPage from "renft-front/pages/lend";
 let OLD_ENV: NodeJS.ProcessEnv;
 
@@ -84,6 +103,7 @@ beforeAll(() => {
   jest.resetModules();
   jest.spyOn(console, "error").mockImplementation();
   jest.spyOn(console, "warn").mockImplementation();
+  jest.spyOn(console, "log").mockImplementation();
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "fdsafa8";
@@ -110,6 +130,7 @@ afterAll(() => {
   process.env = OLD_ENV;
   console.error.mockRestore();
   console.log.mockRestore();
+  console.warn.mockRestore();
   Sentry.captureException.mockRestore();
   getContractWithProvider.mockRestore();
   global.window.IntersectionObserver.mockRestore();
@@ -126,6 +147,17 @@ describe("lend page wallet connected", () => {
     });
   });
 
+  beforeEach(() => {
+    console.log.mockReset();
+    console.warn.mockReset();
+    console.error.mockReset();
+  });
+  afterEach(() => {
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
@@ -134,107 +166,8 @@ describe("lend page wallet connected", () => {
 
   // Disable API mocking after the tests are done.
   afterAll(() => mswServer && mswServer.close());
-  it("renders empty content when no item returned by server", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(`${process.env.NEXT_PUBLIC_RENFT_API}/*`, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ data: [] }));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ tokens: [] }));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ account: { balances: [] } }));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
-      })
-    );
-    render(<LendPage />);
-
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
-
-    await waitFor(() => {
-      const message = screen.getByText(/you don't have any nfts to lend/i);
-
-      expect(message).toBeInTheDocument();
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  }, 2000);
-
-  // TODO:eniko show error message when API is down
-  it("renders empty content when EIP721_API server errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ account: { balances: [] } }));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
-
-    await waitFor(() => {
-      const message = screen.getByText(/you don't have any nfts to lend/i);
-
-      expect(message).toBeInTheDocument();
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  }, 2000);
 
   it("renders empty content when EIP_1155 server errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
     mswServer.use(
       rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         // Respond with "500 Internal Server Error" status for this test.
@@ -254,8 +187,10 @@ describe("lend page wallet connected", () => {
         return res(ctx.status(200), ctx.json({}));
       })
     );
+    await act(async () => {
+      render(<LendPage />);
+    });
 
-    render(<LendPage />);
     await waitFor(() => {
       const loader = screen.getByTestId("list-loader");
       expect(loader).toBeInTheDocument();
@@ -269,102 +204,9 @@ describe("lend page wallet connected", () => {
 
       expect(message).toBeInTheDocument();
     });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
   }, 2000);
 
-  it("should show content from other APIs when EIP_721 errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-
-    await waitFor(() => {
-      const items = screen.getAllByRole("gridcell");
-      expect(items.length).toBe(1);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-
-  it("should show content from other APIs when EIP_1155 errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-
-    await waitFor(() => {
-      const items = screen.getAllByRole("gridcell");
-      expect(items.length).toBe(1);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  }, 5000);
-
   it("should log to sentry when EIP_721 errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
     mswServer.use(
       rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
         // Respond with "500 Internal Server Error" status for this test.
@@ -392,8 +234,10 @@ describe("lend page wallet connected", () => {
         };
       })
     );
+    await act(async () => {
+      render(<LendPage />);
+    });
 
-    render(<LendPage />);
     await waitFor(() => {
       const loader = screen.getByTestId("list-loader");
       expect(loader).toBeInTheDocument();
@@ -405,548 +249,16 @@ describe("lend page wallet connected", () => {
       // TODO:eniko decrease the amount
       expect(Sentry.captureException).toHaveBeenCalledTimes(5);
     });
-
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
   });
 
-  it("should log to sentry when EIP_1155 errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ assets: [] }));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-
-    await waitFor(() => {
-      expect(Sentry.captureException).toHaveBeenCalledTimes(5);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  //TODO:eniko times are not consistent
-  xit("should log to sentry when amount fetch errors", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    getContractWithProvider.mockReturnValue({
-      balanceOf: jest.fn().mockRejectedValue(),
-    });
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-
-    await waitFor(() => {
-      expect(getContractWithProvider).toHaveBeenCalledTimes(1);
-      expect(Sentry.captureException).toHaveBeenCalledTimes(5);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  //TODO:eniko we don't show the amount on the card anymore
-  xit("renders item with empty amount when rejected", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-    getContractWithProvider.mockReturnValue({
-      balanceOf: jest.fn().mockRejectedValue(),
-    });
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-
-    await waitFor(() => {
-      const item = screen.getByRole("gridcell");
-      const { getByLabelText } = within(item);
-      const amountDisplay = getByTestId(/amount/i);
-      expect(amountDisplay).toContain("0");
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
   //TODO:eniko ask design for this
   xit("renders refresh button when amount is not loaded", () => {
     expect(true).toBe(true);
   });
   // TODO assert amount, address, erc721 instead of snapshot
-  it("renders item erc721, erc1555 with right details returned by API", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-    await waitFor(() => {
-      const items = screen.getAllByTestId("catalogue-item-loaded");
-      expect(items.length).toBe(2);
-      const item1 = within(items[0]);
-      expect(item1.getByTestId(/nft address/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="NFT Address"
-        >
-          <span
-            aria-haspopup="true"
-          >
-            eip1155...ess
-          </span>
-        </div>
-      `);
-      expect(item1.getByTestId(/token id/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="Token id"
-        >
-          <span
-            aria-haspopup="true"
-          >
-            eip1155...nid
-          </span>
-        </div>
-      `);
-      expect(item1.getByTestId(/standard/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="Standard"
-        >
-          1155
-        </div>
-      `);
-
-      const item2 = within(items[1]);
-      expect(item2.getByTestId(/nft address/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="NFT Address"
-        >
-          <span
-            aria-haspopup="true"
-          >
-            eip721a...ess
-          </span>
-        </div>
-      `);
-      expect(item2.getByTestId(/token id/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="Token id"
-        >
-          <span
-            aria-haspopup="true"
-          >
-            eip721t...nid
-          </span>
-        </div>
-      `);
-      expect(item2.getByTestId(/standard/i)).toMatchInlineSnapshot(`
-        <div
-          class="flex-initial"
-          data-testid="Standard"
-        >
-          721
-        </div>
-      `);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  it("show images when returned from opensea", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            assets: [
-              {
-                token_id: "eip721tokenid",
-                image_url: "https://dummy-page/dummy-image-721.jpg",
-                image_preview_url: "https://dummy-page/dummy-image-721.jpg",
-                image_thumbnail_url: "https://dummy-page/dummy-image-721.jpg",
-                image_original_url: "https://dummy-page/dummy-image-721.jpg",
-                asset_contract: {
-                  address: "eip721address",
-                },
-                name: "eip721image",
-              },
-              {
-                token_id: "eip1155tokenid",
-                image_url: "https://dummy-page/dummy-image-1155.jpg",
-                image_preview_url: "https://dummy-page/dummy-image-1155.jpg",
-                image_thumbnail_url: "https://dummy-page/dummy-image-1155.jpg",
-                image_original_url: "https://dummy-page/dummy-image-1155.jpg",
-
-                asset_contract: {
-                  address: "eip1155address",
-                },
-                name: "eip1155image",
-              },
-            ],
-          })
-        );
-      }),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-    await waitFor(() => {
-      expect(
-        screen.getByRole("img", { name: "eip721image" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("img", { name: "eip1155image" })
-      ).toBeInTheDocument();
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  it("show images when returned from tokenURI", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            assets: [],
-          })
-        );
-      }),
-      // catch all for ipfs data
-      rest.get("https://dummy-eip721", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: "https://dummysite/dummyimage.jpg",
-            description: "",
-            name: "eip721image",
-          })
-        );
-      }),
-      rest.get("https://dummy-eip1155", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: "https://dummysite/dummyimage.jpg",
-            description: "",
-            name: "eip1155image",
-          })
-        );
-      }),
-
-      rest.get("*", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-    await waitFor(() => {
-      expect(
-        screen.getByRole("img", { name: "eip721image" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("img", { name: "eip1155image" })
-      ).toBeInTheDocument();
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  it("shows empty placeholders when no image is found", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            assets: [],
-          })
-        );
-      }),
-      rest.get("*", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      })
-    );
-
-    render(<LendPage />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
-    await waitFor(() => {
-      const noImages = screen.getAllByText(/no img/i);
-      expect(noImages.length).toBe(2);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  it("renders clickable items", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      // empty opensea
-      rest.get(
-        `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }
-      ),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
-
-    render(<LendPage />);
-
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
-    await waitFor(() => {
-      const list = screen.getByRole("grid", {
-        name: /nfts/i,
-      });
-
-      const { getAllByRole } = within(list);
-      let items = getAllByRole("gridcell", {
-        selected: false,
-      });
-      expect(items.length).toBe(2);
-
-      const firstItem = within(items[0]);
-      const checkbox = firstItem.getByRole("checkbox");
-      user.click(checkbox);
-      expect(checkbox).toBeEnabled();
-
-      const button = firstItem.getByRole("button", {
-        name: /lend/i,
-      });
-      expect(button).not.toHaveAttribute("disabled");
-      items = getAllByRole("gridcell", {
-        selected: false,
-      });
-      expect(items.length).toBe(1);
-    });
-    expect(spyLog).not.toHaveBeenCalled();
-
-    expect(spyWarn).not.toHaveBeenCalled();
-  });
-  //TODO:eniko
-  // show loading indicator
-  xit("can't select items with 0 amount", () => {});
 
   describe("lend form open", () => {
     it("show lend form when 1 item selected with item details", async () => {
-      const spyLog = jest.spyOn(global.console, "log");
-      const spyWarn = jest.spyOn(global.console, "warn");
-
       mswServer.use(
         rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
           // Respond with "500 Internal Server Error" status for this test.
@@ -977,7 +289,9 @@ describe("lend page wallet connected", () => {
         })
       );
 
-      render(<LendPage />);
+      await act(async () => {
+        render(<LendPage />);
+      });
 
       await waitFor(() => {
         const loader = screen.getByTestId("list-loader");
@@ -985,6 +299,9 @@ describe("lend page wallet connected", () => {
       });
       await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
         timeout: 1500,
+      });
+      await act(async () => {
+        render(<LendPage />);
       });
       await waitFor(() => {
         screen.getAllByTestId("catalogue-item-loaded");
@@ -1000,25 +317,23 @@ describe("lend page wallet connected", () => {
       expect(items.length).toBe(2);
       const firstItem = within(items[0]);
       const checkbox = firstItem.getByRole("checkbox");
-      user.click(checkbox);
+      await act(async () => {
+        user.click(checkbox);
+      });
 
       const button = firstItem.getByRole("button", {
         name: /lend/i,
       });
-      user.click(button);
+      await act(async () => {
+        user.click(button);
+      });
 
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       const list = screen.getByRole("listitem");
       expect(list).toBeInTheDocument();
-      expect(spyLog).not.toHaveBeenCalled();
-
-      expect(spyWarn).not.toHaveBeenCalled();
     });
 
     it("show lend form when 2 item selected with selected items details", async () => {
-      const spyLog = jest.spyOn(global.console, "log");
-      const spyWarn = jest.spyOn(global.console, "warn");
-
       mswServer.use(
         rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
           // Respond with "500 Internal Server Error" status for this test.
@@ -1036,6 +351,7 @@ describe("lend page wallet connected", () => {
             return res(ctx.status(200), ctx.json({}));
           }
         ),
+
         // catch all for ipfs data
         rest.get("*", (req, res, ctx) => {
           return res(
@@ -1048,8 +364,9 @@ describe("lend page wallet connected", () => {
           );
         })
       );
-
-      render(<LendPage />);
+      await act(async () => {
+        render(<LendPage />);
+      });
 
       await waitFor(() => {
         const loader = screen.getByTestId("list-loader");
@@ -1071,27 +388,31 @@ describe("lend page wallet connected", () => {
       });
       expect(items.length).toBe(2);
       const firstItem = within(items[0]);
-      user.click(firstItem.getByRole("checkbox"));
+      await act(async () => {
+        user.click(firstItem.getByRole("checkbox"));
+      });
+      expect(firstItem.getByRole("checkbox")).toBeEnabled();
+
       const secondItem = within(items[1]);
-      user.click(secondItem.getByRole("checkbox"));
+      await act(async () => {
+        user.click(secondItem.getByRole("checkbox"));
+      });
 
-      const button = firstItem.getByRole("button", {
+      expect(secondItem.getByRole("checkbox")).toBeEnabled();
+      const button = secondItem.getByRole("button", {
         name: /lend/i,
       });
-      user.click(button);
-
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      await act(async () => {
+        user.click(button);
+      });
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
+      });
       const list = screen.getAllByRole("listitem");
       expect(list.length).toBe(2);
-
-      expect(spyLog).not.toHaveBeenCalled();
-      expect(spyWarn).not.toHaveBeenCalled();
     });
-    it("shows filled out details when modal was filled before (1 item)", () => {
-      expect(true).toBe(true);
-      const spyLog = jest.spyOn(global.console, "log");
-      const spyWarn = jest.spyOn(global.console, "warn");
 
+    it("bug with item selection", async () => {
       mswServer.use(
         rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
           // Respond with "500 Internal Server Error" status for this test.
@@ -1121,8 +442,11 @@ describe("lend page wallet connected", () => {
           );
         })
       );
-
-      render(<LendPage />);
+      let rerender;
+      await act(async () => {
+        const view = render(<LendPage />);
+        rerender = view.rerender;
+      });
 
       await waitFor(() => {
         const loader = screen.getByTestId("list-loader");
@@ -1144,50 +468,227 @@ describe("lend page wallet connected", () => {
       });
       expect(items.length).toBe(2);
       const firstItem = within(items[0]);
-      user.click(firstItem.getByRole("checkbox"));
+      await act(async () => {
+        user.click(firstItem.getByRole("checkbox"));
+      });
+      const secondItem = within(items[1]);
+      await act(async () => {
+        user.click(secondItem.getByRole("checkbox"));
+      });
 
       const button = firstItem.getByRole("button", {
         name: /lend/i,
       });
-      user.click(button);
+      await act(async () => {
+        user.click(button);
+      });
 
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       const list = screen.getAllByRole("listitem");
       expect(list.length).toBe(2);
+      mswServer.resetHandlers();
+      mswServer.use(
+        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP721_response));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({}));
+        }),
 
-      expect(spyLog).not.toHaveBeenCalled();
-      expect(spyWarn).not.toHaveBeenCalled();
-    });
-    it("shows filled out details when modal was filled before (multiple item)", () => {
-      expect(true).toBe(true);
-    });
-    it("when items selected and filled out and item lended out (form closed/form opened) form does not show it", () => {
-      expect(true).toBe(true);
-    });
+        // empty opensea
+        rest.get(
+          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
+          async (req, res, ctx) => {
+            return res(ctx.status(200), ctx.json({}));
+          }
+        ),
+        // catch all for ipfs data
+        rest.get("*", (req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.json({
+              image: null,
+              description: "",
+              name: "",
+            })
+          );
+        })
+      );
+      // rerender
+      await act(async () => {
+        rerender(<LendPage />);
+      });
+      // wait for refetch to complete
+      await waitFor(() => {
+        const loader = screen.getByLabelText("catalogue-loader");
+        expect(loader).toBeInTheDocument();
+      });
+      await waitForElementToBeRemoved(
+        () => screen.getByLabelText("catalogue-loader"),
+        {
+          timeout: 1500,
+        }
+      );
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+      let button2;
+      await waitFor(
+        () => {
+          // Only one item
+          expect(
+            screen.getAllByRole("button", {
+              name: /lend/i,
+            }).length
+          ).toBe(1);
+          button2 = screen.getByRole("button", {
+            name: /lend/i,
+          });
+        },
+        {
+          timeout: 10000,
+        }
+      );
+      await act(async () => {
+        user.click(button2);
+      });
+
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      const list2 = screen.getAllByRole("listitem");
+      // should only render 1 item
+      expect(list2.length).toBe(1);
+    }, 15000);
   });
 
-  xdescribe("filter", () => {
-    //todo
-    it("filter items out based on collection name", () => {});
-    it("filter shows only matches", () => {});
-    it("filter dropdown shows all available options in dropdown", () => {});
-    it("filter dropdown empty filter shows all items based on page", () => {});
-  });
+  describe("filter", () => {
+    it("show collection filter if there are collections", async () => {
+      mswServer.use(
+        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP721_response));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ tokens: [] }));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP155_response));
+        }),
 
+        // empty opensea
+        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(testAssets));
+        })
+      );
+      await act(async () => {
+        render(<LendPage />);
+      });
+
+      await waitFor(() => {
+        const loader = screen.getByTestId("list-loader");
+        expect(loader).toBeInTheDocument();
+      });
+      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
+        timeout: 1500,
+      });
+
+      await waitFor(() => {
+        const message = screen.getByLabelText(/Filter/i);
+
+        expect(message).toBeInTheDocument();
+      });
+    });
+    it("should not show collection filter if there no collections", async () => {
+      mswServer.use(
+        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP721_response));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ tokens: [] }));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP155_response));
+        }),
+
+        // empty opensea
+        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({}));
+        }),
+
+        // catch all for ipfs data
+        rest.get("*", (req, res, ctx) => {
+          return {
+            image: null,
+            description: "",
+            name: "",
+          };
+        })
+      );
+
+      await act(async () => {
+        render(<LendPage />);
+      });
+
+      await waitFor(() => {
+        const loader = screen.getByTestId("list-loader");
+        expect(loader).toBeInTheDocument();
+      });
+      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
+        timeout: 1500,
+      });
+
+      await waitFor(() => {
+        const message = screen.queryByLabelText(/Filter/i);
+
+        expect(message).not.toBeInTheDocument();
+      });
+    });
+    it("show not show sort on lend page", async () => {
+      mswServer.use(
+        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP721_response));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ tokens: [] }));
+        }),
+        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json(EIP155_response));
+        }),
+
+        // empty opensea
+        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({}));
+        }),
+
+        // catch all for ipfs data
+        rest.get("*", (req, res, ctx) => {
+          return {
+            image: null,
+            description: "",
+            name: "",
+          };
+        })
+      );
+
+      await act(async () => {
+        render(<LendPage />);
+      });
+
+      await waitFor(() => {
+        const loader = screen.getByTestId("list-loader");
+        expect(loader).toBeInTheDocument();
+      });
+      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
+        timeout: 1500,
+      });
+
+      await waitFor(() => {
+        const message = screen.queryByLabelText(/Sort/i);
+
+        expect(message).toBeInTheDocument();
+      });
+    });
+  });
+  //TODO:eniko less important cases
   xdescribe("filter + paging works together (multiple case)", () => {});
-  xdescribe("filter + sort works together (multiple case)", () => {});
-  xdescribe("sort + paging works together (multiple case)", () => {});
-  xdescribe("filter + sort + paging works together (multiple case)", () => {});
-  xdescribe("sort", () => {
-    //todo
-    it("sort reset sorts based on nId by default", () => {});
-    it("sorts items based on rental date desc", () => {});
-    it("sorts items based on rental date asc", () => {});
-    it("sorts items based on collateral desc", () => {});
-    it("sorts items based on collateral asc", () => {});
-    it("sorts items based on daily rent price desc", () => {});
-    it("sorts items based on daily rent price desc", () => {});
-  });
   xdescribe("paging", () => {
     it("show items based on page number based on initial sort", () => {});
     it("items are not duplicated between pages", () => {});

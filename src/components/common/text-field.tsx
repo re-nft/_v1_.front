@@ -1,6 +1,9 @@
 import React, { Ref } from "react";
 import ExclamationCircleIcon from "@heroicons/react/solid/ExclamationCircleIcon";
-import type { ReactEventOnBlurType, ReactEventOnChangeType } from "renft-front/types";
+import type {
+  ReactEventOnBlurType,
+  ReactEventOnChangeType,
+} from "renft-front/types";
 
 export const TextField: React.FC<{
   required?: boolean;
@@ -24,7 +27,7 @@ export const TextField: React.FC<{
     name,
     error,
     helperText,
-    disabled
+    disabled,
   } = props;
 
   return (
@@ -34,7 +37,7 @@ export const TextField: React.FC<{
         ref={ref as Ref<HTMLDivElement>}
       >
         <label
-          htmlFor={name}
+          htmlFor={id || name}
           className="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-lg font-body text-gray-900"
         >
           {label}
@@ -43,11 +46,13 @@ export const TextField: React.FC<{
           className="block w-full border-0 px-3 mt-4 py-1 text-black placeholder-black focus:ring-2 focus:outline-none focus:ring-rn-purple sm:text-lg"
           disabled={disabled}
           required={required}
-          id={id}
+          id={id || name}
           value={value}
           onChange={onChange}
           onBlur={onBlur}
           name={name}
+          aria-invalid={!!error}
+          aria-errormessage={`${id || name}-error`}
         />
         {error && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -59,7 +64,11 @@ export const TextField: React.FC<{
         )}
 
         {error && (
-          <p className="mt-2 text-sm leading-tight text-rn-red text-right">
+          <p
+            className="mt-2 text-sm leading-tight text-rn-red text-right"
+            data-testid="error"
+            id={`${id || name}-error`}
+          >
             {helperText}
           </p>
         )}

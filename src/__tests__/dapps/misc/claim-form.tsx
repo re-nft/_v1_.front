@@ -7,13 +7,13 @@ jest.mock("@ethersproject/providers");
 jest.mock("web3modal");
 
 describe("Claim form", () => {
-  it("should not items to be claimed", () => {
+  it("should show items to be claimed", () => {
     expect(true).toBe(false);
   });
   it("should show claim button", () => {
     expect(true).toBe(false);
   });
-  it("should not items already claimed before", () => {
+  it("should not show items already claimed before", () => {
     expect(true).toBe(false);
   });
 });

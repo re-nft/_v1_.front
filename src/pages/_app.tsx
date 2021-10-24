@@ -35,7 +35,11 @@ const origin =
     ? "https://dapp.renft.io"
     : "https://staging.dapp.renft.io";
 
-const MyApp: React.FC<AppProps> = ({ Component, pageProps, err }: AppProps) => {
+const MyApp: React.FC<AppProps & { err: unknown }> = ({
+  Component,
+  pageProps,
+  err,
+}: AppProps & { err: unknown }) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -61,6 +65,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps, err }: AppProps) => {
     ReactGA.pageview(router.asPath);
   }, [router.asPath]);
 
+  //TODO:eniko what is this
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");

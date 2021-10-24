@@ -20,6 +20,7 @@ import {
   switchMap,
   timer,
   catchError,
+  of,
 } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 import { NetworkName } from "renft-front/types";

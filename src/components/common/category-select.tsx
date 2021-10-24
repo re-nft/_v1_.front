@@ -11,7 +11,8 @@ export const CategorySelect: React.FC<{
   defaultValue: CategoryOptions;
   value: CategoryOptions | undefined;
   disabled?: boolean;
-}> = ({ options, setValue, value, defaultValue, disabled }) => {
+  label: string;
+}> = ({ options, setValue, value, defaultValue, disabled, label }) => {
   const onChange = useCallback(
     (value: string) => {
       setValue(value);
@@ -29,6 +30,7 @@ export const CategorySelect: React.FC<{
       {({ open }) => (
         <>
           <div className="relative w-48 font-body">
+            <Listbox.Label className="sr-only">{label}</Listbox.Label>
             <Listbox.Button className="relative w-full bg-white border-2 flex border-black shadow-rn-one focus:shadow-rn-one-purple pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-rn-purple focus:border-rn-purple sm:text-md">
               {value?.imageUrl && (
                 <span className="flex-1 justify-center items-center pr-2">

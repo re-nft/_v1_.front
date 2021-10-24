@@ -4,7 +4,7 @@ import {
   useForm,
   useFieldArray,
   UseFormRegister,
-  FormState
+  FormState,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { devtools } from "zustand/middleware";
@@ -26,9 +26,8 @@ import type {
   FormProps,
   LendFormProps,
   LendInputDefined,
-  LendInputProps
+  LendInputProps,
 } from "./lend-types";
-
 
 export const useLendFormState = create<{
   values: Record<string, LendInputProps>;
@@ -43,13 +42,13 @@ export const useLendFormState = create<{
             if (value.nft.id) state.values[value.nft.id] = { ...value };
           });
         })
-      )
+      ),
   }))
 );
 
 export const LendForm: React.FC<LendFormProps> = ({
   checkedItems,
-  onClose
+  onClose,
 }) => {
   const { status, startLend } = useStartLend();
   const setValues = useLendFormState(
@@ -86,11 +85,15 @@ export const LendForm: React.FC<LendFormProps> = ({
             nft: nft,
             lendAmount: amount || 1,
             amount: amount?.toString() || "1",
-            nftAddress: nft.nftAddress
+            nftAddress: nft.nftAddress,
+            maxDuration: "",
+            borrowPrice: "",
+            nftPrice: "",
+            pmToken: -1,
           },
           previousValue
         );
-      })
+      }),
     }),
     [ownedNfts, amounts, previousValues]
   );
@@ -101,22 +104,22 @@ export const LendForm: React.FC<LendFormProps> = ({
     control,
     watch,
     formState: { isSubmitting, isValid },
-    formState
+    formState,
   } = useForm<FormProps>({
     defaultValues: { ...defaultValues },
     mode: "onChange",
     shouldFocusError: true,
-    resolver: yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema),
   });
   const { fields, remove } = useFieldArray({
     control,
-    name: "inputs"
+    name: "inputs",
   });
   const watchFieldArray = watch("inputs");
   const controlledFields = fields.map((field, index) => {
     return {
       ...field,
-      ...watchFieldArray[index]
+      ...watchFieldArray[index],
     };
   });
   useEffect(() => {
@@ -148,6 +151,7 @@ export const LendForm: React.FC<LendFormProps> = ({
       <form
         className="flex flex-col space-y-12 mt-4"
         onSubmit={handleSubmit(onSubmit)}
+        aria-label="lend-form"
       >
         <section aria-labelledby="cart-heading">
           <h2 id="cart-heading" className="sr-only">
@@ -198,6 +202,7 @@ export const LendForm: React.FC<LendFormProps> = ({
                   closeWindow={onClose}
                 >
                   <Button
+                    type="submit"
                     onClick={handleSubmit(onSubmit)}
                     description={ownedNfts.length > 1 ? "Lend all" : "Lend"}
                     disabled={
@@ -229,48 +234,48 @@ const TransitionLendItem: React.FC<{
   register,
   remove,
   isSubmitting,
-  formState
+  formState,
 }) => {
-    // render the initial values so transition can be shown
-    const index = useMemo(
-      () =>
-        controlledFields.findIndex((v: LendInputProps) => {
-          if (v === null || !v.nft) return -1;
-          return v.nft.nId === item.nft.nId;
-        }),
-      [controlledFields, item.nft.nId]
-    );
-    const show = useMemo(() => {
-      const controlledItem = controlledFields[index];
-      return Boolean(controlledItem && controlledItem.nft && index >= 0);
-    }, [controlledFields, index]);
+  // render the initial values so transition can be shown
+  const index = useMemo(
+    () =>
+      controlledFields.findIndex((v: LendInputProps) => {
+        if (v === null || !v.nft) return -1;
+        return v.nft.nId === item.nft.nId;
+      }),
+    [controlledFields, item.nft.nId]
+  );
+  const show = useMemo(() => {
+    const controlledItem = controlledFields[index];
+    return Boolean(controlledItem && controlledItem.nft && index >= 0);
+  }, [controlledFields, index]);
 
-    // there is some bug here
-    const value = useMemo(() => {
-      const controlledItem = controlledFields[index];
-      // bug with removal
-      return controlledItem && controlledItem.nft ? controlledItem : item;
-    }, [controlledFields, index, item]);
+  // there is some bug here
+  const value = useMemo(() => {
+    const controlledItem = controlledFields[index];
+    // bug with removal
+    return controlledItem && controlledItem.nft ? controlledItem : item;
+  }, [controlledFields, index, item]);
 
-    return (
-      <Transition
-        show={show}
-        as={Fragment}
-        enter="transition-opacity ease-linear duration-300"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="transition-opacity ease-linear duration-300"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <LendItem
-          lendingInput={value}
-          index={index}
-          register={register}
-          formState={formState}
-          disabled={isSubmitting || formSubmittedSuccessfully}
-          removeFromCart={remove}
-        ></LendItem>
-      </Transition>
-    );
-  };
+  return (
+    <Transition
+      show={show}
+      as={Fragment}
+      enter="transition-opacity ease-linear duration-300"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity ease-linear duration-300"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+    >
+      <LendItem
+        lendingInput={value}
+        index={index}
+        register={register}
+        formState={formState}
+        disabled={isSubmitting || formSubmittedSuccessfully}
+        removeFromCart={remove}
+      ></LendItem>
+    </Transition>
+  );
+};

@@ -19,3 +19,8 @@ export const NUMBER_REGEX =
   /^([1-9][0-9]{0,3}(\.[0-9])?)|([0-9]{1,4}\.(([0-9]{3}[1-9])|([1-9][0-9]{3})|([0-9][1-9][0-9]{2})|([0-9]{2}[1-9][0-9])))$/;
 
 export const PAGE_SIZE = 20;
+
+export const ASTROCAT_CONTRACT_ADDRESS =
+  "0x0db8c099b426677f575d512874d45a767e9acc3c";
+
+export const ERC755_REFETCH_INTERVAL = 30 * SECOND_IN_MILLISECONDS;

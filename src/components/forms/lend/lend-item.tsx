@@ -20,7 +20,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
       removeFromCart,
       disabled,
       register,
-      formState
+      formState,
     } = input;
     const only1Item = useMemo(() => {
       return lendingInput.amount === "1";
@@ -58,7 +58,8 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               className="text-sm font-medium text-black"
               onClick={removeItem}
             >
-              <XIcon className="h-8 w-8 text-black" />
+              <span className="sr-only">Remove</span>
+              <XIcon className="h-8 w-8 text-black" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -73,7 +74,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Amount"
               disabled={only1Item || disabled}
-              value={only1Item ? "1" : lendingInput.lendAmount ?? ""}
+              value={only1Item ? "1" : lendingInput.lendAmount}
               {...registerFields("lendAmount")}
             />
 
@@ -81,14 +82,14 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Max lend duration"
               disabled={disabled}
-              value={lendingInput?.maxDuration ?? ""}
+              value={lendingInput?.maxDuration || ""}
               {...registerFields("maxDuration")}
             />
             <TextField
               required
               label="Borrow Price"
               disabled={disabled}
-              value={lendingInput.borrowPrice ?? ""}
+              value={lendingInput.borrowPrice || ""}
               {...registerFields("borrowPrice")}
             />
 
@@ -96,7 +97,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Collateral"
               disabled={disabled}
-              value={lendingInput.nftPrice ?? ""}
+              value={lendingInput.nftPrice || ""}
               {...registerFields("nftPrice")}
             />
 

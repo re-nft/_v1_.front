@@ -19,7 +19,4 @@ describe("Return form", () => {
   it("should show return button when already approved", () => {
     expect(true).toBe(false);
   });
-  it("should not show items already returned before", () => {
-    expect(true).toBe(false);
-  });
 });

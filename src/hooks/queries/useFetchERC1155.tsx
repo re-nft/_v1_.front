@@ -10,8 +10,13 @@ import {
   switchMap,
   timer,
   catchError,
+  Observable,
+  of,
 } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import {
+  ERC755_REFETCH_INTERVAL,
+  SECOND_IN_MILLISECONDS,
+} from "renft-front/consts";
 import { getContractWithProvider } from "renft-front/utils";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
@@ -29,7 +34,7 @@ import {
 } from "renft-front/hooks/store/useEventTrackedTransactions";
 import * as Sentry from "@sentry/nextjs";
 
-const fetchERC1155 = (currentAddress: string) => {
+const fetchERC1155 = (currentAddress: string): Observable<Nft[]> => {
   //TODO:eniko current limitation is 5000 items for ERC1155
   return from<Promise<NftToken[]>>(
     Promise.allSettled([
@@ -50,19 +55,20 @@ const fetchERC1155 = (currentAddress: string) => {
     map((result) => {
       // filter out duplicates
       const set = new Set();
-      return result
-        .map((nft) => {
-          const id = `${nft.tokenId}-${nft.address}`;
-          if (set.has(id)) {
-            return null;
-          }
+      const items: Nft[] = [];
+      result.forEach((nft) => {
+        const id = `${nft.tokenId}-${nft.address}`;
+        if (!set.has(id)) {
           set.add(id);
-          return new Nft(nft.address, nft.tokenId, nft.isERC721, {
-            meta: nft.meta,
-            tokenURI: nft.tokenURI,
-          });
-        })
-        .filter((n) => n !== null);
+          items.push(
+            new Nft(nft.address, nft.tokenId, nft.isERC721, {
+              meta: nft.meta,
+              tokenURI: nft.tokenURI,
+            })
+          );
+        }
+      });
+      return items;
     })
   );
 };
@@ -85,9 +91,10 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   );
   const ERC1155 = useNftsStore(
     useCallback((state) => {
-      return state.external_erc1155s.map((i) => {
+      const items = state.external_erc1155s.map((i) => {
         return state.nfts[i];
       });
+      return items;
     }, []),
     shallow
   );
@@ -127,7 +134,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   useEffect(() => {
     // stupid way to force refetch
     const start = refetchAfterOperation ? 0 : 0;
-    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(start, ERC755_REFETCH_INTERVAL)
       .pipe(
         switchMap(() => {
           if (!signer) return EMPTY;

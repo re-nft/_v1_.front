@@ -13,11 +13,11 @@ export const useRegisterFields = <V extends Record<string, unknown>>(
   const touchedInput = useMemo(() => {
     const touchedInputs = formState.touchedFields.inputs;
     return touchedInputs ? touchedInputs[index] : undefined;
-  }, [formState.touchedFields.inputs]);
+  }, [formState.touchedFields.inputs, index]);
   const errorInput = useMemo(() => {
     const errorInputs = formState.errors.inputs;
     return errorInputs ? errorInputs[index] : undefined;
-  }, [formState.errors.inputs]);
+  }, [formState.errors.inputs, index]);
 
   return useCallback(
     (fieldName: keyof V) => {
@@ -29,7 +29,7 @@ export const useRegisterFields = <V extends Record<string, unknown>>(
         //@ts-ignore
         typeof errorInput[fieldName] === "object";
       const message =
-      //@ts-ignore
+        //@ts-ignore
         errorInput && errorInput[fieldName]
           ? //@ts-ignore
 
@@ -39,9 +39,9 @@ export const useRegisterFields = <V extends Record<string, unknown>>(
         error: hasError,
         helperText: hasError ? message : false,
         //@ts-ignore
-        ...register(`inputs.${index}.${fieldName}`)
+        ...register(`inputs.${index}.${fieldName}`),
       };
     },
-    [touchedInput, errorInput]
+    [touchedInput, errorInput, index, register]
   );
 };

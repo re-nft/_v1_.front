@@ -93,8 +93,12 @@ const LendingCatalogueItem: React.FC<{
 
 const ItemsRenderer: React.FC<{
   currentPage: (Lending & { show: boolean })[];
-}> = ({ currentPage }) => {
-  const { checkedItems, onCheckboxChange } = useBatchItems("user-is-lending");
+  pageItems: Lending[];
+}> = ({ currentPage, pageItems }) => {
+  const { checkedItems, onCheckboxChange } = useBatchItems(
+    "user-is-lending",
+    pageItems
+  );
 
   const [modalOpen, setModalOpen] = useState(false);
   const [claimModal, setClaimModalOpen] = useState(false);

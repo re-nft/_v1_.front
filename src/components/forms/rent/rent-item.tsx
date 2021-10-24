@@ -14,7 +14,8 @@ import type { RentItemProps } from "./rent-types";
 
 export const RentItem: React.FC<RentItemProps> = React.forwardRef(
   (props, ref) => {
-    const { item, index, disabled, removeFromCart, register, formState } = props;
+    const { item, index, disabled, removeFromCart, register, formState } =
+      props;
 
     const token = item.paymentToken;
     const paymentToken = PaymentToken[token];
@@ -69,7 +70,8 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
               className="text-sm font-medium text-black"
               onClick={removeItem}
             >
-              <XIcon className="h-8 w-8 text-black" />
+              <span className="sr-only">Remove</span>
+              <XIcon className="h-8 w-8 text-black" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -99,7 +101,7 @@ export const RentItem: React.FC<RentItemProps> = React.forwardRef(
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-end",
-                    overflow: "visible"
+                    overflow: "visible",
                   }}
                 >
                   <span>

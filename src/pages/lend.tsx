@@ -1,13 +1,13 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { Nft } from "../types/classes";
-import BatchLendModal from "../components/modals/batch-lend";
-import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/misc/useBatchItems";
-import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
-import { LendSearchLayout } from "../components/layouts/lend-search-layout";
-import { PaginationList } from "../components/layouts/pagination-list";
-import ItemWrapper from "../components/common/items-wrapper";
-import { useWallet } from "../hooks/store/useWallet";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { Nft } from "renft-front/types/classes";
+import BatchLendModal from "renft-front/components/modals/batch-lend";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { useAllAvailableToLend } from "renft-front/hooks/queries/useAllAvailableToLend";
+import { LendSearchLayout } from "renft-front/components/layouts/lend-search-layout";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useWallet } from "renft-front/hooks/store/useWallet";
 import { NoSignerMessage } from "renft-front/components/no-signer-message";
 
 const LendCatalagoueItem: React.FC<{
@@ -40,11 +40,12 @@ const LendCatalagoueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
-  currentPage,
-}) => {
+const ItemsRenderer: React.FC<{
+  currentPage: (Nft & { show: boolean })[];
+  pageItems: Nft[];
+}> = ({ currentPage, pageItems }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, onCheckboxChange } = useBatchItems("lend");
+  const { checkedItems, onCheckboxChange } = useBatchItems("lend", pageItems);
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);

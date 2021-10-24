@@ -4,21 +4,20 @@ export type TransactionHash = string;
 export type TokenId = string;
 export type URI = string;
 
-
 export enum TransactionStateEnum {
   FAILED = 1,
-  SUCCESS,
-  PENDING,
+  SUCCESS = 2,
+  PENDING = 3,
   // transaction is not submitted yet, user has to click on approve button
-  WAITING_FOR_SIGNATURE,
-  NOT_STARTED,
-  DENIED_SIGNATURE
+  WAITING_FOR_SIGNATURE = 4,
+  NOT_STARTED = 5,
+  DENIED_SIGNATURE = 6,
 }
 
 // based on TransactionReceipt return value from ethers
 export enum TransactionReceiptStatus {
   FAILURE = 0,
-  SUCCESS = 1
+  SUCCESS = 1,
 }
 
 export enum NetworkName {
@@ -178,7 +177,9 @@ export type ReactEventOnChangeType = {
     field: T
   ): T extends React.ChangeEvent<unknown>
     ? void | Promise<void | boolean>
-    : (e: string | React.ChangeEvent<unknown>) => void | Promise<void | boolean>;
+    : (
+        e: string | React.ChangeEvent<unknown>
+      ) => void | Promise<void | boolean>;
 };
 
 export type ReactEventOnClickType = {
