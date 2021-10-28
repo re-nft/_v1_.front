@@ -14,23 +14,25 @@ interface TOKEN_PRICE {
   setWETH: (price: number) => void;
 }
 
-const useExchangePriceStore = create<TOKEN_PRICE>(devtools((set) => ({
-  tokenPerUSD: {
-    [PaymentToken.WETH]: 1,
-    [PaymentToken.DAI]: 1,
-    [PaymentToken.USDT]: 1,
-    [PaymentToken.USDC]: 1,
-    [PaymentToken.TUSD]: 1,
-    [PaymentToken.SENTINEL]: 0,
-    [PaymentToken.RENT]: 0,
-  },
-  setWETH: (price: number) =>
-    set(
-      produce((state) => {
-        state.tokenPerUSD[PaymentToken.WETH] = price;
-      })
-    ),
-})));
+const useExchangePriceStore = create<TOKEN_PRICE>(
+  devtools((set) => ({
+    tokenPerUSD: {
+      [PaymentToken.WETH]: 1,
+      [PaymentToken.DAI]: 1,
+      [PaymentToken.USDT]: 1,
+      [PaymentToken.USDC]: 1,
+      [PaymentToken.TUSD]: 1,
+      [PaymentToken.SENTINEL]: 0,
+      [PaymentToken.RENT]: 0,
+    },
+    setWETH: (price: number) =>
+      set(
+        produce((state) => {
+          state.tokenPerUSD[PaymentToken.WETH] = price;
+        })
+      ),
+  }))
+);
 
 //TODO:eniko can be replaced by ethers, they implemented ETH price
 const getPrice = (): Promise<number> =>
@@ -47,7 +49,7 @@ const getPrice = (): Promise<number> =>
       return data.bundles[0].ethPriceUSD;
     })
     .catch((e) => {
-      console.log(e);
+      //TODO:eniko sentry log
       return 0;
     });
 

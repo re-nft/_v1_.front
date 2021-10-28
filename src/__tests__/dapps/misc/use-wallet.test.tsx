@@ -1,10 +1,11 @@
-import { renderHook, waitFor } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react-hooks";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 
 jest.mock("firebase/app");
 jest.mock("react-ga");
 jest.mock("@ethersproject/providers");
 jest.mock("web3modal");
+jest.mock("zustand");
 
 describe("useWallet", () => {
   afterAll(() => {
@@ -12,7 +13,7 @@ describe("useWallet", () => {
   });
   it("should return default state", async () => {
     global.window.ethereum = undefined;
-    const { result } = renderHook(() => useWallet());
+    const { result, waitFor } = renderHook(() => useWallet());
 
     await waitFor(() => {
       expect(result.current.address).toBe("");
@@ -31,7 +32,7 @@ describe("useWallet", () => {
         ])
       ),
     };
-    const { result } = renderHook(() => useWallet());
+    const { result, waitFor } = renderHook(() => useWallet());
     await waitFor(() => {
       expect(result.current.address).toBe("");
       expect(result.current.network).toBe("");
@@ -49,9 +50,12 @@ describe("useWallet", () => {
         ])
       ),
     };
-    const { result } = renderHook(() => useWallet());
+    const { result, waitFor } = renderHook(() => useWallet());
     await waitFor(() => {
-      expect(result.current.address).toBe(address.toLowerCase());
+      expect(result.current.address).toBe(
+        "889714669db168bbdb3894929de608e57959fefc"
+      );
+
       expect(result.current.network).toBe("mainnet");
       expect(result.current.signer).not.toBe(null);
     });
@@ -67,7 +71,8 @@ describe("useWallet", () => {
         ])
       ),
     };
-    const { result } = renderHook(() => useWallet());
+    const { result, waitFor } = renderHook(() => useWallet());
+
     global.window.ethereum = {
       request: jest.fn().mockReturnValue(
         Promise.resolve([
@@ -79,7 +84,9 @@ describe("useWallet", () => {
     };
 
     await waitFor(() => {
-      expect(result.current.address).toBe(address.toLowerCase());
+      expect(result.current.address).toBe(
+        "889714669db168bbdb3894929de608e57959fefc"
+      );
       expect(result.current.network).toBe("mainnet");
       expect(result.current.signer).not.toBe(null);
     });

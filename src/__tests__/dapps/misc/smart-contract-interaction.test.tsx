@@ -10,6 +10,27 @@ import * as sdk from "renft-front/hooks/contract/useSDK";
 import { BigNumber } from "@ethersproject/bignumber";
 import { PaymentToken } from "@renft/sdk";
 
+// import reset function for mocks, which is ducktapped, only availaible for tests
+import { mockStoreResetFns } from "zustand";
+jest.mock("zustand", () => {
+  const mockStoreResetFns = new Set();
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation((createState: any) => {
+      const actualCreate = jest.requireActual("zustand").default;
+      const store = actualCreate(createState);
+      const initialState = store.getState();
+      mockStoreResetFns.add(() => store.setState({ ...initialState }, true));
+      return store;
+    }),
+    mockStoreResetFns,
+  };
+});
+
+afterEach(() => {
+  act(() => mockStoreResetFns.forEach((resetFn) => resetFn()));
+});
+
 jest.mock("firebase/app");
 jest.mock("react-ga");
 jest.mock("@renft/sdk");

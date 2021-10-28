@@ -14,7 +14,7 @@ import {
   of,
 } from "rxjs";
 import {
-  ERC755_REFETCH_INTERVAL,
+  ERC1155_REFETCH_INTERVAL,
   SECOND_IN_MILLISECONDS,
 } from "renft-front/consts";
 import { getContractWithProvider } from "renft-front/utils";
@@ -104,8 +104,8 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
     }, []),
     shallow
   );
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const setAmount = useNftsStore((state) => state.setAmount);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const setAmount = useNftsStore(useCallback((state) => state.setAmount, []));
 
   useEffect(() => {
     const getAvailableTokenAmountForUser = async (nft: Nft) => {
@@ -134,7 +134,7 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
   useEffect(() => {
     // stupid way to force refetch
     const start = refetchAfterOperation ? 0 : 0;
-    const subscription = timer(start, ERC755_REFETCH_INTERVAL)
+    const subscription = timer(start, ERC1155_REFETCH_INTERVAL)
       .pipe(
         switchMap(() => {
           if (!signer) return EMPTY;

@@ -9,6 +9,28 @@ import { Nft } from "renft-front/types/classes";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { PaymentToken } from "@renft/sdk";
 
+import { getContractWithSigner } from "renft-front/utils";
+// import reset function for mocks, which is ducktapped, only availaible for tests
+import { mockStoreResetFns } from "zustand";
+jest.mock("zustand", () => {
+  const mockStoreResetFns = new Set();
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation((createState: any) => {
+      const actualCreate = jest.requireActual("zustand").default;
+      const store = actualCreate(createState);
+      const initialState = store.getState();
+      mockStoreResetFns.add(() => store.setState({ ...initialState }, true));
+      return store;
+    }),
+    mockStoreResetFns,
+  };
+});
+
+afterEach(() => {
+  act(() => mockStoreResetFns.forEach((resetFn) => resetFn()));
+});
+
 jest.mock("firebase/app");
 jest.mock("react-ga");
 jest.mock("@renft/sdk");
@@ -17,6 +39,7 @@ jest.mock("web3modal");
 jest.mock("renft-front/hooks/contract/useContractAddress");
 jest.mock("renft-front/hooks/misc/useCurrentAddress");
 jest.mock("renft-front/hooks/store/useSnackProvider");
+jest.mock("next/router");
 
 jest.mock("renft-front/utils", () => {
   const originalModule = jest.requireActual("renft-front/utils");
@@ -52,7 +75,6 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
     }),
   };
 });
-
 describe("Failure scenarios smart contract returning error", () => {
   describe("lend", () => {
     it("error message from contract propagates", async () => {
@@ -68,7 +90,7 @@ describe("Failure scenarios smart contract returning error", () => {
         nft: new Nft("contract address 1", "1", true),
       };
       // todo not working
-      const { result, waitForValueToChange } = renderHook(useStartLend);
+      const { result, waitForValueToChange } = renderHook(() => useStartLend());
       expect(result.current.status.isLoading).toBe(false);
       expect(result.current.status.hasFailure).toBe(false);
       expect(result.current.status.status).toBe(
@@ -245,6 +267,25 @@ describe("Failure scenarios smart contract returning error", () => {
   });
   describe("approve nfts", () => {
     it("error message from contract propagates", async () => {
+      getContractWithSigner.mockImplementation(() => {
+        return Promise.resolve({
+          setApprovalForAll: jest.fn(() => {
+            return new Promise((resolve) => {
+              setTimeout(
+                () =>
+                  resolve({
+                    hash: "some hash",
+                  }),
+                1000
+              );
+            });
+          }),
+          isApprovedForAll: jest.fn(() => {
+            return Promise.resolve(false);
+          }),
+        });
+      });
+
       const lending = {
         lendAmount: 1,
         id: "1",
@@ -268,19 +309,23 @@ describe("Failure scenarios smart contract returning error", () => {
         TransactionStateEnum.NOT_STARTED
       );
 
+      await waitForValueToChange(() => result.current.nonApprovedNft);
       //ACT
       act(() => {
         result.current.handleApproveAll();
       });
-
-      await waitForValueToChange(() => result.current.approvalStatus);
+      await waitForValueToChange(() => result.current.approvalStatus, {
+        timeout: 2000,
+      });
       expect(result.current.approvalStatus.isLoading).toBe(true);
       expect(result.current.approvalStatus.hasFailure).toBe(false);
       expect(result.current.approvalStatus.status).toBe(
         TransactionStateEnum.PENDING
       );
 
-      await waitForValueToChange(() => result.current.approvalStatus);
+      await waitForValueToChange(() => result.current.approvalStatus, {
+        timeout: 2000,
+      });
       expect(result.current.approvalStatus.isLoading).toBe(false);
       expect(result.current.approvalStatus.hasFailure).toBe(true);
       expect(result.current.approvalStatus.status).toBe(
@@ -288,7 +333,7 @@ describe("Failure scenarios smart contract returning error", () => {
       );
     });
   });
-  xdescribe("approve tokens", () => {
+  describe("approve tokens", () => {
     it("error message from contract propagates", async () => {
       const lending = {
         lendAmount: 1,

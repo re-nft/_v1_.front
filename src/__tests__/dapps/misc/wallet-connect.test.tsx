@@ -3,7 +3,6 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import * as useUserDataHook from "renft-front/hooks/store/useUserData";
 import * as useLookupAddressHook from "renft-front/hooks/queries/useLookupAddress";
 import { WalletConnect } from "renft-front/components/layouts/app-layout/wallet-connect";
-import { sleep } from "renft-front/utils";
 
 const network = "mainnet";
 
@@ -31,7 +30,9 @@ describe("Wallet display", () => {
         ),
       });
 
-    render(<WalletConnect />);
+    await act(async () => {
+      render(<WalletConnect />);
+    });
 
     await waitFor(() => {
       const elem = screen.getByTestId("wallet-connect-button");
@@ -46,8 +47,9 @@ describe("Wallet display", () => {
     jest.mock("web3modal", () => {
       return null;
     });
-
-    render(<WalletConnect />);
+    await act(async () => {
+      render(<WalletConnect />);
+    });
 
     await waitFor(() => {
       const testId = "wallet-connect-install-metamask";
@@ -69,8 +71,10 @@ describe("Wallet display", () => {
       ),
     };
     global.process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = network;
+    await act(async () => {
+      render(<WalletConnect />);
+    });
 
-    render(<WalletConnect />);
     await waitFor(() => {
       const testId = "wallet-address";
       const elem = screen.getByTestId(testId);
@@ -104,8 +108,9 @@ describe("Wallet display", () => {
         name: accountName,
       },
     });
-
-    render(<WalletConnect />);
+    await act(async () => {
+      render(<WalletConnect />);
+    });
 
     await waitFor(() => {
       const testId = "wallet-address";
@@ -140,8 +145,9 @@ describe("Wallet display", () => {
     const spy = jest.spyOn(useLookupAddressHook, "useLookupAddress");
     const lookupAddress = "someaddress.at.eth";
     spy.mockReturnValue(lookupAddress);
-
-    render(<WalletConnect />);
+    await act(async () => {
+      render(<WalletConnect />);
+    });
 
     await waitFor(() => {
       const testId = "wallet-address";

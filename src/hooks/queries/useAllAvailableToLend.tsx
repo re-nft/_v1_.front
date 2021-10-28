@@ -47,7 +47,9 @@ export const useAllAvailableToLend = (): {
 
   const isLoading = useMemo(() => {
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return false;
-    return erc1155Loading || erc721Loading || devIsLoading;
+
+    const isLoading = erc1155Loading || erc721Loading || devIsLoading;
+    return isLoading;
   }, [erc1155Loading, erc721Loading, devIsLoading, network]);
 
   return { allAvailableToLend, isLoading };

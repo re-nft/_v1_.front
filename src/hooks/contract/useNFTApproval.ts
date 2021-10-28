@@ -2,7 +2,7 @@ import {
   SmartContractEventType,
   TransactionStatus,
 } from "renft-front/hooks/store/useEventTrackedTransactions";
-import { from, map } from "rxjs";
+import { from, map, timer, switchMap } from "rxjs";
 import { Nft } from "renft-front/types/classes";
 import { useCallback, useEffect, useState } from "react";
 import { getContractWithSigner, getDistinctItems } from "renft-front/utils";
@@ -11,10 +11,13 @@ import { useContractAddress } from "renft-front/hooks/contract/useContractAddres
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import { useCreateRequest } from "renft-front/hooks/store/useCreateRequest";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 
 type NFTApproval = Pick<Nft, "nftAddress" | "isERC721" | "tokenId" | "id">;
 
-export function useNFTApproval(nfts: NFTApproval[]): {
+export const useNFTApproval = (
+  nfts: NFTApproval[]
+): {
   isApprovalForAll: (
     nft: NFTApproval[],
     currentAddress: string,
@@ -23,7 +26,9 @@ export function useNFTApproval(nfts: NFTApproval[]): {
   isApproved: boolean;
   approvalStatus: TransactionStatus;
   handleApproveAll: () => void;
-} {
+  // needs for testing...
+  nonApprovedNft: NFTApproval[];
+} => {
   const { createRequest, status: approvalStatus } = useCreateRequest();
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [nonApprovedNft, setNonApprovedNfts] = useState<NFTApproval[]>([]);
@@ -107,25 +112,30 @@ export function useNFTApproval(nfts: NFTApproval[]): {
   );
 
   // useeffect to check if isapproved or not
+  // TODO:eniko this called too many times in tests
   useEffect(() => {
     if (!currentAddress) return;
     if (!contractAddress) return;
-    setIsApproved(false);
-    const transaction = from(
-      isApprovalForAll(nfts, currentAddress, contractAddress).catch(() => {
-        console.warn("batch lend issue with is approval for all");
-        return null;
-      })
-    ).pipe(
-      map((arg) => {
-        if (!arg) return;
-        const [status, nonApproved] = arg;
-        if (status) setIsApproved(status);
-        setNonApprovedNfts(nonApproved);
-      })
-    );
+    const transaction = () => {
+      if (nfts.length < 1) return;
+      return from(
+        isApprovalForAll(nfts, currentAddress, contractAddress).catch(() => {
+          console.warn("batch lend issue with is approval for all");
+          return null;
+        })
+      ).pipe(
+        map((arg) => {
+          if (!arg) return;
+          const [status, nonApproved] = arg;
+          if (status) setIsApproved(status);
+          setNonApprovedNfts(nonApproved);
+        })
+      );
+    };
 
-    const subscription = transaction.subscribe();
+    const subscription = timer(0, 10 * SECOND_IN_MILLISECONDS)
+      .pipe(switchMap(transaction))
+      .subscribe();
     return () => {
       subscription.unsubscribe();
     };
@@ -147,5 +157,6 @@ export function useNFTApproval(nfts: NFTApproval[]): {
     isApproved,
     approvalStatus,
     handleApproveAll,
+    nonApprovedNft,
   };
-}
+};

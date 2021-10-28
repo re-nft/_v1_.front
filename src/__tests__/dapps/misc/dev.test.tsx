@@ -6,7 +6,7 @@ jest.mock("react-ga");
 jest.mock("@ethersproject/providers");
 jest.mock("web3modal");
 
-describe("dev features are disabled for mainnet", () => {
+xdescribe("dev features are disabled for mainnet", () => {
   it("should not use react-redux tools", () => {
     expect(true).toBe(false);
   });
@@ -17,7 +17,7 @@ describe("dev features are disabled for mainnet", () => {
     expect(true).toBe(false);
   });
 });
-describe("mainnet has the bellow enabled", () => {
+xdescribe("mainnet has the bellow enabled", () => {
   describe("should log react-ga", () => {
     it("should log claim", () => {
       expect(true).toBe(false);

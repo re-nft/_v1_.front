@@ -2,9 +2,8 @@ import { useEffect, useMemo, useCallback } from "react";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Web3Provider, ExternalProvider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
-import { THROWS } from "../../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 import ReactGA from "react-ga";
 
 import produce from "immer";
@@ -31,7 +30,6 @@ const useWalletState = create<WalletContextType>((set) => ({
   address: "",
   signer: undefined,
   provider: undefined,
-  connect: THROWS,
   web3Provider: undefined,
   network: "",
   permissions: [],
@@ -105,12 +103,22 @@ export const useWallet = (): {
     useCallback((state) => state.signer, []),
     shallow
   );
-  const setProvider = useWalletState((state) => state.setProvider);
-  const setWeb3Provider = useWalletState((state) => state.setWeb3Provider);
-  const setNetworkName = useWalletState((state) => state.setNetworkName);
-  const setSigner = useWalletState((state) => state.setSigner);
-  const setAddress = useWalletState((state) => state.setAddress);
-  const setPermissions = useWalletState((state) => state.setPermissions);
+  const setProvider = useWalletState(
+    useCallback((state) => state.setProvider, [])
+  );
+  const setWeb3Provider = useWalletState(
+    useCallback((state) => state.setWeb3Provider, [])
+  );
+  const setNetworkName = useWalletState(
+    useCallback((state) => state.setNetworkName, [])
+  );
+  const setSigner = useWalletState(useCallback((state) => state.setSigner, []));
+  const setAddress = useWalletState(
+    useCallback((state) => state.setAddress, [])
+  );
+  const setPermissions = useWalletState(
+    useCallback((state) => state.setPermissions, [])
+  );
 
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
@@ -140,6 +148,7 @@ export const useWallet = (): {
           // do nothing
           console.log(e);
         });
+
       setNetworkName(nname);
       setSigner(signer);
       setAddress(address || "");
@@ -163,8 +172,13 @@ export const useWallet = (): {
           web3Modal
             .connect()
             .then((provider) => {
-              resolve(provider);
-              return initState(provider);
+              initState(provider)
+                .then(() => {
+                  resolve(provider);
+                })
+                .catch(() => {
+                  resolve(null);
+                });
             })
             .catch(() => {
               resolve(null);
@@ -201,7 +215,6 @@ export const useWallet = (): {
           if (address) setAddress("");
           if (network) setNetworkName("");
         }
-        return;
       })
     );
   }, [

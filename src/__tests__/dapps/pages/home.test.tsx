@@ -48,7 +48,7 @@ afterAll(() => {
   console.log.mockRestore();
 });
 
-describe("Home when wallet connected ", () => {
+xdescribe("Home when wallet connected ", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {

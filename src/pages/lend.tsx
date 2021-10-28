@@ -9,6 +9,7 @@ import { PaginationList } from "renft-front/components/layouts/pagination-list";
 import ItemWrapper from "renft-front/components/common/items-wrapper";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { NoSignerMessage } from "renft-front/components/no-signer-message";
+import { useSearch } from "renft-front/hooks/store/useSearch";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
@@ -91,6 +92,9 @@ const ItemsRenderer: React.FC<{
 const Lendings: React.FC = () => {
   const { signer } = useWallet();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
+
+  //TODO:eniko move this to the search-layout
+  useSearch(allAvailableToLend);
 
   if (!signer) {
     return (

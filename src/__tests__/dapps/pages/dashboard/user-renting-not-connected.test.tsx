@@ -11,7 +11,7 @@ jest.mock("next/router", () => {
   };
 });
 
-describe("User is Renting page wallet is not connected", () => {
+xdescribe("User is Renting page wallet is not connected", () => {
   it("shows connect message", async () => {
     const spyLog = jest.spyOn(global.console, "log");
     const spyWarn = jest.spyOn(global.console, "warn");

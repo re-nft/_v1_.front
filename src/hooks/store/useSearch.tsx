@@ -89,7 +89,9 @@ export const useSearch = <T extends Renting | Lending | Nft>(
   const tokenPerUSD = useExchangePrice();
   const metas = useNftMetaState(useCallback((state) => state.metas, []));
   const keys = useNftMetaState(useCallback((state) => state.keys, []));
-  const setSearchNfts = useSearchNfts((state) => state.setSearchNfts);
+  const setSearchNfts = useSearchNfts(
+    useCallback((state) => state.setSearchNfts, [])
+  );
   const router = useRouter();
 
   const categories = useMemo(() => {
