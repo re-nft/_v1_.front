@@ -10,36 +10,9 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import { PaymentToken } from "@renft/sdk";
 
 import { getContractWithSigner } from "renft-front/utils";
-// import reset function for mocks, which is ducktapped, only availaible for tests
-import { mockStoreResetFns } from "zustand";
-jest.mock("zustand", () => {
-  const mockStoreResetFns = new Set();
-  return {
-    __esModule: true,
-    default: jest.fn().mockImplementation((createState: any) => {
-      const actualCreate = jest.requireActual("zustand").default;
-      const store = actualCreate(createState);
-      const initialState = store.getState();
-      mockStoreResetFns.add(() => store.setState({ ...initialState }, true));
-      return store;
-    }),
-    mockStoreResetFns,
-  };
-});
-
-afterEach(() => {
-  act(() => mockStoreResetFns.forEach((resetFn) => resetFn()));
-});
-
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@renft/sdk");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
 jest.mock("renft-front/hooks/contract/useContractAddress");
 jest.mock("renft-front/hooks/misc/useCurrentAddress");
 jest.mock("renft-front/hooks/store/useSnackProvider");
-jest.mock("next/router");
 
 jest.mock("renft-front/utils", () => {
   const originalModule = jest.requireActual("renft-front/utils");
@@ -75,6 +48,35 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
     }),
   };
 });
+//import reset function for mocks, which is ducktapped, only availaible for tests
+import { mockStoreResetFns } from "zustand";
+jest.mock("zustand", () => {
+  const mockStoreResetFns = new Set();
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation((createState: any) => {
+      const actualCreate = jest.requireActual("zustand").default;
+      const store = actualCreate(createState);
+      const initialState = store.getState();
+      mockStoreResetFns.add(() => store.setState({ ...initialState }, true));
+      return store;
+    }),
+    mockStoreResetFns,
+  };
+});
+
+afterEach(() => {
+  act(() => {
+    try {
+      mockStoreResetFns.forEach((resetFn) => {
+        if (resetFn && typeof resetFn === "function") resetFn();
+      });
+    } catch (e) {
+      // do nothing
+    }
+  });
+});
+
 describe("Failure scenarios smart contract returning error", () => {
   describe("lend", () => {
     it("error message from contract propagates", async () => {
@@ -97,7 +99,7 @@ describe("Failure scenarios smart contract returning error", () => {
         TransactionStateEnum.NOT_STARTED
       );
 
-      //ACT
+      //ACT;
       act(() => {
         result.current.startLend([nft]);
       });

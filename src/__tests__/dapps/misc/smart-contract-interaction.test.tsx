@@ -31,11 +31,6 @@ afterEach(() => {
   act(() => mockStoreResetFns.forEach((resetFn) => resetFn()));
 });
 
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@renft/sdk");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
 jest.mock("renft-front/hooks/contract/useContractAddress");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 // THIS IS annoying, need to use file level mocking for all tests all succcess, all failure mocking, not per test level

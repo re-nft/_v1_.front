@@ -12,16 +12,9 @@ import { SetupServerApi } from "msw/node";
 import { rest } from "msw";
 import * as testAssets from "./assets.json";
 //import { PAGE_SIZE } from "renft-front/consts";
-import { enableMapSet } from "immer";
 import * as Sentry from "@sentry/nextjs";
 import { getContractWithProvider } from "renft-front/utils";
 
-enableMapSet();
-
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("web3modal");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -127,11 +120,8 @@ const uniswapRequest = (rest) => {
   );
 };
 beforeAll(() => {
-  jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation();
-  jest.spyOn(console, "warn").mockImplementation();
-  jest.spyOn(console, "log").mockImplementation();
   OLD_ENV = { ...process.env };
+
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "fdsafa8";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
@@ -155,14 +145,10 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env = OLD_ENV;
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
   Sentry.captureException.mockRestore();
   getContractWithProvider.mockRestore();
   global.window.IntersectionObserver.mockRestore();
 });
-
 describe("lend page wallet connected", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
@@ -174,21 +160,9 @@ describe("lend page wallet connected", () => {
     });
   });
 
-  beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
-    jest.clearAllMocks();
   });
 
   // Disable API mocking after the tests are done.
@@ -277,7 +251,7 @@ describe("lend page wallet connected", () => {
     });
     await waitFor(() => {
       // TODO:eniko decrease the amount
-      expect(Sentry.captureException).toHaveBeenCalledTimes(5);
+      expect(Sentry.captureException).toHaveBeenCalledTimes(15);
     });
   });
   it("should show EIP721 response", async () => {

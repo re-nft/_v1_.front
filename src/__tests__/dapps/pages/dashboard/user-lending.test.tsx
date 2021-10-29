@@ -14,10 +14,6 @@ import { PAGE_SIZE } from "renft-front/consts";
 import { getUniqueID } from "renft-front/utils";
 import { sleep } from "renft-front/utils";
 
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("next/router");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -33,11 +29,6 @@ import Home from "renft-front/pages/index";
 let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
-  jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation();
-  jest.spyOn(console, "warn").mockImplementation();
-  jest.spyOn(console, "log").mockImplementation();
-
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
@@ -49,23 +40,9 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env = OLD_ENV;
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
 });
 
-describe("User is lending when wallet connected ", () => {
-  beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
+fdescribe("User is lending when wallet connected ", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {
@@ -79,7 +56,6 @@ describe("User is lending when wallet connected ", () => {
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
-    jest.clearAllMocks();
   });
 
   // Disable API mocking after the tests are done.

@@ -1,16 +1,7 @@
 import { renderHook } from "@testing-library/react-hooks";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
-jest.mock("zustand");
-
 describe("useWallet", () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
   it("should return default state", async () => {
     global.window.ethereum = undefined;
     const { result, waitFor } = renderHook(() => useWallet());

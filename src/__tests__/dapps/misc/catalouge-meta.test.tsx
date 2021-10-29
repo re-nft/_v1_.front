@@ -6,18 +6,10 @@ import { Nft } from "renft-front/types/classes";
 import { useEventTrackedTransactionState } from "renft-front/hooks/store/useEventTrackedTransactions";
 import { ASTROCAT_CONTRACT_ADDRESS } from "renft-front/consts";
 
-import { enableMapSet } from "immer";
 import { CatalogueItem } from "renft-front/components/catalogue-item";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { TransactionStateEnum } from "renft-front/types";
 
-enableMapSet();
-
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
     __esModule: true,
@@ -69,29 +61,7 @@ jest.mock("video-react", () => {
     }),
   };
 });
-beforeAll(() => {
-  jest.spyOn(console, "error").mockImplementation();
-  jest.spyOn(console, "warn").mockImplementation();
-  jest.spyOn(console, "log").mockImplementation();
-});
-afterAll(() => {
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
-});
-
 describe("Catalouge item", () => {
-  beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
   it("should show loading skeleton when nft is not found", async () => {
     const props = {
       nId: "contractaddress::tokenid::0",

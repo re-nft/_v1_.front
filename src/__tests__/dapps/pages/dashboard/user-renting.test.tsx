@@ -14,9 +14,6 @@ import { PAGE_SIZE } from "renft-front/consts";
 import { getUniqueID } from "renft-front/utils";
 import { sleep } from "renft-front/utils";
 
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -32,9 +29,6 @@ import Home from "renft-front/pages/index";
 let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
-  jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(console, "warn").mockImplementation(() => {});
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
@@ -45,8 +39,6 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env = OLD_ENV;
-  console.error.mockRestore();
-  console.log.mockRestore();
 });
 
 xdescribe("User is renting when wallet connected ", () => {
@@ -63,7 +55,6 @@ xdescribe("User is renting when wallet connected ", () => {
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
-    jest.clearAllMocks();
   });
 
   // Disable API mocking after the tests are done.
@@ -71,8 +62,6 @@ xdescribe("User is renting when wallet connected ", () => {
 
   it("renders clickable rented items", async () => {
     //todo
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
 
     mswServer.use(
       rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
@@ -137,9 +126,6 @@ xdescribe("User is renting when wallet connected ", () => {
         expect(item).toHaveAttribute("disabled");
       }
     });
-
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
   }, 6000);
   describe("return modal", () => {
     it("rerenders saved form items, when form modal closes", () => {

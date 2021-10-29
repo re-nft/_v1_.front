@@ -8,20 +8,12 @@ import {
   fireEvent,
 } from "@testing-library/react";
 
-import { enableMapSet } from "immer";
 import user from "@testing-library/user-event";
 import { Nft } from "renft-front/types/classes";
 import { LendForm } from "renft-front/components/forms/lend/lend-form";
 import { useStartLend } from "renft-front/hooks/contract/useStartLend";
 import { useNFTApproval } from "renft-front/hooks/contract/useNFTApproval";
 import { useNftsStore } from "renft-front/hooks/store/useNftStore";
-
-enableMapSet();
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
 
 jest.mock("renft-front/hooks/contract/useStartLend", () => {
   return {
@@ -59,31 +51,12 @@ jest.mock("renft-front/hooks/store/useNftStore", () => {
   };
 });
 
-beforeAll(() => {
-  jest.spyOn(console, "error").mockImplementation();
-  jest.spyOn(console, "warn").mockImplementation();
-  jest.spyOn(console, "log").mockImplementation();
-});
-afterAll(() => {
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
-});
 describe("Lend form", () => {
   let nft1: Nft;
   let nft2: Nft;
   beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-
     nft2 = new Nft("dummy address 2", "token id 2", false);
     nft1 = new Nft("dummy address 1", "token id 1", true);
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
   });
   it("renders zero item, when no item is provided", async () => {
     await act(async () =>

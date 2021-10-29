@@ -6,16 +6,7 @@ import { WalletConnect } from "renft-front/components/layouts/app-layout/wallet-
 
 const network = "mainnet";
 
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
-
 describe("Wallet display", () => {
-  afterAll(() => {
-    jest.resetAllMocks();
-  });
-
   it("renders connect button", async () => {
     global.window.ethereum = jest
       .fn()

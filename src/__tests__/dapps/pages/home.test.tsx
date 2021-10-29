@@ -12,13 +12,7 @@ import { rest } from "msw";
 import * as testLendings from "./lendings.json";
 import * as testAssets from "./assets.json";
 import { PAGE_SIZE } from "renft-front/consts";
-
 import * as Sentry from "@sentry/nextjs";
-
-jest.mock("zustand");
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("next/router");
 
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
@@ -30,21 +24,11 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
     })),
   };
 });
-jest.mock("@sentry/nextjs", () => {
-  return {
-    __esModule: true,
-    captureException: jest.fn(),
-  };
-});
 
 import Home from "renft-front/pages/index";
 let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
-  jest.resetModules();
-  jest.spyOn(console, "error");
-  jest.spyOn(console, "warn");
-  jest.spyOn(console, "log");
   OLD_ENV = { ...process.env };
   //TODO:eniko this needs to be backward compatible
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
@@ -57,23 +41,9 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env = OLD_ENV;
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
 });
 
 describe("Home when wallet connected ", () => {
-  beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {
@@ -87,7 +57,6 @@ describe("Home when wallet connected ", () => {
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
-    jest.clearAllMocks();
   });
 
   // Disable API mocking after the tests are done.

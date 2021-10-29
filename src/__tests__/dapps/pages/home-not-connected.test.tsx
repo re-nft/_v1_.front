@@ -13,9 +13,6 @@ import * as testAssets from "./assets.json";
 import { sleep } from "renft-front/utils";
 import { PAGE_SIZE } from "renft-front/consts";
 
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("next/router");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -29,10 +26,6 @@ import Home from "renft-front/pages/index";
 let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
-  jest.resetModules();
-  jest.spyOn(console, "error");
-  jest.spyOn(console, "warn");
-  jest.spyOn(console, "log");
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
@@ -44,9 +37,6 @@ beforeAll(() => {
 
 afterAll(() => {
   process.env = OLD_ENV;
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
 });
 
 describe("Home", () => {
@@ -59,21 +49,9 @@ describe("Home", () => {
       return mswServer.listen();
     });
   });
-  beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
-  });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
   // Reset any runtime request handlers we may add during the tests.
   afterEach(() => {
     if (mswServer) mswServer.resetHandlers();
-    jest.clearAllMocks();
   });
 
   // Disable API mocking after the tests are done.

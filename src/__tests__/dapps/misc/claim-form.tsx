@@ -1,11 +1,5 @@
 // import React from "react";
 // import { render, screen, waitFor } from "@testing-library/react";
-
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
-
 xdescribe("Claim form", () => {
   it("should show items to be claimed", () => {
     expect(true).toBe(false);

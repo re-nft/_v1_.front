@@ -7,7 +7,6 @@ import {
   within,
   fireEvent,
 } from "@testing-library/react";
-import { enableMapSet } from "immer";
 import user from "@testing-library/user-event";
 import { Lending } from "renft-front/types/classes";
 import { useLendingStore } from "renft-front/hooks/store/useNftStore";
@@ -16,13 +15,7 @@ import {
   useRentApproval,
   useStartRent,
 } from "renft-front/hooks/contract/useStartRent";
-enableMapSet();
-jest.mock("zustand");
 
-jest.mock("firebase/app");
-jest.mock("react-ga");
-jest.mock("@ethersproject/providers");
-jest.mock("web3modal");
 jest.mock("@ethersproject/address", () => {
   return {
     __esModule: true,
@@ -58,24 +51,10 @@ jest.mock("renft-front/hooks/store/useNftStore", () => {
     useLendingStore: jest.fn().mockImplementation(),
   };
 });
-beforeAll(() => {
-  jest.spyOn(console, "error").mockImplementation();
-  jest.spyOn(console, "warn").mockImplementation();
-  jest.spyOn(console, "log").mockImplementation();
-});
-afterAll(() => {
-  console.error.mockRestore();
-  console.log.mockRestore();
-  console.warn.mockRestore();
-});
-
 describe("Rent form", () => {
   let lendingerc721: Lending;
   let lendingerc1155: Lending;
   beforeEach(() => {
-    console.log.mockReset();
-    console.warn.mockReset();
-    console.error.mockReset();
     lendingerc721 = new Lending({
       id: "lending id 1",
       nftAddress: "dummy contract address 1",
@@ -114,12 +93,6 @@ describe("Rent form", () => {
       return fn(state);
     });
   });
-  afterEach(() => {
-    expect(console.log).not.toHaveBeenCalled();
-    expect(console.error).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
-  });
-
   it("renders zero item, when no item is provided", async () => {
     await act(async () =>
       render(<RentForm checkedItems={[]} onClose={jest.fn()} />)
