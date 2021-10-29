@@ -58,14 +58,8 @@ jest.mock("renft-front/consts", () => {
     ERC755_REFETCH_INTERVAL: 2000,
   };
 });
-jest.mock("next/router", () => {
-  return {
-    __esModule: true,
-    useRouter: jest.fn().mockReturnValue({
-      events: { on: jest.fn(), off: jest.fn() },
-    }),
-  };
-});
+jest.mock("next/router");
+
 import LendPage from "renft-front/pages/lend";
 let OLD_ENV: NodeJS.ProcessEnv;
 

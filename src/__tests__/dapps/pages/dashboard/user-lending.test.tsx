@@ -17,6 +17,7 @@ import { sleep } from "renft-front/utils";
 jest.mock("zustand");
 jest.mock("firebase/app");
 jest.mock("react-ga");
+jest.mock("next/router");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -33,10 +34,13 @@ let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
   jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "error").mockImplementation();
+  jest.spyOn(console, "warn").mockImplementation();
+  jest.spyOn(console, "log").mockImplementation();
+
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
+  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
   process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
   process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
@@ -47,9 +51,21 @@ afterAll(() => {
   process.env = OLD_ENV;
   console.error.mockRestore();
   console.log.mockRestore();
+  console.warn.mockRestore();
 });
 
-xdescribe("User is lending when wallet connected ", () => {
+describe("User is lending when wallet connected ", () => {
+  beforeEach(() => {
+    console.log.mockReset();
+    console.warn.mockReset();
+    console.error.mockReset();
+  });
+  afterEach(() => {
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {
@@ -71,9 +87,6 @@ xdescribe("User is lending when wallet connected ", () => {
 
   it("renders clickable lent items", async () => {
     //todo
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
     mswServer.use(
       rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         return res(ctx.status(200));
@@ -111,7 +124,7 @@ xdescribe("User is lending when wallet connected ", () => {
 
     // shows actual cards
     await waitFor(() => {
-      const items = screen.getAllByTestId("catalogue-item-action");
+      const items = screen.getAllByTestId("catalogue-item-loaded");
 
       expect(items.length).toBe(PAGE_SIZE);
       items.forEach((item) => {
@@ -129,7 +142,7 @@ xdescribe("User is lending when wallet connected ", () => {
     expect(checkbox).toBeEnabled();
 
     await sleep(1000);
-    const items = screen.getAllByTestId("catalogue-item-action");
+    const items = screen.getAllByTestId("catalogue-item-loaded");
     items.forEach((item) => {
       if (item.id === `catalogue-button-${id}`) {
         expect(item).not.toHaveAttribute("disabled");
@@ -137,11 +150,8 @@ xdescribe("User is lending when wallet connected ", () => {
         expect(item).toHaveAttribute("disabled");
       }
     });
-
-    expect(spyLog).not.toHaveBeenCalled();
-    expect(spyWarn).not.toHaveBeenCalled();
   }, 6000);
-  describe("claim", () => {
+  xdescribe("claim", () => {
     it("rerenders saved form items, when form modal closes", () => {
       //todo
     });
@@ -152,7 +162,7 @@ xdescribe("User is lending when wallet connected ", () => {
       //todo
     });
   });
-  describe("stop lend modal", () => {
+  xdescribe("stop lend modal", () => {
     it("rerenders saved form items, when form modal closes", () => {
       //todo
     });
@@ -163,15 +173,15 @@ xdescribe("User is lending when wallet connected ", () => {
       //todo
     });
   });
-  it("shows 3 states (lending-no-renter/lending-has-renter/lender-expired-claimable)", () => {});
-  it("can claim item", () => {});
-  it("can claim item", () => {});
+  xit("shows 3 states (lending-no-renter/lending-has-renter/lender-expired-claimable)", () => {});
+  xit("can claim item", () => {});
+  xit("can claim item", () => {});
 
-  it("shows lended item in rental tab but owner cannot select it", () => {});
-  describe("filter", () => {
+  xit("shows lended item in rental tab but owner cannot select it", () => {});
+  xdescribe("filter", () => {
     //todo
   });
-  describe("sort", () => {
+  xdescribe("sort", () => {
     //todo
   });
 });

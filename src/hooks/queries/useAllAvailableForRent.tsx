@@ -12,14 +12,15 @@ import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import {
   NFTRentType,
   useLendingStore,
-  useNftsStore
+  useNftsStore,
 } from "renft-front/hooks/store/useNftStore";
 import { usePrevious } from "renft-front/hooks/misc/usePrevious";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
+  useEventTrackedTransactionState,
 } from "renft-front/hooks/store/useEventTrackedTransactions";
+import * as Sentry from "@sentry/nextjs";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -29,7 +30,10 @@ export const fetchRentings = (): Observable<LendingRaw[]> => {
   return from<Promise<{ lendings: LendingRaw[] }>>(
     timeItAsync("Pulled All ReNFT Lendings", async () =>
       request(subgraphURI, queryAllLendingRenft).catch((e) => {
-        console.warn("could not pull all ReNFT lendings");
+        //TODO:eniko sentry loggin
+        Sentry.captureException(e);
+        //TODO:eniko ui error dialog
+
         return {};
       })
     )
@@ -57,7 +61,9 @@ export const useAllAvailableForRent = (): {
         state.pendingTransactions[SmartContractEventType.START_LEND];
       const pendingRentals =
         state.pendingTransactions[SmartContractEventType.STOP_LEND];
-      return pendingRentings.length + pendingLendings.length + pendingRentals.length;
+      return (
+        pendingRentings.length + pendingLendings.length + pendingRentals.length
+      );
     }, []),
     shallow
   );
@@ -117,7 +123,7 @@ export const useAllAvailableForRent = (): {
     network,
     addLendings,
     addNfts,
-    refetchAfterOperation
+    refetchAfterOperation,
   ]);
 
   const allAvailableToRent = useMemo(() => {

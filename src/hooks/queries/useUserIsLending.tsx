@@ -21,6 +21,7 @@ import {
   SmartContractEventType,
   useEventTrackedTransactionState,
 } from "renft-front/hooks/store/useEventTrackedTransactions";
+import * as Sentry from "@sentry/nextjs";
 
 export const useUserIsLending = (): {
   isLoading: boolean;
@@ -93,7 +94,8 @@ export const useUserIsLending = (): {
           // ! know where to look. Right now I am running into an issue of localising the
           // ! problem why user's lending does not show and there is no console.warn here
           //TODO:eniko sentry loggin
-          console.warn("could not pull users ReNFT lendings");
+          Sentry.captureException(e);
+          //TODO:eniko ui error dialog
           return {};
         });
       })

@@ -15,6 +15,7 @@ import { PAGE_SIZE } from "renft-front/consts";
 
 jest.mock("firebase/app");
 jest.mock("react-ga");
+jest.mock("next/router");
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -29,10 +30,12 @@ let OLD_ENV: NodeJS.ProcessEnv;
 
 beforeAll(() => {
   jest.resetModules();
-  jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(console, "warn").mockImplementation(() => {});
+  jest.spyOn(console, "error");
+  jest.spyOn(console, "warn");
+  jest.spyOn(console, "log");
   OLD_ENV = { ...process.env };
   process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
+  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
   process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
   process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
@@ -43,9 +46,10 @@ afterAll(() => {
   process.env = OLD_ENV;
   console.error.mockRestore();
   console.log.mockRestore();
+  console.warn.mockRestore();
 });
 
-xdescribe("Home", () => {
+describe("Home", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {
@@ -54,6 +58,16 @@ xdescribe("Home", () => {
       mswServer = server;
       return mswServer.listen();
     });
+  });
+  beforeEach(() => {
+    console.log.mockReset();
+    console.warn.mockReset();
+    console.error.mockReset();
+  });
+  afterEach(() => {
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   // Reset any runtime request handlers we may add during the tests.
@@ -66,9 +80,6 @@ xdescribe("Home", () => {
   afterAll(() => mswServer && mswServer.close());
 
   it("renders empty rentals", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
     mswServer.use(
       rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         // Respond with "500 Internal Server Error" status for this test.
@@ -87,14 +98,10 @@ xdescribe("Home", () => {
 
       expect(message).toBeInTheDocument();
       expect(message).toHaveTextContent(/you can't rent anything yet/i);
-
-      expect(spyLog).not.toHaveBeenCalled();
-      expect(spyWarn).not.toHaveBeenCalled();
     });
   });
   // TODO:eniko show error message when API is down
   it("renders empty rentals on error", async () => {
-    const spy = jest.spyOn(global.console, "warn");
     mswServer.use(
       rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         // Respond with "500 Internal Server Error" status for this test.
@@ -123,14 +130,10 @@ xdescribe("Home", () => {
 
       expect(message).toBeInTheDocument();
       expect(message).toHaveTextContent(/you can't rent anything yet/i);
-      expect(spy).toHaveBeenCalled();
     });
   });
 
   it("renders rentals returned by API", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
     mswServer.use(
       rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         return res(ctx.status(200));
@@ -168,9 +171,9 @@ xdescribe("Home", () => {
     });
 
     // shows skeletons first
-    await screen.findAllByTestId("catalouge-item-skeleton");
+    await screen.findAllByTestId("catalogue-item-skeleton");
     await waitForElementToBeRemoved(
-      () => screen.getAllByTestId("catalouge-item-skeleton"),
+      () => screen.getAllByTestId("catalogue-item-skeleton"),
       {
         timeout: 3500,
       }
@@ -183,16 +186,10 @@ xdescribe("Home", () => {
       expect(items).toMatchSnapshot();
 
       expect(items.length).toBe(PAGE_SIZE);
-
-      expect(spyLog).not.toHaveBeenCalled();
-      expect(spyWarn).not.toHaveBeenCalled();
     });
   }, 5000);
 
   it("when wallet not connected cannot select elements", async () => {
-    const spyLog = jest.spyOn(global.console, "log");
-    const spyWarn = jest.spyOn(global.console, "warn");
-
     mswServer.use(
       rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
         return res(ctx.status(200));
@@ -245,17 +242,12 @@ xdescribe("Home", () => {
           "disabled"
         );
       });
-      expect(spyLog).not.toHaveBeenCalled();
-      expect(spyWarn).not.toHaveBeenCalled();
     });
   }, 5000);
 
-  it("shows wallet owner lended items in rental tab", () => {});
-  it("shows correct details returned by API on cards", () => {});
-  it("show images for nfts", () => {});
-  it("show empty placeholders for nfts", () => {});
+  xit("shows wallet owner lended items in rental tab", () => {});
 
-  describe("rent form open", () => {
+  xdescribe("rent form open", () => {
     it("show rent form when 1 item selected with item details", () => {});
     it("show rent form when 2 item selected with selected items details", () => {});
     it("shows filled out details when modal was filled before (1 item)", () => {});
@@ -263,7 +255,7 @@ xdescribe("Home", () => {
     it("when items selected and filled out and item rented out(api removed) form does not show it", () => {});
   });
 
-  describe("filter", () => {
+  xdescribe("filter", () => {
     //todo
     it("filter items out based on collection name", () => {});
     it("filter shows only matches", () => {});
@@ -271,11 +263,11 @@ xdescribe("Home", () => {
     it("filter dropdown empty filter shows all items based on page", () => {});
   });
 
-  describe("filter + paging works together (multiple case)", () => {});
-  describe("filter + sort works together (multiple case)", () => {});
-  describe("sort + paging works together (multiple case)", () => {});
-  describe("filter + sort + paging works together (multiple case)", () => {});
-  describe("sort", () => {
+  xdescribe("filter + paging works together (multiple case)", () => {});
+  xdescribe("filter + sort works together (multiple case)", () => {});
+  xdescribe("sort + paging works together (multiple case)", () => {});
+  xdescribe("filter + sort + paging works together (multiple case)", () => {});
+  xdescribe("sort", () => {
     //todo
     it("sort reset sorts based on nId by default", () => {});
     it("sorts items based on rental date desc", () => {});
@@ -286,7 +278,7 @@ xdescribe("Home", () => {
     it("sorts items based on daily rent price desc", () => {});
   });
 
-  describe("paging", () => {
+  xdescribe("paging", () => {
     it("show items based on page number based on initial sort", () => {});
     it("items are not duplicated between pages", () => {});
     it("prev page works as intended", () => {});
