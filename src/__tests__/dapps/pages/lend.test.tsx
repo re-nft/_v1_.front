@@ -3,17 +3,17 @@ import {
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
   within,
   act,
+  prettyDOM,
 } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { SetupServerApi } from "msw/node";
-import { rest } from "msw";
 import * as testAssets from "./assets.json";
 //import { PAGE_SIZE } from "renft-front/consts";
 import * as Sentry from "@sentry/nextjs";
 import { getContractWithProvider } from "renft-front/utils";
+import { waitForRefetch, mockResponse } from "./test-utils";
 
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
@@ -23,11 +23,6 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
       signer: "dummy signer",
       address: "dummy address",
     })),
-  };
-});
-jest.mock("@sentry/nextjs", () => {
-  return {
-    captureException: jest.fn(),
   };
 });
 jest.mock("renft-front/utils", () => {
@@ -48,13 +43,24 @@ jest.mock("renft-front/consts", () => {
   return {
     __esModule: true,
     ...actualModule,
-    ERC755_REFETCH_INTERVAL: 2000,
+    ERC1155_REFETCH_INTERVAL: 5000,
   };
 });
-jest.mock("next/router");
 
 import LendPage from "renft-front/pages/lend";
-let OLD_ENV: NodeJS.ProcessEnv;
+
+const intervalServerError = { message: "Interval Server error" };
+
+beforeAll(() => {
+  Object.defineProperty(global.window, "IntersectionObserver", {
+    writable: true,
+    value: jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    })),
+  });
+});
 
 const EIP1155_response = {
   data: {
@@ -86,69 +92,7 @@ const EIP721_response = {
     ],
   },
 };
-const intervalServerError = { message: "Interval Server error" };
 
-const waitForRefetch = async (screen) => {
-  // wait for refetch to complete
-  await waitFor(() => {
-    expect(screen.queryByTestId("list-loader")).toBeInTheDocument();
-  });
-  await waitFor(
-    () => {
-      expect(screen.queryByTestId("list-loader")).not.toBeInTheDocument();
-    },
-    { timeout: 2000 }
-  );
-};
-const uniswapRequest = (rest) => {
-  return rest.post(
-    "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({
-          data: {
-            bundles: [
-              {
-                ethPriceUSD: 1,
-              },
-            ],
-          },
-        })
-      );
-    }
-  );
-};
-beforeAll(() => {
-  OLD_ENV = { ...process.env };
-
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
-  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "fdsafa8";
-  process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
-  process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
-  process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
-  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
-  process.env.NEXT_PUBLIC_CORS_PROXY = "https://dummy-cors-proxy";
-  process.env.NEXT_PUBLIC_SHOW_MINT = false;
-  process.env.NEXT_PUBLIC_FETCH_NFTS_DEV = undefined;
-  process.env.NEXT_PUBLIC_DEBUG = undefined;
-  const observe = jest.fn();
-  const unobserve = jest.fn();
-
-  // you can also pass the mock implementation
-  // to jest.fn as an argument
-  global.window.IntersectionObserver = jest.fn(() => ({
-    observe,
-    unobserve,
-  }));
-});
-
-afterAll(() => {
-  process.env = OLD_ENV;
-  Sentry.captureException.mockRestore();
-  getContractWithProvider.mockRestore();
-  global.window.IntersectionObserver.mockRestore();
-});
 describe("lend page wallet connected", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
@@ -170,36 +114,18 @@ describe("lend page wallet connected", () => {
 
   it("renders empty content when EIP_1155 server errors", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ data: [] }));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ tokens: [] }));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-
-      uniswapRequest(rest),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      ...mockResponse({
+        eip1155response: {
+          status: 500,
+          json: intervalServerError,
+        },
       })
     );
     await act(async () => {
       render(<LendPage />);
     });
 
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
+    await waitForRefetch(screen);
 
     await waitFor(() => {
       const message = screen.getByText(/you don't have any nfts to lend/i);
@@ -210,78 +136,35 @@ describe("lend page wallet connected", () => {
 
   it("should log to sentry when EIP_721 errors", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(500), ctx.json(intervalServerError));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            data: [],
-          })
-        );
-      }),
-
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-
-      uniswapRequest(rest),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
+      ...mockResponse({
+        eip721api: {
+          status: 500,
+          json: intervalServerError,
+        },
       })
     );
+
     await act(async () => {
       render(<LendPage />);
     });
 
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 3500,
-    });
+    await waitForRefetch(screen);
+
     await waitFor(() => {
       // TODO:eniko decrease the amount
-      expect(Sentry.captureException).toHaveBeenCalledTimes(15);
+      expect(Sentry.captureException).toHaveBeenCalledTimes(20);
     });
   });
   it("should show EIP721 response", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(testAssets));
-      }),
-      uniswapRequest(rest),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
+      ...mockResponse({
+        eip721api: {
+          status: 200,
+          json: EIP721_response,
+        },
       })
     );
+
     act(() => {
       render(<LendPage />);
     });
@@ -296,32 +179,14 @@ describe("lend page wallet connected", () => {
 
   it("should show EIP1155 response", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(testAssets));
-      }),
-      uniswapRequest(rest),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
+      ...mockResponse({
+        eip1155api: {
+          status: 200,
+          json: EIP1155_response,
+        },
       })
     );
+
     act(() => {
       render(<LendPage />);
     });
@@ -336,30 +201,15 @@ describe("lend page wallet connected", () => {
 
   it("should show two items", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP721_response));
-      }),
-      rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(EIP1155_response));
-      }),
-
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(testAssets));
-      }),
-      uniswapRequest(rest),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
+      ...mockResponse({
+        eip1155api: {
+          status: 200,
+          json: EIP1155_response,
+        },
+        eip721api: {
+          status: 200,
+          json: EIP721_response,
+        },
       })
     );
 
@@ -384,47 +234,22 @@ describe("lend page wallet connected", () => {
   describe("lend form open", () => {
     it("show lend form when 1 item selected with item details", async () => {
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP1155_response));
-        }),
-
-        // empty opensea
-        rest.get(
-          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-          async (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}));
-          }
-        ),
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              image: null,
-              description: "",
-              name: "",
-            })
-          );
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
         })
       );
 
       await act(async () => {
         render(<LendPage />);
       });
-
-      await waitFor(() => {
-        const loader = screen.getByTestId("list-loader");
-        expect(loader).toBeInTheDocument();
-      });
-      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-        timeout: 1500,
-      });
+      await waitForRefetch(screen);
       await act(async () => {
         render(<LendPage />);
       });
@@ -460,49 +285,25 @@ describe("lend page wallet connected", () => {
 
     it("show lend form when 2 item selected with selected items details", async () => {
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP1155_response));
-        }),
-
-        // empty opensea
-        rest.get(
-          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-          async (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}));
-          }
-        ),
-
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              image: null,
-              description: "",
-              name: "",
-            })
-          );
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
         })
       );
+
       await act(async () => {
         render(<LendPage />);
       });
-
+      await waitForRefetch(screen);
       await waitFor(() => {
-        const loader = screen.getByTestId("list-loader");
-        expect(loader).toBeInTheDocument();
-      });
-      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-        timeout: 1500,
-      });
-      await waitFor(() => {
-        screen.getAllByTestId("catalogue-item-loaded");
+        const items = screen.getAllByTestId("catalogue-item-loaded");
+        expect(items.length).toBe(2);
       });
       const grid = screen.getByRole("grid", {
         name: /nfts/i,
@@ -538,35 +339,17 @@ describe("lend page wallet connected", () => {
       expect(list.length).toBe(2);
     });
 
-    xit("bug with item selection", async () => {
+    it("bug with item selection", async () => {
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          // Respond with "500 Internal Server Error" status for this test.
-          return res(ctx.status(200), ctx.json(EIP1155_response));
-        }),
-
-        // empty opensea
-        rest.get(
-          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-          async (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}));
-          }
-        ),
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              image: null,
-              description: "",
-              name: "",
-            })
-          );
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
         })
       );
       let rerender;
@@ -606,66 +389,57 @@ describe("lend page wallet connected", () => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       const list = screen.getAllByRole("listitem");
       expect(list.length).toBe(2);
-      mswServer.resetHandlers();
-      mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
+      //close modal
+      await act(async () => {
+        user.click(screen.getByText(/close/i));
+      });
+      await waitFor(() => {
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      });
 
-        // empty opensea
-        rest.get(
-          `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-          async (req, res, ctx) => {
-            return res(ctx.status(200), ctx.json({}));
-          }
-        ),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              image: null,
-              description: "",
-              name: "",
-            })
-          );
-        })
-      );
-      // rerender
+      act(() => {
+        mswServer.resetHandlers();
+        mswServer.use(
+          mockResponse({
+            eip1155response: {
+              status: 200,
+              json: {},
+            },
+            eip721response: {
+              status: 200,
+              json: EIP721_response,
+            },
+          })
+        );
+      });
       await act(async () => {
         rerender(<LendPage />);
       });
-
-      await waitForRefetch(screen);
-      await waitFor(() => {
-        screen.getAllByTestId("catalogue-item-loaded");
-      });
-      let button2;
+      // need to wait for the API to hit again
       await waitFor(
         () => {
           // Only one item
           expect(
-            screen.getAllByRole("button", {
+            screen.queryAllByRole("button", {
               name: /lend/i,
             }).length
           ).toBe(1);
-          button2 = screen.getByRole("button", {
-            name: /lend/i,
-          });
         },
-        {
-          timeout: 10000,
-        }
+        { timeout: 10000 }
       );
       await act(async () => {
-        user.click(button2);
+        user.click(
+          screen.getByRole("button", {
+            name: /lend/i,
+          })
+        );
       });
 
-      expect(screen.getByRole("dialog")).toBeInTheDocument();
-      const list2 = screen.getAllByRole("listitem");
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toBeInTheDocument();
+      // the bug is still present
+      //  console.log(prettyDOM(dialog));
+      const list2 = within(dialog).getAllByRole("listitem");
       // should only render 1 item
       expect(list2.length).toBe(1);
     }, 15000);
@@ -680,34 +454,23 @@ describe("lend page wallet connected", () => {
         EIP1155_response.data.account.balances[0].token.tokenId;
       testAssets.assets[1].asset_contract.address =
         EIP1155_response.data.account.balances[0].token.registry.contractAddress;
-
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP155_response));
-        }),
-
-        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(testAssets));
-        }),
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              image: null,
-              description: "",
-              name: "",
-            })
-          );
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
+          openseaapi: {
+            status: 200,
+            json: testAssets,
+          },
         })
       );
+
       await act(async () => {
         render(<LendPage />);
       });
@@ -728,90 +491,46 @@ describe("lend page wallet connected", () => {
     }, 10000);
     it("should not show collection filter if there no collections", async () => {
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ tokens: [] }));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP155_response));
-        }),
-
-        // empty opensea
-        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
-
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return {
-            image: null,
-            description: "",
-            name: "",
-          };
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
         })
       );
 
       await act(async () => {
         render(<LendPage />);
       });
-
-      await waitFor(() => {
-        const loader = screen.getByTestId("list-loader");
-        expect(loader).toBeInTheDocument();
-      });
-      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-        timeout: 1500,
-      });
-
+      await waitForRefetch(screen);
       await waitFor(() => {
         const message = screen.queryByLabelText(/Filter/i);
 
         expect(message).not.toBeInTheDocument();
       });
     });
-    it("show not show sort on lend page", async () => {
+    it("not show sort on lend page", async () => {
       mswServer.use(
-        rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP721_response));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ tokens: [] }));
-        }),
-        rest.post(process.env.NEXT_PUBLIC_EIP1155_API, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(EIP155_response));
-        }),
-
-        // empty opensea
-        rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}));
-        }),
-
-        uniswapRequest(rest),
-        // catch all for ipfs data
-        rest.get("*", (req, res, ctx) => {
-          return {
-            image: null,
-            description: "",
-            name: "",
-          };
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
         })
       );
 
       await act(async () => {
         render(<LendPage />);
       });
-
-      await waitFor(() => {
-        const loader = screen.getByTestId("list-loader");
-        expect(loader).toBeInTheDocument();
-      });
-      await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-        timeout: 1500,
-      });
-
+      await waitForRefetch(screen);
       await waitFor(() => {
         const message = screen.queryByLabelText(/Sort/i);
 

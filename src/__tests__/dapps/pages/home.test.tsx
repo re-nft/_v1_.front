@@ -7,12 +7,12 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import user from "@testing-library/user-event";
-import { SetupServerApi } from "msw/node";
-import { rest } from "msw";
 import * as testLendings from "./lendings.json";
 import * as testAssets from "./assets.json";
 import { PAGE_SIZE } from "renft-front/consts";
 import * as Sentry from "@sentry/nextjs";
+import { mockResponse, waitForRefetch } from "./test-utils";
+import Home from "renft-front/pages/index";
 
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
@@ -25,55 +25,29 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
   };
 });
 
-import Home from "renft-front/pages/index";
-let OLD_ENV: NodeJS.ProcessEnv;
+import { SetupServerApi } from "msw/node";
 
-beforeAll(() => {
-  OLD_ENV = { ...process.env };
-  //TODO:eniko this needs to be backward compatible
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
-  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
-  process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
-  process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
-  process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
-  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
+// Enable API mocking before tests.
+let mswServer: SetupServerApi;
+beforeAll(async () => {
+  // use dynamic require to properly mock process.env
+  await import("__mocks__/server").then(({ server }) => {
+    mswServer = server;
+    return mswServer.listen();
+  });
 });
 
-afterAll(() => {
-  process.env = OLD_ENV;
+// Reset any runtime request handlers we may add during the tests.
+afterEach(() => {
+  if (mswServer) mswServer.resetHandlers();
 });
+
+// Disable API mocking after the tests are done.
+afterAll(() => mswServer && mswServer.close());
 
 describe("Home when wallet connected ", () => {
-  // Enable API mocking before tests.
-  let mswServer: SetupServerApi;
-  beforeAll(async () => {
-    // use dynamic require to properly mock process.env
-    await import("__mocks__/server").then(({ server }) => {
-      mswServer = server;
-      return mswServer.listen();
-    });
-  });
-
-  // Reset any runtime request handlers we may add during the tests.
-  afterEach(() => {
-    if (mswServer) mswServer.resetHandlers();
-  });
-
-  // Disable API mocking after the tests are done.
-  afterAll(() => mswServer && mswServer.close());
-
   it("renders empty rentals", async () => {
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ data: [] }));
-      }),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      })
-    );
-
+    mockResponse(mswServer);
     render(<Home />);
 
     await waitFor(() => {
@@ -85,28 +59,16 @@ describe("Home when wallet connected ", () => {
   });
   // TODO:eniko show error message when API is down
   it("renders empty rentals on error", async () => {
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(
-          ctx.status(500),
-          ctx.json({ message: "Internal Server Error" })
-        );
-      }),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      })
-    );
+    mockResponse(mswServer, {
+      rentapi: {
+        status: 500,
+        json: { message: "internal server error" },
+      },
+    });
 
     render(<Home />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
+
+    await waitForRefetch(screen);
 
     await waitFor(() => {
       const message = screen.getByTestId("empty-message");
@@ -118,43 +80,21 @@ describe("Home when wallet connected ", () => {
   });
 
   it("renders clickable rental items", async () => {
-    mswServer.use(
-      rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200));
-      }),
-      rest.post(`${process.env.NEXT_PUBLIC_RENFT_API}/*`, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(testLendings));
-      }),
-      // empty opensea
-      rest.get(
-        `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(testAssets));
-        }
-      ),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            image: null,
-            description: "",
-            name: "",
-          })
-        );
-      })
-    );
+    mockResponse(mswServer, {
+      renftapi: {
+        status: 200,
+        json: testLendings,
+      },
+      openseaapi: {
+        status: 200,
+        json: testAssets,
+      },
+    });
 
     render(<Home />);
 
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
-    });
+    await waitForRefetch(screen);
+
     const list = screen.getByRole("grid", {
       name: /nfts/i,
     });

@@ -63,7 +63,6 @@ const ItemsRenderer: React.FC<{
     },
     [onCheckboxChange]
   );
-
   return (
     <div>
       {modalOpen && (

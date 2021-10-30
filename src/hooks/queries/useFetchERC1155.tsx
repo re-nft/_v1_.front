@@ -153,7 +153,6 @@ export const useFetchERC1155 = (): { ERC1155: Nft[]; isLoading: boolean } => {
         }),
         catchError((e) => {
           //TODO:eniko dev test
-          console.log(e);
           Sentry.captureException(e);
           setLoading(false);
           return of();
