@@ -1,7 +1,8 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 
 import { PaymentToken } from "@renft/sdk";
 
+import { useSearch } from "renft-front/hooks/store/useSearch";
 import { NoSignerMessage } from "renft-front/components/no-signer-message";
 import { Renting } from "renft-front/types/classes";
 import { CatalogueItem } from "renft-front/components/catalogue-item";
@@ -33,14 +34,14 @@ const RentingCatalogueItem: React.FC<{
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {
-    return renting.rentedAt * 1000 < blockTimeStamp;
-  }, [blockTimeStamp, renting.rentedAt]);
+    return renting.rentalEndTime < blockTimeStamp;
+  }, [blockTimeStamp, renting.rentalEndTime]);
 
   return (
     <CatalogueItem
       nId={renting.nId}
       uniqueId={renting.id}
-      checked={checked}
+      checked={expired ? false : checked}
       disabled={expired}
       onCheckboxChange={onCheckboxChange}
       hasAction
@@ -121,16 +122,17 @@ const ItemsRenderer: React.FC<{
 export const UserIsRenting: React.FC = () => {
   const { signer } = useWallet();
   const { renting, isLoading } = useUserRenting();
+  const filteredItems = useSearch(renting);
 
   if (!signer) {
     return (
-      <RentSearchLayout hideDevMenu>
+      <RentSearchLayout hideDevMenu hideSearchMenu>
         <NoSignerMessage />
       </RentSearchLayout>
     );
   }
   return (
-    <RentSearchLayout hideDevMenu>
+    <RentSearchLayout hideDevMenu hideSearchMenu>
       <div className="py-4 px-8">
         <h2 className="">
           <span sr-only="Renting"></span>
@@ -142,7 +144,7 @@ export const UserIsRenting: React.FC = () => {
         </h3>
       </div>
       <PaginationList
-        nfts={renting}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not renting anything yet"

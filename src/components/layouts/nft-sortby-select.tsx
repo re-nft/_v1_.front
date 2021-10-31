@@ -37,6 +37,12 @@ export const NftSortBySelect: React.FC = () => {
   }, [options, sortBy]);
 
   const router = useRouter();
+  const defaultValue = useMemo(() => {
+    return { label: "Sort by", value: "all", imageUrl: "" };
+  }, []);
+  const extendedOptions = useMemo(() => {
+    return [defaultValue, ...options];
+  }, [defaultValue, options]);
 
   useEffect(() => {
     const handleStop = () => {
@@ -54,8 +60,8 @@ export const NftSortBySelect: React.FC = () => {
       label="Sort"
       value={value}
       setValue={setSortBy}
-      options={options}
-      defaultValue={{ label: "Sort by", value: "all", imageUrl: "" }}
+      options={extendedOptions}
+      defaultValue={defaultValue}
     ></CategorySelect>
   );
 };

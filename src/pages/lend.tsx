@@ -93,7 +93,7 @@ const Lendings: React.FC = () => {
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
 
   //TODO:eniko move this to the search-layout
-  useSearch(allAvailableToLend);
+  const filteredItems = useSearch(allAvailableToLend);
 
   if (!signer) {
     return (
@@ -106,7 +106,7 @@ const Lendings: React.FC = () => {
   return (
     <LendSearchLayout>
       <PaginationList
-        nfts={allAvailableToLend}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You don't have any NFTs to lend"

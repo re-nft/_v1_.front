@@ -1,7 +1,7 @@
 import { RENFT_ADDRESS } from "@renft/sdk";
 import { useMemo } from "react";
-import { NetworkName } from "../../types";
-import { useSmartContracts } from "./useSmartContracts";
+import { NetworkName } from "renft-front/types";
+import { useSmartContracts } from "renft-front/hooks/contract/useSmartContracts";
 
 export const useContractAddress = (): string => {
   const { ReNFT } = useSmartContracts();

@@ -16,12 +16,6 @@ import {
   useStartRent,
 } from "renft-front/hooks/contract/useStartRent";
 
-jest.mock("@ethersproject/address", () => {
-  return {
-    __esModule: true,
-    getAddress: jest.fn().mockImplementation((a: string) => a),
-  };
-});
 jest.mock("renft-front/hooks/contract/useStartRent", () => {
   return {
     __esModule: true,
@@ -49,6 +43,7 @@ jest.mock("renft-front/hooks/store/useNftStore", () => {
   return {
     __esModule: true,
     useLendingStore: jest.fn().mockImplementation(),
+    useRentingStore: jest.fn().mockReturnValue({ lendings: {} }),
   };
 });
 describe("Rent form", () => {

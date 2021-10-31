@@ -1,14 +1,18 @@
 import { useCallback, useMemo } from "react";
 import shallow from "zustand/shallow";
-import { Renting } from "../../types/classes";
-import { useRentingStore } from "../store/useNftStore";
-import { useTimestamp } from "./useTimestamp";
+import { Renting } from "renft-front/types/classes";
+import { useRentingStore } from "renft-front/hooks/store/useNftStore";
+import { useTimestamp } from "renft-front/hooks/misc/useTimestamp";
 
-export const isClaimable = (blockTimeStamp: number, collateralClaimed: boolean, renting: Renting | null): boolean => {
-  if(!renting) return false;
-  if(collateralClaimed) return true;
-  return renting.rentedAt * 1000 < blockTimeStamp
-}
+export const isClaimable = (
+  blockTimeStamp: number,
+  collateralClaimed: boolean,
+  renting: Renting | null
+): boolean => {
+  if (!renting) return false;
+  if (collateralClaimed) return true;
+  return renting.rentalEndTime < blockTimeStamp;
+};
 
 export const useIsClaimable = (
   rentingId: string | undefined,
@@ -24,6 +28,6 @@ export const useIsClaimable = (
   );
 
   return useMemo(() => {
-    return isClaimable(blockTimeStamp, collateralClaimed, renting)
+    return isClaimable(blockTimeStamp, collateralClaimed, renting);
   }, [collateralClaimed, renting, blockTimeStamp]);
 };

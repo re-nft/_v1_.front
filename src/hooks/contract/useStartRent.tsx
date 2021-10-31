@@ -10,9 +10,9 @@ import {
   SmartContractEventType,
   TransactionStatus,
 } from "renft-front/hooks/store/useEventTrackedTransactions";
-import { useContractAddress } from "./useContractAddress";
-import { useResolverAddress } from "./useResolverAddress";
-import { useSmartContracts } from "./useSmartContracts";
+import { useContractAddress } from "renft-front/hooks/contract/useContractAddress";
+import { useResolverAddress } from "renft-front/hooks/contract/useResolverAddress";
+import { useSmartContracts } from "renft-front/hooks/contract/useSmartContracts";
 import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import { Lending } from "renft-front/types/classes";
@@ -40,7 +40,6 @@ export const useRentApproval = (): {
   const { Resolver } = useSmartContracts();
   const currentAddress = useCurrentAddress();
   const [approvals, setApprovals] = useState<ERC20[]>();
-  const [isCheckLoading, setCheckLoading] = useState<boolean>(true);
   const contractAddress = useContractAddress();
   const resolverAddress = useResolverAddress();
   const { createRequest, status } = useCreateRequest();
@@ -52,7 +51,6 @@ export const useRentApproval = (): {
       if (!contractAddress) return;
       if (!signer) return;
 
-      setCheckLoading(true);
       const resolver = Resolver.attach(resolverAddress).connect(signer);
       const nfts = items.map((lending) => ({
         address: lending.nftAddress,
@@ -88,7 +86,6 @@ export const useRentApproval = (): {
                 return allowance.lt(BigNumber.from(MAX_UINT256).div(2));
               })
               .map(([_, erc20]) => erc20);
-            setCheckLoading(false);
             setApprovals(approvals);
           }
         );
@@ -101,11 +98,10 @@ export const useRentApproval = (): {
     // setState is not trusthworth when selecting USCD/DAI first =>isApprove true
     // better to call the smart contracts periodically for allowance check
     // need to optimize this later on
-    if (isCheckLoading) return false;
     if (status.isLoading) return false;
     if (!approvals) return true;
     return approvals?.length < 1;
-  }, [approvals, status.isLoading, isCheckLoading]);
+  }, [approvals, status.isLoading]);
 
   const handleApproveAll = useCallback(() => {
     if (approvals && approvals.length > 0) {

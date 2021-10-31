@@ -25,22 +25,16 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
   };
 });
 
+jest.mock("next/router", () => {
+  return {
+    useRouter: jest.fn().mockReturnValue({
+      pathname: "/dashboard/renting",
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
+  };
+});
+
 import Home from "renft-front/pages/index";
-let OLD_ENV: NodeJS.ProcessEnv;
-
-beforeAll(() => {
-  OLD_ENV = { ...process.env };
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
-  process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
-  process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
-  process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
-  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
-});
-
-afterAll(() => {
-  process.env = OLD_ENV;
-});
-
 xdescribe("User is renting when wallet connected ", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;

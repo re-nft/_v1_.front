@@ -20,23 +20,18 @@ export const DashboardPage: React.FC = ({ children }) => {
         current: pathname === "/dashboard/renting",
         href: "/dashboard/renting",
       },
-      {
-        name: "Favourites",
-        current: pathname == "/dashboard/favourites",
-        href: "/dashboard/favourites",
-      },
     ];
   }, [pathname]);
   if (!signer) {
     return (
-      <SearchLayout tabs={[]}>
+      <SearchLayout tabs={[]} addPading>
         <NoSignerMessage />
       </SearchLayout>
     );
   }
 
   return (
-    <SearchLayout tabs={tabs}>
+    <SearchLayout tabs={tabs} addPadding>
       <div className="flex flex-col space-y-2 text-white text-base">
         {children}
       </div>

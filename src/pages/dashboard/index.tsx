@@ -1,7 +1,7 @@
 import React from "react";
 
-import { UserIsLending } from "../../components/pages/user-is-lending";
-import { DashboardPage } from "../../components/pages/dashboard-page";
+import { UserIsLending } from "renft-front/components/pages/user-is-lending";
+import { DashboardPage } from "renft-front/components/pages/dashboard-page";
 
 export const Dashboard: React.FC = () => {
   return (

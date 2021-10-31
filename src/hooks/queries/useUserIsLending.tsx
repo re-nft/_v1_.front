@@ -41,9 +41,9 @@ export const useUserIsLending = (): {
         state.pendingTransactions[SmartContractEventType.CLAIM];
       // refetch will change when you start renting goes from non-empty array to empty array
       return (
-        pendingLendings.length +
-        pendingStopRentals.length +
-        claimLendings.length
+        pendingLendings.length * 1 +
+        pendingStopRentals.length * 2 +
+        claimLendings.length * 3
       );
     }, []),
     shallow

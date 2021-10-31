@@ -1,15 +1,20 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import UserIsLendingPage from "renft-front/pages/dashboard/lending";
 
 jest.mock("next/router", () => {
   return {
-    useRouter: jest.fn().mockReturnValue({ pathname: "/dashboard/lending" }),
+    useRouter: jest.fn().mockReturnValue({
+      pathname: "/dashboard/lending",
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
   };
 });
 
-xdescribe("User Lending page wallet is not connected", () => {
+describe("User Lending page wallet is not connected", () => {
   it("shows connect message", async () => {
-    render(<UserIsLendingPage />);
+    act(() => {
+      render(<UserIsLendingPage />);
+    });
 
     const message = screen.getByText(/please connect your wallet/i);
 

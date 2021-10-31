@@ -1,18 +1,7 @@
 import React from "react";
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
-import user from "@testing-library/user-event";
+import { render, screen, waitFor, within, act } from "@testing-library/react";
 import { SetupServerApi } from "msw/node";
-import { rest } from "msw";
-import * as testLendings from "../lendings.json";
 import * as testAssets from "../assets.json";
-import { PAGE_SIZE } from "renft-front/consts";
-import { getUniqueID } from "renft-front/utils";
-import { sleep } from "renft-front/utils";
 
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
@@ -25,24 +14,26 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
   };
 });
 
-import Home from "renft-front/pages/index";
-let OLD_ENV: NodeJS.ProcessEnv;
-
-beforeAll(() => {
-  OLD_ENV = { ...process.env };
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
-  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
-  process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
-  process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
-  process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
-  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
+jest.mock("next/router", () => {
+  return {
+    useRouter: jest.fn().mockReturnValue({
+      pathname: "/dashboard/lending",
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
+  };
+});
+jest.mock("renft-front/hooks/misc/useTimestamp", () => {
+  return {
+    __esModule: true,
+    useTimestamp: jest.fn().mockImplementation(() => {
+      return Date.now();
+    }),
+  };
 });
 
-afterAll(() => {
-  process.env = OLD_ENV;
-});
+import Page from "renft-front/pages/dashboard/lending";
 
-fdescribe("User is lending when wallet connected ", () => {
+describe("User is lending when wallet connected ", () => {
   // Enable API mocking before tests.
   let mswServer: SetupServerApi;
   beforeAll(async () => {
@@ -61,103 +52,165 @@ fdescribe("User is lending when wallet connected ", () => {
   // Disable API mocking after the tests are done.
   afterAll(() => mswServer && mswServer.close());
 
-  it("renders clickable lent items", async () => {
-    //todo
+  it("renders clickable lent items with right state", async () => {
+    const lendingsArr = [
+      {
+        // defaultstate
+        collateralClaimed: false,
+        dailyRentPrice: "0x0000005a",
+        id: "103",
+        isERC721: true,
+        lenderAddress: "0x48ddea6de8c0393a26e2590a3b724fc47abdcf22",
+        lentAmount: "1",
+        lentAt: "1627407065",
+        maxRentDuration: "15",
+        nftAddress: "0xc3f733ca98e0dad0386979eb96fb1722a1a05e69",
+        nftPrice: "0x000005dc",
+        paymentToken: "1",
+        tokenId: "20581",
+      },
+      {
+        //claimed
+        collateralClaimed: true,
+        dailyRentPrice: "0x00010000",
+        id: "105",
+        isERC721: false,
+        lenderAddress: "0xd39ea6043d1fa03f5be2beb2cfe65faa4ef0e595",
+        lentAmount: "1",
+        lentAt: "1627447207",
+        maxRentDuration: "5",
+        nftAddress: "0xfaff15c6cdaca61a4f87d329689293e07c98f578",
+        nftPrice: "0x00140000",
+        paymentToken: "3",
+        renting: {
+          id: "105",
+          rentDuration: "1",
+          rentedAt: (Date.now() - 48 * 60 * 60 * 1000) / 1000,
+          renterAddress: "0x8b6e96947349c5efabd44bd8f8901d31951202c6",
+        },
+        tokenId: "1",
+      },
+      {
+        //claimable
+        collateralClaimed: false,
+        dailyRentPrice: "0x00000064",
+        id: "106",
+        isERC721: true,
+        lenderAddress: "0xbc2a432a01a64b5bdc9360c22b6603c60e96c867",
+        lentAmount: "1",
+        lentAt: "1627468549",
+        maxRentDuration: "100",
+        nftAddress: "0x9d413b9434c20c73f509505f7fbc6fc591bbf04a",
+        nftPrice: "0x00001388",
+        paymentToken: "1",
+        renting: {
+          id: "105",
+          rentDuration: "1",
+          rentedAt: (Date.now() - 48 * 60 * 60 * 1000) / 1000,
+          renterAddress: "0x8b6e96947349c5efabd44bd8f8901d31951202c6",
+        },
+        tokenId: "7085325",
+      },
+      {
+        //hasRenting, not expired
+        collateralClaimed: false,
+        dailyRentPrice: "0x00140000",
+        id: "107",
+        isERC721: false,
+        lenderAddress: "0x75dc67127f851a3fefd38a9183a09803364c575c",
+        lentAmount: "1",
+        lentAt: "1627484931",
+        maxRentDuration: "7",
+        nftAddress: "0x0db8c099b426677f575d512874d45a767e9acc3c",
+        nftPrice: "0x01f40000",
+        paymentToken: "2",
+        renting: {
+          id: "107",
+          rentDuration: "1",
+          rentedAt: (Date.now() - 20000) / 1000,
+          renterAddress: "0x000000041d22b34812630f07f7b3be152f430aa9",
+        },
+        tokenId: "1",
+      },
+    ];
+    const lendings = {
+      data: {
+        users: [{ lending: lendingsArr }],
+      },
+    };
+
     mswServer.use(
-      rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200));
-      }),
-      rest.post(`${process.env.NEXT_PUBLIC_RENFT_API}/*`, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(testLendings));
-      }),
-      // empty opensea
-      rest.get(
-        `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(testAssets));
-        }
-      ),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
+      ...mockResponse({
+        renftapi: {
+          status: 200,
+          json: lendings,
+        },
+        openseaapi: {
+          status: 200,
+          json: testAssets,
+        },
       })
     );
 
-    render(<Home />);
-
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
+    act(() => {
+      render(<Page />);
     });
 
-    // shows actual cards
+    await waitForRefetch(screen);
     await waitFor(() => {
-      const items = screen.getAllByTestId("catalogue-item-loaded");
+      const list = screen.getByRole("grid", {
+        name: /nfts/i,
+      });
+      const items = within(list).getAllByRole("gridcell", {
+        selected: false,
+      });
 
-      expect(items.length).toBe(PAGE_SIZE);
-      items.forEach((item) => {
-        expect(item).toHaveAttribute("disabled");
+      expect(items.length).toBe(4);
+      expect(screen.getAllByRole("button", { name: /stop lend/i }).length).toBe(
+        2
+      );
+      expect(screen.getAllByRole("button", { name: /claim/i }).length).toBe(2);
+      const claimed = within(list).queryAllByTestId("claimed", {
+        selected: false,
+      });
+
+      expect(claimed.length).toBe(1);
+      claimed.forEach((item) => {
+        const { getByRole, getByTestId } = within(item);
+        expect(getByRole("checkbox")).toHaveAttribute("disabled");
+        expect(getByTestId("catalogue-action")).toHaveAttribute("disabled");
+      });
+      const claimable = within(list).queryAllByTestId("claimable", {
+        selected: false,
+      });
+
+      claimable.forEach((item) => {
+        const { getByRole, getByTestId } = within(item);
+        expect(getByRole("checkbox")).not.toHaveAttribute("disabled");
+        expect(getByTestId("catalogue-action")).toHaveAttribute("disabled");
+      });
+      expect(claimable.length).toBe(1);
+      const hasRenting = within(list).queryAllByTestId("hasRenting", {
+        selected: false,
+      });
+
+      expect(hasRenting.length).toBe(1);
+      hasRenting.forEach((item) => {
+        const { getByRole, getByTestId } = within(item);
+        expect(getByRole("checkbox")).toHaveAttribute("disabled");
+        expect(getByTestId("catalogue-action")).toHaveAttribute("disabled");
+      });
+
+      const defaultState = within(list).queryAllByTestId("default", {
+        selected: false,
+      });
+
+      expect(defaultState.length).toBe(1);
+      defaultState.forEach((item) => {
+        const { getByRole, getByTestId } = within(item);
+        expect(getByRole("checkbox")).not.toHaveAttribute("disabled");
+        expect(getByTestId("catalogue-action")).toHaveAttribute("disabled");
       });
     });
-
-    const lending = testLendings.data.lendings[3];
-    const id = getUniqueID(lending.nftAddress, lending.tokenId);
-    const re = new RegExp(`toggle catalogue item ${id}`, "i");
-
-    const checkbox = screen.getByLabelText(re);
-    user.click(checkbox);
-
-    expect(checkbox).toBeEnabled();
-
-    await sleep(1000);
-    const items = screen.getAllByTestId("catalogue-item-loaded");
-    items.forEach((item) => {
-      if (item.id === `catalogue-button-${id}`) {
-        expect(item).not.toHaveAttribute("disabled");
-      } else {
-        expect(item).toHaveAttribute("disabled");
-      }
-    });
-  }, 6000);
-  xdescribe("claim", () => {
-    it("rerenders saved form items, when form modal closes", () => {
-      //todo
-    });
-    it("rerenders saved form items, when form model closes without removed item (someone already rented it out in the bg)", () => {
-      //todo
-    });
-    it("rerenders selected rentals when page changed", () => {
-      //todo
-    });
-  });
-  xdescribe("stop lend modal", () => {
-    it("rerenders saved form items, when form modal closes", () => {
-      //todo
-    });
-    it("rerenders saved form items, when form model closes without removed item (someone already rented it out in the bg)", () => {
-      //todo
-    });
-    it("rerenders selected rentals when page changed", () => {
-      //todo
-    });
-  });
-  xit("shows 3 states (lending-no-renter/lending-has-renter/lender-expired-claimable)", () => {});
-  xit("can claim item", () => {});
-  xit("can claim item", () => {});
-
-  xit("shows lended item in rental tab but owner cannot select it", () => {});
-  xdescribe("filter", () => {
-    //todo
-  });
-  xdescribe("sort", () => {
-    //todo
-  });
+  }, 15_000);
 });

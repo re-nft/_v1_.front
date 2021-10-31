@@ -9,12 +9,16 @@ import { SearchMenu } from "./search-menu";
 type PageLayoutProps = {
   tabs: { name: string; href: string; current: boolean }[];
   hideDevMenu?: true;
+  hideSearchMenu?: true;
+  addPadding?: true;
 };
 
 const SearchLayout: React.FC<PageLayoutProps> = ({
   tabs,
   children,
   hideDevMenu = false,
+  hideSearchMenu = false,
+  addPadding = false,
 }) => {
   const router = useRouter();
   if (!tabs || tabs.length < 1)
@@ -22,7 +26,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
       <div className="flex flex-col py-4 w-full">
         <div className="flex flex-col md:flex-row pr-10">
           {!hideDevMenu && <DevMenu />}
-          <SearchMenu />
+          {!hideSearchMenu && <SearchMenu />}
         </div>
         {children}
         <SnackAlert />
@@ -32,7 +36,13 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
   return (
     <div className="flex flex-col py-4 w-full">
       {!hideDevMenu && <DevMenu />}
-      <SearchMenu />
+
+      {!hideSearchMenu && !addPadding && <SearchMenu />}
+      {!hideSearchMenu && addPadding && (
+        <div className="pr-10">
+          <SearchMenu />
+        </div>
+      )}
       <div>
         <div className="sm:hidden">
           <label htmlFor="tabs" className="sr-only">

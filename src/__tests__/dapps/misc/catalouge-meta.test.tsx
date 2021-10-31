@@ -21,6 +21,8 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
 jest.mock("renft-front/hooks/store/useNftStore", () => {
   return {
     __esModule: true,
+    useLendingStore: jest.fn().mockReturnValue({ lendings: {} }),
+    useRentingStore: jest.fn().mockReturnValue({ rentings: {} }),
     useNftsStore: jest.fn().mockImplementation((fn) => {
       const state = {
         amounts: new Map(),

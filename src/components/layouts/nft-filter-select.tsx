@@ -41,6 +41,10 @@ export const NftFilterSelect: React.FC = () => {
   }, [filters, options]);
 
   const router = useRouter();
+  const defaultValue = useMemo(
+    () => ({ label: "All NFTs", value: "", imageUrl: "" }),
+    []
+  );
 
   useEffect(() => {
     const handleStop = () => {
@@ -53,15 +57,19 @@ export const NftFilterSelect: React.FC = () => {
     };
   }, [router, setNftFilter]);
 
+  const extendedOptions = useMemo(() => {
+    return [defaultValue, ...options];
+  }, [options, defaultValue]);
+
   if (!options || options.length === 0) return null;
 
   return (
     <CategorySelect
       label="Filter"
       value={value}
-      options={options}
+      options={extendedOptions}
       setValue={setNftFilter}
-      defaultValue={{ label: "All NFTs", value: "", imageUrl: "" }}
+      defaultValue={defaultValue}
     />
   );
 };

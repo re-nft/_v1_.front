@@ -109,7 +109,7 @@ const useContractsState = create<{
       })
     ),
 }));
-export const useSmartContracts = () => {
+export const useSmartContracts = (): ContractsObject => {
   const { signer, network } = useWallet();
   const contracts = useContractsState(
     useCallback((state) => state.contracts, []),

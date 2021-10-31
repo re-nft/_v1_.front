@@ -16,7 +16,11 @@ export const Disclosure = ActualDisclosure;
 export const Transition = ({ children, role, show, ...props }) => {
   if (!show) return null;
   return (
-    <div role={role} aria-selected={props["aria-selected"]}>
+    <div
+      role={role}
+      aria-selected={props["aria-selected"]}
+      data-testid={props["data-testid"]}
+    >
       {children}
     </div>
   );

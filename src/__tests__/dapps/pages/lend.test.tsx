@@ -1,19 +1,10 @@
 import React from "react";
-import {
-  render,
-  screen,
-  waitFor,
-  within,
-  act,
-  prettyDOM,
-} from "@testing-library/react";
+import { render, screen, waitFor, within, act } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import { SetupServerApi } from "msw/node";
 import * as testAssets from "./assets.json";
 //import { PAGE_SIZE } from "renft-front/consts";
 import * as Sentry from "@sentry/nextjs";
-import { getContractWithProvider } from "renft-front/utils";
-import { waitForRefetch, mockResponse } from "./test-utils";
 
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
@@ -25,19 +16,6 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
     })),
   };
 });
-jest.mock("renft-front/utils", () => {
-  const actualModule = jest.requireActual("renft-front/utils");
-  return {
-    __esModule: true,
-    ...actualModule,
-    getContractWithProvider: jest.fn().mockReturnValue({
-      balanceOf: jest.fn().mockReturnValue(Promise.resolve(2)),
-    }),
-    getContractWithSigner: jest.fn().mockResolvedValue({
-      isApprovedForAll: jest.fn().mockResolvedValue(true),
-    }),
-  };
-});
 jest.mock("renft-front/consts", () => {
   const actualModule = jest.requireActual("renft-front/consts");
   return {
@@ -46,21 +24,18 @@ jest.mock("renft-front/consts", () => {
     ERC1155_REFETCH_INTERVAL: 5000,
   };
 });
+jest.mock("next/router", () => {
+  return {
+    useRouter: jest.fn().mockReturnValue({
+      pathname: "/lend",
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
+  };
+});
 
 import LendPage from "renft-front/pages/lend";
 
 const intervalServerError = { message: "Interval Server error" };
-
-beforeAll(() => {
-  Object.defineProperty(global.window, "IntersectionObserver", {
-    writable: true,
-    value: jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    })),
-  });
-});
 
 const EIP1155_response = {
   data: {
@@ -250,9 +225,6 @@ describe("lend page wallet connected", () => {
         render(<LendPage />);
       });
       await waitForRefetch(screen);
-      await act(async () => {
-        render(<LendPage />);
-      });
       await waitFor(() => {
         screen.getAllByTestId("catalogue-item-loaded");
       });
@@ -534,7 +506,154 @@ describe("lend page wallet connected", () => {
       await waitFor(() => {
         const message = screen.queryByLabelText(/Sort/i);
 
-        expect(message).toBeInTheDocument();
+        expect(message).not.toBeInTheDocument();
+      });
+    });
+    it("filters items based on collection", async () => {
+      testAssets.assets[0].tokenId = EIP721_response.data.tokens[0].tokenId;
+      testAssets.assets[0].asset_contract.address =
+        EIP721_response.data.tokens[0].contractAddress;
+      testAssets.assets[1].tokenId =
+        EIP1155_response.data.account.balances[0].token.tokenId;
+      testAssets.assets[1].asset_contract.address =
+        EIP1155_response.data.account.balances[0].token.registry.contractAddress;
+      mswServer.use(
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
+          openseaapi: {
+            status: 200,
+            json: testAssets,
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<LendPage />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const collection = screen.getByRole("option", {
+        name: testAssets.assets[0].collection.name,
+      });
+      expect(collection).toBeInTheDocument();
+
+      act(() => {
+        user.click(collection);
+        //click outside
+        user.click(global.document.body);
+      });
+      // filter should be shown
+      expect(screen.getByLabelText(/Filter/i)).toHaveTextContent(
+        testAssets.assets[0].collection.name
+      );
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(1);
+      });
+    });
+
+    it("can clear filter", async () => {
+      testAssets.assets[0].tokenId = EIP721_response.data.tokens[0].tokenId;
+      testAssets.assets[0].asset_contract.address =
+        EIP721_response.data.tokens[0].contractAddress;
+      testAssets.assets[1].tokenId =
+        EIP1155_response.data.account.balances[0].token.tokenId;
+      testAssets.assets[1].asset_contract.address =
+        EIP1155_response.data.account.balances[0].token.registry.contractAddress;
+      mswServer.use(
+        ...mockResponse({
+          eip1155api: {
+            status: 200,
+            json: EIP1155_response,
+          },
+          eip721api: {
+            status: 200,
+            json: EIP721_response,
+          },
+          openseaapi: {
+            status: 200,
+            json: testAssets,
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<LendPage />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const collection = screen.getByRole("option", {
+        name: testAssets.assets[0].collection.name,
+      });
+      expect(collection).toBeInTheDocument();
+
+      act(() => {
+        user.click(collection);
+        //click outside
+        user.click(global.document.body);
+      });
+      // filter should be shown
+      expect(screen.getByLabelText(/Filter/i)).toHaveTextContent(
+        testAssets.assets[0].collection.name
+      );
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(1);
+      });
+      //reset
+      act(() => {
+        const filter = screen.getByText(testAssets.assets[0].collection.name);
+        user.click(filter);
+      });
+      const clearFilter = screen.getByRole("option", {
+        name: /all nfts/i,
+      });
+      expect(clearFilter).toBeInTheDocument();
+      act(() => {
+        const filter = screen.getByText(/all nfts/i);
+        user.click(filter);
+      });
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(2);
       });
     });
   });

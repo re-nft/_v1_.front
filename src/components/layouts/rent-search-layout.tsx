@@ -3,9 +3,13 @@ import SearchLayout from "./search-layout";
 
 export const RentSearchLayout: React.FC<{
   hideDevMenu?: true;
-}> = ({ children, hideDevMenu }) => {
+}> = ({ children, hideDevMenu, hideSearchMenu }) => {
   return (
-    <SearchLayout tabs={[]} hideDevMenu={hideDevMenu}>
+    <SearchLayout
+      tabs={[]}
+      hideDevMenu={hideDevMenu}
+      hideSearchMenu={hideSearchMenu}
+    >
       {children}
     </SearchLayout>
   );

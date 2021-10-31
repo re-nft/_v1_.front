@@ -219,6 +219,9 @@ export const useSearchOptions = (): CategoryOptions[] => {
         if (!set.has(name)) {
           set.add(name);
           arr.push({
+            //TODO:eniko same collection name can be different
+            // the name will contain id at the end if the collection has the same name
+            // but different instance
             value: meta.collection.name,
             label: meta.collection.name,
             imageUrl: meta.collection.imageUrl,

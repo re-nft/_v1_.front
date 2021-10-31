@@ -1,11 +1,15 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect } from "react";
 import { Transition } from "@headlessui/react";
 import shallow from "zustand/shallow";
 import { ASTROCAT_CONTRACT_ADDRESS } from "renft-front/consts";
 
 import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
 import { useWallet } from "renft-front/hooks/store/useWallet";
-import { useNftsStore } from "renft-front/hooks/store/useNftStore";
+import {
+  useNftsStore,
+  useRentingStore,
+  useLendingStore,
+} from "renft-front/hooks/store/useNftStore";
 import { useEventTrackedTransactionState } from "renft-front/hooks/store/useEventTrackedTransactions";
 
 import { ShortenPopover } from "renft-front/components/common/shorten-popover";
@@ -21,6 +25,7 @@ import { Skeleton } from "./skeleton";
 import { CatalogueItemRow } from "./catalogue-item-row";
 import { CatalogueActions } from "./catalogue-actions";
 import { CatalogueItemDisplay } from "./catalogue-item-display";
+import { CountDown } from "renft-front/components/common/countdown";
 
 type CatalougeItemBaseProps = {
   // nftId
@@ -54,6 +59,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   ...rest
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
+  const lending = useLendingStore(
+    useCallback((state) => state.lendings[uniqueId], [uniqueId])
+  );
+  const renting = useRentingStore(
+    useCallback(
+      (state) =>
+        lending?.rentingId ? state.rentings[lending.rentingId] : null,
+      [lending?.rentingId]
+    )
+  );
   const { signer } = useWallet();
   const meta = useNftMetaState(
     useCallback(
@@ -123,11 +138,12 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
       className={classNames(
         disabled && "cursor-not-allowed",
         !disabled && "hover:shadow-rn-one",
-        checked && "shadow-rn-one border-4",
+        !disabled && checked && "shadow-rn-one border-4",
         "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
       )}
-      aria-selected={!!checked}
+      aria-selected={!disabled && !!checked}
       role="gridcell"
+      data-testid={rest["data-testid"]}
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
@@ -140,11 +156,19 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                   nftAddress={nft?.nftAddress || ""}
                   tokenId={nft?.tokenId || ""}
                   disabled={disabled || !signer}
-                  checked={!!checked}
+                  checked={!disabled && !!checked}
                   onCheckboxChange={onCheckboxChange}
                 />
               </div>
               <div className="relative">
+                <div className="absolute inset-x-0 top-0 h-16 z-10">
+                  {renting && (
+                    <CountDown
+                      endTime={renting?.rentalEndTime || 0}
+                      claimed={lending?.collateralClaimed || false}
+                    />
+                  )}
+                </div>
                 <CatalogueItemDisplay image={image} description={name} />
                 <div className="absolute inset-0  flex items-center text-center justify-center">
                   <PendingTransactionsLoader status={pendingStatus} />
@@ -212,6 +236,7 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 <Button
                   onClick={cb}
                   description={rest.buttonTitle}
+                  data-testid="catalogue-action"
                   disabled={actionDisabled}
                 />
               </div>

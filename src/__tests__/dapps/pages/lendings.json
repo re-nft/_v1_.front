@@ -2,7 +2,7 @@
   "data": {
     "lendings": [
       {
-        "collateralClaimed": true,
+        "collateralClaimed": false,
         "dailyRentPrice": "0x0000005a",
         "id": "103",
         "isERC721": true,
@@ -13,12 +13,6 @@
         "nftAddress": "0xc3f733ca98e0dad0386979eb96fb1722a1a05e69",
         "nftPrice": "0x000005dc",
         "paymentToken": "1",
-        "renting": {
-          "id": "103",
-          "rentDuration": "1",
-          "rentedAt": "1627777443",
-          "renterAddress": "0x67fdbb7326a6de4194b1dfee2e1e212952f0092b"
-        },
         "tokenId": "20581"
       },
       {

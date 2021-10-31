@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 
 import { Lending } from "renft-front/types/classes";
 import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
@@ -9,6 +9,8 @@ import { PaginationList } from "renft-front/components/layouts/pagination-list";
 import { RentSearchLayout } from "renft-front/components/layouts/rent-search-layout";
 import ItemWrapper from "renft-front/components/common/items-wrapper";
 import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+
+import { useSearch } from "renft-front/hooks/store/useSearch";
 
 const RentCatalogueItem: React.FC<{
   checkedItems: string[];
@@ -31,6 +33,7 @@ const RentCatalogueItem: React.FC<{
     if (userLender) return "Lending";
     return checkedMoreThanOne && checked ? "Rent all" : "Rent";
   }, [userLender, checkedMoreThanOne, checked]);
+
   return (
     <CatalogueItem
       nId={lending.nId}
@@ -101,10 +104,13 @@ export const AvailableToRent: React.FC<{
   allAvailableToRent: Lending[];
   isLoading: boolean;
 }> = ({ allAvailableToRent, isLoading }) => {
+  //TODO:eniko move this to the search-layout
+  const filteredItems = useSearch(allAvailableToRent);
+
   return (
     <RentSearchLayout>
       <PaginationList
-        nfts={allAvailableToRent}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You can't rent anything yet"

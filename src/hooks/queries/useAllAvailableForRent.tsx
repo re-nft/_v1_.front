@@ -3,7 +3,10 @@ import request from "graphql-request";
 import { Lending, Nft } from "renft-front/types/classes";
 import { queryAllLendingRenft } from "renft-front/services/queries";
 import { timeItAsync } from "renft-front/utils";
-import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import {
+  SECOND_IN_MILLISECONDS,
+  RENFT_REFETCH_INTERVAL,
+} from "renft-front/consts";
 import { debounceTime, from, map, Observable, switchMap, timer } from "rxjs";
 import { LendingRaw } from "renft-front/types";
 import shallow from "zustand/shallow";
@@ -62,7 +65,9 @@ export const useAllAvailableForRent = (): {
       const pendingRentals =
         state.pendingTransactions[SmartContractEventType.STOP_LEND];
       return (
-        pendingRentings.length + pendingLendings.length + pendingRentals.length
+        pendingRentings.length * 2 +
+        pendingLendings.length * 3 +
+        pendingRentals.length * 4
       );
     }, []),
     shallow
@@ -72,8 +77,10 @@ export const useAllAvailableForRent = (): {
     shallow
   );
 
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const addLendings = useLendingStore((state) => state.addLendings);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const addLendings = useLendingStore(
+    useCallback((state) => state.addLendings, [])
+  );
   const allAvailableToRentIds = useLendingStore(
     useCallback((state) => state.allAvailableToRent, []),
     shallow
@@ -81,7 +88,7 @@ export const useAllAvailableForRent = (): {
   useEffect(() => {
     // stupid way to force refetch
     const start = refetchAfterOperation ? 0 : 0;
-    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(start, RENFT_REFETCH_INTERVAL)
       .pipe(
         switchMap(() => {
           if (

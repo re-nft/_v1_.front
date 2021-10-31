@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within, act } from "@testing-library/react";
 import { SetupServerApi } from "msw/node";
-import { rest } from "msw";
 import * as testLendings from "./lendings.json";
 import * as testAssets from "./assets.json";
-import { sleep } from "renft-front/utils";
 import { PAGE_SIZE } from "renft-front/consts";
 
+import user from "@testing-library/user-event";
 jest.mock("renft-front/hooks/store/useSnackProvider");
 jest.mock("renft-front/hooks/store/useWallet", () => {
   return {
@@ -23,20 +16,14 @@ jest.mock("renft-front/hooks/store/useWallet", () => {
 });
 
 import Home from "renft-front/pages/index";
-let OLD_ENV: NodeJS.ProcessEnv;
 
-beforeAll(() => {
-  OLD_ENV = { ...process.env };
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
-  process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
-  process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
-  process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
-  process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
-  process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
-});
-
-afterAll(() => {
-  process.env = OLD_ENV;
+jest.mock("next/router", () => {
+  return {
+    useRouter: jest.fn().mockReturnValue({
+      pathname: "/",
+      events: { on: jest.fn(), off: jest.fn() },
+    }),
+  };
 });
 
 describe("Home", () => {
@@ -58,18 +45,11 @@ describe("Home", () => {
   afterAll(() => mswServer && mswServer.close());
 
   it("renders empty rentals", async () => {
-    mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json({ data: [] }));
-      }),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
-      })
-    );
+    mswServer.use(...mockResponse());
 
-    render(<Home />);
+    act(() => {
+      render(<Home />);
+    });
 
     await waitFor(() => {
       const message = screen.getByTestId("empty-message");
@@ -81,28 +61,18 @@ describe("Home", () => {
   // TODO:eniko show error message when API is down
   it("renders empty rentals on error", async () => {
     mswServer.use(
-      rest.post(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(
-          ctx.status(500),
-          ctx.json({ message: "Internal Server Error" })
-        );
-      }),
-      // empty opensea
-      rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      ...mockResponse({
+        renftapi: {
+          status: 500,
+          json: { message: "Interval server error" },
+        },
       })
     );
-
-    render(<Home />);
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
+    act(() => {
+      render(<Home />);
     });
 
+    await waitForRefetch(screen);
     await waitFor(() => {
       const message = screen.getByTestId("empty-message");
 
@@ -113,50 +83,23 @@ describe("Home", () => {
 
   it("renders rentals returned by API", async () => {
     mswServer.use(
-      rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200));
-      }),
-      rest.post(`${process.env.NEXT_PUBLIC_RENFT_API}/*`, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(testLendings));
-      }),
-      // empty opensea
-      rest.get(
-        `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-        async (req, res, ctx) => {
-          await sleep(1000);
-          return res(ctx.status(200), ctx.json(testAssets));
-        }
-      ),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
+      ...mockResponse({
+        renftapi: {
+          status: 200,
+          json: testLendings,
+        },
+        openseaapi: {
+          status: 200,
+          json: testAssets,
+        },
       })
     );
 
-    render(<Home />);
-
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
+    act(() => {
+      render(<Home />);
     });
 
-    // shows skeletons first
-    await screen.findAllByTestId("catalogue-item-skeleton");
-    await waitForElementToBeRemoved(
-      () => screen.getAllByTestId("catalogue-item-skeleton"),
-      {
-        timeout: 3500,
-      }
-    );
-
+    await waitForRefetch(screen);
     // shows actual cards
     await waitFor(() => {
       const items = screen.getAllByTestId("catalogue-item-loaded");
@@ -169,40 +112,23 @@ describe("Home", () => {
 
   it("when wallet not connected cannot select elements", async () => {
     mswServer.use(
-      rest.options(process.env.NEXT_PUBLIC_RENFT_API, (req, res, ctx) => {
-        return res(ctx.status(200));
-      }),
-      rest.post(`${process.env.NEXT_PUBLIC_RENFT_API}/*`, (req, res, ctx) => {
-        // Respond with "500 Internal Server Error" status for this test.
-        return res(ctx.status(200), ctx.json(testLendings));
-      }),
-      // empty opensea
-      rest.get(
-        `${process.env.NEXT_PUBLIC_OPENSEA_API}/*`,
-        async (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(testAssets));
-        }
-      ),
-      // catch all for ipfs data
-      rest.get("*", (req, res, ctx) => {
-        return {
-          image: null,
-          description: "",
-          name: "",
-        };
+      ...mockResponse({
+        renftapi: {
+          status: 200,
+          json: testLendings,
+        },
+        openseaapi: {
+          status: 200,
+          json: testAssets,
+        },
       })
     );
 
-    render(<Home />);
-
-    await waitFor(() => {
-      const loader = screen.getByTestId("list-loader");
-      expect(loader).toBeInTheDocument();
-    });
-    await waitForElementToBeRemoved(() => screen.getByTestId("list-loader"), {
-      timeout: 1500,
+    act(() => {
+      render(<Home />);
     });
 
+    await waitForRefetch(screen);
     // shows actual cards
     await waitFor(() => {
       const list = screen.getByRole("grid", {
@@ -223,22 +149,410 @@ describe("Home", () => {
     });
   }, 5000);
 
-  xit("shows wallet owner lended items in rental tab", () => {});
+  it("shows wallet owner lended items in rental tab", async () => {
+    const lendingsArr = [...testLendings.data.lendings];
+    lendingsArr[0].lenderAddress = "dummy wallet address";
+    const lendings = {
+      data: { lendings: lendingsArr },
+    };
+    mswServer.use(
+      ...mockResponse({
+        renftapi: {
+          status: 200,
+          json: lendings,
+        },
+        openseaapi: {
+          status: 200,
+          json: testAssets,
+        },
+      })
+    );
+    act(() => {
+      render(<Home />);
+    });
 
-  xdescribe("rent form open", () => {
-    it("show rent form when 1 item selected with item details", () => {});
-    it("show rent form when 2 item selected with selected items details", () => {});
-    it("shows filled out details when modal was filled before (1 item)", () => {});
-    it("shows filled out details when modal was filled before (multiple item)", () => {});
-    it("when items selected and filled out and item rented out(api removed) form does not show it", () => {});
-  });
+    await waitForRefetch(screen);
+    await waitFor(() => {
+      screen.getAllByTestId("catalogue-item-loaded");
+    });
 
-  xdescribe("filter", () => {
+    // shows actual cards
+    await waitFor(() => {
+      const list = screen.getByRole("grid", {
+        name: /nfts/i,
+      });
+      const lendItems = within(list).queryAllByRole("gridcell", {
+        selected: false,
+        name: /lending/i,
+      });
+
+      expect(lendItems.length).toBe(1);
+
+      const items = within(list).queryAllByRole("gridcell", {
+        selected: false,
+      });
+
+      expect(items.length).toBe(PAGE_SIZE);
+      items.forEach((item) => {
+        const catItem = within(item);
+        expect(catItem.getByRole("checkbox")).toHaveAttribute("disabled");
+        expect(catItem.getByTestId("catalogue-action")).toHaveAttribute(
+          "disabled"
+        );
+      });
+    });
+  }, 15_000);
+
+  describe("filter", () => {
     //todo
-    it("filter items out based on collection name", () => {});
-    it("filter shows only matches", () => {});
-    it("filter dropdown shows all available options in dropdown", () => {});
-    it("filter dropdown empty filter shows all items based on page", () => {});
+    it("show collection filter if there are collections", async () => {
+      const assets = [...testAssets.assets];
+      assets[0].tokenId = testLendings.data.lendings[0].tokenId;
+      assets[0].asset_contract.address =
+        testLendings.data.lendings[0].nftAddress;
+      assets[1].tokenId = testLendings.data.lendings[1].tokenId;
+      assets[1].asset_contract.address =
+        testLendings.data.lendings[1].nftAddress;
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: { assets },
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+    }, 10000);
+    it("should not show collection filter if there no collections", async () => {
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: testAssets,
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        const message = screen.queryByLabelText(/Filter/i);
+
+        expect(message).not.toBeInTheDocument();
+      });
+    });
+    it("show sort on rent page", async () => {
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: testAssets,
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        const message = screen.queryByLabelText(/Sort/i);
+
+        expect(message).toBeInTheDocument();
+      });
+    });
+    it("filters items based on collection", async () => {
+      const assets = [...testAssets.assets];
+      assets[0].tokenId = testLendings.data.lendings[0].tokenId;
+      assets[0].asset_contract.address =
+        testLendings.data.lendings[0].nftAddress;
+      assets[1].tokenId = testLendings.data.lendings[1].tokenId;
+      assets[1].asset_contract.address =
+        testLendings.data.lendings[1].nftAddress;
+
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: { assets },
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const collection = screen.getByRole("option", {
+        name: testAssets.assets[0].collection.name,
+      });
+      expect(collection).toBeInTheDocument();
+
+      act(() => {
+        user.click(collection);
+        //click outside
+        user.click(global.document.body);
+      });
+      // filter should be shown
+      expect(screen.getByLabelText(/Filter/i)).toHaveTextContent(
+        testAssets.assets[0].collection.name
+      );
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(1);
+      });
+    });
+
+    it("can clear filter", async () => {
+      const assets = [...testAssets.assets];
+      assets[0].tokenId = testLendings.data.lendings[0].tokenId;
+      assets[0].asset_contract.address =
+        testLendings.data.lendings[0].nftAddress;
+      assets[1].tokenId = testLendings.data.lendings[1].tokenId;
+      assets[1].asset_contract.address =
+        testLendings.data.lendings[1].nftAddress;
+
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: { assets },
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const collection = screen.getByRole("option", {
+        name: testAssets.assets[0].collection.name,
+      });
+      expect(collection).toBeInTheDocument();
+
+      act(() => {
+        user.click(collection);
+        //click outside
+        user.click(global.document.body);
+      });
+      // filter should be shown
+      expect(screen.getByLabelText(/Filter/i)).toHaveTextContent(
+        testAssets.assets[0].collection.name
+      );
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(1);
+      });
+      //reset
+      act(() => {
+        const filter = screen.getByText(testAssets.assets[0].collection.name);
+        user.click(filter);
+      });
+      const clearFilter = screen.getByRole("option", {
+        name: /all nfts/i,
+      });
+      expect(clearFilter).toBeInTheDocument();
+      act(() => {
+        const filter = screen.getByText(/all nfts/i);
+        user.click(filter);
+      });
+      await waitFor(() => {
+        expect(screen.queryAllByTestId("catalogue-item-loaded").length).toBe(
+          20
+        );
+      });
+    });
+
+    it("filter dropdown shows all available options in dropdown", async () => {
+      const assets = [...testAssets.assets];
+      assets[0].tokenId = testLendings.data.lendings[0].tokenId;
+      assets[0].asset_contract.address =
+        testLendings.data.lendings[0].nftAddress;
+      assets[1].tokenId = testLendings.data.lendings[1].tokenId;
+      assets[1].asset_contract.address =
+        testLendings.data.lendings[1].nftAddress;
+
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: { assets },
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const filter = screen.getByLabelText(/Filter/i, { selector: "ul" });
+      const dropdown = within(filter);
+      const collections = dropdown.getAllByRole("option");
+      expect(collections.length).toBe(14);
+    });
+
+    it("filter doesn't return collection which has no matching nft", async () => {
+      const assets = [...testAssets.assets];
+      assets[0].tokenId = testLendings.data.lendings[0].tokenId;
+      assets[0].asset_contract.address =
+        testLendings.data.lendings[0].nftAddress;
+      assets[1].tokenId = testLendings.data.lendings[1].tokenId;
+      assets[1].asset_contract.address =
+        testLendings.data.lendings[1].nftAddress;
+
+      assets.push({
+        tokenId: "dummy token id",
+        asset_contract: {
+          address: "dummy contract address",
+          name: "dummy collection",
+          description: "dummy collection description",
+        },
+        collection: {
+          name: "dummy collection",
+          description: "dummy collection description",
+        },
+      });
+      const index = assets.length - 1;
+      mswServer.use(
+        ...mockResponse({
+          renftapi: {
+            status: 200,
+            json: testLendings,
+          },
+
+          openseaapi: {
+            status: 200,
+            json: { assets },
+          },
+        })
+      );
+
+      await act(async () => {
+        render(<Home />);
+      });
+
+      await waitForRefetch(screen);
+      await waitFor(() => {
+        screen.getAllByTestId("catalogue-item-loaded");
+      });
+
+      await waitFor(
+        () => {
+          const message = screen.getByLabelText(/Filter/i);
+
+          expect(message).toBeInTheDocument();
+        },
+        { waitFor: 9000 }
+      );
+      act(() => {
+        const filter = screen.getByText(/all Nfts/i);
+        user.click(filter);
+      });
+      const collection = screen.queryByRole("option", {
+        name: assets[index].collection.name,
+      });
+      expect(collection).not.toBeInTheDocument();
+    });
   });
 
   xdescribe("filter + paging works together (multiple case)", () => {});
