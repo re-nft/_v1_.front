@@ -24,7 +24,7 @@ export const DashboardPage: React.FC = ({ children }) => {
   }, [pathname]);
   if (!signer) {
     return (
-      <SearchLayout tabs={[]} addPading>
+      <SearchLayout tabs={[]} addPadding>
         <NoSignerMessage />
       </SearchLayout>
     );

@@ -2,7 +2,7 @@ import {
   SmartContractEventType,
   TransactionStatus,
 } from "renft-front/hooks/store/useEventTrackedTransactions";
-import { from, map, timer, switchMap } from "rxjs";
+import { from, map, timer, switchMap, EMPTY } from "rxjs";
 import { Nft } from "renft-front/types/classes";
 import { useCallback, useEffect, useState } from "react";
 import { getContractWithSigner, getDistinctItems } from "renft-front/utils";
@@ -117,7 +117,7 @@ export const useNFTApproval = (
     if (!currentAddress) return;
     if (!contractAddress) return;
     const transaction = () => {
-      if (nfts.length < 1) return;
+      if (nfts.length < 1) return EMPTY;
       return from(
         isApprovalForAll(nfts, currentAddress, contractAddress).catch(() => {
           console.warn("batch lend issue with is approval for all");

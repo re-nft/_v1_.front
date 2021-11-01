@@ -37,6 +37,7 @@ type CatalougeItemBaseProps = {
   show: boolean;
   // lending/renting uniqueId, nftId if not lended yet
   uniqueId: string;
+  "data-testid"?: string
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
   onClick: ReactEventOnClickType;

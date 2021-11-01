@@ -3,6 +3,7 @@ import SearchLayout from "./search-layout";
 
 export const RentSearchLayout: React.FC<{
   hideDevMenu?: true;
+  hideSearchMenu?: true
 }> = ({ children, hideDevMenu, hideSearchMenu }) => {
   return (
     <SearchLayout

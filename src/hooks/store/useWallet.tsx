@@ -13,7 +13,6 @@ import shallow from "zustand/shallow";
 type WalletContextType = {
   address: string;
   permissions: unknown[];
-  connect: () => Promise<Web3Provider | undefined> | void;
   signer: Signer | undefined;
   web3Provider: Web3Provider | undefined;
   network: string;

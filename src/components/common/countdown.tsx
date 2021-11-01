@@ -15,9 +15,9 @@ export const CountDown: React.FC<{ endTime: number; claimed: boolean }> = ({
   const [{ days, hours, minutes, seconds, closeToDeadline }, setRemaining] =
     useState({
       days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
+      hours: '0',
+      minutes: '0',
+      seconds: '0',
       closeToDeadline: false,
     });
 
@@ -41,9 +41,9 @@ export const CountDown: React.FC<{ endTime: number; claimed: boolean }> = ({
       const s = parseInt(seconds.toString(), 10);
       setRemaining({
         days: parseInt(days.toString(), 10),
-        hours: h < 10 ? `0${h}` : h,
-        minutes: m < 10 ? `0${m}` : m,
-        seconds: s < 10 ? `0${s}` : s,
+        hours: h < 10 ? `0${h}` : h.toString(),
+        minutes: m < 10 ? `0${m}` : m.toString(),
+        seconds: s < 10 ? `0${s}` : s.toString(), 
         closeToDeadline: days < 1 && hours < 2,
       });
       if (time < 0) clearInterval(interval);
