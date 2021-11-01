@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useMemo } from "react";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Transition } from "@headlessui/react";
 import { useForm, useFieldArray } from "react-hook-form";

@@ -1,6 +1,6 @@
 import { Lending, Nft, Renting } from "renft-front/types/classes";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import produce from "immer";
 
 export enum NFTRentType {

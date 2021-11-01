@@ -3,23 +3,25 @@ import { useCallback, useEffect } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { usePrevious } from "./usePrevious";
-import { useWallet } from "../store/useWallet";
-import { devtools } from "zustand/middleware";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { devtools } from "renft-front/hooks/devtools";
 
 const useCurrentAddressState = create<{
   address: string;
   setAddress: (r: string) => void;
-}>(devtools((set) => ({
-  address: "",
-  setAddress: (r: string) =>
-    set(
-      produce((state) => {
-        state.address = r;
-      })
-    ),
-})));
+}>(
+  devtools((set) => ({
+    address: "",
+    setAddress: (r: string) =>
+      set(
+        produce((state) => {
+          state.address = r;
+        })
+      ),
+  }))
+);
 
-export const useCurrentAddress = ():string => {
+export const useCurrentAddress = (): string => {
   const { address } = useWallet();
   const newAddress = useCurrentAddressState(
     useCallback((state) => state.address, []),

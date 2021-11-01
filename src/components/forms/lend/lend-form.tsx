@@ -7,7 +7,7 @@ import {
   FormState,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import create from "zustand";
 import produce from "immer";
 import shallow from "zustand/shallow";

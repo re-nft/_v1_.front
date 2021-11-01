@@ -6,7 +6,7 @@ import {
 import { NftTokenMeta } from "../../types";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import produce from "immer";
 import { from, map, mergeMap } from "rxjs";
 import { RENFT_SUBGRAPH_ID_SEPARATOR } from "../../consts";

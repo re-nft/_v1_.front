@@ -5,7 +5,7 @@ import { timer, from, switchMap, map } from "rxjs";
 import produce from "immer";
 import shallow from "zustand/shallow";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 
 import { PaymentToken } from "@renft/sdk";
 

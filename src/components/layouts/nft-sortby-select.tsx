@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import { useRouter } from "next/router";
 
 import { CategorySelect } from "renft-front/components/common/category-select";

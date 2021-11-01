@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 
 import { CategorySelect } from "renft-front/components/common/category-select";
 import {

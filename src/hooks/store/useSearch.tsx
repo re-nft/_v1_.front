@@ -8,7 +8,7 @@ import { useExchangePrice } from "renft-front/hooks/queries/useExchangePrice";
 import { NO_COLLECTION } from "renft-front/consts";
 import create from "zustand";
 import produce from "immer";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import { useRouter } from "next/router";
 import { useNftMetaState } from "./useMetaState";
 

@@ -1,7 +1,7 @@
 import produce from "immer";
 import { useCallback, useEffect } from "react";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import shallow from "zustand/shallow";
 import { Nft, Lending, Renting } from "../../types/classes";
 
