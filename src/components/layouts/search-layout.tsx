@@ -24,7 +24,7 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
   if (!tabs || tabs.length < 1)
     return (
       <div className="flex flex-col py-4 w-full">
-        <div className="flex flex-col md:flex-row pr-10">
+        <div className="flex flex-col md:flex-row pr-10 space-y-2 md:space-y-0">
           {!hideDevMenu && <DevMenu />}
           {!hideSearchMenu && <SearchMenu />}
         </div>
@@ -51,8 +51,8 @@ const SearchLayout: React.FC<PageLayoutProps> = ({
           <select
             id="tabs"
             name="tabs"
-            className="block w-full pl-3 pr-10 py-2 text-base justify-end focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
-            defaultValue={tabs.find((tab) => tab.current)?.name}
+            className="block w-full pl-3 pr-10 py-2 mt-4 text-base justify-end focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
+            value={tabs.find((tab) => tab.current)?.name}
             onChange={(event) => {
               router.push(event?.target.value);
             }}

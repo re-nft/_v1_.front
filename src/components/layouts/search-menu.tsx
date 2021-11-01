@@ -10,11 +10,13 @@ export const SearchMenu: React.FC = () => {
     return pathname.startsWith("/lend");
   }, [pathname]);
   return (
-    <div className="flex flex-col content-center justify-center md:flex-row md:justify-end flex-1">
-      <div className="flex-initial md:mr-4">
+    <div className="flex flex-col content-center space-y-3 md:space-y-0  ml-8 md:ml-0 md:flex-row md:justify-end flex-1">
+      <div className="flex-initial md:mr-4 self-center md:self-auto">
         <NftFilterSelect />
       </div>
-      <div className="flex-initial">{!isLendPage && <NftSortBySelect />}</div>
+      <div className="flex-initial self-center md:self-auto">
+        {!isLendPage && <NftSortBySelect />}
+      </div>
     </div>
   );
 };

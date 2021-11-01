@@ -14,13 +14,12 @@ const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
-  { name: "Faq", href: "/faq" }
+  { name: "Faq", href: "/faq" },
 ];
 const userNavigation = [
   { name: "Profile", href: "/profile" },
-  { name: "Sign out", href: "/signout", disabled: true }
+  { name: "Sign out", href: "/signout", disabled: true },
 ];
-
 
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
@@ -115,8 +114,8 @@ export const AppLayout: React.FC = ({ children }) => {
                                     item.disabled
                                       ? "text-gray-400 cursor-not-allowed"
                                       : active
-                                        ? "text-white bg-black"
-                                        : "text-black hover:bg-black hover:text-white",
+                                      ? "text-white bg-black"
+                                      : "text-black hover:bg-black hover:text-white",
                                     "cursor-default select-none relative block p-2"
                                   )}
                                 >
@@ -184,7 +183,7 @@ export const AppLayout: React.FC = ({ children }) => {
             className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-6 shadow-rn-one"
             style={{
               backgroundImage:
-                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
+                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)",
             }}
           >
             <div className="flex mb-8 w-full ">{children}</div>
