@@ -233,16 +233,6 @@ export const useSearchOptions = (): CategoryOptions[] => {
         }
       }
     });
-    return [
-      {
-        value: "value 1",
-        label: "value 1",
-      },
-      {
-        value: "value 3",
-        label: "value 3",
-      },
-    ];
     return arr;
   }, [keys, metas, activeNfts]);
 };
