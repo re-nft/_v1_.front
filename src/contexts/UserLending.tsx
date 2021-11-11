@@ -4,7 +4,7 @@ import React, {
   useState,
   useContext,
   useCallback,
-  useEffect
+  useEffect,
 } from "react";
 
 import { hasDifference, timeItAsync } from "../utils";
@@ -24,7 +24,7 @@ export type UserLendingContextType = {
 };
 export const UserLendingContext = createContext<UserLendingContextType>({
   userLending: [],
-  isLoading: false
+  isLoading: false,
 });
 
 UserLendingContext.displayName = "UserLendingContext";
@@ -112,7 +112,7 @@ export const UserLendingProvider: React.FC = ({ children }) => {
     <UserLendingContext.Provider
       value={{
         userLending: lending,
-        isLoading
+        isLoading,
       }}
     >
       {children}
