@@ -13,12 +13,15 @@ const AvailableToRentPage: React.FC<{
   const { allAvailableToRent, isLoading } = useAllAvailableForRent();
 
   const {
-    query: { contractId, tokenId },
+    query: { contractId, tokenId }
   } = useRouter();
 
   const match = useMemo(() => {
     return allAvailableToRent.find((r) => {
-      return r.tokenId === tokenId && r.address == contractId;
+      return (
+        r.tokenId.toLowerCase() === (tokenId as string).toLowerCase() &&
+        r.address.toLowerCase() == (contractId as string).toLowerCase()
+      );
     });
   }, [contractId, tokenId, allAvailableToRent]);
 
@@ -81,7 +84,7 @@ const AvailableToRentPage: React.FC<{
 // this will bake metatags into every request to a shared url
 export async function getServerSideProps({
   params: { contractId, tokenId },
-  req,
+  req
 }: any) {
   const metas: any[] | undefined = await fetchNFTsFromOpenSea(
     [contractId],

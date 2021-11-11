@@ -65,16 +65,16 @@ const useAllAvailableStore = create<allAvailableForRent>((set, get) => ({
       }
       return {
         ...state,
-        nfts,
+        nfts
       };
     }),
   setLoading: (isLoading: boolean) =>
     set((state) => {
       return {
         ...state,
-        isLoading,
+        isLoading
       };
-    }),
+    })
 }));
 
 export const useAllAvailableForRent = () => {

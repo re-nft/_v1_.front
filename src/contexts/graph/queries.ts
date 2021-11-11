@@ -43,7 +43,7 @@ export const queryMyERC1155s = (user: string, skip = 0): string => {
 
 export const queryAllLendingRenft = `
   {
-    lendings {
+    lendings(  first: 1000) {
       id
       nftAddress
       tokenId
@@ -68,7 +68,7 @@ export const queryAllLendingRenft = `
 
 export const queryAllRentingRenft = `
   {
-    rentings {
+    rentings (  first: 1000) {
       id
       renterAddress
       rentDuration
@@ -93,7 +93,7 @@ export const queryAllRentingRenft = `
 
 export const queryAllRenft = (): string => {
   return `{
-    nfts {
+    nfts(  first: 1000) {
       id
       lending {
         id
@@ -139,7 +139,7 @@ export const queryAllRenft = (): string => {
 // reNFT's query to pull all user's lendings and rentings
 export const queryUserRenft = (user: string): string => {
   return `{
-    user(id: "${user.toString().toLowerCase()}") {
+    user(id: "${user.toString().toLowerCase()}",   first: 1000) {
       id
       lending {
         id
@@ -173,7 +173,7 @@ export const queryUserRenft = (user: string): string => {
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
-    users(where: {id: "${user.toString().toLowerCase()}"}) {
+    users(where: {id: "${user.toString().toLowerCase()}"},   first: 1000) {
       lending {
         id
         nftAddress
