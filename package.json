@@ -11,7 +11,8 @@
     "test": "jest test",
     "format": "prettier --write 'src/**/*.ts' 'src/**/*.tsx' 'src/*.tsx' 'src/*.ts'",
     "analyze": "cross-env ANALYZE=true yarn build",
-    "serve": "serve .next/analyze"
+    "serve": "serve .next/analyze",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@material-ui/core": "4.11.3",
@@ -112,13 +113,10 @@
     "@ethersproject/web": "5.4.0",
     "@ethersproject/wordlists": "5.4.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged && lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.ts(x)?": "prettier --write"
+    "*.ts(x)?": "prettier --write",
+    "*.js": "eslint --cache --fix",
+    "*.ts": "prettier --write"
   },
   "keywords": [
     "NFT",

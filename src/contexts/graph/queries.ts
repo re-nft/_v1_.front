@@ -93,9 +93,9 @@ export const queryAllRentingRenft = `
 
 export const queryAllRenft = (): string => {
   return `{
-    nfts(  first: 1000) {
+    nfts {
       id
-      lending {
+      lending(first:1000) {
         id
         nftAddress
         tokenId
@@ -113,7 +113,7 @@ export const queryAllRenft = (): string => {
           renterAddress
         }
       }
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration
@@ -139,9 +139,9 @@ export const queryAllRenft = (): string => {
 // reNFT's query to pull all user's lendings and rentings
 export const queryUserRenft = (user: string): string => {
   return `{
-    user(id: "${user.toString().toLowerCase()}",   first: 1000) {
+    user(id: "${user.toString().toLowerCase()}") {
       id
-      lending {
+      lending(first: 1000) {
         id
         nftAddress
         tokenId
@@ -153,7 +153,7 @@ export const queryUserRenft = (user: string): string => {
           id
         }
       }
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration
@@ -173,8 +173,8 @@ export const queryUserRenft = (user: string): string => {
 
 export const queryUserLendingRenft = (user: string): string => {
   return `{
-    users(where: {id: "${user.toString().toLowerCase()}"},   first: 1000) {
-      lending {
+    users(where: {id: "${user.toString().toLowerCase()}"}) {
+      lending(first: 1000) {
         id
         nftAddress
         tokenId
@@ -201,7 +201,7 @@ export const queryUserLendingRenft = (user: string): string => {
 export const queryUserRentingRenft = (user: string): string => {
   return `{
     users(where: {id: "${user.toString().toLowerCase()}"}) {
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration
