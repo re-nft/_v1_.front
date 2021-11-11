@@ -12,7 +12,6 @@ import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import ReactGA from "react-ga";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import Torus from "@toruslabs/torus-embed";
 
 const DefaultUser = {
   address: "",
