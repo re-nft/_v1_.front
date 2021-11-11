@@ -12,6 +12,7 @@ import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import ReactGA from "react-ga";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import Torus from "@toruslabs/torus-embed";
 
 const DefaultUser = {
   address: "",
@@ -70,13 +71,15 @@ export const UserProvider: React.FC = ({ children }) => {
     (manual: boolean) => {
       if (!(!!manual || (permissions.length > 0 && !signer))) return EMPTY;
 
+      const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
+
       const web3Modal = new Web3Modal({
         cacheProvider: false,
         providerOptions: {
           walletconnect: {
             package: WalletConnectProvider,
             options: {
-              infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+              infuraId,
             },
           },
         },
