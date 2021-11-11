@@ -4,7 +4,6 @@ import GraphContext from "../../contexts/graph";
 import UserContext from "../../contexts/UserProvider";
 import { useLookupAddress } from "../../hooks/useLookupAddress";
 import { Button } from "../common/button";
-import { InstallMetamask } from "../common/install-metamask";
 import { ShortenPopover } from "../common/shorten-popover";
 import Link from "next/link";
 
@@ -14,15 +13,6 @@ export const Header: React.FC = () => {
   const [username, setUsername] = useState<string>();
   const { userData } = useContext(GraphContext);
   const lookupAddress = useLookupAddress();
-
-  const installMetaMask = useMemo(() => {
-    const noProvider =
-      typeof window === "undefined"
-        ? false
-        : typeof window?.web3 === "undefined" &&
-          typeof window?.ethereum === "undefined";
-    return noProvider;
-  }, [typeof window]);
 
   useEffect(() => {
     if (userData?.name !== "") {
@@ -39,7 +29,7 @@ export const Header: React.FC = () => {
   return (
     <div className="header">
       <div className="header__logo"></div>
-      {!installMetaMask && (!currentAddress || !network) ? (
+      {!currentAddress || !network ? (
         <Button
           datacy="metamask-connect-button"
           onClick={connect}
@@ -66,10 +56,6 @@ export const Header: React.FC = () => {
 
           {!networkNotSupported && (
             <div className="header__wallet-user">
-              {installMetaMask && <InstallMetamask />}
-
-              {!installMetaMask && !!currentAddress && (
-                <>
                   <Link href="/profile">
                     <a>
                       <ShortenPopover
@@ -78,8 +64,6 @@ export const Header: React.FC = () => {
                       />
                     </a>
                   </Link>
-                </>
-              )}
             </div>
           )}
         </div>
