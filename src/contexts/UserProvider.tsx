@@ -80,6 +80,13 @@ export const UserProvider: React.FC = ({ children }) => {
             },
           },
         },
+        theme: {
+          background: "rgb(238, 230, 246)",
+          main: "black",
+          secondary: "black",
+          border: "black",
+          hover: "#ff9800",
+        },
       });
 
       // only reconnect if we have permissions or
