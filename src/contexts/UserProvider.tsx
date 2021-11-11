@@ -11,6 +11,7 @@ import { hasDifference, THROWS } from "../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import { SECOND_IN_MILLISECONDS } from "../consts";
 import ReactGA from "react-ga";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 const DefaultUser = {
   address: "",
@@ -41,19 +42,9 @@ export const UserProvider: React.FC = ({ children }) => {
   const [address, setAddress] = useState<string>("");
   const [permissions, setPermissions] = useState<unknown[]>([]);
 
-  const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
     return typeof window !== "undefined";
   }, [typeof window]);
-  // web3modal is only working in browser\]
-  const web3Modal = useMemo(() => {
-    return hasWindow
-      ? new Web3Modal({
-          cacheProvider: false,
-          providerOptions, // required
-        })
-      : null;
-  }, [providerOptions, hasWindow]);
 
   const initState = async (provider: any) => {
     const web3p = new ethers.providers.Web3Provider(provider);
@@ -77,8 +68,20 @@ export const UserProvider: React.FC = ({ children }) => {
 
   const connect = useCallback(
     (manual: boolean) => {
-      if (!web3Modal) return EMPTY;
       if (!(!!manual || (permissions.length > 0 && !signer))) return EMPTY;
+
+      const web3Modal = new Web3Modal({
+        cacheProvider: false,
+        providerOptions: {
+          walletconnect: {
+            package: WalletConnectProvider,
+            options: {
+              infuraId: process.env.NEXT_PUBLIC_INFURA_ID,
+            },
+          },
+        },
+      });
+
       // only reconnect if we have permissions or
       // user manually connected through action
       return from(
@@ -95,7 +98,7 @@ export const UserProvider: React.FC = ({ children }) => {
         )
       );
     },
-    [web3Modal, permissions, signer, initState]
+    [permissions, signer]
   );
 
   // there is no better way to do disconnect with metemask+web3modal combo

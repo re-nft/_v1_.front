@@ -17,7 +17,6 @@ const customStyles = {
   control: (provided: any, state: any) => ({
     // none of react-select's styles are passed to <Control />
     ...provided,
-    zIndex: 100,
     color: "black",
     width: "13rem",
     fontFamily: "VT323",

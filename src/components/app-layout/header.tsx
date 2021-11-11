@@ -14,6 +14,7 @@ export const Header: React.FC = () => {
   const [username, setUsername] = useState<string>();
   const { userData } = useContext(GraphContext);
   const lookupAddress = useLookupAddress();
+
   const installMetaMask = useMemo(() => {
     const noProvider =
       typeof window === "undefined"
