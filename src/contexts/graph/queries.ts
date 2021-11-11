@@ -43,7 +43,7 @@ export const queryMyERC1155s = (user: string, skip = 0): string => {
 
 export const queryAllLendingRenft = `
   {
-    lendings {
+    lendings(  first: 1000) {
       id
       nftAddress
       tokenId
@@ -68,7 +68,7 @@ export const queryAllLendingRenft = `
 
 export const queryAllRentingRenft = `
   {
-    rentings {
+    rentings (  first: 1000) {
       id
       renterAddress
       rentDuration
@@ -95,7 +95,7 @@ export const queryAllRenft = (): string => {
   return `{
     nfts {
       id
-      lending {
+      lending(first:1000) {
         id
         nftAddress
         tokenId
@@ -113,7 +113,7 @@ export const queryAllRenft = (): string => {
           renterAddress
         }
       }
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration
@@ -141,7 +141,7 @@ export const queryUserRenft = (user: string): string => {
   return `{
     user(id: "${user.toString().toLowerCase()}") {
       id
-      lending {
+      lending(first: 1000) {
         id
         nftAddress
         tokenId
@@ -153,7 +153,7 @@ export const queryUserRenft = (user: string): string => {
           id
         }
       }
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration
@@ -174,7 +174,7 @@ export const queryUserRenft = (user: string): string => {
 export const queryUserLendingRenft = (user: string): string => {
   return `{
     users(where: {id: "${user.toString().toLowerCase()}"}) {
-      lending {
+      lending(first: 1000) {
         id
         nftAddress
         tokenId
@@ -201,7 +201,7 @@ export const queryUserLendingRenft = (user: string): string => {
 export const queryUserRentingRenft = (user: string): string => {
   return `{
     users(where: {id: "${user.toString().toLowerCase()}"}) {
-      renting {
+      renting(first:1000) {
         id
         renterAddress
         rentDuration

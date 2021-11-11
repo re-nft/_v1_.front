@@ -18,7 +18,10 @@ const AvailableToRentPage: React.FC<{
 
   const match = useMemo(() => {
     return allAvailableToRent.find((r) => {
-      return r.tokenId === tokenId && r.address == contractId;
+      return (
+        r.tokenId.toLowerCase() === (tokenId as string).toLowerCase() &&
+        r.address.toLowerCase() == (contractId as string).toLowerCase()
+      );
     });
   }, [contractId, tokenId, allAvailableToRent]);
 

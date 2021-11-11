@@ -18,7 +18,6 @@ import { SECOND_IN_MILLISECONDS } from "../consts";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
 import * as Sentry from "@sentry/nextjs";
 
-
 export type UserLendingContextType = {
   userLending: Lending[];
   isLoading: boolean;
