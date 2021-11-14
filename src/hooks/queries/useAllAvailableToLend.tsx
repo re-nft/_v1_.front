@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Nft } from "../../types/classes";
-import { useWallet } from "../store/useWallet";
+import { Nft } from "renft-front/types/classes";
+import { useWallet } from "renft-front/hooks/store/useWallet";
 import { useFetchERC1155 } from "./useFetchERC1155";
 import { useFetchERC721 } from "./useFetchERC721";
 import { useFetchNftDev } from "./useFetchNftDev";
@@ -41,12 +41,15 @@ export const useAllAvailableToLend = (): {
 
   const allAvailableToLend: Nft[] = useMemo(() => {
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return [];
-    return [...devNfts, ...filteredERC1155, ...filteredERC721];
+    const all = [...devNfts, ...filteredERC1155, ...filteredERC721];
+    return all;
   }, [filteredERC1155, filteredERC721, devNfts, network]);
 
   const isLoading = useMemo(() => {
     if (network !== process.env.NEXT_PUBLIC_NETWORK_SUPPORTED) return false;
-    return erc1155Loading || erc721Loading || devIsLoading;
+
+    const isLoading = erc1155Loading || erc721Loading || devIsLoading;
+    return isLoading;
   }, [erc1155Loading, erc721Loading, devIsLoading, network]);
 
   return { allAvailableToLend, isLoading };

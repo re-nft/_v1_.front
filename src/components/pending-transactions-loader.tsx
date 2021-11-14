@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TransactionStateEnum } from "../types";
+import { TransactionStateEnum } from "renft-front/types";
 
 const IMAGE_PENDING = "/assets/loading-pending.gif";
 const IMAGE_SUCCESS = "/assets/loading-success.png";
@@ -24,5 +24,11 @@ export const PendingTransactionsLoader: React.FC<{
 
   if (!imageSource) return null;
 
-  return <img src={imageSource}></img>;
+  return (
+    <img
+      src={imageSource}
+      aria-label="transaction-status-loader"
+      alt="transaction status"
+    ></img>
+  );
 };

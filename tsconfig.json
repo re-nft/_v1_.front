@@ -1,5 +1,20 @@
 {
   "compilerOptions": {
+    "baseUrl": "src/",
+    "paths": {
+      "renft-front/components/*": ["components/*"],
+      "renft-front/pages/*": ["pages/*"],
+      "renft-front/hooks/*": ["hooks/*"],
+      "renft-front/contracts/*": ["contracts/*"],
+      "renft-front/services/*": ["services/*"],
+      "renft-front/utils/*": ["utils/*"],
+      "renft-front/utils": ["utils/index.ts"],
+      "renft-front/types/*": ["types/*"],
+      "renft-front/types": ["types/index.ts"],
+      "renft-front/consts": ["consts.ts"],
+      "__mocks__": ["__mocks__/*"],
+      "__tests__": ["__tests__/*"]
+    },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

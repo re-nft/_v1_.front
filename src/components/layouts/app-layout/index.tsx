@@ -1,24 +1,25 @@
 import React, { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import MenuIcon from "@heroicons/react/outline/MenuIcon";
 import XIcon from "@heroicons/react/outline/XIcon";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+
+import { classNames } from "renft-front/utils";
+
+import { WalletConnect } from "./wallet-connect";
 import { Footer } from "./footer";
-import { Connect } from "./connect";
-import { classNames } from "../../../utils";
 
 const navigation = [
   { name: "Rent", href: "/" },
   { name: "Lend", href: "/lend" },
   { name: "Dashboard", href: "/dashboard" },
-  { name: "Faq", href: "/faq" }
+  { name: "Faq", href: "/faq" },
 ];
 const userNavigation = [
   { name: "Profile", href: "/profile" },
-  { name: "Sign out", href: "/signout", disabled: true }
+  { name: "Sign out", href: "/signout", disabled: true },
 ];
-
 
 const isPathActive = (linkPath: string, pathname: string) => {
   if (pathname === linkPath) return true;
@@ -93,7 +94,7 @@ export const AppLayout: React.FC = ({ children }) => {
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex flex-shrink-0 lg:items-center lg:w-64 lg:justify-self-end lg:justify-end">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <Connect menuButton />
+                    <WalletConnect menuButton />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -131,7 +132,7 @@ export const AppLayout: React.FC = ({ children }) => {
               </div>
               <div className="lg:hidden flex justify-end md:justify-none items-center">
                 <div className="flex-shrink-0">
-                  <Connect />
+                  <WalletConnect />
                 </div>
               </div>
             </div>
@@ -182,7 +183,7 @@ export const AppLayout: React.FC = ({ children }) => {
             className="flex-1 flex flex-col min-h-full items-center  border-4 border-black mx-6 shadow-rn-one"
             style={{
               backgroundImage:
-                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)"
+                "linear-gradient(rgb(244, 62, 119) 0%, rgb(104, 87, 159) 100%)",
             }}
           >
             <div className="flex mb-8 w-full ">{children}</div>

@@ -4,15 +4,20 @@ export type TransactionHash = string;
 export type TokenId = string;
 export type URI = string;
 
-
 export enum TransactionStateEnum {
   FAILED = 1,
-  SUCCESS,
-  PENDING,
+  SUCCESS = 2,
+  PENDING = 3,
   // transaction is not submitted yet, user has to click on approve button
-  WAITING_FOR_SIGNATURE,
-  NOT_STARTED,
-  DENIED_SIGNATURE
+  WAITING_FOR_SIGNATURE = 4,
+  NOT_STARTED = 5,
+  DENIED_SIGNATURE = 6,
+}
+
+// based on TransactionReceipt return value from ethers
+export enum TransactionReceiptStatus {
+  FAILURE = 0,
+  SUCCESS = 1,
 }
 
 export enum NetworkName {
@@ -159,23 +164,25 @@ export type CalculatedUserVote = {
   };
 };
 
-export type ReactEventOnBlurType  = {
+export type ReactEventOnBlurType = {
   (e: React.FocusEvent<unknown>): void | Promise<void | boolean>;
   <T = unknown>(fieldOrEvent: T): T extends string
     ? (e: unknown) => void | Promise<void | boolean>
     : void | Promise<void | boolean>;
 };
 
-export type ReactEventOnChangeType  = {
+export type ReactEventOnChangeType = {
   (e: React.ChangeEvent<unknown>): void | Promise<void | boolean>;
   <T = string | React.ChangeEvent<unknown>>(
     field: T
   ): T extends React.ChangeEvent<unknown>
     ? void | Promise<void | boolean>
-    : (e: string | React.ChangeEvent<unknown>) => void | Promise<void | boolean>;
+    : (
+        e: string | React.ChangeEvent<unknown>
+      ) => void | Promise<void | boolean>;
 };
 
-export type ReactEventOnClickType  = {
+export type ReactEventOnClickType = {
   (e: React.MouseEvent<unknown>): void | Promise<void | boolean>;
   <T = string | React.MouseEvent<unknown>>(
     field: T

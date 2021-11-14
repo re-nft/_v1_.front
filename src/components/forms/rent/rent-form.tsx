@@ -1,24 +1,27 @@
 import React, { Fragment, useCallback, useEffect, useMemo } from "react";
-import { TransactionStateEnum } from "../../../types";
+import produce from "immer";
+import create from "zustand";
+import shallow from "zustand/shallow";
+import { devtools } from "renft-front/hooks/devtools";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Transition } from "@headlessui/react";
+import { useForm, useFieldArray } from "react-hook-form";
+
 import {
   StartRentNft,
   useRentApproval,
-  useStartRent
-} from "../../../hooks/contract/useStartRent";
-import { TransactionWrapper } from "../../transaction-wrapper";
-import { Transition } from "@headlessui/react";
-import { FormProps, LendFormProps } from "./rent-types";
+  useStartRent,
+} from "renft-front/hooks/contract/useStartRent";
+import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
+import { Button } from "renft-front/components/common/button";
+import { useLendingStore } from "renft-front/hooks/store/useNftStore";
+import { TransactionStateEnum } from "renft-front/types";
+
 import { RentItem } from "./rent-item";
 import { validationSchema } from "./rent-validate";
-import { Button } from "../../common/button";
-import { useForm, useFieldArray } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useLendingStore } from "../../../hooks/store/useNftStore";
-import { devtools } from "zustand/middleware";
-import create from "zustand";
-import produce from "immer";
-import { Lending } from "../../../types/classes";
-import shallow from "zustand/shallow";
+
+import type { Lending } from "renft-front/types/classes";
+import type { FormProps, LendFormProps } from "./rent-types";
 
 export const useRentFormState = create<{
   values: Record<string, Lending>;
@@ -33,18 +36,18 @@ export const useRentFormState = create<{
             state.values[value.id] = { ...value };
           });
         })
-      )
+      ),
   }))
 );
 export const RentForm: React.FC<LendFormProps> = ({
   checkedItems,
-  onClose
+  onClose,
 }) => {
   const {
     isApproved,
     handleApproveAll,
     checkApprovals,
-    status: approvalStatus
+    status: approvalStatus,
   } = useRentApproval();
   const { startRent: handleSave, status } = useStartRent();
   const setValues = useRentFormState(
@@ -71,7 +74,7 @@ export const RentForm: React.FC<LendFormProps> = ({
   }, [checkApprovals, selectedToRent]);
 
   const defaultValues: FormProps = {
-    inputs: selectedToRent
+    inputs: selectedToRent,
   };
   const {
     register,
@@ -79,35 +82,35 @@ export const RentForm: React.FC<LendFormProps> = ({
     control,
     watch,
     formState: { isSubmitting, isValid },
-    formState
+    formState,
   } = useForm<FormProps>({
     defaultValues,
     mode: "onChange",
     shouldFocusError: true,
-    resolver: yupResolver(validationSchema)
+    resolver: yupResolver(validationSchema),
   });
   const { fields, remove } = useFieldArray({
     control,
-    name: "inputs"
+    name: "inputs",
   });
   const watchFieldArray = watch("inputs");
   const controlledFields = fields.map((field, index) => {
     return {
       ...field,
-      ...watchFieldArray[index]
+      ...watchFieldArray[index],
     };
   });
   const onSubmit = (values: FormProps) => {
     handleSave(
       values.inputs.map<StartRentNft>(
         (lending: Lending & { duration: string }) => ({
-          address: lending.nftAddress,
+          nftAddress: lending.nftAddress,
           tokenId: lending.tokenId,
           amount: lending.lentAmount,
           lendingId: lending.id,
           rentDuration: lending.duration,
           paymentToken: lending.paymentToken,
-          isERC721: lending.isERC721
+          isERC721: lending.isERC721,
         })
       )
     );
@@ -140,6 +143,7 @@ export const RentForm: React.FC<LendFormProps> = ({
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col space-y-12 mt-4"
+        aria-label="rent-form"
       >
         <section aria-labelledby="cart-heading">
           <h2 id="cart-heading" className="sr-only">

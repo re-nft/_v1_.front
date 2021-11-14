@@ -1,14 +1,16 @@
 import React, { Ref, useCallback, useMemo } from "react";
-import ModalFields from "../../modals/modal-fields";
-import { TextField } from "../../common/text-field";
-import { CatalogueItemRow } from "../../catalogue-item/catalogue-item-row";
-import { useNftMetaState } from "../../../hooks/store/useMetaState";
-import shallow from "zustand/shallow";
-import { CatalogueItemDisplay } from "../../catalogue-item/catalogue-item-display";
 import XIcon from "@heroicons/react/outline/XIcon";
-import { ILendInput } from "./lend-types";
-import { TokenSelect } from "../../common/token-select";
-import { useRegisterFields } from "../../../hooks/misc/useRegisterFields";
+import shallow from "zustand/shallow";
+
+import ModalFields from "renft-front/components/modals/modal-fields";
+import { TextField } from "renft-front/components/common/text-field";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
+import { CatalogueItemDisplay } from "renft-front/components/catalogue-item/catalogue-item-display";
+import { TokenSelect } from "renft-front/components/common/token-select";
+import { useRegisterFields } from "renft-front/hooks/misc/useRegisterFields";
+
+import type { ILendInput } from "./lend-types";
 
 export const LendItem: React.FC<ILendInput> = React.forwardRef(
   (input: ILendInput, ref) => {
@@ -18,7 +20,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
       removeFromCart,
       disabled,
       register,
-      formState
+      formState,
     } = input;
     const only1Item = useMemo(() => {
       return lendingInput.amount === "1";
@@ -56,7 +58,8 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               className="text-sm font-medium text-black"
               onClick={removeItem}
             >
-              <XIcon className="h-8 w-8 text-black" />
+              <span className="sr-only">Remove</span>
+              <XIcon className="h-8 w-8 text-black" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -71,7 +74,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Amount"
               disabled={only1Item || disabled}
-              value={only1Item ? "1" : lendingInput.lendAmount ?? ""}
+              value={only1Item ? "1" : lendingInput.lendAmount}
               {...registerFields("lendAmount")}
             />
 
@@ -79,14 +82,14 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Max lend duration"
               disabled={disabled}
-              value={lendingInput?.maxDuration ?? ""}
+              value={lendingInput?.maxDuration || ""}
               {...registerFields("maxDuration")}
             />
             <TextField
               required
               label="Borrow Price"
               disabled={disabled}
-              value={lendingInput.borrowPrice ?? ""}
+              value={lendingInput.borrowPrice || ""}
               {...registerFields("borrowPrice")}
             />
 
@@ -94,7 +97,7 @@ export const LendItem: React.FC<ILendInput> = React.forwardRef(
               required
               label="Collateral"
               disabled={disabled}
-              value={lendingInput.nftPrice ?? ""}
+              value={lendingInput.nftPrice || ""}
               {...registerFields("nftPrice")}
             />
 

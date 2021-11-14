@@ -1,44 +1,47 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 
-import { Renting } from "../../types/classes";
-import { CatalogueItem } from "../catalogue-item";
-import ReturnModal from "../modals/return-modal";
-import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { formatCollateral } from "../../utils";
 import { PaymentToken } from "@renft/sdk";
-import { RentSearchLayout } from "../layouts/rent-search-layout";
-import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
-import { PaginationList } from "../layouts/pagination-list";
-import ItemWrapper from "../common/items-wrapper";
-import { useUserRenting } from "../../hooks/queries/useUserRenting";
-import { useWallet } from "../../hooks/store/useWallet";
-import { useTimestamp } from "../../hooks/misc/useTimestamp";
+
+import { useSearch } from "renft-front/hooks/store/useSearch";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
+import { Renting } from "renft-front/types/classes";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import ReturnModal from "renft-front/components/modals/return-modal";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { formatCollateral } from "renft-front/utils";
+import { RentSearchLayout } from "renft-front/components/layouts/rent-search-layout";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useUserRenting } from "renft-front/hooks/queries/useUserRenting";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useTimestamp } from "renft-front/hooks/misc/useTimestamp";
 
 const RentingCatalogueItem: React.FC<{
   renting: Renting;
   checkedItems: string[];
   onCheckboxChange: () => void;
   handleReturnNft: (renting: Renting) => () => void;
-  show: boolean
+  show: boolean;
 }> = ({ renting, checkedItems, onCheckboxChange, handleReturnNft, show }) => {
   const days = renting.rentDuration;
   const checkedMoreThanOne = useMemo(() => {
     return checkedItems && checkedItems.length > 1;
   }, [checkedItems]);
   const checked = useMemo(() => {
-    const set = new Set(checkedItems)
+    const set = new Set(checkedItems);
     return set.has(renting.id);
   }, [checkedItems, renting]);
   const blockTimeStamp = useTimestamp();
   const expired = useMemo(() => {
-    return renting.rentedAt * 1000 < blockTimeStamp;
-  }, [blockTimeStamp, renting.rentedAt]);
+    return renting.rentalEndTime < blockTimeStamp;
+  }, [blockTimeStamp, renting.rentalEndTime]);
 
   return (
     <CatalogueItem
       nId={renting.nId}
       uniqueId={renting.id}
-      checked={checked}
+      checked={expired ? false : checked}
       disabled={expired}
       onCheckboxChange={onCheckboxChange}
       hasAction
@@ -63,13 +66,14 @@ const RentingCatalogueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = ({
-  currentPage
-}) => {
-  const {
-    checkedItems,
-    onCheckboxChange
-  } = useBatchItems('user-is-renting');
+const ItemsRenderer: React.FC<{
+  currentPage: (Renting & { show: boolean })[];
+  pageItems: Renting[];
+}> = ({ currentPage, pageItems }) => {
+  const { checkedItems, onCheckboxChange } = useBatchItems(
+    "user-is-renting",
+    pageItems
+  );
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleCloseModal = useCallback(() => {
@@ -86,7 +90,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
   const onItemCheck = useCallback(
     (nft) => {
       return () => {
-        onCheckboxChange(nft)
+        onCheckboxChange(nft);
       };
     },
     [onCheckboxChange]
@@ -101,7 +105,7 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
         />
       )}
       <ItemWrapper>
-        {currentPage.map((renting: (Renting & {show: boolean})) => (
+        {currentPage.map((renting: Renting & { show: boolean }) => (
           <RentingCatalogueItem
             renting={renting}
             key={renting.id}
@@ -118,18 +122,17 @@ const ItemsRenderer: React.FC<{ currentPage: (Renting & {show: boolean})[] }> = 
 export const UserIsRenting: React.FC = () => {
   const { signer } = useWallet();
   const { renting, isLoading } = useUserRenting();
+  const filteredItems = useSearch(renting);
 
   if (!signer) {
     return (
-      <RentSearchLayout hideDevMenu>
-        <div className="text-center text-base text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+      <RentSearchLayout hideDevMenu hideSearchMenu>
+        <NoSignerMessage />
       </RentSearchLayout>
     );
   }
   return (
-    <RentSearchLayout hideDevMenu>
+    <RentSearchLayout hideDevMenu hideSearchMenu>
       <div className="py-4 px-8">
         <h2 className="">
           <span sr-only="Renting"></span>
@@ -141,7 +144,7 @@ export const UserIsRenting: React.FC = () => {
         </h3>
       </div>
       <PaginationList
-        nfts={renting}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not renting anything yet"

@@ -1,18 +1,18 @@
-import { ContractTransaction } from "ethers";
+import { ContractTransaction } from "@ethersproject/contracts";
 import { useCallback, useMemo, useState } from "react";
-import { TransactionStateEnum } from "../../types";
+import { TransactionStateEnum } from "renft-front/types";
 import {
   SmartContractEventType,
   TransactionRequest,
   TransactionStatus,
   useEventTrackedTransactionManager
-} from "../store/useEventTrackedTransactions";
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 
 // update status to form or where the request started
 export const useCreateRequest = (): {
   status: TransactionStatus;
   createRequest: (
-    promise: Promise<ContractTransaction[] | ContractTransaction>,
+    promise: () => Promise<ContractTransaction[] | ContractTransaction>,
     ga: { action: string; label: string },
     event: {
       ids: string[];
@@ -26,7 +26,7 @@ export const useCreateRequest = (): {
 
   const createRequest = useCallback(
     (
-      promise: Promise<ContractTransaction[] | ContractTransaction>,
+      promise: () => Promise<ContractTransaction[] | ContractTransaction>,
       ga,
       event
     ) => {
@@ -50,5 +50,7 @@ export const useCreateRequest = (): {
 
     return request.transactionStatus;
   }, [requestId, transactionRequests]);
+
+
   return { createRequest, status };
 };

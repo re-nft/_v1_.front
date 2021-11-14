@@ -1,5 +1,5 @@
-import { NftTokenMeta } from "../types";
-import { Nft } from "../types/classes";
+import { NftTokenMeta } from "renft-front/types";
+import { Nft } from "renft-front/types/classes";
 import {
   arrayToURI,
   buildStaticIPFS_URL,
@@ -8,7 +8,8 @@ import {
   normalizeTokenUri,
   snakeCaseToCamelCase,
 } from "./utils";
-import { getUniqueID } from "../utils";
+import { getUniqueID } from "renft-front/utils";
+import * as Sentry from "@sentry/nextjs";
 
 export type NftError = { nId: string; error: string };
 
@@ -142,6 +143,11 @@ export const fetchNFTFromOtherSource = async (
   if (!tokenURI) {
     return { nId: key, error: "No tokenUri" };
   }
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API_KEY) {
+    throw new Error("OPENSEA_API_KEY is not defined");
+  }
+
+  const api_key: string = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
 
   // It's still possible that the tokenUri points to opensea...
   const headers: Record<string, string> = {};
@@ -150,7 +156,7 @@ export const fetchNFTFromOtherSource = async (
     process.env.NEXT_PUBLIC_OPENSEA_API &&
     transformedUri.indexOf("api.opensea") > -1
   ) {
-    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_OPENSEA_API;
+    headers["X-API-KEY"] = api_key;
   }
   // We want timeout, as some resources are unfetchable
   // example : ipfs://bafybeifninkto2jwjp5szbkwawnnvl2bcpwo6os5zr45ctxns3dhtfxk7e/0.json
@@ -181,7 +187,9 @@ export const fetchNFTFromOtherSource = async (
           nId: key,
         };
       })
-      .catch(() => {
+      .catch((e) => {
+        //TODO:eniko user warning
+        Sentry.captureException(e);
         return { nId: key, error: "unknown error" };
       })
   );
@@ -194,14 +202,19 @@ export const fetchNFTsFromOpenSea = async (
   if (!process.env.NEXT_PUBLIC_OPENSEA_API) {
     throw new Error("OPENSEA_API is not defined");
   }
+  if (!process.env.NEXT_PUBLIC_OPENSEA_API_KEY) {
+    throw new Error("OPENSEA_API_KEY is not defined");
+  }
+
+  const key: string = process.env.NEXT_PUBLIC_OPENSEA_API_KEY;
   return fetch(
-    `https://api.opensea.io/api/v1/assets/?${arrayToURI(
+    `${process.env.NEXT_PUBLIC_OPENSEA_API}/?${arrayToURI(
       "asset_contract_addresses",
       asset_contract_addresses
     )}&${arrayToURI("token_ids", token_ids)}&limit=50`,
     {
       headers: {
-        "X-API-KEY": process.env.NEXT_PUBLIC_OPENSEA_API,
+        "X-API-KEY": key,
       },
     }
   )
@@ -226,7 +239,8 @@ export const fetchNFTsFromOpenSea = async (
       });
     })
     .catch((e) => {
-      //TODO add logging
+      //TODO:eniko add sentry tests for logging
+      Sentry.captureException(e);
       return [];
     });
 };

@@ -1,22 +1,31 @@
-import React, { useCallback, useState, useMemo } from "react";
-
-import { Lending } from "../../types/classes";
-import { CatalogueItem } from "../catalogue-item";
-import { useBatchItems } from "../../hooks/misc/useBatchItems";
-import { StopLendModal } from "../modals/stop-lend-modal";
-import { LendSearchLayout } from "../layouts/lend-search-layout";
-import { PaginationList } from "../layouts/pagination-list";
-import ItemWrapper from "../common/items-wrapper";
-import { useUserIsLending } from "../../hooks/queries/useUserIsLending";
-import { useWallet } from "../../hooks/store/useWallet";
-import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
-import { PaymentToken } from "@renft/sdk";
-import { isClaimable, useIsClaimable } from "../../hooks/misc/useIsClaimable";
-import { formatCollateral } from "../../utils";
-import ClaimModal from "../modals/claim-modal";
-import { useTimestamp } from "../../hooks/misc/useTimestamp";
-import { useLendingStore, useRentingStore } from "../../hooks/store/useNftStore";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import shallow from "zustand/shallow";
+
+import { useSearch } from "renft-front/hooks/store/useSearch";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
+import { PaymentToken } from "@renft/sdk";
+
+import { Lending } from "renft-front/types/classes";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { StopLendModal } from "renft-front/components/modals/stop-lend-modal";
+import { LendSearchLayout } from "renft-front/components/layouts/lend-search-layout";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useUserIsLending } from "renft-front/hooks/queries/useUserIsLending";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import {
+  isClaimable,
+  useIsClaimable,
+} from "renft-front/hooks/misc/useIsClaimable";
+import { formatCollateral } from "renft-front/utils";
+import ClaimModal from "renft-front/components/modals/claim-modal";
+import { useTimestamp } from "renft-front/hooks/misc/useTimestamp";
+import {
+  useLendingStore,
+  useRentingStore,
+} from "renft-front/hooks/store/useNftStore";
 
 const LendingCatalogueItem: React.FC<{
   lending: Lending;
@@ -47,17 +56,30 @@ const LendingCatalogueItem: React.FC<{
     return checkedMoreThanOne && checked ? "Stop lend all" : "Stop lend";
   }, [isClaimable, checkedMoreThanOne, checked]);
 
+  const disabled = useMemo(() => {
+    return (
+      (hasRenting && lending.collateralClaimed) || (hasRenting && !isClaimable)
+    );
+  }, [isClaimable, hasRenting, lending.collateralClaimed]);
+  const state = useMemo(() => {
+    if (isClaimable && lending.collateralClaimed) return "claimed";
+    if (isClaimable) return "claimable";
+    if (lending.hasRenting) return "hasRenting";
+    return "default";
+  }, [lending.collateralClaimed, lending.hasRenting, isClaimable]);
+
   return (
     <CatalogueItem
-      checked={checked}
+      checked={disabled ? false : checked}
       nId={lending.nId}
       uniqueId={lending.id}
       onCheckboxChange={onCheckboxChange}
-      disabled={hasRenting && !isClaimable}
+      disabled={disabled}
       hasAction
       show={show}
       buttonTitle={buttonTitle}
       onClick={onClick}
+      data-testid={state}
     >
       <CatalogueItemRow
         text={`Price/day [${PaymentToken[lending.paymentToken]}]`}
@@ -72,8 +94,8 @@ const LendingCatalogueItem: React.FC<{
         value={formatCollateral(lending.nftPrice * Number(lending.lentAmount))}
       />
       <CatalogueItemRow
-        text="Original owner"
-        value={lending.hasRenting ? "renter" : "owner"}
+        text="Has renting"
+        value={lending.hasRenting ? "yes" : "no"}
       />
       <CatalogueItemRow
         text="Defaulted"
@@ -85,56 +107,66 @@ const LendingCatalogueItem: React.FC<{
 
 const ItemsRenderer: React.FC<{
   currentPage: (Lending & { show: boolean })[];
-}> = ({ currentPage }) => {
-  const { checkedItems, onCheckboxChange } = useBatchItems("user-is-lending");
+  pageItems: Lending[];
+}> = ({ currentPage, pageItems }) => {
+  const { checkedItems, onCheckboxChange } = useBatchItems(
+    "user-is-lending",
+    pageItems
+  );
 
   const [modalOpen, setModalOpen] = useState(false);
   const [claimModal, setClaimModalOpen] = useState(false);
 
   const blockTimeStamp = useTimestamp();
   const rentings = useRentingStore(
-    useCallback(
-      (state) => state.rentings,
-      []
-    ),
+    useCallback((state) => state.rentings, []),
     shallow
   );
   const lendings = useLendingStore(
-    useCallback(
-      (state) => state.lendings,
-      []
-    ),
+    useCallback((state) => state.lendings, []),
     shallow
   );
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
   }, []);
 
-  const [claimableCheckedItems, nonClaimableCheckedItems] = useMemo(()=>{
+  const [claimableCheckedItems, nonClaimableCheckedItems] = useMemo(() => {
     const claimableItems: string[] = [];
     const nonclaimable: string[] = [];
-    checkedItems.forEach((id)=>{
-      const lending = lendings[id];
-      if(!lending) return;
-      const claimable = isClaimable(
-        blockTimeStamp,
-        lending.collateralClaimed,
-        lending.rentingId ? rentings[lending?.rentingId] : null
-      );
-      if(claimable) claimableItems.push(id)
-      else nonclaimable.push(id)
-    })
-    return [claimableItems, nonclaimable]
-  }, [checkedItems, lendings, blockTimeStamp, rentings])
-
+    if (checkedItems)
+      checkedItems.forEach((id) => {
+        const lending = lendings[id];
+        if (!lending) return;
+        const claimable = isClaimable(
+          blockTimeStamp,
+          lending.collateralClaimed,
+          lending.rentingId ? rentings[lending?.rentingId] : null
+        );
+        if (claimable) claimableItems.push(id);
+        else nonclaimable.push(id);
+      });
+    return [claimableItems, nonclaimable];
+  }, [checkedItems, lendings, blockTimeStamp, rentings]);
 
   const handleClaimCloseModal = useCallback(() => {
     setClaimModalOpen(false);
   }, []);
 
-  const handleClickNft = useCallback(() => {
-    setModalOpen(true);
-  }, []);
+  const handleClickNft = useCallback(
+    (lending: Lending) => () => {
+      const claimable = isClaimable(
+        blockTimeStamp,
+        lending.collateralClaimed,
+        lending.rentingId ? rentings[lending?.rentingId] : null
+      );
+      if (claimable) {
+        setClaimModalOpen(true);
+      } else {
+        setModalOpen(true);
+      }
+    },
+    [blockTimeStamp, rentings]
+  );
   const onItemCheck = useCallback(
     (nft) => {
       return () => {
@@ -154,7 +186,7 @@ const ItemsRenderer: React.FC<{
       )}
       {claimModal && (
         <ClaimModal
-          open={modalOpen}
+          open={claimModal}
           onClose={handleClaimCloseModal}
           checkedItems={claimableCheckedItems}
         />
@@ -167,7 +199,7 @@ const ItemsRenderer: React.FC<{
             key={lending.id}
             checkedItems={checkedItems}
             onCheckboxChange={onItemCheck(lending)}
-            handleClickNft={handleClickNft}
+            handleClickNft={handleClickNft(lending)}
           />
         ))}
       </ItemWrapper>
@@ -179,18 +211,18 @@ export const UserIsLending: React.FC = () => {
   const { signer } = useWallet();
   const { userLending, isLoading } = useUserIsLending();
 
+  const filteredItems = useSearch(userLending);
+
   if (!signer) {
     return (
-      <LendSearchLayout hideDevMenu>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+      <LendSearchLayout hideDevMenu hideSearchMenu>
+        <NoSignerMessage />
       </LendSearchLayout>
     );
   }
 
   return (
-    <LendSearchLayout hideDevMenu>
+    <LendSearchLayout hideDevMenu hideSearchMenu>
       <div className="mt- px-8">
         <h2>
           <span sr-only="Lending"></span>
@@ -201,7 +233,7 @@ export const UserIsLending: React.FC = () => {
         </h3>
       </div>
       <PaginationList
-        nfts={userLending}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You are not lending anything yet"

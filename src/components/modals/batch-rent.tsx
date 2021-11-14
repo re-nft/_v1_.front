@@ -1,7 +1,7 @@
 import React from "react";
 
+import { RentForm } from "renft-front/components/forms/rent/rent-form";
 import Modal from "./modal";
-import { RentForm } from "../forms/rent/rent-form";
 
 type BatchRentModalProps = {
   open: boolean;

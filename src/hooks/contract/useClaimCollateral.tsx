@@ -1,13 +1,14 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { useCallback } from "react";
-import { Lending } from "../../types/classes";
-import { sortNfts } from "../../utils";
+import { Lending } from "renft-front/types/classes";
+import { sortNfts } from "renft-front/utils";
 import createDebugger from "debug";
-import { useSDK } from "./useSDK";
-import { SmartContractEventType, TransactionStatus } from "../store/useEventTrackedTransactions";
+import { useSDK } from "renft-front/hooks/contract/useSDK";
 import {
-  useCreateRequest
-} from "../store/useCreateRequest";
+  SmartContractEventType,
+  TransactionStatus,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
+import { useCreateRequest } from "renft-front/hooks/store/useCreateRequest";
 
 const debug = createDebugger("app:contracts:useClaimcollateral");
 
@@ -21,15 +22,15 @@ export const useClaimcollateral = (): {
 
   const claim = useCallback(
     (lendings: Lending[]) => {
-      if (!sdk) {
-        debug("SDK not found");
-        return;
-      }
+      if (!sdk) return;
+      if (lendings == null) return;
+      if (lendings.length < 1) return;
+
       const sortedNfts = lendings.sort(sortNfts);
       const params: [string[], BigNumber[], BigNumber[]] = [
         sortedNfts.map((lending) => lending.nftAddress),
         sortedNfts.map((lending) => BigNumber.from(lending.tokenId)),
-        sortedNfts.map((lending) => BigNumber.from(lending.id))
+        sortedNfts.map((lending) => BigNumber.from(lending.id)),
       ];
       debug(
         "Claim modal addresses ",
@@ -44,7 +45,7 @@ export const useClaimcollateral = (): {
         sortedNfts.map((lending) => lending.id)
       );
       createRequest(
-        sdk.claimCollateral(...params),
+        () => sdk.claimCollateral(...params),
         {
           action: "claim",
           label: `Claim modal addresses : ${sortedNfts.map(
@@ -52,11 +53,11 @@ export const useClaimcollateral = (): {
           )}
         Claim modal tokenId: ${sortedNfts.map((lending) => lending.tokenId)}
         Claim modal lendingIds: ${sortedNfts.map((lending) => lending.id)}
-        `
+        `,
         },
         {
           ids: lendings.map((l) => l.id),
-          type: SmartContractEventType.CLAIM
+          type: SmartContractEventType.CLAIM,
         }
       );
     },

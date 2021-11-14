@@ -1,4 +1,4 @@
-import { short } from "../../utils";
+import { short } from "renft-front/utils";
 import React, { useState } from "react";
 
 export const ShortenPopover: React.FC<{ longString: string }> = ({
@@ -23,7 +23,7 @@ export const ShortenPopover: React.FC<{ longString: string }> = ({
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-        {longString.length > 10 ? short(longString) : longString}
+        {longString.length > 12 ? short(longString) : longString}
       </span>
     </>
   );

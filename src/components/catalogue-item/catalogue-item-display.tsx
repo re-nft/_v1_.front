@@ -1,7 +1,7 @@
 import React from "react";
 // @ts-ignore
 import { Player } from "video-react";
-import { isVideo } from "../../utils";
+import { isVideo } from "renft-front/utils";
 
 export const CatalogueItemDisplay: React.FC<{
   image?: string;
@@ -17,7 +17,10 @@ export const CatalogueItemDisplay: React.FC<{
     );
   if (isVideo(image))
     return (
-      <div className="overflow-hidden aspect-h-1 overflow-hidden lg:h-50">
+      <div
+        className="overflow-hidden aspect-h-1 overflow-hidden lg:h-50"
+        data-testid="catalogue-item-player"
+      >
         <Player playsInline autoPlay src={image} muted />
       </div>
     );
@@ -26,6 +29,7 @@ export const CatalogueItemDisplay: React.FC<{
       <img
         alt={description}
         src={image}
+        data-testid="catalogue-item-img"
         className="w-full h-full object-center object-cover lg:w-full lg:h-full"
       />
     </div>

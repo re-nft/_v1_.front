@@ -1,25 +1,29 @@
-import request from "graphql-request";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Lending, Nft } from "../../types/classes";
-import { queryAllLendingRenft } from "../../services/queries";
-import { timeItAsync } from "../../utils";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
+import request from "graphql-request";
+import { Lending, Nft } from "renft-front/types/classes";
+import { queryAllLendingRenft } from "renft-front/services/queries";
+import { timeItAsync } from "renft-front/utils";
+import {
+  SECOND_IN_MILLISECONDS,
+  RENFT_REFETCH_INTERVAL,
+} from "renft-front/consts";
 import { debounceTime, from, map, Observable, switchMap, timer } from "rxjs";
-import { LendingRaw } from "../../types";
+import { LendingRaw } from "renft-front/types";
 import shallow from "zustand/shallow";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import {
   NFTRentType,
   useLendingStore,
-  useNftsStore
-} from "../store/useNftStore";
-import { usePrevious } from "../misc/usePrevious";
+  useNftsStore,
+} from "renft-front/hooks/store/useNftStore";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../store/useEventTrackedTransactions";
+  useEventTrackedTransactionState,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
+import * as Sentry from "@sentry/nextjs";
 
 export const fetchRentings = (): Observable<LendingRaw[]> => {
   if (!process.env.NEXT_PUBLIC_RENFT_API) {
@@ -28,8 +32,11 @@ export const fetchRentings = (): Observable<LendingRaw[]> => {
   const subgraphURI = process.env.NEXT_PUBLIC_RENFT_API;
   return from<Promise<{ lendings: LendingRaw[] }>>(
     timeItAsync("Pulled All ReNFT Lendings", async () =>
-      request(subgraphURI, queryAllLendingRenft).catch(() => {
-        console.warn("could not pull all ReNFT lendings");
+      request(subgraphURI, queryAllLendingRenft).catch((e) => {
+        //TODO:eniko sentry loggin
+        Sentry.captureException(e);
+        //TODO:eniko ui error dialog
+
         return {};
       })
     )
@@ -57,7 +64,11 @@ export const useAllAvailableForRent = (): {
         state.pendingTransactions[SmartContractEventType.START_LEND];
       const pendingRentals =
         state.pendingTransactions[SmartContractEventType.STOP_LEND];
-      return pendingRentings.length + pendingLendings.length + pendingRentals.length;
+      return (
+        pendingRentings.length * 2 +
+        pendingLendings.length * 3 +
+        pendingRentals.length * 4
+      );
     }, []),
     shallow
   );
@@ -66,8 +77,10 @@ export const useAllAvailableForRent = (): {
     shallow
   );
 
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const addLendings = useLendingStore((state) => state.addLendings);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const addLendings = useLendingStore(
+    useCallback((state) => state.addLendings, [])
+  );
   const allAvailableToRentIds = useLendingStore(
     useCallback((state) => state.allAvailableToRent, []),
     shallow
@@ -75,7 +88,7 @@ export const useAllAvailableForRent = (): {
   useEffect(() => {
     // stupid way to force refetch
     const start = refetchAfterOperation ? 0 : 0;
-    const subscription = timer(start, 30 * SECOND_IN_MILLISECONDS)
+    const subscription = timer(start, RENFT_REFETCH_INTERVAL)
       .pipe(
         switchMap(() => {
           if (
@@ -93,7 +106,6 @@ export const useAllAvailableForRent = (): {
               new Nft(
                 lendingRaw.nftAddress,
                 lendingRaw.tokenId,
-                lendingRaw.lentAmount,
                 lendingRaw.isERC721
               )
           );
@@ -118,7 +130,7 @@ export const useAllAvailableForRent = (): {
     network,
     addLendings,
     addNfts,
-    refetchAfterOperation
+    refetchAfterOperation,
   ]);
 
   const allAvailableToRent = useMemo(() => {

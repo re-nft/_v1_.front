@@ -1,21 +1,34 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { BigNumber, Signer } from "ethers";
-import { Nft } from "../../types/classes";
-import { usePrevious } from "../misc/usePrevious";
-import { useSmartContracts } from "../contract/useSmartContracts";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Nft } from "renft-front/types/classes";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
+import { useSmartContracts } from "renft-front/hooks/contract/useSmartContracts";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 import shallow from "zustand/shallow";
-import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
-import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { NetworkName } from "../../types";
+import {
+  OWNED_NFT_TYPE,
+  useNftsStore,
+} from "renft-front/hooks/store/useNftStore";
+import {
+  debounceTime,
+  EMPTY,
+  from,
+  map,
+  switchMap,
+  timer,
+  catchError,
+  of,
+} from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import { NetworkName } from "renft-front/types";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../store/useEventTrackedTransactions";
+  useEventTrackedTransactionState,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 
 export type CancellablePromise<T> = {
   promise: Promise<T>;
@@ -51,7 +64,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
       const pendingLendings =
         state.pendingTransactions[SmartContractEventType.START_LEND];
       // refetch will change when you start renting goes from non-empty array to empty array
-      return pendingLendings.length + pendingStopRentals.length ;
+      return pendingLendings.length + pendingStopRentals.length;
     }, []),
     shallow
   );
@@ -97,7 +110,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721.address, tokenId.toString(), "1", true));
+          usersNfts.push(new Nft(e721.address, tokenId.toString(), true));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -111,7 +124,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
             currentAddress,
             String(i)
           );
-          usersNfts.push(new Nft(e721b.address, tokenId.toString(), "1", true));
+          usersNfts.push(new Nft(e721b.address, tokenId.toString(), true));
         } catch (e) {
           console.debug(
             "most likely tokenOfOwnerByIndex does not work. whatever, this is not important"
@@ -126,12 +139,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
 
       for (let i = 0; i < num1155s.length; i++) {
         if (amountBalance[i].toNumber() > 0) {
-          const nft = new Nft(
-            e1155.address,
-            E1155IDs[i].toString(),
-            amountBalance[i].toString(),
-            false
-          );
+          const nft = new Nft(e1155.address, E1155IDs[i].toString(), false);
           setAmount(nft.nId, Number(amountBalance[i].toString()));
           usersNfts.push(nft);
         }
@@ -144,12 +152,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
 
       for (let i = 0; i < num1155bs.length; i++) {
         if (amountBalance[i].toNumber() > 0) {
-          const nft = new Nft(
-            e1155b.address,
-            E1155IDs[i].toString(),
-            amountBalance[i].toString(),
-            false
-          );
+          const nft = new Nft(e1155b.address, E1155IDs[i].toString(), false);
           setAmount(nft.nId, Number(amountBalance[i].toString()));
           usersNfts.push(nft);
         }
@@ -182,13 +185,24 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
           setLoading(false);
+        }),
+        catchError(() => {
+          setLoading(false);
+          return of();
         })
       )
       .subscribe();
     return () => {
       subscription?.unsubscribe();
     };
-  }, [signer, currentAddress, addNfts, network, fetchDevNfts, refetchAfterOperation]);
+  }, [
+    signer,
+    currentAddress,
+    addNfts,
+    network,
+    fetchDevNfts,
+    refetchAfterOperation,
+  ]);
 
   // reset on wallet change
   useEffect(() => {

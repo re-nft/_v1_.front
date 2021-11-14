@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Lending, Nft, Renting } from "../../types/classes";
-import CatalogueLoader from "../common/catalogue-loader";
-import Pagination from "../common/pagination";
-import { useFetchMeta } from "../../hooks/store/useMetaState";
-import { usePrevious } from "../../hooks/misc/usePrevious";
+
+import CatalogueLoader from "renft-front/components/common/catalogue-loader";
+import Pagination from "renft-front/components/common/pagination";
+import { useFetchMeta } from "renft-front/hooks/store/useMetaState";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
+import { Lending, Nft, Renting } from "renft-front/types/classes";
+import { PAGE_SIZE } from "renft-front/consts";
 
 const defaultSate = {
   pageItems: [],
   currentPage: [],
   currentPageNumber: 1,
-  totalPages: 1
+  totalPages: 1,
 };
 
 type State<T> = {
@@ -19,17 +21,18 @@ type State<T> = {
   totalPages: number;
 };
 
-const PAGE_SIZE = 20;
-
 export const PaginationList = <T extends Renting | Lending | Nft>({
   nfts,
   ItemsRenderer,
   isLoading,
-  emptyResultMessage
+  emptyResultMessage,
 }: {
   nfts: T[] | T[];
   isLoading: boolean;
-  ItemsRenderer: React.FC<{ currentPage: (T & { show: boolean })[] }>;
+  ItemsRenderer: React.FC<{
+    currentPage: (T & { show: boolean })[];
+    pageItems: T[];
+  }>;
   emptyResultMessage: string;
 }): JSX.Element => {
   const [{ currentPage, currentPageNumber, totalPages, pageItems }, setState] =
@@ -61,7 +64,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
       setState((prevState) => ({
         ...prevState,
         currentPageNumber,
-        currentPage
+        currentPage,
       }));
     },
     [getCurrentPage, pageItems, totalPages]
@@ -87,7 +90,7 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
         pageItems: newItems,
         totalPages,
         currentPageNumber: 1,
-        currentPage: getCurrentPage(1, totalPages, newItems)
+        currentPage: getCurrentPage(1, totalPages, newItems),
       });
     },
     [getCurrentPage]
@@ -133,14 +136,24 @@ export const PaginationList = <T extends Renting | Lending | Nft>({
 
   return (
     <>
-      {isLoading && <div className='absolute inset-0 bottom-0'><CatalogueLoader /></div>}
+      {isLoading && (
+        <div className="absolute inset-0 bottom-0" data-testid="list-loader">
+          <CatalogueLoader />
+        </div>
+      )}
       {currentPage.length === 0 ? (
-        <div className="text-center text-base text-white font-display py-32 leading-tight">
+        <div
+          className="text-center text-base text-white font-display py-32 leading-tight"
+          data-testid="empty-message"
+        >
           {emptyResultMessage}
         </div>
       ) : (
         <>
-          <ItemsRenderer currentPage={currentPageWithShow}></ItemsRenderer>
+          <ItemsRenderer
+            currentPage={currentPageWithShow}
+            pageItems={pageItems}
+          ></ItemsRenderer>
           <Pagination
             totalPages={totalPages}
             currentPageNumber={currentPageNumber}

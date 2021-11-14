@@ -1,20 +1,31 @@
-import React, { useMemo, useCallback } from "react";
-import { CatalogueItemRow } from "./catalogue-item-row";
-import { Skeleton } from "./skeleton";
-import { CatalogueItemDisplay } from "./catalogue-item-display";
-
-import { useNftMetaState } from "../../hooks/store/useMetaState";
-import shallow from "zustand/shallow";
-import { ShortenPopover } from "../common/shorten-popover";
-import { CatalogueActions } from "./catalogue-actions";
-import { useWallet } from "../../hooks/store/useWallet";
-import { Button } from "../common/button";
-import { useNftsStore } from "../../hooks/store/useNftStore";
-import { useEventTrackedTransactionState } from "../../hooks/store/useEventTrackedTransactions";
-import { ReactEventOnChangeType, ReactEventOnClickType } from "../../types";
+import React, { useMemo, useCallback, useEffect } from "react";
 import { Transition } from "@headlessui/react";
-import { classNames } from "../../utils";
-import { PendingTransactionsLoader } from "../pending-transactions-loader";
+import shallow from "zustand/shallow";
+import { ASTROCAT_CONTRACT_ADDRESS } from "renft-front/consts";
+
+import { useNftMetaState } from "renft-front/hooks/store/useMetaState";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import {
+  useNftsStore,
+  useRentingStore,
+  useLendingStore,
+} from "renft-front/hooks/store/useNftStore";
+import { useEventTrackedTransactionState } from "renft-front/hooks/store/useEventTrackedTransactions";
+
+import { ShortenPopover } from "renft-front/components/common/shorten-popover";
+import { Button } from "renft-front/components/common/button";
+import { PendingTransactionsLoader } from "renft-front/components/pending-transactions-loader";
+import type {
+  ReactEventOnChangeType,
+  ReactEventOnClickType,
+} from "renft-front/types";
+import { classNames } from "renft-front/utils";
+
+import { Skeleton } from "./skeleton";
+import { CatalogueItemRow } from "./catalogue-item-row";
+import { CatalogueActions } from "./catalogue-actions";
+import { CatalogueItemDisplay } from "./catalogue-item-display";
+import { CountDown } from "renft-front/components/common/countdown";
 
 type CatalougeItemBaseProps = {
   // nftId
@@ -26,6 +37,7 @@ type CatalougeItemBaseProps = {
   show: boolean;
   // lending/renting uniqueId, nftId if not lended yet
   uniqueId: string;
+  "data-testid"?: string
 };
 type CatalogueItemWithAction = CatalougeItemBaseProps & {
   onClick: ReactEventOnClickType;
@@ -48,22 +60,34 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   ...rest
 }) => {
   const nft = useNftsStore(useCallback((state) => state.nfts[nId], [nId]));
+  const lending = useLendingStore(
+    useCallback((state) => state.lendings[uniqueId], [uniqueId])
+  );
+  const renting = useRentingStore(
+    useCallback(
+      (state) =>
+        lending?.rentingId ? state.rentings[lending.rentingId] : null,
+      [lending?.rentingId]
+    )
+  );
   const { signer } = useWallet();
   const meta = useNftMetaState(
     useCallback(
       (state) => {
-        return state.metas[nft.nId] || {};
+        return state.metas[nft?.nId] || {};
       },
-      [nft.nId]
+      [nft?.nId]
     ),
     shallow
   );
 
   const imageIsReady = useMemo(() => {
-    return meta && !meta.loading;
+    if (!meta) return false;
+    if (typeof meta.loading === "undefined") return false;
+    return !meta.loading;
   }, [meta]);
 
-  const { name, image, description, openseaLink } = meta;
+  const { name, image, openseaLink } = meta;
   const pendingStatus = useEventTrackedTransactionState(
     useCallback(
       (state) => {
@@ -75,11 +99,8 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
   );
 
   const knownContract = useMemo(() => {
-    return (
-      nft.nftAddress.toLowerCase() ===
-      "0x0db8c099b426677f575d512874d45a767e9acc3c"
-    );
-  }, [nft.nftAddress]);
+    return nft?.nftAddress.toLowerCase() === ASTROCAT_CONTRACT_ADDRESS;
+  }, [nft?.nftAddress]);
 
   const cb: ReactEventOnClickType = useCallback(
     (e: React.MouseEvent<unknown>) => {
@@ -100,40 +121,56 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
     },
     [disabled, onCheckboxChange]
   );
+  const actionDisabled = useMemo(() => {
+    return disabled || !checked || !signer;
+  }, [disabled, checked, signer]);
+
   return (
     <Transition
       show={show}
-      as="div"
+      as="li"
       enter="transition-opacity ease-linear duration-300"
       enterFrom="opacity-0"
       enterTo="opacity-100"
       leave="transition-opacity ease-linear duration-300"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      key={nft.id}
+      key={nft?.id}
       className={classNames(
         disabled && "cursor-not-allowed",
         !disabled && "hover:shadow-rn-one",
-        checked && "shadow-rn-one border-4",
+        !disabled && checked && "shadow-rn-one border-4",
         "text-base leading-tight flex flex-col bg-white border-2 border-black pb-1"
       )}
+      aria-selected={!disabled && !!checked}
+      role="gridcell"
+      data-testid={rest["data-testid"]}
     >
       {!imageIsReady && <Skeleton />}
       {imageIsReady && (
-        <>
+        <div data-testid="catalogue-item-loaded">
           <div onClick={onChange}>
             <>
               <div className="flex justify-center space-x-2">
                 <CatalogueActions
-                  nftAddress={nft.nftAddress}
-                  tokenId={nft.tokenId}
+                  id={nId}
+                  nftAddress={nft?.nftAddress || ""}
+                  tokenId={nft?.tokenId || ""}
                   disabled={disabled || !signer}
-                  checked={!!checked}
+                  checked={!disabled && !!checked}
                   onCheckboxChange={onCheckboxChange}
                 />
               </div>
               <div className="relative">
-                <CatalogueItemDisplay image={image} description={description} />
+                <div className="absolute inset-x-0 top-0 h-16 z-10">
+                  {renting && (
+                    <CountDown
+                      endTime={renting?.rentalEndTime || 0}
+                      claimed={lending?.collateralClaimed || false}
+                    />
+                  )}
+                </div>
+                <CatalogueItemDisplay image={image} description={name} />
                 <div className="absolute inset-0  flex items-center text-center justify-center">
                   <PendingTransactionsLoader status={pendingStatus} />
                 </div>
@@ -146,11 +183,9 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                       className="flex-initial p-2"
                       target="_blank"
                       rel="noreferrer"
+                      aria-label="verified"
                     >
-                      <img
-                        src="/assets/nft-verified.png"
-                        className="nft__icon small"
-                      />
+                      <img src="/assets/nft-verified.png" alt="" />
                     </a>
                   )}
                 </div>
@@ -159,17 +194,16 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <div className="px-2 flex flex-auto flex-col text-black">
               <CatalogueItemRow
                 text="NFT Address"
-                value={<ShortenPopover longString={nft.nftAddress} />}
+                value={<ShortenPopover longString={nft?.nftAddress || ""} />}
               />
               <CatalogueItemRow
                 text="Token id"
-                value={<ShortenPopover longString={nft.tokenId} />}
+                value={<ShortenPopover longString={nft?.tokenId || ""} />}
               />
               <CatalogueItemRow
                 text="Standard"
-                value={nft.isERC721 ? "721" : "1155"}
+                value={nft?.isERC721 ? "721" : "1155"}
               />
-
               {children}
             </div>
           </div>
@@ -178,20 +212,22 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
             <div className="flex-1">
               <a
                 className="flex-initial"
+                aria-label="rarible link"
                 target="_blank"
                 rel="noreferrer"
-                href={`https://rarible.com/token/${nft.nftAddress}:${nft.tokenId}`}
+                href={`https://rarible.com/token/${nft?.nftAddress}:${nft?.tokenId}`}
               >
-                <img src="/assets/rarible.png" className="nft__icon" />
+                <img src="/assets/rarible.png" className="nft__icon" alt="" />
               </a>
               {openseaLink && (
                 <a
                   className="flex-initial"
                   target="_blank"
                   rel="noreferrer"
+                  aria-label="opensea link"
                   href={openseaLink}
                 >
-                  <img src="/assets/opensea.png" className="nft__icon" />
+                  <img src="/assets/opensea.png" className="nft__icon" alt="" />
                 </a>
               )}
             </div>
@@ -201,12 +237,13 @@ export const CatalogueItem: React.FC<CatalogueItemProps> = ({
                 <Button
                   onClick={cb}
                   description={rest.buttonTitle}
-                  disabled={disabled || !checked || !signer}
+                  data-testid="catalogue-action"
+                  disabled={actionDisabled}
                 />
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </Transition>
   );

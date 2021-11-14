@@ -1,17 +1,17 @@
-import { Lending, Nft, Renting } from "../../types/classes";
+import { Lending, Nft, Renting } from "renft-front/types/classes";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import produce from "immer";
 
 export enum NFTRentType {
   USER_IS_LENDING,
   ALL_AVAILABLE_TO_RENT,
-  USER_IS_RENTING
+  USER_IS_RENTING,
 }
 export enum OWNED_NFT_TYPE {
   DEV_NFT = 1,
   EXTERNAL_ERC721,
-  EXTERNAL_ERC1155
+  EXTERNAL_ERC1155,
 }
 type NftMetaState = {
   nfts: Record<string, Nft>;
@@ -58,7 +58,7 @@ export const useNftsStore = create<NftMetaState>(
               const previousNft: Nft = state.nfts[nft.id];
               state.nfts[nft.id] = {
                 ...previousNft,
-                ...nft
+                ...nft,
               };
             });
             if (ownedNftType) {
@@ -82,7 +82,7 @@ export const useNftsStore = create<NftMetaState>(
               }
             }
           })
-        )
+        ),
     }),
     "nft-store"
   )
@@ -109,7 +109,7 @@ export const useLendingStore = create<LendingState>(
               const previousNft = state.lendings[lending.id];
               state.lendings[lending.id] = {
                 ...previousNft,
-                ...lending
+                ...lending,
               };
             });
             switch (type) {
@@ -123,7 +123,7 @@ export const useLendingStore = create<LendingState>(
               }
             }
           })
-        )
+        ),
     }),
     "lending-store"
   )
@@ -147,9 +147,9 @@ export const useRentingStore = create<RentingState>(
             else if (type === NFTRentType.USER_IS_LENDING)
               rentings.map((renting) => {
                 state.rentings[renting.id] = renting;
-              })  
+              });
           })
-        )
+        ),
     }),
     "renting-store"
   )

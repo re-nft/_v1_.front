@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import { ReactEventOnChangeType } from "../../types";
-import { classNames } from "../../utils";
+import type { ReactEventOnChangeType } from "renft-front/types";
+import { classNames } from "renft-front/utils";
 
 type CheckboxProps = {
   onChange: ReactEventOnChangeType;
@@ -9,6 +9,7 @@ type CheckboxProps = {
   label: string;
   srOnly?: boolean;
   ariaLabel: string;
+  id: string;
 };
 
 export const Checkbox: React.FC<CheckboxProps> = ({
@@ -16,8 +17,9 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   onChange,
   disabled,
   label,
+  id,
+  ariaLabel,
   srOnly = true,
-  ariaLabel
 }) => {
   const cb: ReactEventOnChangeType = useCallback(
     (e: React.ChangeEvent<unknown>) => {
@@ -30,6 +32,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     <>
       <div className="flex items-center h-5">
         <input
+          id={`checkbox-${id}`}
           aria-describedby={ariaLabel}
           type="checkbox"
           checked={checked}
@@ -42,7 +45,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         />
       </div>
       <div className={srOnly ? "sr-only ml-3 text-sm" : "ml-3 text-sm"}>
-        <label htmlFor="comments" className="font-medium text-gray-700">
+        <label htmlFor={`checkbox-${id}`} className="font-medium text-gray-700">
           {label}
         </label>
       </div>

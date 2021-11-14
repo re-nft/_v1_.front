@@ -1,5 +1,5 @@
 import { FormState, UseFormRegister } from "react-hook-form/dist/types";
-import { Nft } from "../../../types/classes";
+import { Nft } from "renft-front/types/classes";
 
 export type LendFormProps = {
   checkedItems: string[];

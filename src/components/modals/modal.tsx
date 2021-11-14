@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/outline";
 
 type ModalProps = {
   open: boolean;
@@ -9,12 +10,13 @@ type ModalProps = {
 export const Modal: React.FC<ModalProps> = ({
   children,
   open,
-  handleClose
+  handleClose,
 }) => {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog
         as="div"
+        open={open}
         auto-reopen="true"
         className="fixed z-20 inset-0 overflow-y-auto"
         onClose={handleClose}
@@ -53,6 +55,16 @@ export const Modal: React.FC<ModalProps> = ({
             shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 shadow-rn-one-purple
             border-4 border-rn-purple"
             >
+              <div className="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+                <button
+                  type="button"
+                  className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={handleClose}
+                >
+                  <span className="sr-only">Close</span>
+                  <XIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </div>
               {children}
             </div>
           </Transition.Child>

@@ -1,7 +1,7 @@
 import produce from "immer";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import shallow from "zustand/shallow";
 import { Nft, Lending, Renting } from "../../types/classes";
 
@@ -24,10 +24,13 @@ export const useBatchItemsState = create<{
         produce((state) => {
           state.values[key] = values;
         })
-      )
+      ),
   }))
 );
-export const useBatchItems: (key: string) => BatchContextType = (key) => {
+export const useBatchItems: (
+  key: string,
+  pageItems: (Nft | Lending | Renting)[]
+) => BatchContextType = (key, pageItems) => {
   const checkedItems = useBatchItemsState(
     useCallback((state) => state.values[key], [key]),
     shallow
@@ -64,9 +67,22 @@ export const useBatchItems: (key: string) => BatchContextType = (key) => {
     },
     [checkedItems, key, setCheckedItems]
   );
+  useEffect(() => {
+    // reset checkeditems, if item was removed from API
+    const set = new Set(pageItems.map((i) => i.id));
+    const checked: string[] = [];
+    if (checkedItems) {
+      checkedItems.map((i) => {
+        if (set.has(i)) checked.push(i);
+      });
+
+      setCheckedItems(key, checked);
+    }
+  }, [key, pageItems, setCheckedItems, checkedItems]);
+
   return {
     checkedItems,
     handleReset,
-    onCheckboxChange
+    onCheckboxChange,
   };
 };

@@ -1,16 +1,16 @@
 import { useCallback, useMemo, useEffect } from "react";
-import { useNFTFilterBy } from "../../components/layouts/app-layout/nft-filter-select";
-import { useNFTSortBy } from "../../components/layouts/app-layout/nft-sortby-select";
+import { useNFTFilterBy } from "renft-front/components/layouts/nft-filter-select";
+import { useNFTSortBy } from "renft-front/components/layouts/nft-sortby-select";
 import shallow from "zustand/shallow";
-import { Lending, Nft, Renting } from "../../types/classes";
+import { Lending, Nft, Renting } from "renft-front/types/classes";
 import { PaymentToken } from "@renft/sdk";
-import { useExchangePrice } from "../queries/useExchangePrice";
-import { useNftMetaState } from "./useMetaState";
-import { NO_COLLECTION } from "../../consts";
+import { useExchangePrice } from "renft-front/hooks/queries/useExchangePrice";
+import { NO_COLLECTION } from "renft-front/consts";
 import create from "zustand";
 import produce from "immer";
-import { devtools } from "zustand/middleware";
+import { devtools } from "renft-front/hooks/devtools";
 import { useRouter } from "next/router";
+import { useNftMetaState } from "./useMetaState";
 
 interface NftSearchState {
   nfts: string[];
@@ -25,7 +25,7 @@ export const useSearchNfts = create<NftSearchState>(
         produce((state) => {
           state.nfts = nfts.map((n) => n.nId);
         })
-      )
+      ),
   }))
 );
 
@@ -89,7 +89,9 @@ export const useSearch = <T extends Renting | Lending | Nft>(
   const tokenPerUSD = useExchangePrice();
   const metas = useNftMetaState(useCallback((state) => state.metas, []));
   const keys = useNftMetaState(useCallback((state) => state.keys, []));
-  const setSearchNfts = useSearchNfts((state) => state.setSearchNfts);
+  const setSearchNfts = useSearchNfts(
+    useCallback((state) => state.setSearchNfts, [])
+  );
   const router = useRouter();
 
   const categories = useMemo(() => {
@@ -176,7 +178,7 @@ export const useSearch = <T extends Renting | Lending | Nft>(
       collateralInUSD:
         r instanceof Lending || r instanceof Renting
           ? toUSD(r.paymentToken, r.nftPrice, tokenPerUSD)
-          : 1
+          : 1,
     }));
     r = filterItems(r, filter);
     r = sortItems([...r], sortBy);
@@ -217,9 +219,12 @@ export const useSearchOptions = (): CategoryOptions[] => {
         if (!set.has(name)) {
           set.add(name);
           arr.push({
+            //TODO:eniko same collection name can be different
+            // the name will contain id at the end if the collection has the same name
+            // but different instance
             value: meta.collection.name,
             label: meta.collection.name,
-            imageUrl: meta.collection.imageUrl
+            imageUrl: meta.collection.imageUrl,
           });
         }
       } else {
@@ -238,7 +243,7 @@ export const useSortOptions = (): CategoryOptions[] => {
       { label: "Price: Low to High", value: "p-lh", imageUrl: "" },
       { label: "Price: High to Low", value: "p-hl", imageUrl: "" },
       { label: "Highest Collateral", value: "hc", imageUrl: "" },
-      { label: "Lowest Collateral", value: "lc", imageUrl: "" }
+      { label: "Lowest Collateral", value: "lc", imageUrl: "" },
     ];
   }, []);
 };

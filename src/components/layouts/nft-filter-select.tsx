@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { CategorySelect } from "../../common/category-select";
 
+import { useRouter } from "next/router";
+import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import produce from "immer";
-import { devtools } from "zustand/middleware";
-import { CategoryOptions, useSearchOptions } from "../../../hooks/store/useSearch";
-import { useRouter } from "next/router";
+import { devtools } from "renft-front/hooks/devtools";
+
+import { CategorySelect } from "renft-front/components/common/category-select";
+import {
+  CategoryOptions,
+  useSearchOptions,
+} from "renft-front/hooks/store/useSearch";
 
 interface NftFilterState {
   filters: string | null;
@@ -37,6 +41,10 @@ export const NftFilterSelect: React.FC = () => {
   }, [filters, options]);
 
   const router = useRouter();
+  const defaultValue = useMemo(
+    () => ({ label: "All NFTs", value: "", imageUrl: "" }),
+    []
+  );
 
   useEffect(() => {
     const handleStop = () => {
@@ -49,12 +57,19 @@ export const NftFilterSelect: React.FC = () => {
     };
   }, [router, setNftFilter]);
 
+  const extendedOptions = useMemo(() => {
+    return [defaultValue, ...options];
+  }, [options, defaultValue]);
+
+  if (!options || options.length === 0) return null;
+
   return (
     <CategorySelect
+      label="Filter"
       value={value}
-      options={options}
+      options={extendedOptions}
       setValue={setNftFilter}
-      defaultValue={{ label: "All NFTs", value: "", imageUrl: "" }}
+      defaultValue={defaultValue}
     />
   );
 };

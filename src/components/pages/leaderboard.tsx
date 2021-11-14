@@ -1,5 +1,5 @@
 import React from "react";
-import { CatalogueItemRow } from "../catalogue-item/catalogue-item-row";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
 
 const leaderboardData = [
   {
@@ -100,9 +100,8 @@ const Leaderboard: React.FC = () => {
         </div>
         <div className="leaderboard-list">
           {rest.map((item, index) => (
-            <div key={index} className="leaderboard-list-item">{`#${
-              4 + index
-            }   ${item.address}`}</div>
+            <div key={index} className="leaderboard-list-item">{`#${4 + index
+              }   ${item.address}`}</div>
           ))}
         </div>
       </div>

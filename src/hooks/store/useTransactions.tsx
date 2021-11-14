@@ -1,14 +1,15 @@
 import { useCallback, useEffect } from "react";
-// TODO: otherwise it takes it from packages/front and crashes everything
+import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
+import { Web3Provider } from "@ethersproject/providers";
 import { TransactionReceipt } from "@ethersproject/abstract-provider";
 
-import { TransactionHash, TransactionStateEnum } from "../../types";
-import { IS_PROD, SECOND_IN_MILLISECONDS } from "../../consts";
-
-import { catchError, EMPTY, from, map, Observable, of, zipAll } from "rxjs";
-import { ethers } from "ethers";
-import { ErrorType, useSnackProvider } from "./useSnackProvider";
-import { useWallet } from "./useWallet";
+import { TransactionHash, TransactionStateEnum } from "renft-front/types";
+import { IS_PROD, SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import {
+  ErrorType,
+  useSnackProvider,
+} from "renft-front/hooks/store/useSnackProvider";
+import { useWallet } from "renft-front/hooks/store/useWallet";
 
 import produce from "immer";
 import create from "zustand";
@@ -19,7 +20,7 @@ const TRANSACTION_TIMEOUT = 10 * 60 * SECOND_IN_MILLISECONDS;
 
 const waitForTransactions = (
   hashes: TransactionHash[],
-  provider: ethers.providers.Web3Provider | undefined,
+  provider: Web3Provider | undefined,
   setError: (str: string, type: ErrorType) => void
 ): Observable<(TransactionReceipt | null)[]> => {
   if (!provider) return EMPTY;
@@ -55,8 +56,7 @@ export type TransactionStatus = {
   hasFailure: boolean;
   hasPending: boolean;
 };
-
-const useTransactionState = create<{
+type UseTransactionState = {
   // start lend transactions
   // start rent transactions
   // claim transactions
@@ -67,33 +67,34 @@ const useTransactionState = create<{
   setTransactions: (key: string, t: TransactionState) => void;
   removeTransactionId: (keys: string[]) => void;
   addTransactionId: (keys: string) => void;
-}>((set) => ({
+};
+const useTransactionState = create<UseTransactionState>((set) => ({
   transactions: {},
   pendingTransactions: [],
   setTransactions: (key: string, transactions: TransactionState) =>
     set(
-      produce((state) => {
-        state.transactions[key] = transactions;
+      produce((draft: UseTransactionState) => {
+        draft.transactions[key] = transactions;
       })
     ),
   addTransactionId: (key: string) =>
     set(
-      produce((state) => {
-        state.pendingTransactions.push(key);
+      produce((draft: UseTransactionState) => {
+        draft.pendingTransactions.push(key);
       })
     ),
 
   removeTransactionId: (keys: string[]) =>
     set(
-      produce((state) => {
+      produce((draft: UseTransactionState) => {
         if (keys.length === 0) return;
-        const set = new Set(state.pendingTransactions);
+        const set = new Set(draft.pendingTransactions);
         keys.forEach((key) => {
           set.delete(key);
         });
-        state.pendingTransactions = Array.from(set);
+        draft.pendingTransactions = Array.from(set);
       })
-    )
+    ),
 }));
 // simple transaction manager
 export const useTransactions = (): {
@@ -119,10 +120,11 @@ export const useTransactions = (): {
   const { setError } = useSnackProvider();
 
   const transactionSucceeded =
-    (state: TransactionStateEnum) => (receipt: TransactionReceipt | null) => {
+    (state: TransactionStateEnum) =>
+    (receipt: TransactionReceipt | null): boolean => {
       if (!receipt) return false;
       const status = receipt.status;
-      if (!status) return false;
+      if (status == null) return false;
       return TransactionStateEnum[status] === TransactionStateEnum[state];
     };
   const getTransactionsStatus = useCallback(
@@ -130,15 +132,16 @@ export const useTransactions = (): {
       if (!receipts) return [true, false];
       if (receipts && receipts.length < 1) return [true, false];
 
-      const hasFailure =
+      const hasFailure: boolean =
         receipts.filter(transactionSucceeded(TransactionStateEnum.FAILED - 1))
           .length > 0;
-      const hasPending =
+      const hasPending: boolean =
         receipts.filter(transactionSucceeded(TransactionStateEnum.PENDING - 1))
           .length > 0;
       // TODO this is where state management will come in to make this easy
       if (hasFailure) setError("Transaction is not successful!", "warning");
-      if (!hasFailure && !hasPending) setError("Transaction is success!", "success");
+      if (!hasFailure && !hasPending)
+        setError("Transaction is success!", "success");
       return [hasFailure, hasPending];
     },
     [setError]
@@ -150,14 +153,14 @@ export const useTransactions = (): {
         return of({
           key,
           hasFailure: true,
-          hasPending: false
+          hasPending: false,
         });
       const transaction = transactions[key];
       if (transaction.hasFailure)
         return of({
           key,
           hasFailure: true,
-          hasPending: false
+          hasPending: false,
         });
       return waitForTransactions(transaction.hashes, provider, setError).pipe(
         map((receipts) => {
@@ -166,12 +169,12 @@ export const useTransactions = (): {
             hashes: transactions[key].hashes,
             receipts,
             hasFailure,
-            hasPending
+            hasPending,
           });
           return {
             key,
             hasFailure,
-            hasPending
+            hasPending,
           };
         })
       );
@@ -189,7 +192,7 @@ export const useTransactions = (): {
         hashes,
         receipts: [],
         hasFailure: false,
-        hasPending: true
+        hasPending: true,
       });
       const key = hashes[0];
       addTransactionId(key);
@@ -205,6 +208,7 @@ export const useTransactions = (): {
           const ids: string[] = [];
           statuses.map((status) => {
             if (status.hasFailure) ids.push(status.key);
+            if (!status.hasFailure && !status.hasPending) ids.push(status.key);
           });
           removeTransactionId(ids);
         })

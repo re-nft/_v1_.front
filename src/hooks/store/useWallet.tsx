@@ -1,29 +1,25 @@
 import { useEffect, useMemo, useCallback } from "react";
-import { ethers, Signer } from "ethers";
+import { Signer } from "@ethersproject/abstract-signer";
+import { Web3Provider, ExternalProvider } from "@ethersproject/providers";
 import Web3Modal from "web3modal";
-import { THROWS } from "../../utils";
 import { EMPTY, from, timer, map, switchMap } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
 import ReactGA from "react-ga";
 
 import produce from "immer";
 import create from "zustand";
 import shallow from "zustand/shallow";
-import {
-  ExternalProvider
-} from "@ethersproject/providers";
 
 type WalletContextType = {
   address: string;
   permissions: unknown[];
-  connect: () => Promise<ethers.providers.Web3Provider | undefined> | void;
   signer: Signer | undefined;
-  web3Provider: ethers.providers.Web3Provider | undefined;
+  web3Provider: Web3Provider | undefined;
   network: string;
   provider: unknown;
   setProvider: (p: unknown) => void;
   setNetworkName: (str: string) => void;
-  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) => void;
+  setWeb3Provider: (p: Web3Provider | undefined) => void;
   setAddress: (address: string) => void;
   setSigner: (s: Signer | undefined) => void;
   setPermissions: (str: unknown[]) => void;
@@ -33,7 +29,6 @@ const useWalletState = create<WalletContextType>((set) => ({
   address: "",
   signer: undefined,
   provider: undefined,
-  connect: THROWS,
   web3Provider: undefined,
   network: "",
   permissions: [],
@@ -67,19 +62,19 @@ const useWalletState = create<WalletContextType>((set) => ({
         state.permissions = n;
       })
     ),
-  setWeb3Provider: (p: ethers.providers.Web3Provider | undefined) =>
+  setWeb3Provider: (p: Web3Provider | undefined) =>
     set(
       produce((state) => {
         state.web3Provider = p;
       })
-    )
+    ),
 }));
 
 export const useWallet = (): {
   connect: () => void;
-  signer: ethers.Signer | undefined;
+  signer: Signer | undefined;
   address: string;
-  web3Provider: ethers.providers.Web3Provider | undefined;
+  web3Provider: Web3Provider | undefined;
   network: string;
 } => {
   // const [currentAddress, setAddress] = useState(DefaultUser.currentAddress);
@@ -107,12 +102,22 @@ export const useWallet = (): {
     useCallback((state) => state.signer, []),
     shallow
   );
-  const setProvider = useWalletState((state) => state.setProvider);
-  const setWeb3Provider = useWalletState((state) => state.setWeb3Provider);
-  const setNetworkName = useWalletState((state) => state.setNetworkName);
-  const setSigner = useWalletState((state) => state.setSigner);
-  const setAddress = useWalletState((state) => state.setAddress);
-  const setPermissions = useWalletState((state) => state.setPermissions);
+  const setProvider = useWalletState(
+    useCallback((state) => state.setProvider, [])
+  );
+  const setWeb3Provider = useWalletState(
+    useCallback((state) => state.setWeb3Provider, [])
+  );
+  const setNetworkName = useWalletState(
+    useCallback((state) => state.setNetworkName, [])
+  );
+  const setSigner = useWalletState(useCallback((state) => state.setSigner, []));
+  const setAddress = useWalletState(
+    useCallback((state) => state.setAddress, [])
+  );
+  const setPermissions = useWalletState(
+    useCallback((state) => state.setPermissions, [])
+  );
 
   const providerOptions = useMemo(() => ({}), []);
   const hasWindow = useMemo(() => {
@@ -123,16 +128,14 @@ export const useWallet = (): {
     return hasWindow
       ? new Web3Modal({
           cacheProvider: false,
-          providerOptions // required
+          providerOptions, // required
         })
       : null;
   }, [providerOptions, hasWindow]);
 
   const initState = useCallback(
     async (provider: unknown) => {
-      const web3p = new ethers.providers.Web3Provider(
-        provider as ExternalProvider
-      );
+      const web3p = new Web3Provider(provider as ExternalProvider);
       const network = await web3p?.getNetwork();
       const name = network.chainId === 31337 ? "localhost" : network?.name;
       const nname = name === "homestead" ? "mainnet" : name;
@@ -144,6 +147,7 @@ export const useWallet = (): {
           // do nothing
           console.log(e);
         });
+
       setNetworkName(nname);
       setSigner(signer);
       setAddress(address || "");
@@ -155,8 +159,11 @@ export const useWallet = (): {
 
   const connect = useCallback(
     (manual: boolean) => {
-      if (!web3Modal) return EMPTY;
-      if (!(!!manual || (permissions.length > 0 && !signer))) return EMPTY;
+      if (web3Modal == null) return EMPTY;
+      const noSigner = signer == null;
+      const connectedBefore = permissions.length > 0 && noSigner;
+
+      if (!connectedBefore && !manual) return EMPTY;
       // only reconnect if we have permissions or
       // user manually connected through action
       return from(
@@ -164,8 +171,13 @@ export const useWallet = (): {
           web3Modal
             .connect()
             .then((provider) => {
-              resolve(provider);
-              return initState(provider);
+              initState(provider)
+                .then(() => {
+                  resolve(provider);
+                })
+                .catch(() => {
+                  resolve(null);
+                });
             })
             .catch(() => {
               resolve(null);
@@ -178,7 +190,9 @@ export const useWallet = (): {
 
   // there is no better way to do disconnect with metemask+web3modal combo
   const connectDisconnect = useCallback(() => {
-    if (!hasWindow || !window.ethereum) return EMPTY;
+    if (typeof window === "undefined") return EMPTY;
+    if (window.ethereum == null) return EMPTY;
+    if (window.ethereum.request == null) return EMPTY;
     return from<Promise<string[]>>(
       new Promise((resolve) => {
         window.ethereum
@@ -200,18 +214,16 @@ export const useWallet = (): {
           if (address) setAddress("");
           if (network) setNetworkName("");
         }
-        return;
       })
     );
   }, [
     address,
     network,
     signer,
-    hasWindow,
     setPermissions,
     setAddress,
     setSigner,
-    setNetworkName
+    setNetworkName,
   ]);
 
   useEffect(() => {
@@ -264,7 +276,7 @@ export const useWallet = (): {
       setPermissions,
       setAddress,
       setSigner,
-      setNetworkName
+      setNetworkName,
     ]
   );
   const chainChanged = useCallback(() => {
@@ -302,6 +314,6 @@ export const useWallet = (): {
     signer,
     address,
     web3Provider,
-    network
+    network,
   };
 };

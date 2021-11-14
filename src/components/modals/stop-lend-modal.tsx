@@ -1,10 +1,12 @@
 import React, { useCallback } from "react";
-import { Button } from "../common/button";
-import { TransactionWrapper } from "../transaction-wrapper";
-import { Lending } from "../../types/classes";
-import { useStopLend } from "../../hooks/contract/useStopLend";
+
+import { Button } from "renft-front/components/common/button";
+import { TransactionWrapper } from "renft-front/components/transaction-wrapper";
+import { Lending } from "renft-front/types/classes";
+import { useStopLend } from "renft-front/hooks/contract/useStopLend";
+import { useLendingStore } from "renft-front/hooks/store/useNftStore";
+
 import Modal from "./modal";
-import { useLendingStore } from "../../hooks/store/useNftStore";
 
 type ReturnModalProps = {
   open: boolean;

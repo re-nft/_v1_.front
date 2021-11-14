@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { ClientOnlyPortal } from "../client-only-portal";
+import { ClientOnlyPortal } from "renft-front/components/client-only-portal";
 import { Button } from "./button";
 
 type PaginationProps = {

@@ -1,19 +1,32 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchUserProd721 } from "../../services/graph";
-import { Nft } from "../../types/classes";
-import { debounceTime, EMPTY, from, map, switchMap, timer } from "rxjs";
-import { SECOND_IN_MILLISECONDS } from "../../consts";
-import { useWallet } from "../store/useWallet";
-import { useCurrentAddress } from "../misc/useCurrentAddress";
-import { NetworkName, NftToken } from "../../types";
-import { OWNED_NFT_TYPE, useNftsStore } from "../store/useNftStore";
-import { usePrevious } from "../misc/usePrevious";
+import { fetchUserProd721 } from "renft-front/services/graph";
+import { Nft } from "renft-front/types/classes";
+import {
+  debounceTime,
+  EMPTY,
+  from,
+  map,
+  switchMap,
+  timer,
+  catchError,
+  of,
+} from "rxjs";
+import { SECOND_IN_MILLISECONDS } from "renft-front/consts";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { NetworkName, NftToken } from "renft-front/types";
+import {
+  OWNED_NFT_TYPE,
+  useNftsStore,
+} from "renft-front/hooks/store/useNftStore";
+import { usePrevious } from "renft-front/hooks/misc/usePrevious";
 import {
   EventTrackedTransactionStateManager,
   SmartContractEventType,
-  useEventTrackedTransactionState
-} from "../store/useEventTrackedTransactions";
+  useEventTrackedTransactionState,
+} from "renft-front/hooks/store/useEventTrackedTransactions";
 import shallow from "zustand/shallow";
+import * as Sentry from "@sentry/nextjs";
 
 const fetchERC721 = (currentAddress: string) => {
   //TODO:eniko current limitation is 5000 items for ERC721
@@ -23,7 +36,7 @@ const fetchERC721 = (currentAddress: string) => {
       fetchUserProd721(currentAddress, 1),
       fetchUserProd721(currentAddress, 2),
       fetchUserProd721(currentAddress, 3),
-      fetchUserProd721(currentAddress, 4)
+      fetchUserProd721(currentAddress, 4),
     ]).then((r) => {
       return r.reduce<NftToken[]>((acc, v) => {
         if (v.status === "fulfilled") {
@@ -39,9 +52,9 @@ const fetchERC721 = (currentAddress: string) => {
       const resultIds = new Set();
       result
         .map((nft) => {
-          return new Nft(nft.address, nft.tokenId, "0", nft.isERC721, {
+          return new Nft(nft.address, nft.tokenId, nft.isERC721, {
             meta: nft.meta,
-            tokenURI: nft.tokenURI
+            tokenURI: nft.tokenURI,
           });
         })
         .forEach((nft) => {
@@ -66,7 +79,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
       const pendingLendings =
         state.pendingTransactions[SmartContractEventType.START_LEND];
       // refetch will change when you start renting goes from non-empty array to empty array
-      return pendingLendings.length  + pendingStopRentals.length;
+      return pendingLendings.length * 1 + pendingStopRentals.length * 2;
     }, []),
     shallow
   );
@@ -77,7 +90,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
       });
     }, [])
   );
-  const addNfts = useNftsStore((state) => state.addNfts);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
 
   useEffect(() => {
     // stupid way to force refetch
@@ -98,6 +111,12 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
         debounceTime(SECOND_IN_MILLISECONDS),
         map(() => {
           setLoading(false);
+        }),
+        catchError((e) => {
+          //TODO:eniko dev test
+          Sentry.captureException(e);
+          setLoading(false);
+          return of();
         })
       )
       .subscribe();
@@ -110,7 +129,7 @@ export const useFetchERC721 = (): { ERC721: Nft[]; isLoading: boolean } => {
     setLoading,
     addNfts,
     refetchAfterOperation,
-    network
+    network,
   ]);
 
   // reset on wallet change

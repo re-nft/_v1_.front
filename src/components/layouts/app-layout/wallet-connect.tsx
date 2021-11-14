@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useLookupAddress } from "../../../hooks/queries/useLookupAddress";
-import { InstallMetamask } from "../../common/install-metamask";
-import { ShortenPopover } from "../../common/shorten-popover";
 import { Jazzicon } from "@ukstv/jazzicon-react";
-import { useUserData } from "../../../hooks/store/useUserData";
-import { useWallet } from "../../../hooks/store/useWallet";
-import { useCurrentAddress } from "../../../hooks/misc/useCurrentAddress";
 import { Menu } from "@headlessui/react";
+
+import { useLookupAddress } from "renft-front/hooks/queries/useLookupAddress";
+import { InstallMetamask } from "renft-front/components/common/install-metamask";
+import { ShortenPopover } from "renft-front/components/common/shorten-popover";
+import { useUserData } from "renft-front/hooks/store/useUserData";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
 
 const RenderButton: React.FC<{
   menuButton: boolean;
@@ -18,7 +19,8 @@ const RenderButton: React.FC<{
     <Menu.Button {...props}>{children}</Menu.Button>
   );
 };
-export const Connect: React.FC<{
+
+export const WalletConnect: React.FC<{
   menuButton?: boolean;
 }> = ({ menuButton }) => {
   const currentAddress = useCurrentAddress();
@@ -46,18 +48,18 @@ export const Connect: React.FC<{
   }, [network]);
 
   return (
-    <>
+    <div data-testid="wallet-connect">
       {!installMetaMask && (!currentAddress || !network) ? (
-        <button className="relative outline-none block" onClick={connect}>
+        <button className="relative outline-none block" onClick={connect} data-testid="wallet-connect-button">
           <div className="relative py-1 text-rn-purple leading-5 font-display text-sm uppercase whitespace-nowrap border-b-4 border-white">
             Connect Wallet
           </div>
         </button>
       ) : (
-        <div className="flex flex-col justify-end items-end lg:flex-row lg:justify-center lg:items-center md:px-0 font-display">
+        <div className="flex flex-col justify-end items-end lg:flex-row lg:justify-center lg:items-center md:px-0 font-display" data-testid="wallet-message">
           <div>
             <div className="text-sm leading-tight text-rn-purple border-b-4 border-white">
-              <span className="uppercase">{network}&nbsp;</span>
+              <span className="uppercase" data-testid="wallet-network">{network}&nbsp;</span>
               {networkNotSupported && (
                 <span className="text-black">is not supported</span>
               )}
@@ -73,7 +75,7 @@ export const Connect: React.FC<{
           </div>
 
           {!networkNotSupported && (
-            <div className="text-rn-purple text-sm px-2 border-b-4 border-white">
+            <div className="text-rn-purple text-sm px-2 border-b-4 border-white" data-testid='wallet-address'>
               {installMetaMask && <InstallMetamask />}
 
               {!installMetaMask && !!currentAddress && (
@@ -92,6 +94,6 @@ export const Connect: React.FC<{
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };

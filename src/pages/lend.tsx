@@ -1,13 +1,15 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { Nft } from "../types/classes";
-import BatchLendModal from "../components/modals/batch-lend";
-import { CatalogueItem } from "../components/catalogue-item";
-import { useBatchItems } from "../hooks/misc/useBatchItems";
-import { useAllAvailableToLend } from "../hooks/queries/useAllAvailableToLend";
-import { LendSearchLayout } from "../components/layouts/lend-search-layout";
-import { PaginationList } from "../components/layouts/pagination-list";
-import ItemWrapper from "../components/common/items-wrapper";
-import { useWallet } from "../hooks/store/useWallet";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { Nft } from "renft-front/types/classes";
+import BatchLendModal from "renft-front/components/modals/batch-lend";
+import { CatalogueItem } from "renft-front/components/catalogue-item";
+import { useBatchItems } from "renft-front/hooks/misc/useBatchItems";
+import { useAllAvailableToLend } from "renft-front/hooks/queries/useAllAvailableToLend";
+import { LendSearchLayout } from "renft-front/components/layouts/lend-search-layout";
+import { PaginationList } from "renft-front/components/layouts/pagination-list";
+import ItemWrapper from "renft-front/components/common/items-wrapper";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
+import { useSearch } from "renft-front/hooks/store/useSearch";
 
 const LendCatalagoueItem: React.FC<{
   checkedItems: string[];
@@ -39,11 +41,12 @@ const LendCatalagoueItem: React.FC<{
   );
 };
 
-const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
-  currentPage
-}) => {
+const ItemsRenderer: React.FC<{
+  currentPage: (Nft & { show: boolean })[];
+  pageItems: Nft[];
+}> = ({ currentPage, pageItems }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const { checkedItems, onCheckboxChange } = useBatchItems('lend');
+  const { checkedItems, onCheckboxChange } = useBatchItems("lend", pageItems);
   const handleClose = useCallback(() => {
     setModalOpen(false);
   }, [setModalOpen]);
@@ -60,7 +63,6 @@ const ItemsRenderer: React.FC<{ currentPage: (Nft & { show: boolean })[] }> = ({
     },
     [onCheckboxChange]
   );
-
   return (
     <div>
       {modalOpen && (
@@ -90,12 +92,13 @@ const Lendings: React.FC = () => {
   const { signer } = useWallet();
   const { allAvailableToLend, isLoading } = useAllAvailableToLend();
 
+  //TODO:eniko move this to the search-layout
+  const filteredItems = useSearch(allAvailableToLend);
+
   if (!signer) {
     return (
       <LendSearchLayout>
-        <div className="text-center text-lg text-white font-display py-32 leading-tight">
-          Please connect your wallet!
-        </div>
+        <NoSignerMessage />
       </LendSearchLayout>
     );
   }
@@ -103,7 +106,7 @@ const Lendings: React.FC = () => {
   return (
     <LendSearchLayout>
       <PaginationList
-        nfts={allAvailableToLend}
+        nfts={filteredItems}
         ItemsRenderer={ItemsRenderer}
         isLoading={isLoading}
         emptyResultMessage="You don't have any NFTs to lend"

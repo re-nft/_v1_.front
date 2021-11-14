@@ -3,10 +3,11 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import produce from "immer";
-import { devtools } from "zustand/middleware";
-import { CategorySelect } from "../../common/category-select";
-import { useSortOptions } from "../../../hooks/store/useSearch";
+import { devtools } from "renft-front/hooks/devtools";
 import { useRouter } from "next/router";
+
+import { CategorySelect } from "renft-front/components/common/category-select";
+import { useSortOptions } from "renft-front/hooks/store/useSearch";
 
 interface NftSortbyState {
   sortBy: string;
@@ -36,6 +37,12 @@ export const NftSortBySelect: React.FC = () => {
   }, [options, sortBy]);
 
   const router = useRouter();
+  const defaultValue = useMemo(() => {
+    return { label: "Sort by", value: "all", imageUrl: "" };
+  }, []);
+  const extendedOptions = useMemo(() => {
+    return [defaultValue, ...options];
+  }, [defaultValue, options]);
 
   useEffect(() => {
     const handleStop = () => {
@@ -50,10 +57,11 @@ export const NftSortBySelect: React.FC = () => {
 
   return (
     <CategorySelect
+      label="Sort"
       value={value}
       setValue={setSortBy}
-      options={options}
-      defaultValue={{ label: "Sort by", value: "all", imageUrl: "" }}
+      options={extendedOptions}
+      defaultValue={defaultValue}
     ></CategorySelect>
   );
 };

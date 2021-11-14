@@ -1,6 +1,6 @@
 import React from "react";
-import { AvailableToRent } from "../../components/pages/available-to-rent";
-import { useAllAvailableForRent } from "../../hooks/queries/useAllAvailableForRent";
+import { AvailableToRent } from "renft-front/components/pages/available-to-rent";
+import { useAllAvailableForRent } from "renft-front/hooks/queries/useAllAvailableForRent";
 
 const AvailableToRentPage: React.FC = () => {
   const { allAvailableToRent, isLoading } = useAllAvailableForRent();

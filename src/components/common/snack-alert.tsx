@@ -5,7 +5,10 @@ import CheckCircleIcon from "@heroicons/react/outline/CheckCircleIcon";
 import InformationCircleIcon from "@heroicons/react/outline/InformationCircleIcon";
 import ExclamationIcon from "@heroicons/react/outline/ExclamationIcon";
 import XIcon from "@heroicons/react/solid/XIcon";
-import { ErrorType, useSnackProvider } from "../../hooks/store/useSnackProvider";
+import {
+  ErrorType,
+  useSnackProvider,
+} from "renft-front/hooks/store/useSnackProvider";
 
 const SnackIcons: React.FC<{
   type: ErrorType;
@@ -32,7 +35,7 @@ export const SnackAlert: React.FC = () => {
     hideError: closeAlert,
     errorIsShown: open,
     message,
-    type
+    type,
   } = useSnackProvider();
 
   return (

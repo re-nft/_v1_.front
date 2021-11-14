@@ -1,15 +1,16 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { updateUserData } from "../services/firebase";
-import CatalogueLoader from "../components/common/catalogue-loader";
-import { useLookupAddress } from "../hooks/queries/useLookupAddress";
-import { Button } from "../components/common/button";
-import { CatalogueItemRow } from "../components/catalogue-item/catalogue-item-row";
-import { TextField } from "../components/common/text-field";
-import { TextArea } from "../components/common/textarea";
-import { ShortenPopover } from "../components/common/shorten-popover";
-import { useUserData } from "../hooks/store/useUserData";
-import { useWallet } from "../hooks/store/useWallet";
-import { useCurrentAddress } from "../hooks/misc/useCurrentAddress";
+import { updateUserData } from "renft-front/services/firebase";
+import CatalogueLoader from "renft-front/components/common/catalogue-loader";
+import { useLookupAddress } from "renft-front/hooks/queries/useLookupAddress";
+import { Button } from "renft-front/components/common/button";
+import { CatalogueItemRow } from "renft-front/components/catalogue-item/catalogue-item-row";
+import { TextField } from "renft-front/components/common/text-field";
+import { TextArea } from "renft-front/components/common/textarea";
+import { ShortenPopover } from "renft-front/components/common/shorten-popover";
+import { useUserData } from "renft-front/hooks/store/useUserData";
+import { useWallet } from "renft-front/hooks/store/useWallet";
+import { useCurrentAddress } from "renft-front/hooks/misc/useCurrentAddress";
+import { NoSignerMessage } from "renft-front/components/no-signer-message";
 
 const Profile: React.FC = () => {
   const { userData, isLoading, refreshUserData } = useUserData();
@@ -53,13 +54,7 @@ const Profile: React.FC = () => {
     }
   }, [userData]);
 
-  if (!signer) {
-    return (
-      <div className="text-center text-base text-white font-display py-32 leading-tight">
-        Please connect your wallet!
-      </div>
-    );
-  }
+  if (!signer) return <NoSignerMessage />;
 
   if (isLoading) {
     return (
