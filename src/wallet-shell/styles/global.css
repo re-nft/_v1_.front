@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.identicon {
+  height: 20px !important;
+  width: 20px !important;
+}
+
+.animated-dialog-overlay[data-reach-dialog-overlay] {
+  z-index: 12;
+  background-color: transparent;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.animated-dialog-content[data-reach-dialog-content] {
+  margin: 0 0 2rem 0;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(#2f80ed, 0.65);
+  padding: 0px;
+  width: 50vw;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  align-self: center;
+  max-width: 420px;
+  display: flex;
+  border-radius: 20px;
+}
+.animated-dialog-content[data-reach-dialog-content].mobile {
+  overflow-y: scroll;
+  align-self: flex-end;
+}
+@media screen and (max-width: 960px) {
+  .animated-dialog-content[data-reach-dialog-content] {
+    width: 65vw;
+    margin: 0;
+  }
+}
+@media screen and (max-width: 720px) {
+  .animated-dialog-content[data-reach-dialog-content] {
+    width: 85vw;
+  }
+  .animated-dialog-content[data-reach-dialog-content].mobile {
+    width: 85vw;
+    width: 100vw;
+    border-radius: 20px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.closeButton > path {
+  stroke: #C3C5CB;
+}
+.loader > path {
+  stroke: blue;
+}
+
+@keyframes loader {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

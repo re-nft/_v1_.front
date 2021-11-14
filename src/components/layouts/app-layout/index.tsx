@@ -7,7 +7,16 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 
 import { classNames } from "renft-front/utils";
 
-import { WalletConnect } from "./wallet-connect";
+import dynamic from "next/dynamic";
+
+const Wallet = dynamic(() => import("../../../wallet-shell/wallet"));
+const Web3Status = dynamic(
+  () => import("../../../wallet-shell/components/Web3Status")
+);
+const CurrentBlockNumber = dynamic(
+  () => import("../../../wallet-shell/components/CurrentBlockNumber")
+);
+
 import { Footer } from "./footer";
 
 const navigation = [
@@ -34,7 +43,7 @@ export const AppLayout: React.FC = ({ children }) => {
   const { pathname } = useRouter();
 
   return (
-    <div>
+    <Wallet>
       <Disclosure as="header">
         {({ open }) => (
           <>
@@ -94,7 +103,8 @@ export const AppLayout: React.FC = ({ children }) => {
                 <div className="hidden lg:relative lg:z-10 lg:ml-4 lg:flex flex-shrink-0 lg:items-center lg:w-64 lg:justify-self-end lg:justify-end">
                   {/* Profile dropdown */}
                   <Menu as="div" className="flex-shrink-0 relative ml-4">
-                    <WalletConnect menuButton />
+                    {/* <WalletConnect menuButton /> */}
+                    <Web3Status />
                     <Transition
                       as={Fragment}
                       enter="transition ease-out duration-100"
@@ -132,7 +142,8 @@ export const AppLayout: React.FC = ({ children }) => {
               </div>
               <div className="lg:hidden flex justify-end md:justify-none items-center">
                 <div className="flex-shrink-0">
-                  <WalletConnect />
+                  {/* <WalletConnect /> */}
+                  <Web3Status />
                 </div>
               </div>
             </div>
@@ -192,6 +203,7 @@ export const AppLayout: React.FC = ({ children }) => {
       </main>
       <div id="pagination"></div>
       <Footer />
-    </div>
+      <CurrentBlockNumber />
+    </Wallet>
   );
 };

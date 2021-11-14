@@ -4,7 +4,12 @@ import { useAllAvailableForRent } from "renft-front/hooks/queries/useAllAvailabl
 
 const AvailableToRentPage: React.FC = () => {
   const { allAvailableToRent, isLoading } = useAllAvailableForRent();
-  return <AvailableToRent isLoading={isLoading} allAvailableToRent={allAvailableToRent} />;
+  return (
+    <AvailableToRent
+      isLoading={isLoading}
+      allAvailableToRent={allAvailableToRent}
+    />
+  );
 };
 
 export default AvailableToRentPage;

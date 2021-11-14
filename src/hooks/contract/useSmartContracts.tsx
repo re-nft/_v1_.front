@@ -40,12 +40,12 @@ const loadContract = (contractName: string, signer: Signer | undefined) => {
     require(`../../contracts/${contractName}.abi.js`),
     signer
   );
-  try {
-    // @ts-ignore
-    newContract.bytecode = require(`../../contracts/${contractName}.bytecode.js`);
-  } catch (e) {
-    console.log(e);
-  }
+  // try {
+  //   // @ts-ignore
+  //   newContract.bytecode = require(`../../contracts/${contractName}.bytecode.js`);
+  // } catch (e) {
+  //   console.log(e);
+  // }
   const name = contractName.replace("Test/", "");
   switch (name) {
     case "ReNFT":

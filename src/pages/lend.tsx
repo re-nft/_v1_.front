@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Nft } from "renft-front/types/classes";
 import BatchLendModal from "renft-front/components/modals/batch-lend";
 import { CatalogueItem } from "renft-front/components/catalogue-item";

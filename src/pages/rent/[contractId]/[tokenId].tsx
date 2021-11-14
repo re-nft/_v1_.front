@@ -15,7 +15,7 @@ const AvailableToRentPage: React.FC<{
   const { allAvailableToRent, isLoading } = useAllAvailableForRent();
 
   const {
-    query: { contractId, tokenId }
+    query: { contractId, tokenId },
   } = useRouter();
 
   const match = useMemo(() => {
@@ -65,7 +65,7 @@ const AvailableToRentPage: React.FC<{
 // this will bake metatags into every request to a shared url
 export const getServerSideProps: GetServerSideProps = async ({
   params,
-  req
+  req,
 }) => {
   if (Array.isArray(params)) {
     const metas: NftTokenMeta[] | undefined = await fetchNFTsFromOpenSea(

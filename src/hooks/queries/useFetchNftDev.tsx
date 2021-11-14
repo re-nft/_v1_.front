@@ -69,8 +69,8 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
     shallow
   );
   const previousAddress = usePrevious(currentAddress);
-  const addNfts = useNftsStore((state) => state.addNfts);
-  const setAmount = useNftsStore((state) => state.setAmount);
+  const addNfts = useNftsStore(useCallback((state) => state.addNfts, []));
+  const setAmount = useNftsStore(useCallback((state) => state.setAmount, []));
 
   const fetchDevNfts = useCallback(
     async (currentAddress: string, signer: Signer) => {
@@ -186,7 +186,7 @@ export const useFetchNftDev = (): { devNfts: Nft[]; isLoading: boolean } => {
         map(() => {
           setLoading(false);
         }),
-        catchError(() => {
+        catchError((e) => {
           setLoading(false);
           return of();
         })

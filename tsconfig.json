@@ -12,6 +12,8 @@
       "renft-front/types/*": ["types/*"],
       "renft-front/types": ["types/index.ts"],
       "renft-front/consts": ["consts.ts"],
+      "renft-front/wallet-shell/*": ["wallet-shell/*"],
+      "renft-front/wallet-shell": ["wallet-shell/index.tsx"],
       "__mocks__": ["__mocks__/*"],
       "__tests__": ["__tests__/*"]
     },

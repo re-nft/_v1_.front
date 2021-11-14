@@ -2,10 +2,13 @@ import "../styles/globals.css";
 import "../styles/loader.css";
 import "../styles/nprogress.css";
 import "../styles/video-react.css";
+import "../wallet-shell/styles/global.css";
+import "@reach/dialog/styles.css";
+
 import Head from "next/head";
 import React, { useEffect } from "react";
-import { AppLayout } from "renft-front/components/layouts/app-layout";
 import type { AppProps } from "next/app";
+
 import ReactGA from "react-ga";
 import { useRouter } from "next/router";
 import "../scripts/wdyr";
@@ -14,6 +17,7 @@ import NProgress from "nprogress";
 import { NetworkName } from "renft-front/types";
 
 import { enableMapSet } from "immer";
+import { AppLayout } from "renft-front/components/layouts/app-layout";
 
 enableMapSet();
 
@@ -65,14 +69,14 @@ const MyApp: React.FC<AppProps & { err: unknown }> = ({
     ReactGA.pageview(router.asPath);
   }, [router.asPath]);
 
-  //TODO:eniko what is this
-  useEffect(() => {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
-    }
-  }, []);
+  // //TODO:eniko what is this
+  // useEffect(() => {
+  //   // Remove the server-side injected CSS.
+  //   const jssStyles = document.querySelector("#jss-server-side");
+  //   if (jssStyles) {
+  //     jssStyles.parentElement?.removeChild(jssStyles);
+  //   }
+  // }, []);
 
   return (
     <>
@@ -92,7 +96,6 @@ const MyApp: React.FC<AppProps & { err: unknown }> = ({
           key="og:image"
         />
       </Head>
-
       <AppLayout>
         <Component {...pageProps} err={err} />
       </AppLayout>
