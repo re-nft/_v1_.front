@@ -7,7 +7,6 @@ import {
   isValidMethodArgs,
 } from "../utils";
 import { useContext, useMemo, useEffect } from "react";
-import { MULTICALL_NETWORKS, MULTICALL_ABI } from "../constants/multicall";
 import {
   CallResult,
   INVALID_RESULT,
@@ -46,15 +45,6 @@ function useContract(
       return null;
     }
   }, [address, ABI, library, withSignerIfPossible, account]);
-}
-
-export function useMulticallContract(): Contract | null {
-  const { chainId } = useActiveWeb3React();
-  return useContract(
-    chainId && MULTICALL_NETWORKS[chainId],
-    MULTICALL_ABI,
-    false
-  );
 }
 
 // the lowest level call for subscribing to contract data

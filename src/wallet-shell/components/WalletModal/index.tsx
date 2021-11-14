@@ -8,8 +8,6 @@ import { Modal } from "../common/Modal";
 import { ModalContent } from "./ModalContent";
 
 interface Props {
-  pendingTransactions: string[]; // hashes of pending
-  confirmedTransactions: string[]; // hashes of confirmed
   ENSName?: string;
 }
 
@@ -17,11 +15,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
   return <div className="w-full">{children}</div>;
 };
 
-export const WalletModal: React.FC<Props> = ({
-  pendingTransactions,
-  confirmedTransactions,
-  ENSName,
-}) => {
+export const WalletModal: React.FC<Props> = ({ ENSName }) => {
   // important that these are destructed from the account-specific web3-react context
   const { account, connector } = useWeb3React();
   const {
@@ -49,8 +43,6 @@ export const WalletModal: React.FC<Props> = ({
         <ModalContent
           {...{
             toggleModal,
-            pendingTransactions,
-            confirmedTransactions,
             ENSName,
             connector,
           }}

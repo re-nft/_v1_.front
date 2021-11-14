@@ -1,5 +1,8 @@
 import React, { ReactNode, useContext } from "react";
-import { AlertTriangle, X } from "react-feather";
+import { ExclamationIcon as AlertTriangle } from "@heroicons/react/outline";
+
+import { XIcon as X } from "@heroicons/react/outline";
+
 import { isMobile } from "react-device-detect";
 import { Web3StatusActions, Web3StatusState } from "../../index.provider";
 import { APP_URL } from "../../constants";
@@ -42,7 +45,10 @@ export function URLWarning() {
   return (
     <PhisAlert2 isActive={URLWarningVisible}>
       <div className="flex px-2">
-        <AlertTriangle className="mr-1" size={12} /> Always make sure the URL is
+        <span className="w-3 h-3 mr-1">
+          <AlertTriangle />
+        </span>
+        Always make sure the URL is
         <code
           style={{ padding: "0 4px", display: "inline", fontWeight: "bold" }}
         >
@@ -51,7 +57,9 @@ export function URLWarning() {
         - bookmark it to be safe.
       </div>
       <button className="cursor-pointer" onClick={toggleURLWarning}>
-        <X size={12} />
+        <span className="w-3 h-3">
+          <X />
+        </span>
       </button>
     </PhisAlert2>
   );

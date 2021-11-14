@@ -1,14 +1,10 @@
-import { X as Close } from "react-feather";
-import React, { ReactNode } from "react";
+import React from "react";
 import clsx from "clsx";
+import { XIcon as Close } from "@heroicons/react/outline";
 
-export const CloseIcon = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const CloseIcon: React.FC<{
   onClick: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -19,21 +15,21 @@ export const CloseIcon = ({
   );
 };
 
-export const CloseColor = () => {
-  return <Close className="closeButton" />;
+export const CloseColor: React.FC = () => {
+  return (
+    <span className="h-4 w-4 flex">
+      <Close />
+    </span>
+  );
 };
 
-export const Wrapper = ({ children }: { children: ReactNode }) => {
+export const Wrapper: React.FC = ({ children }) => {
   return <div className="w-full">{children}</div>;
 };
 
-export const HeaderRow = ({
-  children,
-  isBlue,
-}: {
-  children: ReactNode;
+export const HeaderRow: React.FC<{
   isBlue?: boolean;
-}) => {
+}> = ({ children, isBlue }) => {
   return (
     <div className={clsx(isBlue && "text-blue-500", "p-4 font-medium")}>
       {children}
@@ -41,15 +37,15 @@ export const HeaderRow = ({
   );
 };
 
-export const ContentWrapper = ({ children }: { children: ReactNode }) => {
+export const ContentWrapper: React.FC = ({ children }) => {
   return <div className="p-3 md:p-6">{children}</div>;
 };
 
-export const UpperSection = ({ children }: { children: ReactNode }) => {
+export const UpperSection: React.FC = ({ children }) => {
   return <div className="relative">{children}</div>;
 };
 
-export const Blurb = ({ children }: { children: ReactNode }) => {
+export const Blurb: React.FC = ({ children }) => {
   return (
     <div className="flex flex-row flex-wrap items-center justify-center m-4 text-xs md:text-base md:m-0 md:mt-8">
       {children}
@@ -57,19 +53,15 @@ export const Blurb = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const OptionGrid = ({ children }: { children: ReactNode }) => {
+export const OptionGrid: React.FC = ({ children }) => {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-none">{children}</div>
   );
 };
 
-export const HoverText = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const HoverText: React.FC<{
   onClick?: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <button className="cursor-pointer" onClick={onClick}>
       {children}

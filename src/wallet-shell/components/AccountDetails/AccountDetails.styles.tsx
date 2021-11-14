@@ -1,8 +1,9 @@
-import { X as Close } from "react-feather";
-import { ExternalLink } from "../common/ExternalLink";
-import React, { HTMLProps, ReactNode } from "react";
+import { XIcon as Close } from "@heroicons/react/outline";
 
-export const HeaderRow = ({ children }: { children: ReactNode }) => {
+import { ExternalLink } from "../common/ExternalLink";
+import React, { HTMLProps } from "react";
+
+export const HeaderRow: React.FC = ({ children }) => {
   return (
     <div className="flex flex-row p-4 font-medium color-pink-500">
       {children}
@@ -10,7 +11,7 @@ export const HeaderRow = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const UpperSection = ({ children }: { children: ReactNode }) => {
+export const UpperSection: React.FC = ({ children }) => {
   return <div className="relative">{children}</div>;
 };
 
@@ -36,13 +37,9 @@ export const AccountGroupingRow: React.FC<{ id?: string }> = ({
   );
 };
 
-export const AccountSection = ({
-  children,
-  id,
-}: {
-  children: ReactNode;
+export const AccountSection: React.FC<{
   id?: string;
-}) => {
+}> = ({ children, id }) => {
   return (
     <div className="pt-4 pb-4 pl-6 md:p-4" id={id}>
       {children}
@@ -50,13 +47,7 @@ export const AccountSection = ({
   );
 };
 
-export const LowerSection = ({
-  children,
-  id,
-}: {
-  children: ReactNode;
-  id?: string;
-}) => {
+export const LowerSection: React.FC<{ id?: string }> = ({ children, id }) => {
   return (
     <div
       className="flex flex-col flex-grow p-6 overflow-auto bg-gray-200"
@@ -67,13 +58,7 @@ export const LowerSection = ({
   );
 };
 
-export const AccountControl = ({
-  children,
-  id,
-}: {
-  children: ReactNode;
-  id?: string;
-}) => {
+export const AccountControl: React.FC<{ id?: string }> = ({ children, id }) => {
   return (
     <div
       className="flex flex-row items-center w-full pb-2 text-lg font-medium"
@@ -84,11 +69,11 @@ export const AccountControl = ({
   );
 };
 
-export const AddressLink = ({
-  ...rest
-}: Omit<HTMLProps<HTMLAnchorElement>, "as" | "ref" | "onClick"> & {
-  href: string;
-}) => {
+export const AddressLink: React.FC<
+  Omit<HTMLProps<HTMLAnchorElement>, "as" | "ref" | "onClick"> & {
+    href: string;
+  }
+> = ({ ...rest }) => {
   return (
     <ExternalLink
       className="flex flex-row items-center flex-shrink-0 ml-4 text-sm font-medium text-gray-400 no-underline cursor-pointer justify-content hover:text-gray-600 focus:text-gray-600 active:text-gray-600"
@@ -97,13 +82,9 @@ export const AddressLink = ({
   );
 };
 // TODO duplication
-export const CloseIcon = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const CloseIcon: React.FC<{
   onClick: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -115,28 +96,24 @@ export const CloseIcon = ({
 };
 
 // TODO duplicaion
-export const CloseColor = () => {
-  return <Close className="closeButton" />;
+export const CloseColor: React.FC = () => {
+  return (
+    <span className="h-4 w-4 flex">
+      <Close />
+    </span>
+  );
 };
 
-export const WalletName = ({ children }: { children: ReactNode }) => {
+export const WalletName: React.FC = ({ children }) => {
   return <div className="text-sm font-medium text-gray-500">{children}</div>;
 };
 
-export const TransactionListWrapper = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const TransactionListWrapper: React.FC = ({ children }) => {
   return <button className="flex flex-col">{children}</button>;
 };
-export const WalletAction = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const WalletAction: React.FC<{
   onClick: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -148,7 +125,7 @@ export const WalletAction = ({
   );
 };
 
-export const AutoRow = ({ children }: { children: ReactNode }) => {
+export const AutoRow: React.FC = ({ children }) => {
   return (
     <button className="flex flex-row justify-between mb-3">{children}</button>
   );

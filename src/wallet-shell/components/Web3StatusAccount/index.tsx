@@ -1,12 +1,8 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import React, { useMemo, useContext } from "react";
+import React, { useContext } from "react";
 import { NetworkContextName } from "../../constants";
-import { useENSName, useAllTransactions } from "../../state-hooks";
-import {
-  shortenAddress,
-  newTransactionsFirst,
-  isTransactionRecent,
-} from "../../utils";
+import { useENSName } from "../../state-hooks";
+import { shortenAddress } from "../../utils";
 import { Web3StatusActions } from "../../index.provider";
 
 import {
@@ -21,27 +17,16 @@ import { Loader } from "../common/Loader";
 import { StatusIcon } from "../StatusIcon";
 import { WalletModal } from "../WalletModal";
 
-export function Web3StatusAccount() {
+export const Web3StatusAccount: React.FC = () => {
   const { active, account, connector, error } = useWeb3React();
   const contextNetwork = useWeb3React(NetworkContextName);
 
   const { ENSName } = useENSName(account ?? undefined);
   const { toggleModal } = useContext(Web3StatusActions);
 
-  const allTransactions = useAllTransactions();
-
-  const sortedRecentTransactions = useMemo(() => {
-    const txs = Object.values(allTransactions);
-    return txs.filter(isTransactionRecent).sort(newTransactionsFirst);
-  }, [allTransactions]);
-
-  const pending = sortedRecentTransactions
-    .filter((tx) => !tx.receipt)
-    .map((tx) => tx.hash);
-  const confirmed = sortedRecentTransactions
-    .filter((tx) => tx.receipt)
-    .map((tx) => tx.hash);
-  const hasPendingTransactions = !!pending.length;
+  //TODO:eniko useEventTrackedTransactions
+  // this is a nicecities to show if something is in progress or not
+  const hasPendingTransactions = false;
 
   if (!contextNetwork.active && !active) {
     return null;
@@ -88,11 +73,7 @@ export function Web3StatusAccount() {
           <Text>Connect to a wallet</Text>
         </Web3StatusConnect>
       )}
-      <WalletModal
-        ENSName={ENSName ?? undefined}
-        pendingTransactions={pending}
-        confirmedTransactions={confirmed}
-      />
+      <WalletModal ENSName={ENSName ?? undefined} />
     </>
   );
-}
+};

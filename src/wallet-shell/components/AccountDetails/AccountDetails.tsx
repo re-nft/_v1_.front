@@ -1,6 +1,6 @@
-import React, { useCallback, useContext } from "react";
+import React from "react";
 import { AbstractConnector } from "@web3-react/abstract-connector";
-import { ExternalLink as LinkIcon } from "react-feather";
+import { ExternalLinkIcon as LinkIcon } from "@heroicons/react/outline";
 
 import { useActiveWeb3React } from "../../state-hooks";
 import { shortenAddress, getEtherscanLink } from "../../utils";
@@ -9,10 +9,8 @@ import { SUPPORTED_WALLETS } from "../../constants";
 
 import { StatusIcon } from "../StatusIcon";
 import { Copy } from "./Copy";
-import { Transaction } from "./Transaction";
 
 import {
-  TransactionListWrapper,
   WalletName,
   UpperSection,
   CloseIcon,
@@ -23,11 +21,8 @@ import {
   AccountGroupingRow,
   AccountControl,
   AddressLink,
-  LowerSection,
   WalletAction,
-  AutoRow,
 } from "./AccountDetails.styles";
-import { Web3StatusActions } from "../../index.provider";
 
 function getName(connector: AbstractConnector | undefined) {
   const { ethereum } = window;
@@ -44,25 +39,17 @@ function getName(connector: AbstractConnector | undefined) {
 
 interface AccountDetailsProps {
   toggleWalletModal: () => void;
-  pendingTransactions: string[];
-  confirmedTransactions: string[];
   ENSName?: string;
   openOptions: () => void;
 }
 
-export function AccountDetails({
+export const AccountDetails: React.FC<AccountDetailsProps> = ({
   toggleWalletModal,
-  pendingTransactions,
-  confirmedTransactions,
   ENSName,
   openOptions,
-}: AccountDetailsProps) {
+}) => {
   const { chainId, account, connector } = useActiveWeb3React();
-  const { clearAllTransactions } = useContext(Web3StatusActions);
 
-  const clearAllTransactionsCallback = useCallback(() => {
-    if (chainId) clearAllTransactions({ chainId });
-  }, [chainId, clearAllTransactions]);
   return (
     <>
       <UpperSection>
@@ -109,7 +96,9 @@ export function AccountDetails({
                       getEtherscanLink(chainId, ENSName || account, "address")
                     }
                   >
-                    <LinkIcon size={16} />
+                    <span className="w-4 h-4">
+                      <LinkIcon />
+                    </span>
                     <span style={{ marginLeft: "4px" }}>View on Etherscan</span>
                   </AddressLink>
                 )}
@@ -118,33 +107,6 @@ export function AccountDetails({
           </InfoCard>
         </AccountSection>
       </UpperSection>
-      {!!pendingTransactions.length || !!confirmedTransactions.length ? (
-        <LowerSection>
-          <AutoRow>
-            <p>Recent Transactions</p>
-            <button
-              className="font-medium text-pink-500"
-              onClick={clearAllTransactionsCallback}
-            >
-              (clear all)
-            </button>
-          </AutoRow>
-          <TransactionListWrapper>
-            {pendingTransactions.map((hash, i) => {
-              return <Transaction key={i} hash={hash} />;
-            })}
-          </TransactionListWrapper>
-          <TransactionListWrapper>
-            {confirmedTransactions.map((hash, i) => {
-              return <Transaction key={i} hash={hash} />;
-            })}
-          </TransactionListWrapper>
-        </LowerSection>
-      ) : (
-        <LowerSection>
-          <p>Your transactions will appear here...</p>
-        </LowerSection>
-      )}
     </>
   );
-}
+};

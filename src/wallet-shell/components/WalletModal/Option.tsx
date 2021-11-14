@@ -11,7 +11,7 @@ import {
 import { MetamaskIcon } from "../common/icons/metamask";
 import { CoinbaseIcon } from "../common/icons/coinbase";
 import { WalletConnectIcon } from "../common/icons/walletconect";
-import { ArrowRight } from "react-feather";
+import { ArrowRightIcon as ArrowRight } from "@heroicons/react/outline";
 
 interface Props {
   link?: string | null;
@@ -51,7 +51,11 @@ export function Option({
       </OptionCardLeft>
       <IconWrapper>
         {icon === "metamask" && <MetamaskIcon />}
-        {icon === "arrow-right" && <ArrowRight size="24px" />}
+        {icon === "arrow-right" && (
+          <span className="w-5 h-5">
+            <ArrowRight />
+          </span>
+        )}
         {icon === "coinbase" && <CoinbaseIcon />}
         {icon === "wallet-connect" && <WalletConnectIcon />}
       </IconWrapper>

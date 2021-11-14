@@ -1,14 +1,9 @@
-import { Activity } from "react-feather";
-import React, { ReactNode } from "react";
+import React from "react";
 import clsx from "clsx";
 
-export const Web3StatusError = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const Web3StatusError: React.FC<{
   onClick: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <div
       className="flex items-center w-full p-2 font-medium text-white bg-red-500 border border-red-500 border-solid cursor-pointer select-none focus:outline-none hover:bg-red-600 focus:bg-red-600"
@@ -19,17 +14,11 @@ export const Web3StatusError = ({
   );
 };
 
-export const Web3StatusConnected = ({
-  children,
-  pending,
-  onClick,
-  id,
-}: {
-  children: ReactNode;
+export const Web3StatusConnected: React.FC<{
   onClick: () => void;
   pending: boolean;
   id: string;
-}) => {
+}> = ({ children, pending, onClick, id }) => {
   return (
     <div
       className={clsx(
@@ -47,17 +36,11 @@ export const Web3StatusConnected = ({
   );
 };
 
-export const Web3StatusConnect = ({
-  children,
-  faded,
-  onClick,
-  id,
-}: {
-  children: ReactNode;
+export const Web3StatusConnect: React.FC<{
   onClick: () => void;
   faded: boolean;
   id: string;
-}) => {
+}> = ({ children, faded, onClick, id }) => {
   return (
     <div
       className={clsx(
@@ -75,7 +58,7 @@ export const Web3StatusConnect = ({
   );
 };
 
-export const Text = ({ children }: { children: ReactNode }) => {
+export const Text: React.FC = ({ children }) => {
   return (
     <p
       className="flex-1 ml-1 mr-2 overflow-hidden text-base font-medium overflow-ellipsis whitespace-nowrap"
@@ -86,11 +69,35 @@ export const Text = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const NetworkIcon = () => {
-  return <Activity className="w-4 h-4 ml-1 mr-2" />;
+const Activity: React.FC<{
+  width?: number;
+  height?: number;
+}> = ({ width = 20, height = 20 }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+    </svg>
+  );
+};
+export const NetworkIcon: React.FC = () => {
+  return (
+    <span className="w-4 h-4 ml-1 mr-2">
+      <Activity />
+    </span>
+  );
 };
 
-export const RowBetween = ({ children }: { children: ReactNode }) => {
+export const RowBetween: React.FC = ({ children }) => {
   return (
     <div className={clsx("p-0 flex w-full items-center justify-between")}>
       {children}

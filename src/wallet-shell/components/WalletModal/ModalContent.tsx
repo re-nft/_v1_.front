@@ -22,18 +22,11 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 interface Props {
   toggleModal: () => void;
-  pendingTransactions: string[];
-  confirmedTransactions: string[];
   ENSName?: string;
   connector?: AbstractConnector;
 }
 
-export function ModalContent({
-  toggleModal,
-  pendingTransactions,
-  confirmedTransactions,
-  ENSName,
-}: Props) {
+export const ModalContent: React.FC<Props> = ({ toggleModal, ENSName }) => {
   const { active, account, connector, activate, error } = useWeb3React();
   const {
     application: { modalOpen },
@@ -128,8 +121,6 @@ export function ModalContent({
     return (
       <AccountDetails
         toggleWalletModal={toggleModal}
-        pendingTransactions={pendingTransactions}
-        confirmedTransactions={confirmedTransactions}
         ENSName={ENSName}
         openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
       />
@@ -181,4 +172,4 @@ export function ModalContent({
       </ContentWrapper>
     </UpperSection>
   );
-}
+};

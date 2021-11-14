@@ -3,6 +3,4 @@
 export * from "./connect";
 export * from "./useContract";
 export * from "./useENSName";
-export * from "./useEthBalances";
 export * from "./useActiveWeb3React";
-export * from "./useAllTransactions";
