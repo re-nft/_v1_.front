@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers";
 
-import { useActiveWeb3React } from "../../wallet-shell/state-hooks";
+import { useActiveWeb3React } from "../../wallet-shell/state-hooks/useActiveWeb3React";
 
 export const useWallet = (): {
   signer: JsonRpcSigner | null;

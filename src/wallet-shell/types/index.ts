@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { ChainId } from "@uniswap/sdk";
+import { ChainId } from "../constants";
 
 export interface CallListeners {
   // on a per-chain basis

@@ -117,7 +117,7 @@ export const WalletAction: React.FC<{
   return (
     <button
       onClick={onClick}
-      className="p-2 px-1 py-2 ml-2 text-sm font-normal text-pink-500 border border-pink-300 border-solid rounded-md hover:cursor-pointer focus:shadow-md focus:border-pink-500 hover:border-pink-500 active:shadow-md active:border-pink-500 "
+      className="p-2 px-1 py-2 ml-2 text-sm font-normal text-pink-500 border border-pink-300 border-solid hover:cursor-pointer focus:shadow-md focus:border-pink-500 hover:border-pink-500 active:shadow-md active:border-pink-500 "
       style={{ width: "fit-content" }}
     >
       {children}

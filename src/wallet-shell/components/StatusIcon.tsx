@@ -1,17 +1,14 @@
 import { Identicon } from "./Identicon";
 import { injected, walletconnect, walletlink } from "../connectors";
 import { AbstractConnector } from "@web3-react/abstract-connector";
-import React, { ReactNode } from "react";
+import React from "react";
 import clsx from "clsx";
 import { CoinbaseIcon } from "./common/icons/coinbase";
 import { WalletConnectIcon } from "./common/icons/walletconect";
-// TODO try out different connectors
-export const MainWalletAction = ({
+
+export const MainWalletAction: React.FC<{ onClick: () => void }> = ({
   children,
   onClick,
-}: {
-  children: ReactNode;
-  onClick: () => void;
 }) => {
   return (
     <button
@@ -24,13 +21,7 @@ export const MainWalletAction = ({
   );
 };
 
-export const IconWrapper = ({
-  children,
-  end,
-}: {
-  children: ReactNode;
-  end?: boolean;
-}) => {
+export const IconWrapper: React.FC<{ end?: boolean }> = ({ children, end }) => {
   return (
     <div
       className={clsx(
@@ -42,13 +33,10 @@ export const IconWrapper = ({
     </div>
   );
 };
-export function StatusIcon({
-  connector,
-  end,
-}: {
-  connector?: AbstractConnector;
+export const StatusIcon: React.FC<{
   end?: boolean;
-}) {
+  connector?: AbstractConnector;
+}> = ({ connector, end }) => {
   if (connector === injected) {
     return <Identicon />;
   } else if (connector === walletconnect) {
@@ -65,4 +53,4 @@ export function StatusIcon({
     );
   }
   return null;
-}
+};

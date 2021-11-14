@@ -25,7 +25,7 @@ interface Props {
   id: string;
 }
 // TODO icon
-export function Option({
+export const Option: React.FC<Props> = ({
   link = null,
   clickable = true,
   onClick,
@@ -34,7 +34,7 @@ export function Option({
   active = false,
   id,
   subheader,
-}: Props) {
+}) => {
   const content = (
     <OptionCardClickable
       id={id}
@@ -66,4 +66,4 @@ export function Option({
   }
 
   return content;
-}
+};

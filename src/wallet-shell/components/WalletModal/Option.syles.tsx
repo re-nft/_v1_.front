@@ -1,25 +1,17 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import clsx from "clsx";
 
-export const OptionCardLeft = ({ children }: { children: ReactNode }) => {
+export const OptionCardLeft: React.FC = ({ children }) => {
   return <div className="flex flex-col justify-center h-full">{children}</div>;
 };
 
-export const OptionCardClickable = ({
-  children,
-  onClick,
-  active,
-  clickable,
-  disabled,
-  id,
-}: {
-  children: ReactNode;
+export const OptionCardClickable: React.FC<{
   onClick?: () => void;
   active?: boolean;
   clickable?: boolean;
   disabled?: boolean;
   id: string;
-}) => {
+}> = ({ children, onClick, active, clickable, disabled, id }) => {
   return (
     <button
       className={clsx(
@@ -39,7 +31,7 @@ export const OptionCardClickable = ({
   );
 };
 
-export const GreenCircle = () => {
+export const GreenCircle: React.FC = () => {
   return (
     <div className="flex items-center justify-center text-green-500">
       <div className="flex flex-row items-center ">
@@ -49,7 +41,7 @@ export const GreenCircle = () => {
   );
 };
 
-export const HeaderText = ({ children }: { children: ReactNode }) => {
+export const HeaderText: React.FC = ({ children }) => {
   return (
     <div className="flex flex-row font-medium text-black font-base">
       {children}
@@ -57,11 +49,11 @@ export const HeaderText = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const SubHeader = ({ children }: { children: ReactNode }) => {
+export const SubHeader: React.FC = ({ children }) => {
   return <div className="mt-1 text-xs text-black">{children}</div>;
 };
 
-export const IconWrapper = ({ children }: { children: ReactNode }) => {
+export const IconWrapper: React.FC = ({ children }) => {
   return (
     <div className="flex flex-col items-end justify-center md:items-center">
       {" "}

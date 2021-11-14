@@ -41,6 +41,7 @@
     "react/prop-types": "off",
     "unused-imports/no-unused-imports": "warn",
     "react/react-in-jsx-scope": "off",
+    "testing-library/no-unnecessary-act": "off",
     "unused-imports/no-unused-vars": [
       "warn",
       {

@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext } from "react";
+import React, { useContext } from "react";
 import { ExclamationIcon as AlertTriangle } from "@heroicons/react/outline";
 
 import { XIcon as X } from "@heroicons/react/outline";
@@ -8,12 +8,9 @@ import { Web3StatusActions, Web3StatusState } from "../../index.provider";
 import { APP_URL } from "../../constants";
 import clsx from "clsx";
 
-const PhisAlert2 = ({
+const PhisAlert2: React.FC<{ isActive: boolean }> = ({
   children,
   isActive,
-}: {
-  children: ReactNode;
-  isActive: boolean;
 }) => {
   return (
     <div

@@ -1,9 +1,8 @@
 import { Loader } from "../common/Loader";
-import { ReactNode } from "react";
 import clsx from "clsx";
 import React from "react";
 
-export const PendingSection = ({ children }: { children: ReactNode }) => {
+export const PendingSection: React.FC = ({ children }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full">
       {children}
@@ -11,16 +10,13 @@ export const PendingSection = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const StyledLoader = () => {
+export const StyledLoader: React.FC = () => {
   return <Loader className="mr-4" />;
 };
 
-export const LoadingMessage = ({
+export const LoadingMessage: React.FC<{ hasError?: boolean }> = ({
   children,
   hasError,
-}: {
-  children: ReactNode;
-  hasError?: boolean;
 }) => {
   return (
     <div
@@ -34,7 +30,7 @@ export const LoadingMessage = ({
   );
 };
 
-export const ErrorGroup = ({ children }: { children: ReactNode }) => {
+export const ErrorGroup: React.FC = ({ children }) => {
   return (
     <div className="flex flex-row items-center justify-between w-full">
       {children}
@@ -42,13 +38,9 @@ export const ErrorGroup = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const ErrorButton = ({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
+export const ErrorButton: React.FC<{
   onClick: () => void;
-}) => {
+}> = ({ children, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -59,7 +51,7 @@ export const ErrorButton = ({
   );
 };
 
-export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
+export const LoadingWrapper: React.FC = ({ children }) => {
   return (
     <div className="flex flex-row items-center w-full justify-content">
       {children}

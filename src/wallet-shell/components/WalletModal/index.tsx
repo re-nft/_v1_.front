@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, ReactNode } from "react";
+import React, { useEffect, useContext } from "react";
 import { useWeb3React } from "@web3-react/core";
 
 import usePrevious from "../../hooks/usePrevious";
@@ -11,7 +11,7 @@ interface Props {
   ENSName?: string;
 }
 
-const Wrapper = ({ children }: { children: ReactNode }) => {
+const Wrapper: React.FC = ({ children }) => {
   return <div className="w-full">{children}</div>;
 };
 

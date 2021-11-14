@@ -39,6 +39,14 @@ const origin =
     ? "https://dapp.renft.io"
     : "https://staging.dapp.renft.io";
 
+//throw it here instead in connector
+const NETWORK_URL = process.env.NEXT_PUBLIC_PROVIDER_URL;
+if (process.env && !NETWORK_URL) {
+  throw new Error(
+    `NEXT_PUBLIC_PROVIDER_URL must be a defined environment variable`
+  );
+}
+
 const MyApp: React.FC<AppProps & { err: unknown }> = ({
   Component,
   pageProps,

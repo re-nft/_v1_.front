@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, ReactNode, useReducer } from "react";
+import React, { createContext, useMemo, useReducer } from "react";
 import { toCallKey } from "./utils";
 import {
   ListenerProps,
@@ -76,7 +76,7 @@ export const Web3StatusActions = createContext(actionsIntialValue);
 
 const now = () => new Date().getTime();
 
-export const Web3StatusProvider = ({ children }: { children: ReactNode }) => {
+export const Web3StatusProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(
     (state: IWeb3StatusState, action: ApplicationAction) => {
       switch (action.type) {

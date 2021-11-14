@@ -21,12 +21,12 @@ import ENS_PUBLIC_RESOLVER_ABI from "../constants/abis/ens-public-resolver.json"
 // Instead of redux just use a Web3Status which groups together the required state for wallet connect related features
 import { Web3StatusState, Web3StatusActions } from "../index.provider";
 import { useActiveWeb3React } from "./useActiveWeb3React";
-import { ChainId } from "@uniswap/sdk";
+import { ChainId } from "../constants";
 
 // returns null on errors
 function useContract(
   address: string | undefined,
-  ABI: any,
+  ABI: Record<string, unknown>,
   withSignerIfPossible = true
 ): Contract | null {
   const { library, account } = useActiveWeb3React();
@@ -117,44 +117,6 @@ export function useBlockNumber(): number | undefined {
   return blockNumber[chainId ?? -1];
 }
 
-// Call a contract on different chains, but same function
-// with different inputs
-// returns the state of each calls with relavant data/error
-export function useSingleContractMultipleData(
-  contract: Contract | null | undefined,
-  methodName: string,
-  callInputs: OptionalMethodInputs[],
-  options?: ListenerOptions
-): CallState[] {
-  const fragment = useMemo(
-    () => contract?.interface?.getFunction(methodName),
-    [contract, methodName]
-  );
-
-  const calls = useMemo(
-    () =>
-      contract && fragment && callInputs && callInputs.length > 0
-        ? callInputs.map<Call>((inputs) => {
-            return {
-              address: contract.address,
-              callData: contract.interface.encodeFunctionData(fragment, inputs),
-            };
-          })
-        : [],
-    [callInputs, contract, fragment]
-  );
-
-  const results = useCallsData(calls, options);
-
-  const latestBlockNumber = useBlockNumber();
-
-  return useMemo(() => {
-    return results.map((result) =>
-      toCallState(result, contract?.interface, fragment, latestBlockNumber)
-    );
-  }, [fragment, contract, results, latestBlockNumber]);
-}
-
 export function useSingleCallResult(
   contract: Contract | null | undefined,
   methodName: string,
@@ -205,12 +167,20 @@ export function useENSRegistrarContract(
         break;
     }
   }
-  return useContract(address, ENS_ABI, withSignerIfPossible);
+  return useContract(
+    address,
+    ENS_ABI as any as Record<string, unknown>,
+    withSignerIfPossible
+  );
 }
 
 export function useENSResolverContract(
   address: string | undefined,
   withSignerIfPossible?: boolean
 ): Contract | null {
-  return useContract(address, ENS_PUBLIC_RESOLVER_ABI, withSignerIfPossible);
+  return useContract(
+    address,
+    ENS_PUBLIC_RESOLVER_ABI as any as Record<string, unknown>,
+    withSignerIfPossible
+  );
 }

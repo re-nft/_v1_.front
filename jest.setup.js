@@ -15,9 +15,15 @@ if (!global.fetch) {
 const ENABLE_LOG = false;
 beforeAll(() => {
   if (ENABLE_LOG)
-    jest.spyOn(global.console, "log").mockImplementation(() => {});
-  jest.spyOn(global.console, "error").mockImplementation(() => {});
-  jest.spyOn(global.console, "warn").mockImplementation(() => {});
+    jest.spyOn(global.console, "log").mockImplementation(() => {
+      //nothing
+    });
+  jest.spyOn(global.console, "error").mockImplementation(() => {
+    //nothing
+  });
+  jest.spyOn(global.console, "warn").mockImplementation(() => {
+    //nothing
+  });
 });
 
 beforeEach(() => {
@@ -47,6 +53,14 @@ jest.mock("@ethersproject/providers");
 jest.mock("web3modal");
 jest.mock("next/router");
 jest.mock("@renft/sdk");
+jest.mock("renft-front/hooks/store/useWallet", () => {
+  return {
+    __esModule: true,
+    useWallet: jest.fn().mockReturnValue({
+      signer: undefined,
+    }),
+  };
+});
 //jest.mock("zustand");
 jest.mock("@sentry/nextjs", () => {
   return {
@@ -88,6 +102,8 @@ beforeAll(() => {
   process.env.NEXT_PUBLIC_EIP1155_API = "https://eip1155";
   process.env.NEXT_PUBLIC_NETWORK_SUPPORTED = "mainnet";
   process.env.NEXT_PUBLIC_CORS_PROXY = "https://dummy-cors-proxy";
+  process.env.NEXT_PUBLIC_PROVIDER_URL = "infura";
+  process.env.NEXT_PUBLIC_CHAIN_ID = 1;
   process.env.NEXT_PUBLIC_SHOW_MINT = false;
   process.env.NEXT_PUBLIC_FETCH_NFTS_DEV = undefined;
   process.env.NEXT_PUBLIC_DEBUG = undefined;

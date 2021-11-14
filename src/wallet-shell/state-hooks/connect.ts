@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { injected } from "../connectors";
 
-export function useEagerConnect() {
+export const useEagerConnect = (): boolean => {
   const { activate, active } = useWeb3ReactCore(); // specifically using useWeb3ReactCore because of what this hook does
   const [tried, setTried] = useState(false);
 
@@ -33,13 +33,13 @@ export function useEagerConnect() {
   }, [active]);
 
   return tried;
-}
+};
 
 /**
  * Use for network and injected - logs user in
  * and out after checking what network theyre on
  */
-export function useInactiveListener(suppress = false) {
+export const useInactiveListener = (suppress = false): void => {
   const { active, error, activate } = useWeb3ReactCore(); // specifically using useWeb3React because of what this hook does
 
   useEffect(() => {
@@ -76,4 +76,4 @@ export function useInactiveListener(suppress = false) {
     }
     return undefined;
   }, [active, error, suppress, activate]);
-}
+};

@@ -1,7 +1,14 @@
 import { injected, walletconnect, walletlink } from "../connectors";
 import { AbstractConnector } from "@web3-react/abstract-connector";
-import { ChainId } from "@uniswap/sdk";
 
+export enum ChainId {
+  MAINNET = 1,
+  ROPSTEN = 3,
+  RINKEBY = 4,
+  GÖRLI = 5,
+  KOVAN = 42,
+  LOCALHOST = 31337,
+}
 // TODO put into requirements
 export const NetworkContextName = "NETWORK";
 export interface WalletInfo {
@@ -68,7 +75,7 @@ export const NETWORK_LABELS: { [t: number]: string } = {
   [ChainId.GÖRLI]: "Görli",
   [ChainId.KOVAN]: "Kovan",
   [ChainId.MAINNET]: "Mainnet",
-  31337: "Localhost",
+  [ChainId.LOCALHOST]: "Localhost",
 };
 
 export const WALLET_VIEWS = {

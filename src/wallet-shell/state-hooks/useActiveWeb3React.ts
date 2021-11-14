@@ -1,8 +1,7 @@
 import { Web3Provider } from "@ethersproject/providers";
-import { ChainId } from "@uniswap/sdk";
 import { useWeb3React as useWeb3ReactCore } from "@web3-react/core";
 import { Web3ReactContextInterface } from "@web3-react/core/dist/types";
-import { NetworkContextName } from "../constants";
+import { ChainId, NetworkContextName } from "../constants";
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
   chainId?: ChainId;

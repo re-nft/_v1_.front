@@ -12,7 +12,7 @@ import {
   MethodArgs,
   MethodArg,
 } from "../types";
-import { ChainId } from "@uniswap/sdk";
+import { ChainId } from "../constants";
 
 const INVALID_CALL_STATE: CallState = {
   valid: false,
@@ -104,6 +104,7 @@ const ETHERSCAN_PREFIXES: { [_chainId in ChainId]: string } = {
   4: "rinkeby.",
   5: "goerli.",
   42: "kovan.",
+  31337: "",
 };
 
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end

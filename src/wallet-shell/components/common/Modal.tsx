@@ -14,7 +14,7 @@ interface ModalProps {
   onDismiss: () => void;
   minHeight?: number | false;
   maxHeight?: number;
-  initialFocusRef?: React.RefObject<any>;
+  initialFocusRef?: React.RefObject<unknown>;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -67,10 +67,8 @@ export const Modal: React.FC<ModalProps> = ({
                 {...(isMobile
                   ? {
                       ...bind(),
-                      // @ts-ignore
                       style: {
-                        // @ts-ignore
-                        transform: y.interpolate(
+                        transform: y.to(
                           (y) => `translateY(${y > 0 ? y : 0}px)`
                         ),
                         maxHeight: maxHeight ? `${maxHeight}vh` : "",
@@ -79,8 +77,6 @@ export const Modal: React.FC<ModalProps> = ({
                     }
                   : {})}
                 aria-label="dialog content"
-                //@ts-ignore
-                mobile={isMobile}
                 as="div"
                 className={clsx(
                   isMobile && "mobile",
