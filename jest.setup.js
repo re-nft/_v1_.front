@@ -95,7 +95,6 @@ let OLD_ENV;
 beforeAll(() => {
   OLD_ENV = { ...process.env };
   //TODO:eniko this needs to be backward compatible
-  process.env.NEXT_PUBLIC_OPENSEA_API = "https://api.opensea";
   process.env.NEXT_PUBLIC_OPENSEA_API_KEY = "https://api.opensea";
   process.env.NEXT_PUBLIC_RENFT_API = "https://renftapi";
   process.env.NEXT_PUBLIC_EIP721_API = "https://eip721";
@@ -174,7 +173,7 @@ global.mockResponse = (options) => {
       // Respond with "500 Internal Server Error" status for this test.
       return res(ctx.status(renftapi.status), ctx.json(renftapi.json));
     }),
-    rest.get(`${process.env.NEXT_PUBLIC_OPENSEA_API}`, (req, res, ctx) => {
+    rest.get("https://api.opensea.io/api/v1/assets", (req, res, ctx) => {
       return res(ctx.status(openseaapi.status), ctx.json(openseaapi.json));
     }),
     rest.post(process.env.NEXT_PUBLIC_EIP721_API, (req, res, ctx) => {
