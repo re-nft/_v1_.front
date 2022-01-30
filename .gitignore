@@ -47,3 +47,6 @@ cypress/videos
 .sentryclirc
 # Sentry
 .sentryclirc
+
+.ipynb_checkpoints/
+*.ipynb

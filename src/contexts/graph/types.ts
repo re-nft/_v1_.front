@@ -38,12 +38,12 @@ export type ERC721s = {
 // raw data that comes from the eip1155 subgraph
 export type ERC1155s = {
   account: {
-    balances: {
+    ERC1155balances: {
       amount: number;
       token: {
         tokenId: NftToken["tokenId"];
         tokenURI?: NftToken["tokenURI"];
-        registry: {
+        contract: {
           contractAddress: Address;
         };
       };

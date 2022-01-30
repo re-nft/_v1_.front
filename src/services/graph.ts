@@ -100,8 +100,8 @@ export const fetchUserProd1155 = async (
   );
 
   const tokens: NftToken[] =
-    (response as ERC1155s).account?.balances?.map(({ token }) => ({
-      address: token.registry.contractAddress,
+    (response as ERC1155s).account?.ERC1155balances?.map(({ token }) => ({
+      address: token.contract.contractAddress,
       tokenURI: token.tokenURI,
       tokenId: token.tokenId,
       isERC721: false,

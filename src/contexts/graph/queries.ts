@@ -26,13 +26,11 @@ export const queryMyERC1155s = (user: string, skip = 0): string => {
         first: 1000,
         skip: ${skip}
         ) {
-      balances(
+      ERC1155balances(
         where: {value_gt: 0}) {
         token {
-          tokenURI: URI
-          registry {
-            contractAddress: id
-          }
+          tokenURI: uri
+          contract { contractAddress: id }
           tokenId: identifier
         }
         value
